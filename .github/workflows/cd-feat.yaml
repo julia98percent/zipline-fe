@@ -1,0 +1,62 @@
+name: feature 브랜치 전용 S3 버킷 상태 관리
+
+on:
+  pull_request:
+    types: [opened, reopened, synchronize]
+    branches:
+      - dev
+
+jobs:
+  cd-feat:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout the code
+        uses: actions/checkout@v3
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: "20" # 프로젝트에서 사용하는 Node.js 버전에 맞게 설정
+
+      - name: Install dependencies
+        run: yarn install
+
+      - name: Build project
+        run: yarn run build # Vite로 프로젝트를 빌드
+
+      - name: Set up AWS CLI
+        uses: aws-actions/configure-aws-credentials@v3
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ap-northeast-2
+
+      - name: Determine folder name in s3 feature bucket
+        id: extract-bucket-name
+        env:
+          FEATURE_BRANCH: ${{ github.head_ref }}
+        run: |
+          # feat/ 이후의 문자열만 추출
+          if [[ "$FEATURE_BRANCH" == feat/* ]]; then
+            S3_FOLDER_NAME=$(echo $FEATURE_BRANCH | sed 's|^feat/||')
+            echo "Folder name determined: $S3_FOLDER_NAME"
+            echo "folder=$S3_FOLDER_NAME" >> $GITHUB_ENV
+          else
+             echo "Branch name is not in expected format: $FEATURE_BRANCH"
+             exit 1
+          fi
+
+      - name: Handle Build Deployment and S3 Buckets
+        env:
+          S3_FOLDER: ${{ env.folder }}
+        run: |
+          if [ "${{ github.event.action }}" = "opened" ] || [ "${{ github.event.action }}" = "reopened" ] ||  [ "${{ github.event.action }}" = "synchronize" ]; then
+            echo "Deploying to S3 folder: $S3_FOLDER"
+            aws s3 sync ./dist s3://zipline-fe-feat/$S3_FOLDER/ --delete
+          elif [ "${{ github.event.action }}" = "closed" ] && [ "${{ github.event.pull_request.merged }}" = "true" ]; then
+            echo "Deleting S3 folder: $S3_FOLDER"
+            aws s3 rm s3://zipline-fe-feat/$S3_FOLDER/ --recursive
+          else
+            echo "No action needed"
+          fi

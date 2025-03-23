@@ -1,0 +1,37 @@
+name: 작업 완료된 feature 브랜치의 S3 버킷 삭제
+
+on:
+  pull_request:
+    types: [closed]
+    branches:
+      - dev
+
+jobs:
+  cd-feat:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Set up AWS CLI
+        uses: aws-actions/configure-aws-credentials@v3
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ap-northeast-2
+
+      - name: Get branch name for folder deletion
+        id: extract-bucket-name
+        env:
+          FEATURE_BRANCH: ${{ github.event.pull_request.head.ref }}
+        run: |
+          # feat/ 이후의 문자열만 추출
+          FOLDER_NAME=$(echo $FEATURE_BRANCH | sed 's|^feat/||')
+          echo "Bucket name determined: $FOLDER_NAME" # For debugging
+
+      - name: Delete S3 bucket
+        run: |
+          if [ "${{ github.event.action }}" = "closed" ] && [ "${{ github.event.pull_request.merged }}" = "true" ]; then
+            echo "Deleting folder in feat bucket: $S3_BUCKET"
+            aws s3 rm s3://zipline-fe-feat/$FOLDER_NAME/ --recursive
+          else
+            echo "No action needed"
+          fi

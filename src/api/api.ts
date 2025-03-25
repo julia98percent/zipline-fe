@@ -1,4 +1,5 @@
 import axios, { AxiosInstance } from 'axios';
+import { ApiResponse } from '../types';
 
 const api: AxiosInstance = axios.create({
   baseURL: 'http://localhost:8080/api',

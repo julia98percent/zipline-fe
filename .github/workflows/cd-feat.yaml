@@ -9,6 +9,8 @@ on:
 jobs:
   cd-feat:
     runs-on: ubuntu-latest
+    outputs:
+      bucket-name: ${{ steps.generate-bucket-name.outputs.bucket-name }}
 
     steps:
       - name: Checkout the code
@@ -32,31 +34,61 @@ jobs:
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws-region: ap-northeast-2
 
-      - name: Determine folder name in s3 feature bucket
-        id: extract-bucket-name
+      - name: Determine S3 bucket name with branch name
+        id: generate-bucket-name
         env:
           FEATURE_BRANCH: ${{ github.head_ref }}
         run: |
-          # feat/ 이후의 문자열만 추출
-          if [[ "$FEATURE_BRANCH" == feat/* ]]; then
-            S3_FOLDER_NAME=$(echo $FEATURE_BRANCH | sed 's|^feat/||')
-            echo "Folder name determined: $S3_FOLDER_NAME"
-            echo "folder=$S3_FOLDER_NAME" >> $GITHUB_ENV
-          else
-             echo "Branch name is not in expected format: $FEATURE_BRANCH"
-             exit 1
+          # feat/ 이후의 문자열만 추출, empty string일 경우 exit
+          BUCKET_NAME=$(echo "${{ github.head_ref }}" | 
+            sed -e 's/feat\///' |  # feat/ 접두사 제거
+            tr '[:upper:]' '[:lower:]' |  # 대문자를 소문자로 변환
+            sed -e 's/[^a-z0-9-]/-/g' |  # 허용되지 않는 문자를 대시로 대체
+            sed -e 's/^-*//; s/-*$//' |  # 시작과 끝의 대시 제거
+            cut -c1-50)  # 최대 길이 제한
+
+          echo "bucket-name=zipline-fe-$BUCKET_NAME" >> $GITHUB_OUTPUT
+
+      - name: Manage S3 Buckets
+        env:
+          S3_BUCKET: ${{ steps.generate-bucket-name.outputs.bucket-name }}
+
+        run: |
+          if [[ "${{ github.event.action }}" == "opened" || "${{ github.event.action }}" == "reopened" || "${{ github.event.action }}" == "synchronize" ]]; then
+            echo "Set S3 bucket config: $S3_BUCKET"
+            if ! aws s3api head-bucket --bucket $S3_BUCKET 2>/dev/null; then
+            aws s3api create-bucket --bucket $S3_BUCKET --region ap-northeast-2 --create-bucket-configuration LocationConstraint=ap-northeast-2
+
+            aws s3api delete-public-access-block --bucket $S3_BUCKET
+            
+            aws s3api put-bucket-policy --bucket $S3_BUCKET --policy '{
+              "Version": "2012-10-17",
+              "Statement": [
+                {
+                  "Effect": "Allow",
+                  "Principal": "*",
+                  "Action": "s3:GetObject",
+                  "Resource": "arn:aws:s3:::'$S3_BUCKET'/*"
+                }
+              ]
+            }'
+
+            aws s3 website s3://$S3_BUCKET --index-document index.html --error-document index.html
           fi
 
-      - name: Handle Build Deployment and S3 Buckets
-        env:
-          S3_FOLDER: ${{ env.folder }}
-        run: |
-          if [ "${{ github.event.action }}" = "opened" ] || [ "${{ github.event.action }}" = "reopened" ] ||  [ "${{ github.event.action }}" = "synchronize" ]; then
-            echo "Deploying to S3 folder: $S3_FOLDER"
-            aws s3 sync ./dist s3://zipline-fe-feat/$S3_FOLDER/ --delete
-          elif [ "${{ github.event.action }}" = "closed" ] && [ "${{ github.event.pull_request.merged }}" = "true" ]; then
-            echo "Deleting S3 folder: $S3_FOLDER"
-            aws s3 rm s3://zipline-fe-feat/$S3_FOLDER/ --recursive
+            aws s3 sync ./dist s3://$S3_BUCKET/ --delete
+
+          elif [[ "${{ github.event.action }}" = "closed" && "${{ github.event.pull_request.merged }}" = "true" ]]; then
+            echo "Deleting S3 bucket: $S3_BUCKET"
+            aws s3 rm s3://$S3_BUCKET --recursive
+            aws s3 rb s3://$S3_BUCKET --force
           else
             echo "No action needed"
           fi
+
+  add_comment:
+    needs: cd-feat
+    uses: ./.github/workflows/preview-comment.yaml
+    with:
+      bucket_name: ${{ needs.cd-feat.outputs.bucket-name }}
+      pr_number: ${{ github.event.pull_request.number }}

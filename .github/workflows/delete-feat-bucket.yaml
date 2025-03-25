@@ -18,20 +18,23 @@ jobs:
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws-region: ap-northeast-2
 
-      - name: Get branch name for folder deletion
+      - name: Get branch name for bucket deletion
         id: extract-bucket-name
         env:
           FEATURE_BRANCH: ${{ github.event.pull_request.head.ref }}
         run: |
           # feat/ 이후의 문자열만 추출
-          FOLDER_NAME=$(echo $FEATURE_BRANCH | sed 's|^feat/||')
-          echo "Bucket name determined: $FOLDER_NAME" # For debugging
+          BUCKET_NAME=$(echo $FEATURE_BRANCH | sed 's|^feat/||')
+          echo "Bucket name determined: $BUCKET_NAME" # For debugging
+          echo "bucket=$BUCKET_NAME" >> $GITHUB_ENV
 
       - name: Delete S3 bucket
+        env:
+          S3_BUCKET: zipline-fe-${{ env.bucket }}
         run: |
           if [ "${{ github.event.action }}" = "closed" ] && [ "${{ github.event.pull_request.merged }}" = "true" ]; then
-            echo "Deleting folder in feat bucket: $S3_BUCKET"
-            aws s3 rm s3://zipline-fe-feat/$FOLDER_NAME/ --recursive
+            echo "Deleting S3 bucket: $S3_BUCKET"
+            aws s3 rb s3://$S3_BUCKET --force
           else
             echo "No action needed"
           fi

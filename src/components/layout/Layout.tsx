@@ -8,7 +8,7 @@ const Layout: React.FC = () => {
         <h1>My App Header</h1>
       </header>
       <main>
-        <Outlet /> {/* 자식 라우트가 여기 렌더링됨 */}
+        <Outlet /> 
       </main>
       <footer>
         <p>Footer Content</p>

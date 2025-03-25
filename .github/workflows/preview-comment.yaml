@@ -10,6 +10,9 @@ on:
         required: true
         type: number
 
+permissions:
+  pull-requests: write
+
 jobs:
   s3_address:
     runs-on: ubuntu-latest

@@ -6,6 +6,9 @@ on:
     branches:
       - dev
 
+permissions:
+  pull-requests: write
+
 jobs:
   cd-feat:
     runs-on: ubuntu-latest

@@ -39,9 +39,7 @@ jobs:
         env:
           FEATURE_BRANCH: ${{ github.head_ref }}
         run: |
-          # feat/ 이후의 문자열만 추출, empty string일 경우 exit
           BUCKET_NAME=$(echo "${{ github.head_ref }}" | 
-            sed -e 's/feat\///' |  # feat/ 접두사 제거
             tr '[:upper:]' '[:lower:]' |  # 대문자를 소문자로 변환
             sed -e 's/[^a-z0-9-]/-/g' |  # 허용되지 않는 문자를 대시로 대체
             sed -e 's/^-*//; s/-*$//' |  # 시작과 끝의 대시 제거

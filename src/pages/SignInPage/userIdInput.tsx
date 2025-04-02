@@ -5,10 +5,10 @@ interface Props {
   handleChangeUserId: React.ChangeEventHandler<HTMLInputElement>;
 }
 
-const userIdInput = ({ userId, handleChangeUserId }: Props) => {
+const UserIdInput = ({ userId, handleChangeUserId }: Props) => {
   return (
     <TextField label="아이디" value={userId} onChange={handleChangeUserId} />
   );
 };
 
-export default userIdInput;
+export default UserIdInput;

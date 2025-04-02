@@ -53,7 +53,7 @@ const SignUpPage = () => {
       .then((res) => {
         if (res.status === 201) {
           alert("가입 성공~~");
-          // navigate("/sign-in");
+          navigate("/sign-in");
         }
       })
       .catch((error) => {

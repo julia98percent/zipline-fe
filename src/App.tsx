@@ -1,19 +1,23 @@
-import React from 'react';
-import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
-import HomePage from './pages/HomePage';
-import AuthPage from './pages/AuthPage.tsx';
-import Layout from './components/layout/Layout';
+import { Routes, Route } from "react-router-dom";
+// import { Provider } from "react-redux";
+// import store from "./store";
+import PrivateRoute from "./components/layout/PrivateRoute";
+import GuestRoute from "./components/layout/GuestRoute";
+import SignUpPage from "./pages/SignUpPage/SignUpPage";
+import HomePage from "@pages/HomePage";
 
-const App: React.FC = () => {
+const App = () => {
   return (
-    <Router>
-      <Routes>
-        <Route path="/" element={<Layout />}>
-          <Route index element={<HomePage/>} />
-          <Route path="auth" element={<AuthPage />} />
-        </Route>
-      </Routes>
-    </Router>
+    <Routes>
+      <Route element={<PrivateRoute />}>
+        {/* 로그인 해야 진입 가능한 페이지 */}
+        <Route index element={<HomePage />} />
+      </Route>
+
+      <Route element={<GuestRoute />}>
+        <Route path="sign-up" element={<SignUpPage />} />
+      </Route>
+    </Routes>
   );
 };
 

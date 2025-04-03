@@ -4,12 +4,14 @@ import GuestRoute from "./components/layout/GuestRoute";
 import SignUpPage from "@pages/SignUpPage";
 import SignInPage from "@pages/SignInPage";
 import DashboardPage from "@pages/DashboardPage";
+import CustomerListPage from "@pages/CustomerListPage";
 
 const App = () => {
   return (
     <Routes>
       <Route element={<PrivateRoute />}>
         <Route index element={<DashboardPage />} />
+        <Route path="customers" element={<CustomerListPage />} />
       </Route>
 
       <Route element={<GuestRoute />}>

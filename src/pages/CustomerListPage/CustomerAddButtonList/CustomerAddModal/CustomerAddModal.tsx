@@ -23,7 +23,7 @@ function CustomerAddModal({ open, handleClose: setModalClose }: any) {
     useInput("");
   const [region, handleChangeRegion, setRegion] = useInput("");
 
-  const [telProvider, setTelProvider] = useState(null);
+  const [telProvider, setTelProvider] = useState<string | null>(null);
   const [buyingData, setBuyingData] = useState({
     minPrice: null,
     maxPrice: null,
@@ -66,7 +66,7 @@ function CustomerAddModal({ open, handleClose: setModalClose }: any) {
     });
   };
 
-  const handleChangeTelProvider = (e) => {
+  const handleChangeTelProvider = (e: React.ChangeEvent<HTMLInputElement>) => {
     setTelProvider(e.target.value);
   };
 

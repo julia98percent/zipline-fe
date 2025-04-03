@@ -1,4 +1,3 @@
-import axios from "axios";
 import CustomerAddButtonList from "./CustomerAddButtonList";
 import CustomerTable from "./CustomerTable";
 

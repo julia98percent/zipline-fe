@@ -9,6 +9,7 @@ interface TextFieldProps {
   helperText?: string;
   className?: string;
   type?: string;
+  [key: string]: any;
 }
 
 const TextField = ({

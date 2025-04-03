@@ -1,5 +1,14 @@
+import axios from "axios";
+import CustomerAddButtonList from "./CustomerAddButtonList";
+import CustomerTable from "./CustomerTable";
+
 const CustomerListPage = () => {
-  return <div>customers</div>;
+  return (
+    <>
+      <CustomerAddButtonList />
+      <CustomerTable />
+    </>
+  );
 };
 
 export default CustomerListPage;

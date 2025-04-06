@@ -4,7 +4,8 @@
       "@components/*": ["./src/components/*"],
       "@pages/*": ["./src/pages/*"],
       "@assets/*": ["./src/assets/*"],
-      "@hooks/*": ["./src/hooks/*"]
+      "@hooks/*": ["./src/hooks/*"],
+      "@apis/*": ["./src/apis/*"]
     },
     "types": ["vite/client"],
     "target": "ES2020",

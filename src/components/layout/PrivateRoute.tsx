@@ -1,7 +1,7 @@
-import axios from "axios";
 import { useEffect, useState } from "react";
 import { Outlet, Navigate } from "react-router-dom";
 import NavigationBar from "@components/NavigationBar";
+import apiClient from "@apis/apiClient";
 
 const PrivateRoute = () => {
   const isSignedIn = Boolean(sessionStorage.getItem("_ZA"));
@@ -9,14 +9,8 @@ const PrivateRoute = () => {
 
   useEffect(() => {
     if (userInfo == null) {
-      axios
-        .get(`${import.meta.env.VITE_SERVER_URL}/user/me`, {
-          withCredentials: true,
-          headers: {
-            Authorization: `Bearer ${sessionStorage.getItem("_ZA") || ""}`,
-            "Content-Type": "application/json",
-          },
-        })
+      apiClient
+        .get("/users/me")
         .then((res) => {
           const userData = res?.data?.data;
           if (res.status === 200 && userData) {

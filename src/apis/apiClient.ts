@@ -5,9 +5,20 @@ const apiClient: AxiosInstance = axios.create({
   withCredentials: true,
   headers: {
     "Content-Type": "application/json",
-    Authorization: `Bearer ${sessionStorage.getItem("_ZA") || ""}`,
   },
 });
+
+apiClient.interceptors.request.use(
+  (config) => {
+    config.headers.Authorization = `Bearer ${
+      sessionStorage.getItem("_ZA") || ""
+    }`;
+    return config;
+  },
+  (error) => {
+    return Promise.reject(error);
+  }
+);
 
 apiClient.interceptors.response.use(
   (response) => response,

@@ -1,4 +1,3 @@
-import axios from "axios";
 import { useState } from "react";
 import Button from "@components/Button";
 import TextField from "@components/TextField";
@@ -12,6 +11,7 @@ import {
   Checkbox,
 } from "@mui/material";
 import useInput from "@hooks/useInput";
+import apiClient from "@apis/apiClient";
 
 const phoneRegex = /^\d{3}-\d{3,4}-\d{4}$/;
 
@@ -108,28 +108,18 @@ function CustomerAddModal({ open, handleClose: setModalClose }: any) {
           maxPrice: null,
         };
 
-    axios
-      .post(
-        `${import.meta.env.VITE_SERVER_URL}/customers`,
-        {
-          name: userName,
-          phoneNo: phoneNumber,
-          address,
-          telProvider,
-          region,
-          trafficSource,
-          ...rentDataToSubmit,
-          ...buyingDataToSubmit,
-          ...roleData,
-        },
-        {
-          withCredentials: true,
-          headers: {
-            Authorization: `Bearer ${sessionStorage.getItem("_ZA") || ""}`,
-            "Content-Type": "application/json",
-          },
-        }
-      )
+    apiClient
+      .post("/customers", {
+        name: userName,
+        phoneNo: phoneNumber,
+        address,
+        telProvider,
+        region,
+        trafficSource,
+        ...rentDataToSubmit,
+        ...buyingDataToSubmit,
+        ...roleData,
+      })
       .then((res) => {
         if (res.status === 201) {
           alert("고객 등록 성공");

@@ -1,5 +1,5 @@
 import { useState } from "react";
-import axios from "axios";
+import apiClient from "@apis/apiClient";
 import { useNavigate } from "react-router-dom";
 import useInput from "@hooks/useInput";
 import Header from "./Header";
@@ -33,23 +33,17 @@ const SignUpPage = () => {
     birthday == null;
 
   const handleClickSignUpButton = () => {
-    axios
-      .post(
-        `${import.meta.env.VITE_SERVER_URL}/user/signup`,
-        {
-          id: userId,
-          password,
-          passwordCheck,
-          name,
-          birthday: 0,
-          phoneNo: phoneNumber,
-          email,
-          noticeMonth: 0,
-        },
-        {
-          withCredentials: true, // 쿠키 포함 요청
-        }
-      )
+    apiClient
+      .post("/users/signup", {
+        id: userId,
+        password,
+        passwordCheck,
+        name,
+        birthday: 0,
+        phoneNo: phoneNumber,
+        email,
+        noticeMonth: 0,
+      })
       .then((res) => {
         if (res.status === 201) {
           alert("가입 성공~~");

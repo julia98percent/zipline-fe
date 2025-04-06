@@ -1,4 +1,4 @@
-import axios from "axios";
+import apiClient from "@apis/apiClient";
 import { useNavigate } from "react-router-dom";
 import useInput from "@hooks/useInput";
 import Header from "./Header";
@@ -14,25 +14,15 @@ const SignInPage = () => {
   const isSignUpButtonDisabled = !userId || !password;
 
   const handleClickSignUpButton = () => {
-    axios
-      .post(
-        `${import.meta.env.VITE_SERVER_URL}/user/login`,
-        {
-          id: userId,
-          password,
-        },
-        {
-          withCredentials: true,
-          headers: {
-            Authorization: `Bearer ${sessionStorage.getItem("_ZA") || ""}`,
-            "Content-Type": "application/json",
-          },
-        }
-      )
+    apiClient
+      .post("/users/login", {
+        id: userId,
+        password,
+      })
       .then((res) => {
-        console.log(res);
-        if (res.status === 200 && res?.data?.data?.accessToken) {
-          sessionStorage.setItem("_ZA", res.data.data.accessToken);
+        const accessToken = res?.data?.data?.accessToken;
+        if (res.status === 200 && accessToken) {
+          sessionStorage.setItem("_ZA", accessToken);
           navigate("/");
         }
       })

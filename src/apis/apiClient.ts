@@ -8,6 +8,14 @@ const apiClient: AxiosInstance = axios.create({
   },
 });
 
+const reissueTokenClient = axios.create({
+  baseURL: import.meta.env.VITE_SERVER_URL,
+  withCredentials: true,
+  headers: {
+    "Content-Type": "application/json",
+  },
+});
+
 apiClient.interceptors.request.use(
   (config) => {
     config.headers.Authorization = `Bearer ${
@@ -23,10 +31,14 @@ apiClient.interceptors.request.use(
 apiClient.interceptors.response.use(
   (response) => response,
   async (error) => {
+    if (!error.response) {
+      return Promise.reject(error);
+    }
+
     if (error.response.status === 401 && !error.config.__isRetryRequest) {
       try {
         error.config.__isRetryRequest = true;
-        const refreshResponse = await apiClient.get("/users/reissue");
+        const refreshResponse = await reissueTokenClient.get("/users/reissue");
 
         const newAccessToken = refreshResponse?.data?.data?.accessToken ?? null;
         if (!newAccessToken) {

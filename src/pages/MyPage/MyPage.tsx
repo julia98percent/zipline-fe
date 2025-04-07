@@ -29,7 +29,7 @@ function MyPage() {
   };
 
   return (
-    <div className="p-4">
+    <div>
       <Box>
         <Typography>내 정보</Typography>
         <Button text="비밀번호 변경" />

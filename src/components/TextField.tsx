@@ -3,7 +3,7 @@ import { TextField as MuiTextField } from "@mui/material";
 interface TextFieldProps {
   label?: string;
   value: string;
-  onChange: (event: React.ChangeEvent<HTMLInputElement>) => void;
+  onChange?: (event: React.ChangeEvent<HTMLInputElement>) => void;
   placeholder?: string;
   error?: boolean;
   helperText?: string;
@@ -33,6 +33,9 @@ const TextField = ({
       helperText={helperText}
       className={`border rounded-md p-2 ${className}`}
       type={type}
+      InputProps={{
+        readOnly: Boolean(onChange) == false,
+      }}
       {...props}
     />
   );

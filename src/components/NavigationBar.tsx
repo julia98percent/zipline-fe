@@ -3,12 +3,12 @@ import {
   Toolbar,
   Typography,
   Box,
-  Button,
   Menu,
   MenuItem,
 } from "@mui/material";
 import { useState } from "react";
 import { useLocation, Link } from "react-router-dom";
+import Button from "./Button";
 
 const MENU_INFO = [
   {
@@ -69,6 +69,7 @@ const NavigationBar = ({ userInfo }: { userInfo: { name: string } }) => {
               {submenu ? (
                 <>
                   <Button
+                    text={name}
                     sx={{
                       color: currentRoute.startsWith(to)
                         ? "#2E5D9F"
@@ -82,9 +83,7 @@ const NavigationBar = ({ userInfo }: { userInfo: { name: string } }) => {
                       },
                     }}
                     onClick={(e) => handleMenuOpen(e, key)}
-                  >
-                    {name}
-                  </Button>
+                  />
                   <Menu
                     anchorEl={anchorEl}
                     open={submenuOpen === key}
@@ -105,6 +104,7 @@ const NavigationBar = ({ userInfo }: { userInfo: { name: string } }) => {
               ) : (
                 <Link to={to} style={{ textDecoration: "none" }}>
                   <Button
+                    text={name}
                     sx={{
                       color: currentRoute.startsWith(to)
                         ? "#2E5D9F"
@@ -117,17 +117,21 @@ const NavigationBar = ({ userInfo }: { userInfo: { name: string } }) => {
                         color: "#1E88E5",
                       },
                     }}
-                  >
-                    {name}
-                  </Button>
+                  />
                 </Link>
               )}
             </Box>
           ))}
         </Box>
-        <Box>
-          <Typography variant="body1">{userInfo.name}</Typography>
-        </Box>
+        {/* <Box>
+          <Button text={userInfo.name} onClick={handleClick} />
+          <Menu anchorEl={anchorEl} open={open} onClose={handleClose}>
+            <Link to="/my">
+              <MenuItem onClick={handleClose}>마이페이지</MenuItem>
+            </Link>
+            <MenuItem onClick={handleClose}>로그아웃</MenuItem>
+          </Menu>
+        </Box> */}
       </Toolbar>
     </AppBar>
   );

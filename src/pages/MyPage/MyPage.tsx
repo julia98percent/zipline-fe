@@ -28,12 +28,8 @@ function MyPage() {
     ],
   };
 
-  const handleViewResults = () => {
-    alert("결과 보기 버튼을 클릭했습니다.");
-  };
-
   return (
-    <div>
+    <div className="p-4">
       <Box>
         <Typography>내 정보</Typography>
         <Button text="비밀번호 변경" />
@@ -46,6 +42,7 @@ function MyPage() {
             display: "flex",
             flexDirection: "row",
             justifyContent: "space-between",
+            alignItems: "center",
             gap: 2,
             border: "1px solid #ddd",
             borderRadius: 2,
@@ -74,16 +71,10 @@ function MyPage() {
                 color="primary"
                 sx={{
                   backgroundColor: "#2E5D9F",
-                  "&:hover": { backgroundColor: "#1E88E5" },
+                  color: "white",
                 }}
               />
             </Link>
-            <Button
-              text="결과 보기"
-              variant="contained"
-              color="success"
-              onClick={handleViewResults}
-            />
           </Box>
         </Box>
       </Box>

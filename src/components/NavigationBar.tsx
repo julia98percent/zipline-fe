@@ -1,26 +1,51 @@
-import { AppBar, Toolbar, Typography, Box, Button } from "@mui/material";
-import { Link } from "react-router-dom";
-import { useLocation } from "react-router-dom";
+import {
+  AppBar,
+  Toolbar,
+  Typography,
+  Box,
+  Button,
+  Menu,
+  MenuItem,
+} from "@mui/material";
+import { useState } from "react";
+import { useLocation, Link } from "react-router-dom";
 
 const MENU_INFO = [
   {
     name: "매물",
     key: "agent-properties",
     to: "properties",
-    // submenu
+    submenu: [
+      { name: "개인 매물", to: "/properties/private" },
+      { name: "공개 매물", to: "/properties/public" },
+    ],
   },
-  { name: "고객", key: "customers", to: "customers" },
+  { name: "고객", key: "customers", to: "/customers" },
   {
     name: "문자",
     key: "messages",
-    to: "messages",
-    // submenu
+    to: "/messages",
   },
 ];
 
 const NavigationBar = ({ userInfo }: { userInfo: { name: string } }) => {
   const location = useLocation();
   const currentRoute = location.pathname.split("/")[1];
+  const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
+  const [submenuOpen, setSubmenuOpen] = useState<string | null>(null);
+
+  const handleMenuOpen = (
+    event: React.MouseEvent<HTMLButtonElement>,
+    key: string
+  ) => {
+    setAnchorEl(event.currentTarget);
+    setSubmenuOpen(key);
+  };
+
+  const handleMenuClose = () => {
+    setAnchorEl(null);
+    setSubmenuOpen(null);
+  };
 
   return (
     <AppBar
@@ -38,26 +63,68 @@ const NavigationBar = ({ userInfo }: { userInfo: { name: string } }) => {
             LOGO
           </Typography>
         </Link>
-
         <Box className="flex gap-4">
-          {MENU_INFO.map(({ name, key, to }) => (
-            <Link to={to} key={`${key}-menu`}>
-              <Button
-                sx={{
-                  color: currentRoute.startsWith(to) ? "#2E5D9F" : "inherit",
-                  fontWeight: currentRoute.startsWith(to) ? "bold" : "normal",
-                  "&:hover": {
-                    backgroundColor: "#E3F2FD",
-                    color: "#1E88E5",
-                  },
-                }}
-              >
-                {name}
-              </Button>
-            </Link>
+          {MENU_INFO.map(({ name, key, to, submenu }) => (
+            <Box key={`${key}-menu`}>
+              {submenu ? (
+                <>
+                  <Button
+                    sx={{
+                      color: currentRoute.startsWith(to)
+                        ? "#2E5D9F"
+                        : "inherit",
+                      fontWeight: currentRoute.startsWith(to)
+                        ? "bold"
+                        : "normal",
+                      "&:hover": {
+                        backgroundColor: "#E3F2FD",
+                        color: "#1E88E5",
+                      },
+                    }}
+                    onClick={(e) => handleMenuOpen(e, key)}
+                  >
+                    {name}
+                  </Button>
+                  <Menu
+                    anchorEl={anchorEl}
+                    open={submenuOpen === key}
+                    onClose={handleMenuClose}
+                  >
+                    {submenu.map(({ name, to }) => (
+                      <MenuItem key={to} onClick={handleMenuClose}>
+                        <Link
+                          to={to}
+                          style={{ textDecoration: "none", color: "inherit" }}
+                        >
+                          {name}
+                        </Link>
+                      </MenuItem>
+                    ))}
+                  </Menu>
+                </>
+              ) : (
+                <Link to={to} style={{ textDecoration: "none" }}>
+                  <Button
+                    sx={{
+                      color: currentRoute.startsWith(to)
+                        ? "#2E5D9F"
+                        : "inherit",
+                      fontWeight: currentRoute.startsWith(to)
+                        ? "bold"
+                        : "normal",
+                      "&:hover": {
+                        backgroundColor: "#E3F2FD",
+                        color: "#1E88E5",
+                      },
+                    }}
+                  >
+                    {name}
+                  </Button>
+                </Link>
+              )}
+            </Box>
           ))}
         </Box>
-
         <Box>
           <Typography variant="body1">{userInfo.name}</Typography>
         </Box>

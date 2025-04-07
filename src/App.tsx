@@ -5,6 +5,7 @@ import SignUpPage from "@pages/SignUpPage";
 import SignInPage from "@pages/SignInPage";
 import DashboardPage from "@pages/DashboardPage";
 import CustomerListPage from "@pages/CustomerListPage";
+import PrivatePropertyListPage from "@pages/PrivatePropertyListPage";
 
 const App = () => {
   return (
@@ -12,6 +13,11 @@ const App = () => {
       <Route element={<PrivateRoute />}>
         <Route index element={<DashboardPage />} />
         <Route path="customers" element={<CustomerListPage />} />
+        <Route index element={<DashboardPage />} />
+        <Route
+          path="properties/private"
+          element={<PrivatePropertyListPage />}
+        />
       </Route>
 
       <Route element={<GuestRoute />}>

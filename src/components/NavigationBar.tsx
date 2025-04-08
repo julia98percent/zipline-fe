@@ -24,6 +24,7 @@ const MENU_INFO = [
     name: "문자",
     key: "messages",
     to: "/messages",
+    disabled: true,
   },
 ];
 
@@ -67,13 +68,13 @@ const NavigationBar = ({ userInfo }: { userInfo: { name: string } }) => {
       <Toolbar className="flex justify-between">
         <Link to={"/"}>
           <Typography variant="h6" sx={{ fontWeight: "bold" }}>
-            LOGO
+            ZIPLINE
           </Typography>
         </Link>
         <Box className="flex gap-4">
-          {MENU_INFO.map(({ name, key, to, submenu }) =>
+          {MENU_INFO.map(({ name, key, to, submenu, disabled }) =>
             submenu ? (
-              <>
+              <div key={`${key}-menu-container`}>
                 <Button
                   key={`${key}-menu`}
                   text={name}
@@ -90,6 +91,7 @@ const NavigationBar = ({ userInfo }: { userInfo: { name: string } }) => {
                       color: "#1E88E5",
                     },
                   }}
+                  disabled={disabled}
                 />
                 <Menu
                   anchorEl={submenuAnchorEl}
@@ -110,7 +112,20 @@ const NavigationBar = ({ userInfo }: { userInfo: { name: string } }) => {
                     </Link>
                   ))}
                 </Menu>
-              </>
+              </div>
+            ) : disabled ? (
+              <div key={`${key}-menu-container`}>
+                <Button
+                  key={`${key}-menu`}
+                  text={name}
+                  sx={{
+                    color: "#aaa",
+                    fontWeight: "normal",
+                    cursor: "not-allowed",
+                  }}
+                  disabled={true}
+                />
+              </div>
             ) : (
               <Link to={to} key={`${key}-menu`}>
                 <Button

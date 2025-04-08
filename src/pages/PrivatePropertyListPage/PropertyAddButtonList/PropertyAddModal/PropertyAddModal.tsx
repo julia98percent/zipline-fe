@@ -143,7 +143,7 @@ function PropertyAddModal({
         `https://dapi.kakao.com/v2/local/search/address.json?query=${addressForCoord}`,
         {
           headers: {
-            Authorization: "KakaoAK ce08657ba311e8fe08e4166e26db13b5",
+            Authorization: `KakaoAK ${import.meta.env.VITE_KAKAO_MAP_SECRET}`,
           },
         }
       )

@@ -1,33 +1,8 @@
 import { Link } from "react-router-dom";
-import Button from "@components/Button";
 import { Box, Typography } from "@mui/material";
+import Button from "@components/Button";
 
 function MyPage() {
-  const survey = {
-    name: "신규 회원 전용 설문",
-    createdAt: Date.now(),
-    questions: [
-      {
-        title: "문항제목", //필수
-        description: "문항 설명", // 필수
-        type: "MULTIPLE_CHOICE", // (MULTIPLE_CHOICE, SINGLE_CHOICE, SUBJECTIVE, FILE_UPLOAD) 필수
-        isRequired: false, // 필수
-        choices: [
-          // 선택지 (주관식 및 파일업로드 문항인데 있으면 에러 반환)
-          { content: "빨강" }, // 선택지 명(필수)
-          { content: "파랑" },
-          { content: "초록" },
-        ],
-      },
-      {
-        title: "title",
-        description: "당신의 취미는 무엇인가요?",
-        isRequired: false,
-        type: "SUBJECTIVE",
-      },
-    ],
-  };
-
   return (
     <div>
       <Box>
@@ -52,10 +27,10 @@ function MyPage() {
         >
           <div>
             <Typography variant="h6" sx={{ fontWeight: "bold" }}>
-              {survey.name}
+              {/* {user.survey.name} */}
             </Typography>
             <Typography variant="body2" sx={{ color: "gray" }}>
-              생성일: {new Date(survey.createdAt).toLocaleDateString()}
+              {/* 생성일: {user.survey.createdAt} */}
             </Typography>
           </div>
           <Box

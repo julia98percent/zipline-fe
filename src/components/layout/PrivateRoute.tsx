@@ -13,7 +13,6 @@ const PrivateRoute = () => {
       .then((res) => {
         const userData = res?.data?.data;
         if (res && res.status === 200 && userData) {
-          console.log(res);
           setUserInfo(userData);
         }
       })

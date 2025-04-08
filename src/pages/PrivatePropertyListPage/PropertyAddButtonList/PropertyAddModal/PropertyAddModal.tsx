@@ -79,7 +79,6 @@ function PropertyAddModal({
     apiClient
       .post("/properties", propertyDataToSubmit)
       .then((res) => {
-        console.log(res);
         if (res.status === 201) {
           alert("매물 등록 성공");
           fetchPropertyData();

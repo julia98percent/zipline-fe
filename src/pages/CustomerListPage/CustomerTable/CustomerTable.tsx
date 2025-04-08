@@ -53,9 +53,6 @@ const CustomerTable = ({
 
   return (
     <Box sx={{ width: "100%", mt: 4 }}>
-      <Typography variant="h6" sx={{ mb: 2 }}>
-        고객 목록
-      </Typography>
       <Paper sx={{ width: "100%", overflow: "hidden" }}>
         <TableContainer>
           <Table sx={{ minWidth: 650 }} aria-label="customer table">

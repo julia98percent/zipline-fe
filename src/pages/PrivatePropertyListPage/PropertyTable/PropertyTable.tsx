@@ -77,9 +77,6 @@ const PropertyTable = ({ loading, propertyList }: Props) => {
 
   return (
     <Box sx={{ width: "100%", mt: 4 }}>
-      <Typography variant="h6" sx={{ mb: 2 }}>
-        내 매물 목록
-      </Typography>
       <FormControlLabel
         control={
           <Switch

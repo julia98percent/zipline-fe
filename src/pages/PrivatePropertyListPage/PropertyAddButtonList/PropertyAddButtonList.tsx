@@ -14,27 +14,28 @@ function PropertyAddButtonList({ fetchPropertyData }: Props) {
 
   return (
     <>
-      <div className="flex w-full justify-end gap-2">
+      <div>
         <Button
           text="매물 등록"
           onClick={handleOpen}
           sx={{
-            marginTop: "16px",
             color: "white",
             minHeight: "32px",
             backgroundColor: "#2E5D9F",
+            marginRight: "12px",
           }}
         />
 
         <Button
           text="매물 데이터 일괄 등록(.csv)"
+          disabled
           sx={{
-            marginTop: "16px",
             color: "white",
             minHeight: "32px",
             backgroundColor: "#2E5D9F",
-            "&.disabled": {
-              backgroundColor: "lightgray !important",
+            "&:disabled": {
+              backgroundColor: "lightgray",
+              color: "white",
             },
           }}
         />

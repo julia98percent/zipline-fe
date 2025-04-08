@@ -28,6 +28,7 @@ function CustomerAddButtonList({ fetchCustomerList }: any) {
 
         <Button
           text="고객 데이터 일괄 등록(.csv)"
+          disabled
           sx={{
             marginTop: "16px",
             color: "white",

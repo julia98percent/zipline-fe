@@ -31,7 +31,7 @@ const PrivateRoute = () => {
   return (
     <>
       <NavigationBar userInfo={userInfo} />
-      <div className="flex-1 px-8">
+      <div className="flex-1 p-8">
         <Outlet />
       </div>
     </>

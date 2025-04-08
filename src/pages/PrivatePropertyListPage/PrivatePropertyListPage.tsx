@@ -2,7 +2,7 @@ import { useEffect, useState, useCallback } from "react";
 import apiClient from "@apis/apiClient";
 import PropertyAddButtonList from "./PropertyAddButtonList";
 import PropertyTable from "./PropertyTable";
-import { Box } from "@mui/material";
+import { Box, Typography } from "@mui/material";
 
 export interface PropertyItem {
   uid: number;
@@ -66,7 +66,15 @@ function PrivatePropertyListPage() {
 
   return (
     <Box>
-      <PropertyAddButtonList fetchPropertyData={fetchPropertyData} />
+      <div className="flex items-center justify-between">
+        <Typography
+          variant="h6"
+          sx={{ mb: 2, minWidth: "max-content", display: "inline", margin: 0 }}
+        >
+          내 매물 목록
+        </Typography>
+        <PropertyAddButtonList fetchPropertyData={fetchPropertyData} />
+      </div>
       <PropertyTable loading={loading} propertyList={privatePropertyList} />
     </Box>
   );

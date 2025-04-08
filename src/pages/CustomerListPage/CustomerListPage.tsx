@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import apiClient from "@apis/apiClient";
 import CustomerAddButtonList from "./CustomerAddButtonList";
 import CustomerTable from "./CustomerTable";
+import { Box, Typography } from "@mui/material";
 
 const CustomerListPage = () => {
   const [loading, setLoading] = useState(true);
@@ -39,8 +40,16 @@ const CustomerListPage = () => {
 
   if (loading) return <div>로딩중</div>;
   return (
-    <>
-      <CustomerAddButtonList fetchCustomerList={fetchCustomerList} />
+    <Box>
+      <div className="flex items-center justify-between">
+        <Typography
+          variant="h6"
+          sx={{ mb: 2, minWidth: "max-content", display: "inline", margin: 0 }}
+        >
+          고객 목록
+        </Typography>
+        <CustomerAddButtonList fetchCustomerList={fetchCustomerList} />
+      </div>
       <CustomerTable
         customerList={customerList}
         totalCount={totalCount}
@@ -50,7 +59,7 @@ const CustomerListPage = () => {
         page={page}
         rowsPerPage={rowsPerPage}
       />
-    </>
+    </Box>
   );
 };
 

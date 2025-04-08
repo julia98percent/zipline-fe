@@ -1,6 +1,6 @@
 import { useState } from "react";
 import apiClient from "@apis/apiClient";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, Link } from "react-router-dom";
 import useInput from "@hooks/useInput";
 import Header from "./Header";
 import NameInput from "./NameInput";
@@ -11,6 +11,7 @@ import PhoneNumberInput from "./PhoneNumberInput";
 import BirthdayInput from "./BirthdayInput";
 import UserIdInput from "./UserIdInput";
 import { Dayjs } from "dayjs";
+import { Box, Typography } from "@mui/material";
 
 const SignUpPage = () => {
   const navigate = useNavigate();
@@ -92,6 +93,32 @@ const SignUpPage = () => {
           },
         }}
       />
+      <Box
+        sx={{
+          display: "flex",
+          justifyContent: "center",
+          alignItems: "center",
+          mt: 3,
+        }}
+      >
+        <Typography variant="body2">이미 회원이신가요?</Typography>
+        <Link to="/sign-in" className="flex items-center">
+          <Button
+            text="로그인"
+            sx={{
+              color: "#2E5D9F",
+              backgroundColor: "transparent",
+              border: "none",
+              padding: "0",
+              fontWeight: "bold",
+              "&:hover": {
+                backgroundColor: "transparent",
+                textDecoration: "underline",
+              },
+            }}
+          />
+        </Link>
+      </Box>
     </div>
   );
 };

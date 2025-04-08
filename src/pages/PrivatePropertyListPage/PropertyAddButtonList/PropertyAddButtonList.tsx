@@ -1,8 +1,9 @@
 import { useState } from "react";
 import Button from "@components/Button";
-import CustomerAddModal from "./PropertyAddModal";
+import PropertyAddModal from "./PropertyAddModal";
 
-function PropertyAddButtonList() {
+function PropertyAddButtonList({ fetchPropertyData }) {
+  console.log(fetchPropertyData);
   const [open, setOpen] = useState(false); // 모달 열림 상태 관리
 
   const handleOpen = () => setOpen(true);
@@ -35,7 +36,11 @@ function PropertyAddButtonList() {
           }}
         />
       </div>
-      <CustomerAddModal open={open} handleClose={handleClose} />
+      <PropertyAddModal
+        open={open}
+        handleClose={handleClose}
+        fetchPropertyData={fetchPropertyData}
+      />
     </>
   );
 }

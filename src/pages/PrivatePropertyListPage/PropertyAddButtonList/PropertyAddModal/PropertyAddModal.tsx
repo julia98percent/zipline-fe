@@ -33,9 +33,14 @@ type RealCategory =
 interface Props {
   open: boolean;
   handleClose: () => void;
+  fetchPropertyData: any;
 }
 
-function PropertyAddModal({ open, handleClose: setModalClose }: Props) {
+function PropertyAddModal({
+  open,
+  handleClose: setModalClose,
+  fetchPropertyData,
+}: Props) {
   const [address, setAddress] = useState<string | null>(null);
   const [addressForCoord, setAddressForCoord] = useState<string | null>(null);
   const [detailAddress, handleChangeDetailAddress] = useInput<string>("");
@@ -86,6 +91,7 @@ function PropertyAddModal({ open, handleClose: setModalClose }: Props) {
         console.log(res);
         if (res.status === 201) {
           alert("매물 등록 성공");
+          fetchPropertyData();
           handleModalClose();
           resetPropertyData();
         }

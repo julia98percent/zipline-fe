@@ -66,7 +66,7 @@ function PrivatePropertyListPage() {
 
   return (
     <Box>
-      <PropertyAddButtonList />
+      <PropertyAddButtonList fetchPropertyData={fetchPropertyData} />
       <PropertyTable loading={loading} propertyList={privatePropertyList} />
     </Box>
   );

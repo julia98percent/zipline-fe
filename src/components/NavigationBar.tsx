@@ -7,7 +7,7 @@ import {
   Menu,
   MenuItem,
 } from "@mui/material";
-import { useLocation, Link } from "react-router-dom";
+import { useLocation, Link, useNavigate } from "react-router-dom";
 import Button from "./Button";
 
 const MENU_INFO = [
@@ -29,6 +29,7 @@ const MENU_INFO = [
 ];
 
 const NavigationBar = ({ userInfo }: { userInfo: { name: string } }) => {
+  const navigate = useNavigate();
   const location = useLocation();
   const currentPath = location.pathname;
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
@@ -38,6 +39,12 @@ const NavigationBar = ({ userInfo }: { userInfo: { name: string } }) => {
 
   const open = Boolean(anchorEl);
   const submenuOpen = Boolean(submenuAnchorEl);
+
+  const handleClickLogOut = () => {
+    sessionStorage.removeItem("_ZA");
+    navigate("sign-in");
+    handleClose();
+  };
 
   const handleClick = (event: React.MouseEvent<HTMLButtonElement>) => {
     setAnchorEl(event.currentTarget);
@@ -149,7 +156,7 @@ const NavigationBar = ({ userInfo }: { userInfo: { name: string } }) => {
             <Link to="/my">
               <MenuItem onClick={handleClose}>마이페이지</MenuItem>
             </Link>
-            <MenuItem onClick={handleClose}>로그아웃</MenuItem>
+            <MenuItem onClick={handleClickLogOut}>로그아웃</MenuItem>
           </Menu>
         </Box>
       </Toolbar>

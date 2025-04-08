@@ -15,7 +15,6 @@ function CustomerAddButtonList({ fetchCustomerList }: any) {
           text="고객 데이터 등록"
           onClick={handleOpen}
           sx={{
-            marginTop: "16px",
             color: "white",
             minHeight: "32px",
             backgroundColor: "#2E5D9F",
@@ -30,7 +29,6 @@ function CustomerAddButtonList({ fetchCustomerList }: any) {
           text="고객 데이터 일괄 등록(.csv)"
           disabled
           sx={{
-            marginTop: "16px",
             color: "white",
             minHeight: "32px",
             backgroundColor: "#2E5D9F",

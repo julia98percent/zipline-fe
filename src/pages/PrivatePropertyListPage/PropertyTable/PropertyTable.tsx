@@ -8,7 +8,6 @@ import {
   TableHead,
   TableRow,
   TablePagination,
-  Typography,
   Paper,
   FormControlLabel,
   Switch,
@@ -17,7 +16,6 @@ import Chip from "@components/Chip";
 import { PropertyItem } from "../PrivatePropertyListPage";
 
 interface Props {
-  loading: boolean;
   propertyList: PropertyItem[];
 }
 
@@ -27,7 +25,7 @@ const PROPERTY_TYPES = [
   { value: "MONTHLY", name: "월세" },
 ];
 
-const PropertyTable = ({ loading, propertyList }: Props) => {
+const PropertyTable = ({ propertyList }: Props) => {
   const [useMetric, setUseMetric] = useState(true);
 
   const convertToKoreanPyeong = (squareMeters: number) => {
@@ -72,7 +70,6 @@ const PropertyTable = ({ loading, propertyList }: Props) => {
     page * rowsPerPage + rowsPerPage
   );
 
-  if (loading) return <div>로딩중</div>;
   if (!propertyList?.length) return <div>매물 없음</div>;
 
   return (

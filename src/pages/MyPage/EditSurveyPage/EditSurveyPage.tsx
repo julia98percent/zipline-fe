@@ -7,6 +7,7 @@ import {
   Select,
   FormControlLabel,
   Checkbox,
+  CircularProgress,
 } from "@mui/material";
 import { useNavigate } from "react-router-dom";
 import SingleChoiceAdd from "./SingleChoiceAdd";
@@ -197,7 +198,18 @@ const EditSurveyPage = () => {
   };
 
   if (loading) {
-    return <div>설문 정보를 불러오는 중...</div>;
+    return (
+      <Box
+        sx={{
+          display: "flex",
+          justifyContent: "center",
+          alignItems: "center",
+          height: "100vh",
+        }}
+      >
+        <CircularProgress color="primary" />
+      </Box>
+    );
   }
 
   return (

@@ -2,7 +2,7 @@ import { useEffect, useState, useCallback } from "react";
 import apiClient from "@apis/apiClient";
 import PropertyAddButtonList from "./PropertyAddButtonList";
 import PropertyTable from "./PropertyTable";
-import { Box, Typography } from "@mui/material";
+import { Box, Typography, CircularProgress } from "@mui/material";
 
 export interface PropertyItem {
   uid: number;
@@ -64,6 +64,20 @@ function PrivatePropertyListPage() {
     fetchPropertyData();
   }, [fetchPropertyData]);
 
+  if (loading)
+    return (
+      <Box
+        sx={{
+          display: "flex",
+          justifyContent: "center",
+          alignItems: "center",
+          height: "100vh",
+        }}
+      >
+        <CircularProgress color="primary" />
+      </Box>
+    );
+
   return (
     <Box>
       <div className="flex items-center justify-between">
@@ -75,7 +89,7 @@ function PrivatePropertyListPage() {
         </Typography>
         <PropertyAddButtonList fetchPropertyData={fetchPropertyData} />
       </div>
-      <PropertyTable loading={loading} propertyList={privatePropertyList} />
+      <PropertyTable propertyList={privatePropertyList} />
     </Box>
   );
 }

@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import apiClient from "@apis/apiClient";
 import CustomerAddButtonList from "./CustomerAddButtonList";
 import CustomerTable from "./CustomerTable";
-import { Box, Typography } from "@mui/material";
+import { Box, Typography, CircularProgress } from "@mui/material";
 
 const CustomerListPage = () => {
   const [loading, setLoading] = useState(true);
@@ -38,7 +38,21 @@ const CustomerListPage = () => {
     fetchCustomerList();
   }, [page, rowsPerPage]);
 
-  if (loading) return <div>로딩중</div>;
+  if (loading) {
+    return (
+      <Box
+        sx={{
+          display: "flex",
+          justifyContent: "center",
+          alignItems: "center",
+          height: "100vh",
+        }}
+      >
+        <CircularProgress color="primary" />
+      </Box>
+    );
+  }
+
   return (
     <Box>
       <div className="flex items-center justify-between">

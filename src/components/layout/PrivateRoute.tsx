@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { Outlet, Navigate } from "react-router-dom";
 import NavigationBar from "@components/NavigationBar";
 import apiClient from "@apis/apiClient";
+import { Box, CircularProgress } from "@mui/material";
 
 const PrivateRoute = () => {
   const isSignedIn = Boolean(sessionStorage.getItem("_ZA"));
@@ -26,7 +27,19 @@ const PrivateRoute = () => {
     return <Navigate to="/sign-in" />;
   }
 
-  if (!userInfo) return <div>loading ...</div>;
+  if (!userInfo)
+    return (
+      <Box
+        sx={{
+          display: "flex",
+          justifyContent: "center",
+          alignItems: "center",
+          height: "100vh",
+        }}
+      >
+        <CircularProgress color="primary" />
+      </Box>
+    );
 
   return (
     <>

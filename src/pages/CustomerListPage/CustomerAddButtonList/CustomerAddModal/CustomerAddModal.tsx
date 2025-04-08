@@ -15,7 +15,11 @@ import apiClient from "@apis/apiClient";
 
 const phoneRegex = /^\d{3}-\d{3,4}-\d{4}$/;
 
-function CustomerAddModal({ open, handleClose: setModalClose }: any) {
+function CustomerAddModal({
+  open,
+  handleClose: setModalClose,
+  fetchCustomerList,
+}: any) {
   const [userName, handleChangeUserName, setUserName] = useInput("");
   const [phoneNumber, handleChangePhoneNumber, setPhoneNumber] = useInput("");
   const [address, handleChangeAddress, setAddress] = useInput("");
@@ -124,6 +128,7 @@ function CustomerAddModal({ open, handleClose: setModalClose }: any) {
         if (res.status === 201) {
           alert("고객 등록 성공");
           handleModalClose();
+          fetchCustomerList();
         }
       })
       .catch((error) => {

@@ -5,13 +5,19 @@ import Button from "@components/Button";
 function MyPage() {
   return (
     <div>
-      <Box>
+      <Typography
+        variant="h6"
+        sx={{ mb: 2, minWidth: "max-content", display: "inline", margin: 0 }}
+      >
+        마이페이지
+      </Typography>
+      {/* <Box>
         <Typography>내 정보</Typography>
         <Button text="비밀번호 변경" />
-      </Box>
+      </Box> */}
 
-      <Box>
-        <Typography>내 설문</Typography>
+      <Box sx={{ marginTop: 4 }}>
+        <Typography sx={{ marginBottom: 1 }}>내 설문</Typography>
         <Box
           sx={{
             display: "flex",
@@ -54,9 +60,9 @@ function MyPage() {
         </Box>
       </Box>
 
-      <Box>
+      {/* <Box>
         <Button text="회원 탈퇴" />
-      </Box>
+      </Box> */}
     </div>
   );
 }

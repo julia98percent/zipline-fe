@@ -2,8 +2,11 @@ import { useState } from "react";
 import Button from "@components/Button";
 import PropertyAddModal from "./PropertyAddModal";
 
-function PropertyAddButtonList({ fetchPropertyData }) {
-  console.log(fetchPropertyData);
+interface Props {
+  fetchPropertyData: () => void;
+}
+
+function PropertyAddButtonList({ fetchPropertyData }: Props) {
   const [open, setOpen] = useState(false); // 모달 열림 상태 관리
 
   const handleOpen = () => setOpen(true);

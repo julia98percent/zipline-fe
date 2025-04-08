@@ -167,7 +167,7 @@ const PropertyTable = ({ loading, propertyList }: Props) => {
                   <TableCell align="center">{property.floor ?? "-"}</TableCell>
 
                   <TableCell align="center">
-                    {property.constructionYear?.value ?? "-"}
+                    {property.constructionYear ?? "-"}
                   </TableCell>
 
                   <TableCell align="center">

@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { ChangeEvent, useEffect, useState } from "react";
 import Button from "@components/Button";
 import {
   Box,
@@ -31,6 +31,18 @@ interface SurveyType {
   status?: string;
   createdAt?: string;
   questions: QuestionType[];
+}
+
+interface FormattedChoice {
+  content: string;
+}
+
+interface FormattedQuestion {
+  title: string;
+  description: string;
+  type: string;
+  isRequired: boolean;
+  choices?: FormattedChoice[];
 }
 
 const DUMMY_SURVEY_ID = 2;
@@ -79,14 +91,14 @@ const EditSurveyPage = () => {
     fetchSurveyData();
   }, []);
 
-  const handleSurveyTitleChange = (e) => {
+  const handleSurveyTitleChange = (e: ChangeEvent<HTMLInputElement>) => {
     setSurvey({ ...survey, title: e.target.value });
   };
 
   const handleQuestionChange = (
     index: number,
     field: keyof QuestionType,
-    value: any
+    value: string | boolean
   ) => {
     const updatedQuestions = [...survey.questions];
     updatedQuestions[index] = { ...updatedQuestions[index], [field]: value };
@@ -154,7 +166,7 @@ const EditSurveyPage = () => {
             description: question.description,
             type: question.type,
             isRequired: question.required,
-          };
+          } as FormattedQuestion;
 
           if (
             question.type !== "SUBJECTIVE" &&
@@ -250,7 +262,7 @@ const EditSurveyPage = () => {
             control={
               <Checkbox
                 checked={question.required}
-                onChange={(e, checked) =>
+                onChange={(_, checked) =>
                   handleRequiredChange(questionIndex, checked)
                 }
               />

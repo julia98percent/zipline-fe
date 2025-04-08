@@ -21,19 +21,11 @@ import { isNumberOrNumericString } from "@utils/numberUtil";
 import DaumPost from "./DaumPost";
 
 type EstateType = "SALE" | "DEPOSIT" | "MONTHLY";
-type RealCategory =
-  | "ONE_ROOM"
-  | "TWO_ROOM"
-  | "APARTMENT"
-  | "VILLA"
-  | "HOUSE"
-  | "OFFICETEL"
-  | "COMMERCIAL";
 
 interface Props {
   open: boolean;
   handleClose: () => void;
-  fetchPropertyData: any;
+  fetchPropertyData: () => void;
 }
 
 function PropertyAddModal({
@@ -57,8 +49,7 @@ function PropertyAddModal({
   const [hasElevator, setHasElevator] = useState<boolean>(false);
   const [constructionYear, handleChangeConstructionYear, setConstructionYear] =
     useInput(null);
-  const [parkingCapacity, handleChangeParkingCapacity, setParkingCapacity] =
-    useInput(null);
+  const [parkingCapacity, setParkingCapacity] = useState(null);
   const [netArea, handleChangeNetArea, setNetArea] = useInput(null);
   const [totalArea, handleChangeTotalArea, setTotalArea] = useInput(null);
   const [details, handleChangeDetails, setDetails] = useInput(null);

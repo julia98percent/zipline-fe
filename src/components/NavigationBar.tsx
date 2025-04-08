@@ -154,7 +154,14 @@ const NavigationBar = ({ userInfo }: { userInfo: { name: string } }) => {
           <Button text={userInfo.name} onClick={handleClick} />
           <Menu anchorEl={anchorEl} open={open} onClose={handleClose}>
             <Link to="/my">
-              <MenuItem onClick={handleClose}>마이페이지</MenuItem>
+              <MenuItem
+                onClick={handleClose}
+                sx={{
+                  fontWeight: currentPath === "/my" ? "bold" : "normal",
+                }}
+              >
+                마이페이지
+              </MenuItem>
             </Link>
             <MenuItem onClick={handleClickLogOut}>로그아웃</MenuItem>
           </Menu>

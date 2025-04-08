@@ -14,6 +14,12 @@ import {
   Switch,
 } from "@mui/material";
 import Chip from "@components/Chip";
+import { PropertyItem } from "../PrivatePropertyListPage";
+
+interface Props {
+  loading: boolean;
+  propertyList: PropertyItem[];
+}
 
 const PROPERTY_TYPES = [
   { value: "SALE", name: "매매" },
@@ -21,125 +27,7 @@ const PROPERTY_TYPES = [
   { value: "MONTHLY", name: "월세" },
 ];
 
-const DUMMY_CUSTOMER_DATA = {
-  success: true,
-  code: 200,
-  message: "고객 목록 조회에 성공하였습니다.",
-  data: {
-    properties: [
-      {
-        address: "서울시 강남구 역삼동 123-45",
-        dong: "역삼동",
-        roadName: "테헤란로",
-        extraAddress: "아파트 101호",
-        deposit: 1000000,
-        monthlyRent: 500000,
-        price: 150000000,
-        type: "SALE",
-        longitude: 127.035,
-        latitude: 37.501,
-        startDate: "2025-04-07",
-        endDate: "2025-04-30",
-        moveInDate: "2025-05-01",
-        realCategory: "ONE_ROOM",
-        petsAllowed: true,
-        floor: 3,
-        hasElevator: true,
-        constructionYear: {
-          value: 2010,
-          leap: false,
-        },
-        parkingCapacity: 1,
-        netArea: 25.5,
-        totalArea: 30.0,
-        details: "현관 키패드 설치, 리모델링 완료",
-      },
-      {
-        address: "서울시 종로구 사직동 67-8",
-        dong: "사직동",
-        roadName: "새문로",
-        extraAddress: "빌라 203호",
-        deposit: 500000,
-        monthlyRent: 300000,
-        price: 75000000,
-        type: "MONTHLY",
-        longitude: 126.976,
-        latitude: 37.576,
-        startDate: "2025-04-07",
-        endDate: "2025-04-30",
-        moveInDate: "2025-04-15",
-        realCategory: "ONE_ROOM",
-        petsAllowed: false,
-        floor: 2,
-        hasElevator: false,
-        constructionYear: {
-          value: 2005,
-          leap: false,
-        },
-        parkingCapacity: 0,
-        netArea: 20.0,
-        totalArea: 25.0,
-        details: "조용한 주거지, 주변 상권 발달",
-      },
-      {
-        address: "서울시 마포구 서교동 88-12",
-        dong: "서교동",
-        roadName: "홍익로",
-        extraAddress: "다세대주택 2층",
-        deposit: 700000,
-        monthlyRent: 400000,
-        price: 90000000,
-        type: "DEPOSIT",
-        longitude: 126.922,
-        latitude: 37.556,
-        startDate: "2025-04-07",
-        endDate: "2025-04-20",
-        moveInDate: "2025-04-21",
-        realCategory: "ONE_ROOM",
-        petsAllowed: true,
-        floor: 2,
-        hasElevator: false,
-        constructionYear: {
-          value: 2015,
-          leap: false,
-        },
-        parkingCapacity: 2,
-        netArea: 22.0,
-        totalArea: 27.0,
-        details: "남향, 채광 좋음",
-      },
-      {
-        address: "서울시 강남구 역삼동 123-45",
-        dong: "역삼동",
-        roadName: "테헤란로",
-        extraAddress: "아파트 101호",
-        deposit: 1000000,
-        monthlyRent: 500000,
-        price: 150000000,
-        type: "SALE",
-        longitude: 127.035,
-        latitude: 37.501,
-        startDate: "2025-04-07",
-        endDate: "2025-04-30",
-        moveInDate: "2025-05-01",
-        realCategory: "ONE_ROOM",
-        petsAllowed: true,
-        floor: 3,
-        hasElevator: true,
-        constructionYear: {
-          value: 2010,
-          leap: false,
-        },
-        parkingCapacity: 1,
-        netArea: 25.5,
-        totalArea: 30.0,
-        details: "현관 키패드 설치, 리모델링 완료",
-      },
-    ],
-  },
-};
-
-const PropertyTable = () => {
+const PropertyTable = ({ loading, propertyList }: Props) => {
   const [useMetric, setUseMetric] = useState(true);
 
   const convertToKoreanPyeong = (squareMeters: number) => {
@@ -179,12 +67,13 @@ const PropertyTable = () => {
     setPage(0);
   };
 
-  const properties = DUMMY_CUSTOMER_DATA.data.properties;
-
-  const displayedCustomers = properties.slice(
+  const displayedProperties = propertyList.slice(
     page * rowsPerPage,
     page * rowsPerPage + rowsPerPage
   );
+
+  if (loading) return <div>로딩중</div>;
+  if (!propertyList?.length) return <div>매물 없음</div>;
 
   return (
     <Box sx={{ width: "100%", mt: 4 }}>
@@ -206,10 +95,11 @@ const PropertyTable = () => {
           <Table sx={{ minWidth: 650 }} aria-label="customer table">
             <TableHead>
               <TableRow>
+                <TableCell align="center">매물 유형</TableCell>
                 <TableCell align="center">주소</TableCell>
+                <TableCell align="center">매매 가격</TableCell>
                 <TableCell align="center">보증금</TableCell>
                 <TableCell align="center">월세</TableCell>
-                <TableCell align="center">매물 유형</TableCell>
                 <TableCell align="center">
                   면적(순/총) {useMetric ? "(m²)" : "(평)"}
                 </TableCell>
@@ -218,47 +108,75 @@ const PropertyTable = () => {
                 <TableCell align="center">층</TableCell>
                 <TableCell align="center">건축 연도</TableCell>
                 <TableCell align="center">세대별 주차 가능 수</TableCell>
-                <TableCell align="center">기타 상세</TableCell>
+                <TableCell align="center">기타</TableCell>
               </TableRow>
             </TableHead>
             <TableBody>
-              {displayedCustomers.map((property, index) => (
+              {displayedProperties.map((property, index) => (
                 <TableRow key={index}>
-                  <TableCell align="center">{property.address}</TableCell>
-                  <TableCell align="center">
-                    {property.deposit.toLocaleString()} 원
-                  </TableCell>
-                  <TableCell align="center">
-                    {property.monthlyRent.toLocaleString()} 원
-                  </TableCell>
                   <TableCell align="center">
                     {getPropertyTypeName(property.type)}
                   </TableCell>
+
                   <TableCell align="center">
-                    {formatArea(property.netArea, property.totalArea)}
+                    {property.address ?? "-"}
                   </TableCell>
+
                   <TableCell align="center">
-                    {property.petsAllowed ? (
-                      <Chip color="success" text="가능" />
+                    {property.price?.toLocaleString() ?? "-"} 원
+                  </TableCell>
+
+                  <TableCell align="center">
+                    {property.deposit?.toLocaleString() ?? "-"} 원
+                  </TableCell>
+
+                  <TableCell align="center">
+                    {property.monthlyRent?.toLocaleString() ?? "-"} 원
+                  </TableCell>
+
+                  <TableCell align="center">
+                    {property.netArea && property.totalArea
+                      ? formatArea(property.netArea, property.totalArea)
+                      : "정보 없음"}
+                  </TableCell>
+
+                  <TableCell align="center">
+                    {property.petsAllowed !== undefined ? (
+                      property.petsAllowed ? (
+                        <Chip color="success" text="가능" />
+                      ) : (
+                        <Chip color="error" text="불가능" />
+                      )
                     ) : (
-                      <Chip color="error" text="불가능" />
+                      "정보 없음"
                     )}
                   </TableCell>
+
                   <TableCell align="center">
-                    {property.hasElevator ? (
-                      <Chip color="primary" text="O" />
+                    {property.hasElevator !== undefined ? (
+                      property.hasElevator ? (
+                        <Chip color="primary" text="O" />
+                      ) : (
+                        <Chip color="default" text="X" />
+                      )
                     ) : (
-                      <Chip color="default" text="X" />
+                      "정보 없음"
                     )}
                   </TableCell>
-                  <TableCell align="center">{property.floor}</TableCell>
+
+                  <TableCell align="center">{property.floor ?? "-"}</TableCell>
+
                   <TableCell align="center">
-                    {property.constructionYear.value ?? "-"}
+                    {property.constructionYear?.value ?? "-"}
                   </TableCell>
+
                   <TableCell align="center">
-                    {property.parkingCapacity}
+                    {property.parkingCapacity ?? "-"}
                   </TableCell>
-                  <TableCell align="center">{property.details}</TableCell>
+
+                  <TableCell align="center">
+                    {property.details ?? "-"}
+                  </TableCell>
                 </TableRow>
               ))}
             </TableBody>
@@ -266,7 +184,7 @@ const PropertyTable = () => {
         </TableContainer>
         <TablePagination
           component="div"
-          count={properties.length}
+          count={propertyList.length}
           page={page}
           rowsPerPage={rowsPerPage}
           onPageChange={handleChangePage}

@@ -33,9 +33,14 @@ type RealCategory =
 interface Props {
   open: boolean;
   handleClose: () => void;
+  fetchPropertyData: any;
 }
 
-function PropertyAddModal({ open, handleClose: setModalClose }: Props) {
+function PropertyAddModal({
+  open,
+  handleClose: setModalClose,
+  fetchPropertyData,
+}: Props) {
   const [address, setAddress] = useState<string | null>(null);
   const [addressForCoord, setAddressForCoord] = useState<string | null>(null);
   const [detailAddress, handleChangeDetailAddress] = useInput<string>("");
@@ -86,6 +91,7 @@ function PropertyAddModal({ open, handleClose: setModalClose }: Props) {
         console.log(res);
         if (res.status === 201) {
           alert("매물 등록 성공");
+          fetchPropertyData();
           handleModalClose();
           resetPropertyData();
         }
@@ -137,7 +143,7 @@ function PropertyAddModal({ open, handleClose: setModalClose }: Props) {
         `https://dapi.kakao.com/v2/local/search/address.json?query=${addressForCoord}`,
         {
           headers: {
-            Authorization: "KakaoAK ce08657ba311e8fe08e4166e26db13b5",
+            Authorization: `KakaoAK ${import.meta.env.VITE_KAKAO_MAP_SECRET}`,
           },
         }
       )

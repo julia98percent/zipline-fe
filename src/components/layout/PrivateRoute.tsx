@@ -8,20 +8,19 @@ const PrivateRoute = () => {
   const [userInfo, setUserInfo] = useState(null);
 
   useEffect(() => {
-    if (userInfo == null) {
-      apiClient
-        .get("/users/me")
-        .then((res) => {
-          const userData = res?.data?.data;
-          if (res.status === 200 && userData) {
-            setUserInfo(userData);
-          }
-        })
-        .catch((error) => {
-          console.log(error);
-        });
-    }
-  }, [userInfo]);
+    apiClient
+      .get("/users/me")
+      .then((res) => {
+        const userData = res?.data?.data;
+        if (res && res.status === 200 && userData) {
+          console.log(res);
+          setUserInfo(userData);
+        }
+      })
+      .catch((error) => {
+        console.log(error);
+      });
+  }, []);
 
   if (!isSignedIn) {
     localStorage.clear();

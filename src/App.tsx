@@ -6,6 +6,8 @@ import SignInPage from "@pages/SignInPage";
 import DashboardPage from "@pages/DashboardPage";
 import CustomerListPage from "@pages/CustomerListPage";
 import PrivatePropertyListPage from "@pages/PrivatePropertyListPage";
+import MyPage from "@pages/MyPage";
+import EditSurveyPage from "@pages/MyPage/EditSurveyPage";
 
 const App = () => {
   return (
@@ -18,6 +20,10 @@ const App = () => {
           path="properties/private"
           element={<PrivatePropertyListPage />}
         />
+        <Route path="my">
+          <Route index element={<MyPage />} />
+          <Route path="edit-survey" element={<EditSurveyPage />} />
+        </Route>
       </Route>
 
       <Route element={<GuestRoute />}>

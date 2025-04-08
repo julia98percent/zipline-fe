@@ -12,6 +12,7 @@ interface ButtonType {
   onMouseLeave?: React.MouseEventHandler<HTMLButtonElement>;
   id?: string;
   sx?: object;
+  [key: string]: any;
 }
 
 const Button = ({

@@ -17,12 +17,13 @@ const PasswordInput = ({
     <>
       <TextField
         label="비밀번호"
-        placeholder="1자 이상의 문자열"
+        type="password"
         value={password}
         onChange={handleChangePassword}
       />
       <TextField
-        placeholder="비밀번호 확인"
+        label="비밀번호 확인"
+        type="password"
         value={passwordCheck}
         onChange={handleChangePasswordCheck}
       />

@@ -7,12 +7,7 @@ interface Props {
 
 const UserIdInput = ({ userId, handleChangeUserId }: Props) => {
   return (
-    <TextField
-      label="아이디"
-      placeholder="1자 이상의 문자열"
-      value={userId}
-      onChange={handleChangeUserId}
-    />
+    <TextField label="아이디" value={userId} onChange={handleChangeUserId} />
   );
 };
 

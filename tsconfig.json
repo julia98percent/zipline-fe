@@ -6,7 +6,8 @@
       "@assets/*": ["./src/assets/*"],
       "@hooks/*": ["./src/hooks/*"],
       "@apis/*": ["./src/apis/*"],
-      "@utils/*": ["./src/utils/*"]
+      "@utils/*": ["./src/utils/*"],
+      "@stores/*": ["./src/stores/*"]
     },
     "types": ["vite/client"],
     "target": "ES2020",

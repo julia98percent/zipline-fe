@@ -3,31 +3,35 @@ import { Outlet, Navigate } from "react-router-dom";
 import NavigationBar from "@components/NavigationBar";
 import apiClient from "@apis/apiClient";
 import { Box, CircularProgress } from "@mui/material";
+import useUserStore from "@stores/useUserStore";
 
 const PrivateRoute = () => {
   const isSignedIn = Boolean(sessionStorage.getItem("_ZA"));
-  const [userInfo, setUserInfo] = useState(null);
+  const { user, setUser } = useUserStore();
 
   useEffect(() => {
-    apiClient
-      .get("/users/me")
-      .then((res) => {
-        const userData = res?.data?.data;
-        if (res && res.status === 200 && userData) {
-          setUserInfo(userData);
-        }
-      })
-      .catch((error) => {
-        console.log(error);
-      });
-  }, []);
+    if (isSignedIn && !user) {
+      apiClient
+        .get("/users/me")
+        .then((res) => {
+          const userData = res?.data?.data;
+          if (res && res.status === 200 && userData) {
+            setUser(userData);
+          }
+        })
+        .catch((error) => {
+          console.log(error);
+          sessionStorage.removeItem("_ZA");
+        });
+    }
+  }, [isSignedIn, user, setUser]);
 
   if (!isSignedIn) {
     localStorage.clear();
     return <Navigate to="/sign-in" />;
   }
 
-  if (!userInfo)
+  if (!user) {
     return (
       <Box
         sx={{
@@ -40,10 +44,11 @@ const PrivateRoute = () => {
         <CircularProgress color="primary" />
       </Box>
     );
+  }
 
   return (
     <>
-      <NavigationBar userInfo={userInfo} />
+      <NavigationBar userName={user.name} />
       <div className="flex-1">
         <Outlet />
       </div>

@@ -28,7 +28,7 @@ const MENU_INFO = [
   },
 ];
 
-const NavigationBar = ({ userInfo }: { userInfo: { name: string } }) => {
+const NavigationBar = ({ userName }: { userName: string }) => {
   const navigate = useNavigate();
   const location = useLocation();
   const currentPath = location.pathname;
@@ -151,7 +151,7 @@ const NavigationBar = ({ userInfo }: { userInfo: { name: string } }) => {
           )}
         </Box>
         <Box>
-          <Button text={userInfo.name} onClick={handleClick} />
+          <Button text={userName} onClick={handleClick} />
           <Menu anchorEl={anchorEl} open={open} onClose={handleClose}>
             <Link to="/my">
               <MenuItem

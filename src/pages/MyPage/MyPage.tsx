@@ -1,8 +1,17 @@
 import { Link } from "react-router-dom";
 import { Box, Typography } from "@mui/material";
 import Button from "@components/Button";
+import useUserStore from "@stores/useUserStore";
+import apiClient from "@apis/apiClient";
 
 function MyPage() {
+  const triggerCrawler = () => {
+    apiClient
+      .get("/admin/crawl/region")
+      .then(() => console.log("region 크롤링 완료"));
+  };
+
+  const { user } = useUserStore();
   return (
     <Box sx={{ padding: "32px" }}>
       <Typography
@@ -59,10 +68,11 @@ function MyPage() {
           </Box>
         </Box>
       </Box>
-
-      {/* <Box>
-        <Button text="회원 탈퇴" />
-      </Box> */}
+      {user?.role == "ROLE_ADMIN" && (
+        <Box>
+          <Button text="크롤링 트리거 버튼" onClick={triggerCrawler} />
+        </Box>
+      )}
     </Box>
   );
 }

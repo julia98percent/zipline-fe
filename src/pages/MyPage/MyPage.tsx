@@ -4,7 +4,7 @@ import Button from "@components/Button";
 
 function MyPage() {
   return (
-    <div>
+    <Box sx={{ padding: "32px" }}>
       <Typography
         variant="h6"
         sx={{ mb: 2, minWidth: "max-content", display: "inline", margin: 0 }}
@@ -63,7 +63,7 @@ function MyPage() {
       {/* <Box>
         <Button text="회원 탈퇴" />
       </Box> */}
-    </div>
+    </Box>
   );
 }
 

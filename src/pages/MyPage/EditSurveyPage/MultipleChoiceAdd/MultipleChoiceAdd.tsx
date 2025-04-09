@@ -6,6 +6,7 @@ import {
   FormControlLabel,
   IconButton,
 } from "@mui/material";
+import DeleteIcon from "@mui/icons-material/Delete";
 import Button from "@components/Button";
 import { QuestionType } from "../EditSurveyPage";
 
@@ -29,8 +30,10 @@ function MultipleChoiceAdd({
   questionIndex,
 }: Props) {
   return (
-    <Box sx={{ mt: 2 }}>
-      <Typography>선택지</Typography>
+    <Box sx={{ width: "100%", maxWidth: "600px" }}>
+      <Typography sx={{ mb: 2, color: "#2E5D9F", fontWeight: 500 }}>
+        다중 선택 옵션
+      </Typography>
       {question.choices?.map((choice, choiceIndex) => (
         <Box
           key={choiceIndex}
@@ -39,13 +42,21 @@ function MultipleChoiceAdd({
             alignItems: "center",
             gap: 2,
             mb: 1,
+            width: "100%",
           }}
         >
           <FormControlLabel
+            sx={{
+              width: "100%",
+              "& span:nth-of-type(2)": {
+                width: "100%",
+              },
+            }}
             control={<Checkbox disabled />}
             label={
               <TextField
                 fullWidth
+                sx={{ mb: 1 }}
                 value={choice.text}
                 onChange={(event) =>
                   handleChoiceChange(
@@ -62,11 +73,12 @@ function MultipleChoiceAdd({
           <IconButton
             onClick={() => handleDeleteChoice(questionIndex, choiceIndex)}
           >
-            X
+            <DeleteIcon />
           </IconButton>
         </Box>
       ))}
       <Button
+        fullWidth
         text="선택지 추가"
         variant="outlined"
         onClick={() => handleAddChoice(questionIndex)}

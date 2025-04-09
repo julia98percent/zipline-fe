@@ -5,9 +5,10 @@ import {
   Radio,
   RadioGroup,
   FormControl,
-  FormLabel,
+  Typography,
   IconButton,
 } from "@mui/material";
+import DeleteIcon from "@mui/icons-material/Delete";
 import Button from "@components/Button";
 import { QuestionType } from "../EditSurveyPage";
 
@@ -31,51 +32,64 @@ function SingleChoiceAdd({
   questionIndex,
 }: Props) {
   return (
-    <FormControl sx={{ mt: 2 }}>
-      <FormLabel>선택지</FormLabel>
-      <RadioGroup>
-        {question.choices?.map((choice, choiceIndex) => (
-          <Box
-            key={choiceIndex}
-            sx={{
-              display: "flex",
-              alignItems: "center",
-              gap: 2,
-              mb: 1,
-            }}
-          >
-            <FormControlLabel
-              value={choice.text}
-              control={<Radio disabled />}
-              label={
-                <TextField
-                  fullWidth
-                  value={choice.text}
-                  onChange={(event) =>
-                    handleChoiceChange(
-                      questionIndex,
-                      choiceIndex,
-                      event.target.value
-                    )
-                  }
-                  placeholder="선택지 내용을 입력하세요"
-                />
-              }
-            />
-            <IconButton
-              onClick={() => handleDeleteChoice(questionIndex, choiceIndex)}
+    <Box sx={{ width: "100%", maxWidth: "600px" }}>
+      <FormControl fullWidth>
+        <Typography sx={{ mb: 2, color: "#2E5D9F", fontWeight: 500 }}>
+          단일 선택 옵션
+        </Typography>
+        <RadioGroup>
+          {question.choices?.map((choice, choiceIndex) => (
+            <Box
+              key={choiceIndex}
+              sx={{
+                display: "flex",
+                alignItems: "center",
+                gap: 2,
+                mb: 1,
+              }}
             >
-              X
-            </IconButton>
-          </Box>
-        ))}
-      </RadioGroup>
-      <Button
-        text="선택지 추가"
-        variant="outlined"
-        onClick={() => handleAddChoice(questionIndex)}
-      />
-    </FormControl>
+              <FormControlLabel
+                sx={{
+                  width: "100%",
+                  "& span:nth-of-type(2)": {
+                    width: "100%",
+                  },
+                }}
+                value={choice.text}
+                control={<Radio disabled />}
+                label={
+                  <TextField
+                    fullWidth
+                    sx={{ mb: 1 }}
+                    value={choice.text}
+                    onChange={(event) =>
+                      handleChoiceChange(
+                        questionIndex,
+                        choiceIndex,
+                        event.target.value
+                      )
+                    }
+                    placeholder="선택지 내용을 입력하세요"
+                  />
+                }
+              />
+              <IconButton
+                onClick={() => handleDeleteChoice(questionIndex, choiceIndex)}
+              >
+                <DeleteIcon />
+              </IconButton>
+            </Box>
+          ))}
+        </RadioGroup>
+        <Button
+          text="선택지 추가"
+          variant="outlined"
+          onClick={() => {
+            handleAddChoice(questionIndex);
+          }}
+        />
+      </FormControl>
+    </Box>
   );
 }
 

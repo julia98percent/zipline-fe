@@ -54,7 +54,7 @@ const CustomerListPage = () => {
   }
 
   return (
-    <Box>
+    <Box sx={{ padding: "32px" }}>
       <div className="flex items-center justify-between">
         <Typography
           variant="h6"

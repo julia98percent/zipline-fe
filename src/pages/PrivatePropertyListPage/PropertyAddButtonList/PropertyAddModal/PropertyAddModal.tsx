@@ -9,6 +9,7 @@ import {
   RadioGroup,
   FormControlLabel,
   Radio,
+  MenuItem,
 } from "@mui/material";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import { DemoContainer } from "@mui/x-date-pickers/internals/demo";
@@ -33,15 +34,25 @@ function PropertyAddModal({
   handleClose: setModalClose,
   fetchPropertyData,
 }: Props) {
+  const [customerUid, setCustomerUid] = useState<number | null>(null);
+  const [customerOptions, setCustomerOptions] = useState<
+    { uid: number; name: string }[]
+  >([]);
   const [address, setAddress] = useState<string | null>(null);
   const [addressForCoord, setAddressForCoord] = useState<string | null>(null);
-  const [detailAddress, handleChangeDetailAddress] = useInput<string>("");
+  const [dong, setDong] = useState<string | null>(null);
+  const [roadName, setRoadName] = useState<string | null>(null);
+  const [extraAddress, handleChangeDetailAddress] = useInput<string>("");
   const [deposit, handleChangeDeposit, setDeposit] = useInput(null);
   const [monthlyRent, handleChangeMonthlyRent, setMonthlyRent] = useInput(null);
   const [price, handleChangePrice, setPrice] = useInput(null);
   const [type, setType] = useState<EstateType>("SALE");
   const [longitude, setLongitude] = useState(null);
   const [latitude, setLatitude] = useState(null);
+  const [contractStartDate, setContractStartDate] = useState<Dayjs | null>(
+    null
+  );
+  const [contractEndDate, setContractEndDate] = useState<Dayjs | null>(null);
   const [moveInDate, setMoveInDate] = useState<Dayjs | null>(null);
   const [realCategory, setRealCategory] = useState("APARTMENT");
   const [petsAllowed, setPetsAllowed] = useState(false);
@@ -49,21 +60,25 @@ function PropertyAddModal({
   const [hasElevator, setHasElevator] = useState<boolean>(false);
   const [constructionYear, handleChangeConstructionYear, setConstructionYear] =
     useInput(null);
-  const [parkingCapacity, setParkingCapacity] = useState(null);
+  const [parkingCapacity, setParkingCapacity] = useState<number | null>(null);
   const [netArea, handleChangeNetArea, setNetArea] = useInput(null);
   const [totalArea, handleChangeTotalArea, setTotalArea] = useInput(null);
   const [details, handleChangeDetails, setDetails] = useInput(null);
 
   const handleClickSubmitButton = () => {
     const propertyDataToSubmit = {
-      customerUid: 1,
-      address: address + detailAddress,
+      customerUid,
+      address: address + extraAddress,
+      dong,
+      roadName,
       deposit,
       monthlyRent,
       price,
       type,
       longitude,
       latitude,
+      contractStartDate,
+      contractEndDate,
       moveInDate,
       realCategory,
       petsAllowed,
@@ -147,6 +162,12 @@ function PropertyAddModal({
       });
   }, [address, addressForCoord]);
 
+  useEffect(() => {
+    apiClient.get("/customers").then((res) => {
+      setCustomerOptions(res.data.data.customers);
+    });
+  }, []);
+
   return (
     <Modal open={open} onClose={handleModalClose}>
       <Box
@@ -173,6 +194,21 @@ function PropertyAddModal({
           }}
         >
           <Typography variant="h6">매물 등록</Typography>
+
+          <TextField
+            select
+            label="고객 선택"
+            value={customerUid !== null ? customerUid.toString() : ""}
+            onChange={(e) => setCustomerUid(Number(e.target.value))}
+            fullWidth
+            sx={{ mt: 2 }}
+          >
+            {customerOptions.map((customer) => (
+              <MenuItem key={customer.uid} value={customer.uid.toString()}>
+                {customer.name}
+              </MenuItem>
+            ))}
+          </TextField>
           <TextField
             label="주소"
             value={address ?? ""}
@@ -183,13 +219,29 @@ function PropertyAddModal({
           <DaumPost
             setAddress={setAddress}
             setAddressForCoord={setAddressForCoord}
+            setDong={setDong}
+            setRoadName={setRoadName}
           />
           <TextField
             label="상세 주소"
-            value={detailAddress ?? ""}
+            value={extraAddress ?? ""}
             onChange={handleChangeDetailAddress}
             disabled={!address}
             variant="outlined"
+            fullWidth
+          />
+          <TextField
+            label="동"
+            value={dong ?? ""}
+            onChange={(e) => setDong(e.target.value)}
+            sx={{ mt: 2 }}
+            fullWidth
+          />
+          <TextField
+            label="도로명"
+            value={roadName ?? ""}
+            onChange={(e) => setRoadName(e.target.value)}
+            sx={{ mt: 2 }}
             fullWidth
           />
           {/* 거래 유형 */}
@@ -337,6 +389,23 @@ function PropertyAddModal({
             <FormControlLabel value="false" control={<Radio />} label="없음" />
           </RadioGroup>
 
+          <LocalizationProvider dateAdapter={AdapterDayjs}>
+            <DemoContainer components={["DatePicker"]}>
+              <DesktopDatePicker
+                onChange={setContractStartDate}
+                value={contractStartDate}
+                format="YYYY. MM. DD"
+                label="계약 시작일"
+              />
+              <DesktopDatePicker
+                onChange={setContractEndDate}
+                value={contractEndDate}
+                format="YYYY. MM. DD"
+                label="계약 종료일"
+              />
+            </DemoContainer>
+          </LocalizationProvider>
+
           {/* 입주 가능일 */}
           <LocalizationProvider dateAdapter={AdapterDayjs}>
             <DemoContainer components={["DatePicker"]}>
@@ -354,6 +423,17 @@ function PropertyAddModal({
             label="건축년도"
             value={constructionYear ?? ""}
             onChange={handleChangeConstructionYear}
+            sx={{ mt: 2 }}
+            fullWidth
+          />
+          <TextField
+            label="주차 가능 대수"
+            value={parkingCapacity !== null ? parkingCapacity.toString() : ""}
+            onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+              setParkingCapacity(
+                e.target.value === "" ? null : Number(e.target.value)
+              )
+            }
             sx={{ mt: 2 }}
             fullWidth
           />

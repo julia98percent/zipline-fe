@@ -48,7 +48,7 @@ const PropertyTable = ({ propertyList }: Props) => {
   };
 
   const [page, setPage] = useState(0);
-  const [rowsPerPage, setRowsPerPage] = useState(2);
+  const [rowsPerPage, setRowsPerPage] = useState(5);
 
   const handleToggleUnitChange = () => {
     setUseMetric(!useMetric);
@@ -70,8 +70,6 @@ const PropertyTable = ({ propertyList }: Props) => {
     page * rowsPerPage + rowsPerPage
   );
 
-  if (!propertyList?.length) return <div>매물 없음</div>;
-
   return (
     <Box sx={{ width: "100%", mt: 4 }}>
       <FormControlLabel
@@ -86,7 +84,7 @@ const PropertyTable = ({ propertyList }: Props) => {
       />
       <Paper sx={{ width: "100%", overflow: "hidden" }}>
         <TableContainer>
-          <Table sx={{ minWidth: 650 }} aria-label="customer table">
+          <Table sx={{ minWidth: 650 }}>
             <TableHead>
               <TableRow>
                 <TableCell align="center">매물 유형</TableCell>
@@ -106,73 +104,90 @@ const PropertyTable = ({ propertyList }: Props) => {
               </TableRow>
             </TableHead>
             <TableBody>
-              {displayedProperties.map((property, index) => (
-                <TableRow key={index}>
-                  <TableCell align="center">
-                    {getPropertyTypeName(property.type)}
-                  </TableCell>
+              {displayedProperties.length > 0 ? (
+                displayedProperties.map((property, index) => (
+                  <TableRow key={index}>
+                    <TableCell align="center">
+                      {getPropertyTypeName(property.type)}
+                    </TableCell>
 
-                  <TableCell align="center">
-                    {property.address ?? "-"}
-                  </TableCell>
+                    <TableCell align="center">
+                      {property.address ?? "-"}
+                    </TableCell>
 
-                  <TableCell align="center">
-                    {property.price?.toLocaleString() ?? "-"} 원
-                  </TableCell>
+                    <TableCell align="center">
+                      {property.price?.toLocaleString() ?? "-"} 원
+                    </TableCell>
 
-                  <TableCell align="center">
-                    {property.deposit?.toLocaleString() ?? "-"} 원
-                  </TableCell>
+                    <TableCell align="center">
+                      {property.deposit?.toLocaleString() ?? "-"} 원
+                    </TableCell>
 
-                  <TableCell align="center">
-                    {property.monthlyRent?.toLocaleString() ?? "-"} 원
-                  </TableCell>
+                    <TableCell align="center">
+                      {property.monthlyRent?.toLocaleString() ?? "-"} 원
+                    </TableCell>
 
-                  <TableCell align="center">
-                    {property.netArea && property.totalArea
-                      ? formatArea(property.netArea, property.totalArea)
-                      : "정보 없음"}
-                  </TableCell>
+                    <TableCell align="center">
+                      {property.netArea && property.totalArea
+                        ? formatArea(property.netArea, property.totalArea)
+                        : "정보 없음"}
+                    </TableCell>
 
-                  <TableCell align="center">
-                    {property.petsAllowed !== undefined ? (
-                      property.petsAllowed ? (
-                        <Chip color="success" text="가능" />
+                    <TableCell align="center">
+                      {property.petsAllowed !== undefined ? (
+                        property.petsAllowed ? (
+                          <Chip color="success" text="가능" />
+                        ) : (
+                          <Chip color="error" text="불가능" />
+                        )
                       ) : (
-                        <Chip color="error" text="불가능" />
-                      )
-                    ) : (
-                      "정보 없음"
-                    )}
-                  </TableCell>
+                        "정보 없음"
+                      )}
+                    </TableCell>
 
-                  <TableCell align="center">
-                    {property.hasElevator !== undefined ? (
-                      property.hasElevator ? (
-                        <Chip color="primary" text="O" />
+                    <TableCell align="center">
+                      {property.hasElevator !== undefined ? (
+                        property.hasElevator ? (
+                          <Chip color="primary" text="O" />
+                        ) : (
+                          <Chip color="default" text="X" />
+                        )
                       ) : (
-                        <Chip color="default" text="X" />
-                      )
-                    ) : (
-                      "정보 없음"
-                    )}
-                  </TableCell>
+                        "정보 없음"
+                      )}
+                    </TableCell>
 
-                  <TableCell align="center">{property.floor ?? "-"}</TableCell>
+                    <TableCell align="center">
+                      {property.floor ?? "-"}
+                    </TableCell>
 
-                  <TableCell align="center">
-                    {property.constructionYear ?? "-"}
-                  </TableCell>
+                    <TableCell align="center">
+                      {property.constructionYear ?? "-"}
+                    </TableCell>
 
-                  <TableCell align="center">
-                    {property.parkingCapacity ?? "-"}
-                  </TableCell>
+                    <TableCell align="center">
+                      {property.parkingCapacity ?? "-"}
+                    </TableCell>
 
-                  <TableCell align="center">
-                    {property.details ?? "-"}
+                    <TableCell align="center">
+                      {property.details ?? "-"}
+                    </TableCell>
+                  </TableRow>
+                ))
+              ) : (
+                <TableRow sx={{ width: "100%" }}>
+                  <TableCell
+                    colSpan={12}
+                    align="center"
+                    sx={{
+                      width: "100%",
+                      padding: "20px 0",
+                    }}
+                  >
+                    데이터가 없습니다
                   </TableCell>
                 </TableRow>
-              ))}
+              )}
             </TableBody>
           </Table>
         </TableContainer>
@@ -183,7 +198,7 @@ const PropertyTable = ({ propertyList }: Props) => {
           rowsPerPage={rowsPerPage}
           onPageChange={handleChangePage}
           onRowsPerPageChange={handleChangeRowsPerPage}
-          rowsPerPageOptions={[2, 5, 10]}
+          rowsPerPageOptions={[5, 10]}
           labelRowsPerPage="페이지당 행"
         />
       </Paper>

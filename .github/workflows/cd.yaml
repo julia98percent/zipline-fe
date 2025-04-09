@@ -22,8 +22,17 @@ jobs:
       - name: Install dependencies
         run: npm install
 
+      - name: Set environment variables based on branch
+        run: |
+          echo "VITE_KAKAO_MAP_SECRET=${{ secrets.VITE_KAKAO_MAP_SECRET }}" >> .env
+          if [[ "${{ github.ref_name }}" == "main" ]]; then
+            echo "VITE_SERVER_URL=${{ secrets.VITE_PROD_SERVER_URL}}" > .env
+          else
+            echo "VITE_SERVER_URL=${{ secrets.VITE_DEV_SERVER_URL }}" > .env
+          fi
+
       - name: Build project
-        run: npm run build # Vite로 프로젝트를 빌드
+        run: npm run build
 
       - name: Set up AWS CLI
         uses: aws-actions/configure-aws-credentials@v3

@@ -125,16 +125,6 @@ function MyPage() {
                 }}
               />
             </Link>
-            <Link to="survey-result">
-              <Button
-                text="설문 결과 보기"
-                color="primary"
-                sx={{
-                  border: "1px solid #2E5D9F",
-                  color: "#2E5D9F",
-                }}
-              />
-            </Link>
           </Box>
         </Box>
       </Box>

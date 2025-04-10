@@ -8,8 +8,9 @@ import {
   MenuItem,
 } from "@mui/material";
 import { useLocation, Link, useNavigate } from "react-router-dom";
-import Button from "./Button";
+import Button from "@components/Button";
 import useUserStore from "@stores/useUserStore";
+import SubmittedSurveyPopup from "./SubmittedSurveyPopup";
 
 const MENU_INFO = [
   {
@@ -155,7 +156,8 @@ const NavigationBar = ({ userName }: { userName: string }) => {
             )
           )}
         </Box>
-        <Box>
+        <Box sx={{ display: "flex" }}>
+          <SubmittedSurveyPopup />
           <Button text={userName} onClick={handleClick} />
           <Menu anchorEl={anchorEl} open={open} onClose={handleClose}>
             <Link to="/my">

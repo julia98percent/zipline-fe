@@ -5,7 +5,6 @@ import ContractTable from "./ContractTable";
 import ContractAddButtonList from "./ContractAddButtonList";
 import ContractDetailModal from "./ContractAddButtonList/ContractDetailModal/ContractDetailModal";
 
-
 export interface ContractItem {
   uid: number;
   category: string;
@@ -50,10 +49,6 @@ function ContractListPage() {
   useEffect(() => {
     fetchContractData();
   }, [fetchContractData]);
-
-  useEffect(() => {
-    console.log("불러온 계약 리스트:", contractList);
-  }, [contractList]);
 
   if (loading)
     return (

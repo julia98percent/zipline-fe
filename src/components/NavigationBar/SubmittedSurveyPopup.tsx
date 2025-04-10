@@ -77,7 +77,7 @@ function SubmittedSurveyPopup() {
       })
       .then((res) => {
         const responseData = res?.data?.data as PaginatedResponse;
-        console.log(responseData);
+
         if (responseData?.surveyResponses) {
           setNotifications(responseData.surveyResponses);
           setTotalPages(responseData.totalPages);
@@ -138,7 +138,7 @@ function SubmittedSurveyPopup() {
               <CircularProgress color="primary" />
             </Box>
           ) : notifications && notifications.length > 0 ? (
-            <>
+            <div>
               <Box sx={{ maxHeight: 280, overflow: "auto" }}>
                 {notifications.map((notification, index) => (
                   <Box key={notification.surveyResponseUid}>
@@ -195,7 +195,7 @@ function SubmittedSurveyPopup() {
                   siblingCount={0}
                 />
               </Box>
-            </>
+            </div>
           ) : (
             <Box sx={{ p: 2, textAlign: "center" }}>
               <Typography variant="body2" color="text.secondary">

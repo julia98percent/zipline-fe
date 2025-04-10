@@ -4,6 +4,7 @@ import Button from "@components/Button";
 import useUserStore from "@stores/useUserStore";
 import apiClient from "@apis/apiClient";
 import useInput from "@hooks/useInput";
+import { formatDate } from "@utils/dateUtil";
 
 function MyPage() {
   const [cortarNo, handleCortarNo] = useInput("");
@@ -69,10 +70,11 @@ function MyPage() {
         >
           <div>
             <Typography variant="h6" sx={{ fontWeight: "bold" }}>
-              {/* {user.survey.name} */}
+              {user?.surveyTitle}
             </Typography>
             <Typography variant="body2" sx={{ color: "gray" }}>
-              {/* 생성일: {user.survey.createdAt} */}
+              생성일:{" "}
+              {user?.surveyCreatedAt ? formatDate(user?.surveyCreatedAt) : "-"}
             </Typography>
           </div>
           <Box
@@ -89,6 +91,16 @@ function MyPage() {
                 sx={{
                   backgroundColor: "#2E5D9F",
                   color: "white",
+                }}
+              />
+            </Link>
+            <Link to="survey-result">
+              <Button
+                text="설문 결과 보기"
+                color="primary"
+                sx={{
+                  border: "1px solid #2E5D9F",
+                  color: "#2E5D9F",
                 }}
               />
             </Link>

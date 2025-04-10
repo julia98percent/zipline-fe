@@ -12,6 +12,8 @@ interface User {
   role: UserRole;
   uid: string;
   url: number | null;
+  surveyTitle: string;
+  surveyCreatedAt: string;
 }
 
 interface UserState {

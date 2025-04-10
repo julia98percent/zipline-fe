@@ -12,6 +12,7 @@ import SubmitSurveyPage from "@pages/SubmitSurveyPage";
 import SubmitSurveySuccessPage from "@pages/SubmitSurveySuccessPage";
 import NewbieSurveyRoute from "@components/layout/NewbieSurveyRoute";
 import ErrorPage from "@pages/ErrorPage";
+import ContractListPage from "@pages/ContractListPage/ContractListPage";
 
 const App = () => {
   return (
@@ -30,6 +31,7 @@ const App = () => {
           path="properties/private"
           element={<PrivatePropertyListPage />}
         />
+        <Route path="/contracts" element={<ContractListPage />} />
         <Route path="my">
           <Route index element={<MyPage />} />
           <Route path="edit-survey" element={<EditSurveyPage />} />

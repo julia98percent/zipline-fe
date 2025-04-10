@@ -77,7 +77,7 @@ const EditSurveyPage = () => {
   const fetchSurveyData = () => {
     setLoading(true);
     apiClient
-      .get(`/surveys/${user.url}`)
+      .get(`/surveys/${user?.url}`)
       .then((res) => {
         const surveyData = res?.data?.data;
         if (surveyData) {

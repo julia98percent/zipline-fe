@@ -1,5 +1,5 @@
 import { useEffect, useState, useCallback } from "react";
-import apiClient from "@apis/apiClient";
+// import apiClient from "@apis/apiClient";
 import PublicPropertyTable from "./PublicPropertyTable";
 import { Box, Typography, CircularProgress } from "@mui/material";
 
@@ -31,8 +31,8 @@ export interface PropertyItem {
 }
 
 function PublicPropertyListPage() {
-  // setter
-  const [publicPropertyList] = useState<PropertyItem[]>([]);
+  // TODO: setter
+  // const [publicPropertyList] = useState<PropertyItem[]>([]);
   const [loading] = useState<boolean>(false);
 
   const fetchPropertyData = useCallback(() => {

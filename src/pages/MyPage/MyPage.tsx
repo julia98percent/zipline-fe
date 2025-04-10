@@ -1,14 +1,41 @@
 import { Link } from "react-router-dom";
-import { Box, Typography } from "@mui/material";
+import { Box, TextField, Typography } from "@mui/material";
 import Button from "@components/Button";
 import useUserStore from "@stores/useUserStore";
 import apiClient from "@apis/apiClient";
+import useInput from "@hooks/useInput";
 
 function MyPage() {
+  const [cortarNo, handleCortarNo] = useInput("");
+
   const triggerCrawler = () => {
     apiClient
       .get("/admin/crawl/region")
       .then(() => console.log("region 크롤링 완료"));
+  };
+
+  const startNaverMigration = () => {
+    apiClient
+      .post("/admin/NaverMigration/start")
+      .then(() => console.log("naver 마이그레이션 시작"));
+  };
+
+  const crawlNaverAllWithProxy = () => {
+    apiClient
+      .get("/admin/crawl/naver-raw_p/articles/all")
+      .then(() => console.log("네이버 전지역 크롤링(프록시)"));
+  };
+
+  const crawlNaverWithCortarNo = () => {
+    apiClient
+      .get(`/admin/crawl/naver-raw/articles/${cortarNo}`)
+      .then(() => console.log("네이버 법정동코드 크롤링"));
+  };
+
+  const crawlNaverAll = () => {
+    apiClient
+      .get(`/admin/crawl/naver-raw/articles/all`)
+      .then(() => console.log("네이버 전체 크롤링"));
   };
 
   const { user } = useUserStore();
@@ -69,8 +96,44 @@ function MyPage() {
         </Box>
       </Box>
       {user?.role == "ROLE_ADMIN" && (
-        <Box>
-          <Button text="크롤링 트리거 버튼" onClick={triggerCrawler} />
+        <Box
+          sx={{
+            display: "grid",
+            gap: 4,
+            margin: 2,
+            gridTemplateColumns: "repeat(2, 1fr)",
+          }}
+        >
+          <Button
+            sx={{ border: "1px solid #2E5D9F" }}
+            text="region 크롤링 트리거 버튼"
+            onClick={triggerCrawler}
+          />
+          <Button
+            sx={{ border: "1px solid #2E5D9F" }}
+            text="네이버 데이터 마이그레이션"
+            onClick={startNaverMigration}
+          />
+          <Button
+            sx={{ border: "1px solid #2E5D9F" }}
+            text="네이버 전지역 크롤링(프록시)"
+            onClick={crawlNaverAllWithProxy}
+          />
+          <Button
+            sx={{ border: "1px solid #2E5D9F" }}
+            text="네이버 전체 크롤링"
+            onClick={crawlNaverAll}
+          />
+          <TextField
+            label="cortarNo"
+            value={cortarNo}
+            onChange={handleCortarNo}
+          />
+          <Button
+            sx={{ border: "1px solid #2E5D9F" }}
+            text="네이버 법정동코드 크롤링"
+            onClick={crawlNaverWithCortarNo}
+          />
         </Box>
       )}
     </Box>

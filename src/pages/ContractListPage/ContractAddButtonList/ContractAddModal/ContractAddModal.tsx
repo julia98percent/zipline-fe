@@ -17,7 +17,6 @@ import dayjs from "dayjs";
 
 // ✅ 자동 상태 계산 함수
 const getContractStatus = (
-  // contractDate: Dayjs,
   contractStartDate: Dayjs,
   contractEndDate: Dayjs
 ): "PENDING" | "ACTIVE" | "EXPIRED" => {
@@ -65,11 +64,7 @@ const ContractAddModal = ({ open, handleClose, fetchContractData }: Props) => {
     if (!contractDate || !contractStartDate || !contractEndDate || !customerUid)
       return;
 
-    const status = getContractStatus(
-      contractDate,
-      contractStartDate,
-      contractEndDate
-    );
+    const status = getContractStatus(contractStartDate, contractEndDate);
 
     const contractData: ContractData = {
       customerUid,

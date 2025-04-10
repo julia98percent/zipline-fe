@@ -7,7 +7,7 @@ import useUserStore from "@stores/useUserStore";
 
 const PrivateRoute = () => {
   const isSignedIn = Boolean(sessionStorage.getItem("_ZA"));
-  const { user, setUser } = useUserStore();
+  const { user, setUser, clearUser } = useUserStore();
 
   useEffect(() => {
     if (isSignedIn && !user) {
@@ -21,13 +21,15 @@ const PrivateRoute = () => {
         })
         .catch((error) => {
           console.log(error);
+          clearUser();
           sessionStorage.removeItem("_ZA");
         });
     }
   }, [isSignedIn, user, setUser]);
 
   if (!isSignedIn) {
-    localStorage.clear();
+    sessionStorage.clear();
+    clearUser();
     return <Navigate to="/sign-in" />;
   }
 

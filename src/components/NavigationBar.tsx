@@ -9,6 +9,7 @@ import {
 } from "@mui/material";
 import { useLocation, Link, useNavigate } from "react-router-dom";
 import Button from "./Button";
+import useUserStore from "@stores/useUserStore";
 
 const MENU_INFO = [
   {
@@ -37,11 +38,14 @@ const NavigationBar = ({ userName }: { userName: string }) => {
     null
   );
 
+  const { clearUser } = useUserStore();
+
   const open = Boolean(anchorEl);
   const submenuOpen = Boolean(submenuAnchorEl);
 
   const handleClickLogOut = () => {
     sessionStorage.removeItem("_ZA");
+    clearUser();
     navigate("sign-in");
     handleClose();
   };

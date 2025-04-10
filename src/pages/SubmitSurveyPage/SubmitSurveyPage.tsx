@@ -45,7 +45,7 @@ const SubmitSurveyPage = () => {
         if (questions) {
           setSurveyQuestions(questions);
           setAnswers(
-            questions.map((question) => ({
+            questions.map((question: Question) => ({
               questionId: question.id,
               choiceIds: [],
               answer: "",
@@ -105,7 +105,7 @@ const SubmitSurveyPage = () => {
     formData.append("requestDTO", JSON.stringify(requestDTO));
 
     // 파일 추가
-    answers.forEach((answer, index) => {
+    answers.forEach((answer) => {
       if (answer.file) {
         formData.append(`files`, answer.file);
       }

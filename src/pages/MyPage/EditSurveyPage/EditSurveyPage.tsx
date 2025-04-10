@@ -16,6 +16,7 @@ import { useNavigate } from "react-router-dom";
 import SingleChoiceAdd from "./SingleChoiceAdd";
 import MultipleChoiceAdd from "./MultipleChoiceAdd";
 import apiClient from "@apis/apiClient";
+import useUserStore from "@stores/useUserStore";
 
 type ChoiceType = { text: string };
 
@@ -49,8 +50,6 @@ interface FormattedQuestion {
   choices?: FormattedChoice[];
 }
 
-const DUMMY_SURVEY_ID = 2;
-
 const QUESTION_TYPE = [
   { value: "SUBJECTIVE", label: "주관식" },
   { value: "SINGLE_CHOICE", label: "객관식 (단일 선택)" },
@@ -67,6 +66,7 @@ const DEFAULT_QUESTION_TEMPLATE: QuestionType = {
 
 const EditSurveyPage = () => {
   const navigate = useNavigate();
+  const { user } = useUserStore();
   const [survey, setSurvey] = useState<SurveyType>({
     title: "",
     questions: [],
@@ -76,7 +76,7 @@ const EditSurveyPage = () => {
   const fetchSurveyData = () => {
     setLoading(true);
     apiClient
-      .get(`/surveys/${DUMMY_SURVEY_ID}`)
+      .get(`/surveys/${user.url}`)
       .then((res) => {
         const surveyData = res?.data?.data;
         if (surveyData) {

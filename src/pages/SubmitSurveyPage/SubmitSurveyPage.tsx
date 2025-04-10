@@ -115,7 +115,6 @@ const SubmitSurveyPage = () => {
       .post(`/surveys/${surveyId}/submit`, formData)
       .then((res) => {
         if (res.status === 201) {
-          alert("답변이 성공적으로 제출되었습니다!");
           navigate("thank-you");
         }
       })

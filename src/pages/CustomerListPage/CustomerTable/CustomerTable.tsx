@@ -9,6 +9,7 @@ import {
   TablePagination,
   Paper,
 } from "@mui/material";
+import { useNavigate } from "react-router-dom";
 
 interface Customer {
   uid: number;
@@ -39,6 +40,12 @@ const CustomerTable = ({
   page,
   rowsPerPage,
 }: Props) => {
+  const navigate = useNavigate();
+
+  const handleRowClick = (uid: number) => {
+    navigate(`/customers/${uid}`); // 고객 상세 페이지로 이동
+  };
+
   const handleChangePage = (_: unknown, newPage: number) => {
     setPage(newPage);
   };
@@ -70,7 +77,14 @@ const CustomerTable = ({
             <TableBody>
               {customerList.length > 0 ? (
                 customerList.map((customer) => (
-                  <TableRow key={customer.uid}>
+                  <TableRow
+                    key={customer.uid}
+                    onClick={() => handleRowClick(customer.uid)}
+                    sx={{
+                      cursor: "pointer",
+                      "&:hover": { backgroundColor: "#f0f0f0" },
+                    }}
+                  >
                     <TableCell align="center">{customer.uid}</TableCell>
                     <TableCell align="center">{customer.name}</TableCell>
                     <TableCell align="center">{customer.phoneNo}</TableCell>

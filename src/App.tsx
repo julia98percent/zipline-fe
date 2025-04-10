@@ -14,6 +14,7 @@ import NewbieSurveyRoute from "@components/layout/NewbieSurveyRoute";
 import ErrorPage from "@pages/ErrorPage";
 import ContractListPage from "@pages/ContractListPage/ContractListPage";
 import PublicPropertyListPage from "@pages/PublicPropertyListPage";
+import CustomerDetailPage from "@pages/CustomerDetailPage";
 
 const App = () => {
   return (
@@ -27,6 +28,7 @@ const App = () => {
       <Route element={<PrivateRoute />}>
         <Route index element={<Navigate to="/properties/private" replace />} />
         <Route path="customers" element={<CustomerListPage />} />
+        <Route path="customers/:customerId" element={<CustomerDetailPage />} />
 
         <Route
           path="properties/private"

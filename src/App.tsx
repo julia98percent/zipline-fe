@@ -24,7 +24,7 @@ const App = () => {
       </Route>
 
       <Route element={<PrivateRoute />}>
-        <Route index element={<DashboardPage />} />
+        <Route index element={<Navigate to="/properties/private" replace />} />
         <Route path="customers" element={<CustomerListPage />} />
 
         <Route

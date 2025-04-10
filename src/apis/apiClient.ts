@@ -21,6 +21,12 @@ apiClient.interceptors.request.use(
     config.headers.Authorization = `Bearer ${
       sessionStorage.getItem("_ZA") || ""
     }`;
+
+    // FormData 객체 감지 및 Content-Type 자동 조정
+    if (config.data instanceof FormData) {
+      delete config.headers["Content-Type"];
+    }
+
     return config;
   },
   (error) => {

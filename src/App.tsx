@@ -1,4 +1,4 @@
-import { Routes, Route } from "react-router-dom";
+import { Routes, Route, Navigate } from "react-router-dom";
 import PrivateRoute from "./components/layout/PrivateRoute";
 import GuestRoute from "./components/layout/GuestRoute";
 import SignUpPage from "@pages/SignUpPage";
@@ -8,14 +8,24 @@ import CustomerListPage from "@pages/CustomerListPage";
 import PrivatePropertyListPage from "@pages/PrivatePropertyListPage";
 import MyPage from "@pages/MyPage";
 import EditSurveyPage from "@pages/MyPage/EditSurveyPage";
+import SubmitSurveyPage from "@pages/SubmitSurveyPage";
+import SubmitSurveySuccessPage from "@pages/SubmitSurveySuccessPage";
+import NewbieSurveyRoute from "@components/layout/NewbieSurveyRoute";
+import ErrorPage from "@pages/ErrorPage";
 
 const App = () => {
   return (
     <Routes>
+      <Route path="form" element={<Navigate to="/error" replace />} />
+      <Route path="form/:surveyId" element={<NewbieSurveyRoute />}>
+        <Route index element={<SubmitSurveyPage />} />
+        <Route path="thank-you" element={<SubmitSurveySuccessPage />} />
+      </Route>
+
       <Route element={<PrivateRoute />}>
         <Route index element={<DashboardPage />} />
         <Route path="customers" element={<CustomerListPage />} />
-        <Route index element={<DashboardPage />} />
+
         <Route
           path="properties/private"
           element={<PrivatePropertyListPage />}
@@ -30,6 +40,8 @@ const App = () => {
         <Route path="sign-up" element={<SignUpPage />} />
         <Route path="sign-in" element={<SignInPage />} />
       </Route>
+
+      <Route path="error" element={<ErrorPage />} />
     </Routes>
   );
 };

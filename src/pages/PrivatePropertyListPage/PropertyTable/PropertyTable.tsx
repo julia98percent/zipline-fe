@@ -184,7 +184,7 @@ const PropertyTable = ({ propertyList }: Props) => {
                       padding: "20px 0",
                     }}
                   >
-                    데이터가 없습니다
+                    매물 데이터가 없습니다
                   </TableCell>
                 </TableRow>
               )}

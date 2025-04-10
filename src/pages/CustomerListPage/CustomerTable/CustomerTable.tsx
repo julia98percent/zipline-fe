@@ -108,7 +108,7 @@ const CustomerTable = ({
               ) : (
                 <TableRow>
                   <TableCell colSpan={8} align="center">
-                    데이터가 없습니다
+                    고객 데이터가 없습니다
                   </TableCell>
                 </TableRow>
               )}

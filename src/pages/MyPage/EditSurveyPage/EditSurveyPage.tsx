@@ -309,6 +309,7 @@ const EditSurveyPage = () => {
             {/* 질문 기본 정보 영역 */}
             <Box>
               <TextField
+                disabled={questionIndex < 2}
                 fullWidth
                 label="질문 제목"
                 value={question.title}
@@ -322,6 +323,7 @@ const EditSurveyPage = () => {
                 sx={{ mb: 2 }}
               />
               <TextField
+                disabled={questionIndex < 2}
                 fullWidth
                 label="질문 설명"
                 value={question.description}
@@ -335,6 +337,7 @@ const EditSurveyPage = () => {
                 sx={{ mb: 2 }}
               />
               <Select
+                disabled={questionIndex < 2}
                 fullWidth
                 value={question.type}
                 onChange={(event) =>
@@ -356,6 +359,7 @@ const EditSurveyPage = () => {
               <FormControlLabel
                 control={
                   <Checkbox
+                    disabled={questionIndex < 2}
                     checked={question.required}
                     onChange={(_, checked) =>
                       handleRequiredChange(questionIndex, checked)

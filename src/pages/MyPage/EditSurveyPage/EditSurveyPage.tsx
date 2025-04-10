@@ -11,6 +11,7 @@ import {
   Typography,
   Divider,
   Paper,
+  Tooltip,
 } from "@mui/material";
 import { useNavigate } from "react-router-dom";
 import SingleChoiceAdd from "./SingleChoiceAdd";
@@ -155,6 +156,10 @@ const EditSurveyPage = () => {
   };
 
   const handleDeleteQuestion = (index: number) => {
+    if (index < 2) {
+      return;
+    }
+
     const updatedQuestions = survey.questions.filter((_, i) => i !== index);
     setSurvey({ ...survey, questions: updatedQuestions });
   };
@@ -201,6 +206,10 @@ const EditSurveyPage = () => {
         console.log(error);
         alert("설문 수정 중 오류가 발생했습니다.");
       });
+  };
+
+  const isQuestionDeletable = (index: number): boolean => {
+    return index >= 2;
   };
 
   if (loading) {
@@ -278,10 +287,27 @@ const EditSurveyPage = () => {
               p: 3,
               borderRadius: 2,
               backgroundColor: "#f9f9f9",
+              position: "relative",
             }}
           >
+            {questionIndex < 2 && (
+              <Box
+                sx={{
+                  backgroundColor: "#e3f2fd",
+                  color: "#1565c0",
+                  padding: "4px 8px",
+                  borderRadius: 1,
+                  fontSize: "0.75rem",
+                  display: "inline",
+                  float: "right",
+                  marginBottom: "12px",
+                }}
+              >
+                기본 질문
+              </Box>
+            )}
             {/* 질문 기본 정보 영역 */}
-            <Box sx={{ mb: 3 }}>
+            <Box>
               <TextField
                 fullWidth
                 label="질문 제목"
@@ -374,20 +400,40 @@ const EditSurveyPage = () => {
               </>
             )}
 
-            <Box sx={{ mt: 3, display: "flex", justifyContent: "flex-end" }}>
-              <Button
-                text="질문 삭제"
-                color="error"
-                onClick={() => handleDeleteQuestion(questionIndex)}
-                sx={{
-                  mt: 2,
-                  backgroundColor: "#f8f8f8",
-                  color: "#d32f2f",
-                  "&:hover": {
-                    backgroundColor: "#ffebee",
-                  },
-                }}
-              />
+            <Box sx={{ display: "flex", justifyContent: "flex-end" }}>
+              {isQuestionDeletable(questionIndex) ? (
+                <Button
+                  text="질문 삭제"
+                  color="error"
+                  onClick={() => handleDeleteQuestion(questionIndex)}
+                  sx={{
+                    mt: 2,
+                    backgroundColor: "#f8f8f8",
+                    color: "#d32f2f",
+                    "&:hover": {
+                      backgroundColor: "#ffebee",
+                    },
+                  }}
+                />
+              ) : (
+                <Tooltip title="기본 질문은 삭제할 수 없습니다">
+                  <span>
+                    <Button
+                      text="질문 삭제"
+                      color="error"
+                      disabled
+                      sx={{
+                        mt: 2,
+                        backgroundColor: "#f8f8f8",
+                        color: "rgba(0, 0, 0, 0.26)",
+                        "&:hover": {
+                          backgroundColor: "#f8f8f8",
+                        },
+                      }}
+                    />
+                  </span>
+                </Tooltip>
+              )}
             </Box>
           </Paper>
         ))}

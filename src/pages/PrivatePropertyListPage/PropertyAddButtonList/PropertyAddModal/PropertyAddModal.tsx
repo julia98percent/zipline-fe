@@ -39,7 +39,6 @@ function PropertyAddModal({
     { uid: number; name: string }[]
   >([]);
   const [address, setAddress] = useState<string | null>(null);
-  const [addressForCoord, setAddressForCoord] = useState<string | null>(null);
   const [dong, setDong] = useState<string | null>(null);
   const [roadName, setRoadName] = useState<string | null>(null);
   const [extraAddress, handleChangeDetailAddress] = useInput<string>("");
@@ -68,7 +67,7 @@ function PropertyAddModal({
   const handleClickSubmitButton = () => {
     const propertyDataToSubmit = {
       customerUid,
-      address: address + extraAddress,
+      address: address + " " + extraAddress,
       dong,
       roadName,
       deposit,
@@ -145,7 +144,7 @@ function PropertyAddModal({
   useEffect(() => {
     axios
       .get(
-        `https://dapi.kakao.com/v2/local/search/address.json?query=${addressForCoord}`,
+        `https://dapi.kakao.com/v2/local/search/address.json?query=${address}`,
         {
           headers: {
             Authorization: `KakaoAK ${import.meta.env.VITE_KAKAO_MAP_SECRET}`,
@@ -160,7 +159,7 @@ function PropertyAddModal({
           setLatitude(result.y);
         }
       });
-  }, [address, addressForCoord]);
+  }, [address]);
 
   useEffect(() => {
     apiClient.get("/customers").then((res) => {
@@ -218,7 +217,6 @@ function PropertyAddModal({
           />
           <DaumPost
             setAddress={setAddress}
-            setAddressForCoord={setAddressForCoord}
             setDong={setDong}
             setRoadName={setRoadName}
           />

@@ -1,5 +1,6 @@
+import { useState } from "react";
 import { Link } from "react-router-dom";
-import { Box, TextField, Typography } from "@mui/material";
+import { Box, TextField, Typography, Button as MuiButton } from "@mui/material";
 import Button from "@components/Button";
 import useUserStore from "@stores/useUserStore";
 import apiClient from "@apis/apiClient";
@@ -7,7 +8,37 @@ import useInput from "@hooks/useInput";
 import { formatDate } from "@utils/dateUtil";
 
 function MyPage() {
+  const [selectedFile, setSelectedFile] = useState<File | null>(null);
+
   const [cortarNo, handleCortarNo] = useInput("");
+
+  const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    if (event.target.files && event.target.files.length > 0) {
+      setSelectedFile(event.target.files[0]);
+    }
+  };
+
+  const handleUpload = () => {
+    if (selectedFile) {
+      const formData = new FormData();
+      formData.append("file", selectedFile); // 파일 추가
+
+      apiClient
+        .post("/admin/upload-proxy-list", formData, {
+          headers: {
+            "Content-Type": "multipart/form-data", // multipart 요청을 위한 헤더 설정
+          },
+        })
+        .then(() => {
+          console.log(`${selectedFile.name} 업로드 완료!`);
+        })
+        .catch((error) => {
+          console.error("파일 업로드 실패:", error);
+        });
+    } else {
+      alert("파일을 선택해주세요.");
+    }
+  };
 
   const triggerCrawler = () => {
     apiClient
@@ -146,6 +177,49 @@ function MyPage() {
             text="네이버 법정동코드 크롤링"
             onClick={crawlNaverWithCortarNo}
           />
+          <Box
+            sx={{
+              display: "flex",
+              flexDirection: "column",
+              alignItems: "center",
+              gap: 2,
+              border: "1px solid black",
+              padding: "14px 0",
+            }}
+          >
+            <Typography variant="h6">파일 업로드</Typography>
+            <input
+              type="file"
+              onChange={handleFileChange}
+              style={{ display: "none" }}
+              id="file-input"
+            />
+            <input
+              type="file"
+              onChange={handleFileChange}
+              style={{ display: "none" }}
+              id="file-input"
+            />
+            <label htmlFor="file-input">
+              <MuiButton
+                variant="outlined"
+                component="span"
+                sx={{ border: "1px solid #2E5D9F", color: "#2E5D9F" }}
+              >
+                파일 선택
+              </MuiButton>
+            </label>
+            {selectedFile && (
+              <Typography variant="body1">
+                선택된 파일: {selectedFile.name}
+              </Typography>
+            )}
+            <Button
+              text=" 업로드"
+              onClick={handleUpload}
+              sx={{ border: "1px solid #2E5D9F" }}
+            />
+          </Box>
         </Box>
       )}
     </Box>

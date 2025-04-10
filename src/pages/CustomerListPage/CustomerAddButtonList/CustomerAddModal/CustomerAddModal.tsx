@@ -122,7 +122,10 @@ function CustomerAddModal({
         trafficSource,
         ...rentDataToSubmit,
         ...buyingDataToSubmit,
-        ...roleData,
+        isLandlord: roleData.landlord,
+        isTenant: roleData.tenant,
+        isBuyer: roleData.buyer,
+        isSeller: roleData.seller,
       })
       .then((res) => {
         if (res.status === 201) {

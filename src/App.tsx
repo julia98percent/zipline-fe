@@ -3,7 +3,7 @@ import PrivateRoute from "./components/layout/PrivateRoute";
 import GuestRoute from "./components/layout/GuestRoute";
 import SignUpPage from "@pages/SignUpPage";
 import SignInPage from "@pages/SignInPage";
-import DashboardPage from "@pages/DashboardPage";
+// import DashboardPage from "@pages/DashboardPage";
 import CustomerListPage from "@pages/CustomerListPage";
 import PrivatePropertyListPage from "@pages/PrivatePropertyListPage";
 import MyPage from "@pages/MyPage";

@@ -16,7 +16,6 @@ import Button from "@components/Button";
 import dayjs from "dayjs";
 
 const getContractStatus = (
-  contractDate: Dayjs,
   contractStartDate: Dayjs,
   contractEndDate: Dayjs
 ): "PENDING" | "ACTIVE" | "EXPIRED" => {
@@ -44,10 +43,14 @@ interface ContractData {
 const ContractAddModal = ({ open, handleClose, fetchContractData }: Props) => {
   const [category, setCategory] = useState("");
   const [contractDate, setContractDate] = useState<Dayjs | null>(null);
-  const [contractStartDate, setContractStartDate] = useState<Dayjs | null>(null);
+  const [contractStartDate, setContractStartDate] = useState<Dayjs | null>(
+    null
+  );
   const [contractEndDate, setContractEndDate] = useState<Dayjs | null>(null);
   const [customerUid, setCustomerUid] = useState<number | null>(null);
-  const [customerOptions, setCustomerOptions] = useState<{ uid: number; name: string }[]>([]);
+  const [customerOptions, setCustomerOptions] = useState<
+    { uid: number; name: string }[]
+  >([]);
   const [files, setFiles] = useState<File[]>([]);
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -57,9 +60,10 @@ const ContractAddModal = ({ open, handleClose, fetchContractData }: Props) => {
   };
 
   const handleClickSubmitButton = () => {
-    if (!contractDate || !contractStartDate || !contractEndDate || !customerUid) return;
+    if (!contractDate || !contractStartDate || !contractEndDate || !customerUid)
+      return;
 
-    const status = getContractStatus(contractDate, contractStartDate, contractEndDate);
+    const status = getContractStatus(contractStartDate, contractEndDate);
 
     const contractData: ContractData = {
       customerUid,
@@ -112,7 +116,11 @@ const ContractAddModal = ({ open, handleClose, fetchContractData }: Props) => {
   }, []);
 
   const isSubmitButtonDisabled =
-    !category || !contractDate || !contractStartDate || !contractEndDate || !customerUid;
+    !category ||
+    !contractDate ||
+    !contractStartDate ||
+    !contractEndDate ||
+    !customerUid;
 
   return (
     <Modal open={open} onClose={handleModalClose}>
@@ -185,7 +193,12 @@ const ContractAddModal = ({ open, handleClose, fetchContractData }: Props) => {
           </Box>
         </LocalizationProvider>
 
-        <MuiButton variant="outlined" component="label" sx={{ my: 2 }} fullWidth>
+        <MuiButton
+          variant="outlined"
+          component="label"
+          sx={{ my: 2 }}
+          fullWidth
+        >
           파일 업로드
           <input type="file" hidden multiple onChange={handleFileChange} />
         </MuiButton>

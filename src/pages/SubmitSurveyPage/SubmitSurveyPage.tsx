@@ -35,6 +35,9 @@ const SubmitSurveyPage = () => {
   const [surveyQuestions, setSurveyQuestions] = useState<Question[]>([]);
   const [answers, setAnswers] = useState<AnswerType[]>([]);
   const [loading, setLoading] = useState(true);
+  const [validationErrors, setValidationErrors] = useState<{
+    [key: number]: boolean;
+  }>({});
 
   const fetchSurveyQuestions = () => {
     setLoading(true);
@@ -78,6 +81,21 @@ const SubmitSurveyPage = () => {
     }
 
     setAnswers(updatedAnswers);
+
+    if (question.required) {
+      const newValidationErrors = { ...validationErrors };
+
+      if (
+        (question.type === "SUBJECTIVE" && (value as string).trim() !== "") ||
+        (question.type === "FILE_UPLOAD" && value !== null) ||
+        (["SINGLE_CHOICE", "MULTIPLE_CHOICE"].includes(question.type) &&
+          Array.isArray(value) &&
+          value.length > 0)
+      ) {
+        delete newValidationErrors[question.id];
+        setValidationErrors(newValidationErrors);
+      }
+    }
   };
 
   const handleFileChange = (
@@ -89,7 +107,42 @@ const SubmitSurveyPage = () => {
     }
   };
 
+  const validateRequiredFields = (): boolean => {
+    const errors: { [key: number]: boolean } = {};
+    let isValid = true;
+
+    surveyQuestions.forEach((question, index) => {
+      if (question.required) {
+        const answer = answers[index];
+        let hasValue = false;
+
+        if (question.type === "SUBJECTIVE") {
+          hasValue = !!answer.answer && answer.answer.trim() !== "";
+        } else if (question.type === "FILE_UPLOAD") {
+          hasValue = !!answer.file;
+        } else if (
+          ["SINGLE_CHOICE", "MULTIPLE_CHOICE"].includes(question.type)
+        ) {
+          hasValue = !!answer.choiceIds && answer.choiceIds.length > 0;
+        }
+
+        if (!hasValue) {
+          errors[question.id] = true;
+          isValid = false;
+        }
+      }
+    });
+
+    setValidationErrors(errors);
+    return isValid;
+  };
+
   const requestSubmitAnswers = () => {
+    if (!validateRequiredFields()) {
+      window.scrollTo({ top: 0, behavior: "smooth" });
+      return;
+    }
+
     setLoading(true);
 
     // FormData 객체 생성
@@ -115,7 +168,6 @@ const SubmitSurveyPage = () => {
       .post(`/surveys/${surveyId}/submit`, formData)
       .then((res) => {
         if (res.status === 201) {
-          alert("답변이 성공적으로 제출되었습니다!");
           navigate("thank-you");
         }
       })
@@ -146,90 +198,133 @@ const SubmitSurveyPage = () => {
       <Typography variant="h4" sx={{ mb: 4 }}>
         설문 답변 제출
       </Typography>
-      {surveyQuestions.map((question, questionIndex) => (
+
+      {Object.keys(validationErrors).length > 0 && (
         <Paper
-          key={question.id}
-          elevation={1}
+          elevation={0}
           sx={{
             mb: 4,
-            p: 3,
+            p: 2,
             borderRadius: 2,
-            backgroundColor: "#f9f9f9",
+            backgroundColor: "#FFEBEE",
+            border: "1px solid #FFCDD2",
           }}
         >
-          <Typography variant="h6">{question.title}</Typography>
-          <Typography variant="body2" sx={{ mb: 2 }}>
-            {question.description}
+          <Typography variant="subtitle1" color="error">
+            필수 항목을 모두 입력해주세요.
           </Typography>
-
-          {question.type === "SUBJECTIVE" && (
-            <TextField
-              fullWidth
-              placeholder="답변을 입력하세요"
-              value={answers[questionIndex]?.answer || ""}
-              onChange={(e) =>
-                handleAnswerChange(questionIndex, e.target.value)
-              }
-            />
-          )}
-
-          {question.type === "FILE_UPLOAD" && (
-            <Box sx={{ mt: 2 }}>
-              <input
-                type="file"
-                onChange={(e) => handleFileChange(questionIndex, e)}
-                style={{ marginTop: "8px" }}
-              />
-              {answers[questionIndex]?.file && (
-                <Typography variant="body2" sx={{ mt: 1 }}>
-                  선택된 파일: {answers[questionIndex].file.name}
-                </Typography>
-              )}
-            </Box>
-          )}
-
-          {question.type === "SINGLE_CHOICE" &&
-            question.choices?.map((choice) => (
-              <FormControlLabel
-                key={choice.id}
-                control={
-                  <Radio
-                    checked={
-                      answers[questionIndex].choiceIds?.[0] === choice.id
-                    }
-                    onChange={() =>
-                      handleAnswerChange(questionIndex, [choice.id])
-                    }
-                  />
-                }
-                label={choice.text}
-              />
-            ))}
-
-          {question.type === "MULTIPLE_CHOICE" &&
-            question.choices?.map((choice) => (
-              <FormControlLabel
-                key={choice.id}
-                control={
-                  <Checkbox
-                    checked={
-                      answers[questionIndex].choiceIds?.includes(choice.id) ||
-                      false
-                    }
-                    onChange={() => {
-                      const choiceIds = answers[questionIndex].choiceIds || [];
-                      const updatedChoiceIds = choiceIds.includes(choice.id)
-                        ? choiceIds.filter((id) => id !== choice.id)
-                        : [...choiceIds, choice.id];
-                      handleAnswerChange(questionIndex, updatedChoiceIds);
-                    }}
-                  />
-                }
-                label={choice.text}
-              />
-            ))}
         </Paper>
-      ))}
+      )}
+
+      {surveyQuestions.map((question, questionIndex) => {
+        const isError = validationErrors[question.id];
+
+        return (
+          <Paper
+            key={question.id}
+            elevation={1}
+            sx={{
+              mb: 4,
+              p: 3,
+              borderRadius: 2,
+              backgroundColor: "#f9f9f9",
+              border: isError ? "1px solid #f44336" : "none",
+            }}
+          >
+            <Typography variant="h6">
+              {question.title}
+              {question.required && (
+                <Box component="span" sx={{ color: "#f44336", ml: 1 }}>
+                  *
+                </Box>
+              )}
+            </Typography>
+            <Typography variant="body2" sx={{ mb: 2 }}>
+              {question.description}
+            </Typography>
+
+            {isError && (
+              <Typography
+                variant="caption"
+                color="error"
+                sx={{ display: "block", mb: 2 }}
+              >
+                이 항목은 필수입니다.
+              </Typography>
+            )}
+
+            {question.type === "SUBJECTIVE" && (
+              <TextField
+                fullWidth
+                placeholder="답변을 입력하세요"
+                value={answers[questionIndex]?.answer || ""}
+                onChange={(e) =>
+                  handleAnswerChange(questionIndex, e.target.value)
+                }
+                error={isError}
+                helperText={isError ? "이 필드는 필수입니다" : ""}
+              />
+            )}
+
+            {question.type === "FILE_UPLOAD" && (
+              <Box sx={{ mt: 2 }}>
+                <input
+                  type="file"
+                  onChange={(e) => handleFileChange(questionIndex, e)}
+                  style={{ marginTop: "8px" }}
+                />
+                {answers[questionIndex]?.file && (
+                  <Typography variant="body2" sx={{ mt: 1 }}>
+                    선택된 파일: {answers[questionIndex].file.name}
+                  </Typography>
+                )}
+              </Box>
+            )}
+
+            {question.type === "SINGLE_CHOICE" &&
+              question.choices?.map((choice) => (
+                <FormControlLabel
+                  key={choice.id}
+                  control={
+                    <Radio
+                      checked={
+                        answers[questionIndex].choiceIds?.[0] === choice.id
+                      }
+                      onChange={() =>
+                        handleAnswerChange(questionIndex, [choice.id])
+                      }
+                    />
+                  }
+                  label={choice.text}
+                />
+              ))}
+
+            {question.type === "MULTIPLE_CHOICE" &&
+              question.choices?.map((choice) => (
+                <FormControlLabel
+                  key={choice.id}
+                  control={
+                    <Checkbox
+                      checked={
+                        answers[questionIndex].choiceIds?.includes(choice.id) ||
+                        false
+                      }
+                      onChange={() => {
+                        const choiceIds =
+                          answers[questionIndex].choiceIds || [];
+                        const updatedChoiceIds = choiceIds.includes(choice.id)
+                          ? choiceIds.filter((id) => id !== choice.id)
+                          : [...choiceIds, choice.id];
+                        handleAnswerChange(questionIndex, updatedChoiceIds);
+                      }}
+                    />
+                  }
+                  label={choice.text}
+                />
+              ))}
+          </Paper>
+        );
+      })}
 
       <Button
         text="답변 제출"

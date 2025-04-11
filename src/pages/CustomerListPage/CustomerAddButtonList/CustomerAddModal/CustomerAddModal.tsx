@@ -54,6 +54,8 @@ function CustomerAddModal({
   });
 
    
+  const isSubmitButtonDisabled = !userName || !phoneRegex.test(phoneNumber);
+
   const resetCustomerData = () => {
     setUserName("");
     setPhoneNumber("");
@@ -105,9 +107,6 @@ function CustomerAddModal({
       [name]: checked,
     }));
   };
-  const isSubmitButtonDisabled =
-  !userName || !phoneRegex.test(phoneNumber) || !address;
-
 
   const handleClickSubmitButton = () => {
     if (!phoneRegex.test(phoneNumber)) {

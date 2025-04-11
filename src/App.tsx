@@ -3,7 +3,7 @@ import PrivateRoute from "./components/layout/PrivateRoute";
 import GuestRoute from "./components/layout/GuestRoute";
 import SignUpPage from "@pages/SignUpPage";
 import SignInPage from "@pages/SignInPage";
-import DashboardPage from "@pages/DashboardPage";
+// import DashboardPage from "@pages/DashboardPage";
 import CustomerListPage from "@pages/CustomerListPage";
 import PrivatePropertyListPage from "@pages/PrivatePropertyListPage";
 import MyPage from "@pages/MyPage";
@@ -13,6 +13,8 @@ import SubmitSurveySuccessPage from "@pages/SubmitSurveySuccessPage";
 import NewbieSurveyRoute from "@components/layout/NewbieSurveyRoute";
 import ErrorPage from "@pages/ErrorPage";
 import ContractListPage from "@pages/ContractListPage/ContractListPage";
+import PublicPropertyListPage from "@pages/PublicPropertyListPage";
+import CustomerDetailPage from "@pages/CustomerDetailPage";
 
 const App = () => {
   return (
@@ -26,11 +28,13 @@ const App = () => {
       <Route element={<PrivateRoute />}>
         <Route index element={<Navigate to="/properties/private" replace />} />
         <Route path="customers" element={<CustomerListPage />} />
+        <Route path="customers/:customerId" element={<CustomerDetailPage />} />
 
         <Route
           path="properties/private"
           element={<PrivatePropertyListPage />}
         />
+        <Route path="properties/public" element={<PublicPropertyListPage />} />
         <Route path="/contracts" element={<ContractListPage />} />
         <Route path="my">
           <Route index element={<MyPage />} />

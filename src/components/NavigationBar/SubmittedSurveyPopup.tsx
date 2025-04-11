@@ -37,7 +37,7 @@ function SubmittedSurveyPopup() {
   const [page, setPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
   const [totalItems, setTotalItems] = useState(0);
-  const itemsPerPage = 5; // 한 페이지당 표시할 알림 수
+  const itemsPerPage = 10; // 한 페이지당 표시할 알림 수
 
   const notificationsOpen = Boolean(notificationsAnchorEl);
 

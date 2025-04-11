@@ -48,7 +48,7 @@ const PropertyTable = ({ propertyList }: Props) => {
   };
 
   const [page, setPage] = useState(0);
-  const [rowsPerPage, setRowsPerPage] = useState(5);
+  const [rowsPerPage, setRowsPerPage] = useState(10);
 
   const handleToggleUnitChange = () => {
     setUseMetric(!useMetric);

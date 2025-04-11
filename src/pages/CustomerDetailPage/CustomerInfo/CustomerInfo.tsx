@@ -26,15 +26,17 @@ function CustomerInfo({ customerId }: any) {
         const response = await apiClient.get(
           `/customers/${customerId}/counsels`
         );
-        setCounsel(response.data.data);
+        setCounsel(response.data.data || []);
       } else if (tab === 1) {
         const response = await apiClient.get(
           `/customers/${customerId}/properties`
         );
-        setProperty(response.data.data.agentProperty);
+        setProperty(response.data.data.agentProperty || []);
       } else if (tab === 2) {
-        const response = await apiClient.get("/contracts");
-        setContract(response.data.data.contracts);
+        const response = await apiClient.get(
+          `/customers/${customerId}/contracts`
+        );
+        setContract(response.data.data || []);
       }
     } catch (error) {
       console.error(error);

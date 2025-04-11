@@ -80,11 +80,19 @@ const ContractTable = ({ contractList, onRowClick }: Props) => {
                     sx={{ cursor: "pointer" }}
                     onClick={() => onRowClick?.(contract)}
                   >
-                    <TableCell align="center">{contract.customerName}</TableCell>
+                    <TableCell align="center">
+                      {contract.customerName}
+                    </TableCell>
                     <TableCell align="center">{contract.category}</TableCell>
-                    <TableCell align="center">{contract.contractDate}</TableCell>
-                    <TableCell align="center">{contract.contractStartDate}</TableCell>
-                    <TableCell align="center">{contract.contractEndDate}</TableCell>
+                    <TableCell align="center">
+                      {contract.contractDate}
+                    </TableCell>
+                    <TableCell align="center">
+                      {contract.contractStartDate}
+                    </TableCell>
+                    <TableCell align="center">
+                      {contract.contractEndDate}
+                    </TableCell>
                     <TableCell align="center">
                       {getStatusChip(contract.status)}
                     </TableCell>
@@ -92,7 +100,7 @@ const ContractTable = ({ contractList, onRowClick }: Props) => {
                 ))
               ) : (
                 <TableRow>
-                  <TableCell colSpan={6} align="center">
+                  <TableCell colSpan={5} align="center">
                     계약 데이터가 없습니다
                   </TableCell>
                 </TableRow>

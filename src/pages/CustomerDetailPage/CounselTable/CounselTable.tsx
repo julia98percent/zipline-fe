@@ -10,6 +10,7 @@ import {
   Paper,
   TableContainer,
 } from "@mui/material";
+import { formatDate } from "@utils/dateUtil";
 
 function CounselTable({ counselList }: any) {
   const [page, setPage] = useState(0);
@@ -47,7 +48,9 @@ function CounselTable({ counselList }: any) {
                 displayedCounsel.map((item: any, index: number) => (
                   <TableRow key={index}>
                     <TableCell align="center">{item.title}</TableCell>
-                    <TableCell align="center">{item.date}</TableCell>
+                    <TableCell align="center">
+                      {item.counselDate ? formatDate(item.counselDate) : "-"}
+                    </TableCell>
                   </TableRow>
                 ))
               ) : (

@@ -12,30 +12,10 @@ import {
   Switch,
   FormControlLabel,
 } from "@mui/material";
-
-interface PropertyItem {
-  id: number;
-  articleId: string;
-  regionCode: string;
-  category: string;
-  buildingName: string;
-  description: string;
-  buildingType: string;
-  price: number;
-  deposit: number;
-  monthlyRent: number;
-  longitude: number;
-  latitude: number;
-  supplyArea: number;
-  exclusiveArea: number;
-  platform: string;
-  platformUrl: string;
-  createdAt: string;
-  updatedAt: string;
-}
+import { PublicPropertyItem } from "../PublicPropertyListPage";
 
 interface Props {
-  propertyList: PropertyItem[];
+  propertyList: PublicPropertyItem[];
 }
 
 const PublicPropertyTable = ({ propertyList }: Props) => {

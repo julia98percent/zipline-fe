@@ -120,7 +120,8 @@ const ContractAddModal = ({ open, handleClose, fetchContractData }: Props) => {
     !contractDate ||
     !contractStartDate ||
     !contractEndDate ||
-    !customerUid;
+    !customerUid ||
+    files.length === 0;
 
   return (
     <Modal open={open} onClose={handleModalClose}>

@@ -13,19 +13,21 @@ import UserIdInput from "./UserIdInput";
 import { Dayjs } from "dayjs";
 import { Box, Typography } from "@mui/material";
 
-const isValidUserId = (id: string) =>  /^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{4,12}$/.test(id);
+const isValidUserId = (id: string) =>
+  /^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{4,12}$/.test(id);
 
 const isValidPassword = (pw: string) =>
- /^(?=.*[A-Za-z])(?=.*\d)(?=.*[!@#$%^&*()_+])[A-Za-z\d!@#$%^&*()_+]{8,20}$/.test(pw);
+  /^(?=.*[A-Za-z])(?=.*\d)(?=.*[!@#$%^&*()_+])[A-Za-z\d!@#$%^&*()_+]{8,20}$/.test(
+    pw
+  );
 
 const isValidEmail = (email: string) =>
-    /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+  /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
 
 const isValidPhoneNumber = (phone: string) =>
   /^01[0|1|6|7|8|9]-\d{3,4}-\d{4}$/.test(phone);
 
 const isValidBirthday = (birth: string) => /^\d{8}$/.test(birth); // YYYYMMDD 형식
-
 
 const SignUpPage = () => {
   const navigate = useNavigate();
@@ -49,9 +51,7 @@ const SignUpPage = () => {
 
   const handleClickSignUpButton = () => {
     if (!isValidUserId(userId)) {
-      setErrorMessage(
-        "아이디는 영문과과 숫자를 포함해 4~12자로 입력해주세요."
-      );
+      setErrorMessage("아이디는 영문과과 숫자를 포함해 4~12자로 입력해주세요.");
       return;
     }
     if (!isValidPassword(password)) {
@@ -69,7 +69,9 @@ const SignUpPage = () => {
       return;
     }
     if (!isValidEmail(email)) {
-      setErrorMessage("유효한 이메일 형식을 입력해주세요. 예: example@domain.com");
+      setErrorMessage(
+        "유효한 이메일 형식을 입력해주세요. 예: example@domain.com"
+      );
       return;
     }
     if (!isValidPhoneNumber(phoneNumber)) {
@@ -89,7 +91,7 @@ const SignUpPage = () => {
       })
       .then((res) => {
         if (res.status === 201) {
-          alert("가입 성공~~");
+          alert("회원가입에 성공했습니다.");
           navigate("/sign-in");
         }
       })

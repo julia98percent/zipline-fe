@@ -15,7 +15,6 @@ import apiClient from "@apis/apiClient";
 import Button from "@components/Button";
 import dayjs from "dayjs";
 
-// ✅ 자동 상태 계산 함수
 const getContractStatus = (
   contractDate: Dayjs,
   contractStartDate: Dayjs,

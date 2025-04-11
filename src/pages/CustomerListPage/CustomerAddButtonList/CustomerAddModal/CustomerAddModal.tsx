@@ -15,13 +15,21 @@ import apiClient from "@apis/apiClient";
 
 const phoneRegex = /^\d{3}-\d{3,4}-\d{4}$/;
 
+interface CustomerAddModalProps {
+  open: boolean;
+  handleClose: () => void;
+  fetchCustomerList: () => void;
+}
+
 function CustomerAddModal({
   open,
   handleClose: setModalClose,
   fetchCustomerList,
-}: any) {
+}: CustomerAddModalProps) {
   const [userName, handleChangeUserName, setUserName] = useInput("");
   const [phoneNumber, handleChangePhoneNumber, setPhoneNumber] = useInput("");
+  const [phoneNumberError, setPhoneNumberError] = useState<string | null>(null);
+
   const [address, handleChangeAddress, setAddress] = useInput("");
   const [trafficSource, handleChangeTrafficSource, setTrafficSource] =
     useInput("");
@@ -45,9 +53,7 @@ function CustomerAddModal({
     seller: false,
   });
 
-  const isSubmitButtonDisabled =
-    !userName || !phoneRegex.test(phoneNumber) || !address;
-
+   
   const resetCustomerData = () => {
     setUserName("");
     setPhoneNumber("");
@@ -99,8 +105,17 @@ function CustomerAddModal({
       [name]: checked,
     }));
   };
+  const isSubmitButtonDisabled =
+  !userName || !phoneRegex.test(phoneNumber) || !address;
+
 
   const handleClickSubmitButton = () => {
+    if (!phoneRegex.test(phoneNumber)) {
+      setPhoneNumberError("올바른 전화번호 형식이 아닙니다. ex) 010-1234-5678");
+      return;
+    } else {
+      setPhoneNumberError(null);
+    }
     const rentDataToSubmit = roleData.tenant
       ? rentData
       : { minDeposit: null, maxDeposit: null, minRent: null, maxRent: null };
@@ -181,10 +196,15 @@ function CustomerAddModal({
             <TextField
               label="전화번호"
               value={phoneNumber}
-              onChange={handleChangePhoneNumber}
+              onChange={(e) => {
+                handleChangePhoneNumber(e);
+                setPhoneNumberError(null); 
+              }}
               name="phone"
               sx={{ mt: 2 }}
               fullWidth
+              error={!!phoneNumberError}
+              helperText={phoneNumberError ?? undefined}
             />
             <TextField
               label="주소"

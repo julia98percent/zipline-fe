@@ -6,15 +6,19 @@ import UserIdInput from "./UserIdInput";
 import PasswordInput from "./PasswordInput";
 import Button from "@components/Button";
 import { Box, Typography } from "@mui/material";
+import { useState } from "react"; 
 
 const SignInPage = () => {
   const navigate = useNavigate();
   const [userId, handleChangeUserId] = useInput("");
   const [password, handleChangePassword] = useInput("");
+  const [errorMessage, setErrorMessage] = useState(""); 
 
   const isSignUpButtonDisabled = !userId || !password;
 
   const handleClickSignUpButton = () => {
+    setErrorMessage(""); 
+
     apiClient
       .post("/users/login", {
         id: userId,
@@ -28,6 +32,8 @@ const SignInPage = () => {
         }
       })
       .catch((error) => {
+        const serverMessage = error.response?.data?.message || "로그인 중 오류가 발생했습니다.";
+        setErrorMessage(serverMessage); 
         console.log(error);
       });
   };
@@ -42,6 +48,13 @@ const SignInPage = () => {
           handleChangePassword={handleChangePassword}
         />
       </div>
+
+      {/* 에러 메시지 */}
+      {errorMessage && (
+        <Typography color="error" sx={{ mt: 2 }}>
+          {errorMessage}
+        </Typography>
+      )}
 
       <Button
         text="로그인"
@@ -59,6 +72,7 @@ const SignInPage = () => {
           },
         }}
       />
+
       <Box
         sx={{
           display: "flex",

@@ -18,8 +18,27 @@ import { Dayjs } from "dayjs";
 import { DesktopDatePicker } from "@mui/x-date-pickers";
 import useInput from "@hooks/useInput";
 import apiClient from "@apis/apiClient";
-import { isNumberOrNumericString } from "@utils/numberUtil";
 import DaumPost from "./DaumPost";
+
+// Custom hook for numeric input with validation and error
+function useNumericInput(
+  initialValue: string | number | null = ""
+): [string, (e: React.ChangeEvent<HTMLInputElement>) => void, string | null] {
+  const [value, setValue] = useState<string>(initialValue?.toString() ?? "");
+  const [error, setError] = useState<string | null>(null);
+
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const newValue = e.target.value;
+    setValue(newValue);
+    if (newValue && !/^\d+(\.\d+)?$/.test(newValue)) {
+      setError("숫자만 입력 가능합니다.");
+    } else {
+      setError(null);
+    }
+  };
+
+  return [value, handleChange, error];
+}
 
 type EstateType = "SALE" | "DEPOSIT" | "MONTHLY";
 
@@ -43,9 +62,26 @@ function PropertyAddModal({
   const [dong, setDong] = useState<string | null>(null);
   const [roadName, setRoadName] = useState<string | null>(null);
   const [extraAddress, handleChangeDetailAddress] = useInput<string>("");
-  const [deposit, handleChangeDeposit, setDeposit] = useInput(null);
-  const [monthlyRent, handleChangeMonthlyRent, setMonthlyRent] = useInput(null);
-  const [price, handleChangePrice, setPrice] = useInput(null);
+
+  const [deposit, handleChangeDeposit, depositError] = useNumericInput("");
+  const [monthlyRent, handleChangeMonthlyRent, monthlyRentError] =
+    useNumericInput("");
+  const [price, handleChangePrice, priceError] = useNumericInput("");
+  const [netArea, handleChangeNetArea, netAreaError] = useNumericInput("");
+  const [totalArea, handleChangeTotalArea, totalAreaError] =
+    useNumericInput("");
+  const [floor, handleChangeFloor, floorError] = useNumericInput("");
+  const [
+    constructionYear,
+    handleChangeConstructionYear,
+    constructionYearError,
+  ] = useNumericInput("");
+
+  const [parkingCapacity, setParkingCapacity] = useState<string>("");
+  const [parkingCapacityError, setParkingCapacityError] = useState<
+    string | null
+  >(null);
+  const [details, handleChangeDetails, setDetails] = useInput(null);
   const [type, setType] = useState<EstateType>("SALE");
   const [longitude, setLongitude] = useState(null);
   const [latitude, setLatitude] = useState(null);
@@ -56,24 +92,34 @@ function PropertyAddModal({
   const [moveInDate, setMoveInDate] = useState<Dayjs | null>(null);
   const [realCategory, setRealCategory] = useState("APARTMENT");
   const [petsAllowed, setPetsAllowed] = useState(false);
-  const [floor, handleChangeFloor, setFloor] = useInput(null);
   const [hasElevator, setHasElevator] = useState<boolean>(false);
-  const [constructionYear, handleChangeConstructionYear, setConstructionYear] =
-    useInput(null);
-  const [parkingCapacity, setParkingCapacity] = useState<number | null>(null);
-  const [netArea, handleChangeNetArea, setNetArea] = useInput(null);
-  const [totalArea, handleChangeTotalArea, setTotalArea] = useInput(null);
-  const [details, handleChangeDetails, setDetails] = useInput(null);
 
+  const handleChangePriceWithValidation = (
+    e: React.ChangeEvent<HTMLInputElement>
+  ) => {
+    handleChangePrice(e); // 기존 handleChangePrice로 전달
+  };
+
+  const handleChangeParkingCapacity = (
+    e: React.ChangeEvent<HTMLInputElement>
+  ) => {
+    const value = e.target.value;
+    setParkingCapacity(value);
+    if (value && !/^\d+$/.test(value)) {
+      setParkingCapacityError("숫자만 입력 가능합니다.");
+    } else {
+      setParkingCapacityError(null);
+    }
+  };
   const handleClickSubmitButton = () => {
     const propertyDataToSubmit = {
       customerUid,
       address: address + extraAddress,
       dong,
       roadName,
-      deposit,
-      monthlyRent,
-      price,
+      deposit: Number(deposit),
+      monthlyRent: Number(monthlyRent),
+      price: Number(price),
       type,
       longitude,
       latitude,
@@ -82,12 +128,12 @@ function PropertyAddModal({
       moveInDate,
       realCategory,
       petsAllowed,
-      floor,
+      floor: Number(floor),
       hasElevator,
-      constructionYear,
-      parkingCapacity,
-      netArea,
-      totalArea,
+      constructionYear: Number(constructionYear),
+      parkingCapacity: Number(parkingCapacity),
+      netArea: Number(netArea),
+      totalArea: Number(totalArea),
       details,
     };
 
@@ -114,26 +160,38 @@ function PropertyAddModal({
     (type == "SALE" && !price) ||
     (type == "DEPOSIT" && !deposit) ||
     (type == "MONTHLY" && (!monthlyRent || !deposit)) ||
-    (price && !isNumberOrNumericString(price)) ||
-    (monthlyRent && !isNumberOrNumericString(monthlyRent)) ||
-    (deposit && !isNumberOrNumericString(deposit));
+    !!priceError ||
+    !!depositError ||
+    !!monthlyRentError ||
+    !!netAreaError ||
+    !!totalAreaError ||
+    !!floorError ||
+    !!constructionYearError ||
+    !!parkingCapacityError;
+
+  const resetNumericInput = (
+    handler: (e: React.ChangeEvent<HTMLInputElement>) => void
+  ) => {
+    handler({ target: { value: "" } } as React.ChangeEvent<HTMLInputElement>);
+  };
 
   const resetPropertyData = () => {
-    setDeposit(null);
-    setMonthlyRent(null);
-    setPrice(null);
+    resetNumericInput(handleChangeDeposit);
+    resetNumericInput(handleChangeMonthlyRent);
+    resetNumericInput(handleChangePrice);
+    resetNumericInput(handleChangeFloor);
+    resetNumericInput(handleChangeConstructionYear);
+    resetNumericInput(handleChangeNetArea);
+    resetNumericInput(handleChangeTotalArea);
+
     setType("SALE");
     setLongitude(null);
     setLatitude(null);
     setMoveInDate(null);
     setRealCategory("APARTMENT");
     setPetsAllowed(false);
-    setFloor(null);
     setHasElevator(false);
-    setConstructionYear(null);
-    setParkingCapacity(null);
-    setNetArea(null);
-    setTotalArea(null);
+    setParkingCapacity("");
     setDetails(null);
   };
 
@@ -202,6 +260,7 @@ function PropertyAddModal({
             onChange={(e) => setCustomerUid(Number(e.target.value))}
             fullWidth
             sx={{ mt: 2 }}
+            
           >
             {customerOptions.map((customer) => (
               <MenuItem key={customer.uid} value={customer.uid.toString()}>
@@ -209,6 +268,7 @@ function PropertyAddModal({
               </MenuItem>
             ))}
           </TextField>
+          <Box sx={{ mt: 2 }} />
           <TextField
             label="주소"
             value={address ?? ""}
@@ -230,7 +290,7 @@ function PropertyAddModal({
             variant="outlined"
             fullWidth
           />
-          <TextField
+          {/* <TextField
             label="동"
             value={dong ?? ""}
             onChange={(e) => setDong(e.target.value)}
@@ -243,7 +303,7 @@ function PropertyAddModal({
             onChange={(e) => setRoadName(e.target.value)}
             sx={{ mt: 2 }}
             fullWidth
-          />
+          /> */}
           {/* 거래 유형 */}
           <Typography variant="subtitle1" sx={{ mt: 2 }}>
             거래 유형
@@ -270,9 +330,12 @@ function PropertyAddModal({
             <TextField
               label="매매 가격"
               value={price ?? ""}
-              onChange={handleChangePrice}
+              onChange={handleChangePriceWithValidation}
               sx={{ mt: 2 }}
               fullWidth
+              placeholder="숫자만 입력하세요"
+              error={!!priceError}
+              helperText={priceError ?? undefined}
             />
           )}
           {type === "DEPOSIT" && (
@@ -340,10 +403,13 @@ function PropertyAddModal({
           </RadioGroup>
           <TextField
             label="공급 면적"
-            value={totalArea ?? ""}
+            value={totalArea}
             onChange={handleChangeTotalArea}
             sx={{ mt: 2 }}
             fullWidth
+            placeholder="숫자만 입력하세요"
+            error={!!totalAreaError}
+            helperText={totalAreaError ?? undefined}
           />
           <TextField
             label="전용 면적"
@@ -351,13 +417,18 @@ function PropertyAddModal({
             onChange={handleChangeNetArea}
             sx={{ mt: 2 }}
             fullWidth
+            placeholder="숫자만 입력하세요"
+            error={!!netAreaError}
+            helperText={netAreaError ?? undefined}
           />
           <TextField
             label="층수"
             value={floor ?? ""}
             onChange={handleChangeFloor}
             sx={{ mt: 2 }}
-            fullWidth
+            fullWidthplaceholder="숫자만 입력하세요"
+            error={!!floorError}
+            helperText={floorError ?? undefined}
           />
           {/* 반려동물 여부 */}
           <Typography variant="subtitle1" sx={{ mt: 2 }}>
@@ -425,17 +496,19 @@ function PropertyAddModal({
             onChange={handleChangeConstructionYear}
             sx={{ mt: 2 }}
             fullWidth
+            placeholder="숫자만 입력하세요 ex)2010"
+            error={!!constructionYearError}
+            helperText={constructionYearError ?? undefined}
           />
           <TextField
             label="주차 가능 대수"
-            value={parkingCapacity !== null ? parkingCapacity.toString() : ""}
-            onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
-              setParkingCapacity(
-                e.target.value === "" ? null : Number(e.target.value)
-              )
-            }
+            value={parkingCapacity}
+            onChange={handleChangeParkingCapacity}
             sx={{ mt: 2 }}
             fullWidth
+            placeholder="숫자만 입력하세요"
+            error={!!parkingCapacityError}
+            helperText={parkingCapacityError ?? undefined}
           />
 
           {/* 특이사항 */}

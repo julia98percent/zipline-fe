@@ -18,9 +18,9 @@ const CONTRACT_STATUS_TYPES: {
   name: string;
   color: "default" | "primary" | "secondary" | "error" | "info" | "success";
 }[] = [
-  { value: "PENDING", name: "계약 전", color: "info" },
+  { value: "PENDING", name: "PENDING", color: "info" },
   { value: "ACTIVE", name: "진행 중", color: "success" },
-  { value: "EXPIRED", name: "만료", color: "default" },
+  { value: "EXPIRED", name: "계약 만료", color: "default" },
 ];
 
 interface Props {

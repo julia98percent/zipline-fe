@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { Outlet, Navigate } from "react-router-dom";
 import NavigationBar from "@components/NavigationBar";
 import apiClient from "@apis/apiClient";
@@ -6,11 +6,22 @@ import { Box, CircularProgress } from "@mui/material";
 import useUserStore from "@stores/useUserStore";
 
 const PrivateRoute = () => {
-  const isSignedIn = Boolean(sessionStorage.getItem("_ZA"));
   const { user, setUser, clearUser } = useUserStore();
+  const [isLoading, setIsLoading] = useState(true);
+  const [shouldRedirect, setShouldRedirect] = useState(false);
 
   useEffect(() => {
-    if (isSignedIn && !user) {
+    const token = sessionStorage.getItem("_ZA");
+
+    if (!token) {
+      sessionStorage.clear();
+      clearUser();
+      setShouldRedirect(true);
+      setIsLoading(false);
+      return;
+    }
+
+    if (!user) {
       apiClient
         .get("/users/me")
         .then((res) => {
@@ -18,22 +29,25 @@ const PrivateRoute = () => {
           if (res && res.status === 200 && userData) {
             setUser(userData);
           }
+          setIsLoading(false);
         })
         .catch((error) => {
           console.log(error);
           clearUser();
           sessionStorage.removeItem("_ZA");
+          setShouldRedirect(true);
+          setIsLoading(false);
         });
+    } else {
+      setIsLoading(false);
     }
-  }, [isSignedIn, user, setUser]);
+  }, [user, setUser, clearUser]);
 
-  if (!isSignedIn) {
-    sessionStorage.clear();
-    clearUser();
+  if (shouldRedirect) {
     return <Navigate to="/sign-in" />;
   }
 
-  if (!user) {
+  if (isLoading || !user) {
     return (
       <Box
         sx={{

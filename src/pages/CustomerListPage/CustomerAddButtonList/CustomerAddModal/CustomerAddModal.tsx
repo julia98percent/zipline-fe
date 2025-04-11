@@ -53,7 +53,6 @@ function CustomerAddModal({
     seller: false,
   });
 
-   
   const isSubmitButtonDisabled = !userName || !phoneRegex.test(phoneNumber);
 
   const resetCustomerData = () => {
@@ -194,6 +193,7 @@ function CustomerAddModal({
             />
             <TextField
               label="전화번호"
+              placeholder="010-0000-0000"
               value={phoneNumber}
               onChange={(e) => {
                 handleChangePhoneNumber(e);

@@ -199,7 +199,10 @@ const EditSurveyPage = () => {
       .then((res) => {
         if (res.status === 201) {
           alert("설문을 변경했습니다!");
-          navigate("/my");
+          navigate("/my", { replace: true });
+          setTimeout(() => {
+            window.location.reload();
+          }, 100); // 페이지 이동 후 약간의 지연을 두고 새로고침
         }
       })
       .catch((error) => {

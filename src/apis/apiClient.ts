@@ -61,6 +61,7 @@ apiClient.interceptors.response.use(
       } catch (refreshError) {
         sessionStorage.removeItem("_ZA");
         alert("인증이 만료되었습니다. 다시 로그인하세요.");
+        window.location.replace("/sign-in");
         return Promise.reject(refreshError);
       }
     }

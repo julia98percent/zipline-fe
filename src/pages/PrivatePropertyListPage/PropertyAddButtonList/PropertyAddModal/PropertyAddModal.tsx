@@ -259,7 +259,6 @@ function PropertyAddModal({
             onChange={(e) => setCustomerUid(Number(e.target.value))}
             fullWidth
             sx={{ mt: 2 }}
-            
           >
             {customerOptions.map((customer) => (
               <MenuItem key={customer.uid} value={customer.uid.toString()}>
@@ -525,7 +524,7 @@ function PropertyAddModal({
             sx={{
               mt: 4,
               color: "white !important",
-              backgroundColor: "#2E5D9F",
+              backgroundColor: "#164F9E",
               "&:disabled": {
                 backgroundColor: "lightgray",
                 color: "white",

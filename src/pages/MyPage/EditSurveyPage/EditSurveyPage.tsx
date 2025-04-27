@@ -255,15 +255,15 @@ const EditSurveyPage = () => {
               onClick={handleAddQuestion}
               sx={{
                 mr: 2,
-                border: "1px solid #2E5D9F",
-                color: "#2E5D9F",
+                border: "1px solid #164F9E",
+                color: "#164F9E",
               }}
             />
             <Button
               text="설문 저장"
               onClick={requestUpdateSurvey}
               sx={{
-                backgroundColor: "#2E5D9F",
+                backgroundColor: "#164F9E",
                 color: "white",
               }}
             />

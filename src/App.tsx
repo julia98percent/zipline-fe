@@ -15,6 +15,7 @@ import ErrorPage from "@pages/ErrorPage";
 import ContractListPage from "@pages/ContractListPage/ContractListPage";
 import PublicPropertyListPage from "@pages/PublicPropertyListPage";
 import CustomerDetailPage from "@pages/CustomerDetailPage";
+import BulkMessagePage from "@pages/BulkMessagePage";
 
 const App = () => {
   return (
@@ -35,6 +36,7 @@ const App = () => {
           element={<PrivatePropertyListPage />}
         />
         <Route path="properties/public" element={<PublicPropertyListPage />} />
+        <Route path="messages/bulk" element={<BulkMessagePage />} />
         <Route path="/contracts" element={<ContractListPage />} />
         <Route path="my">
           <Route index element={<MyPage />} />

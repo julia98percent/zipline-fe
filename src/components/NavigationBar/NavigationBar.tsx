@@ -26,8 +26,11 @@ const MENU_INFO = [
   {
     name: "문자",
     key: "messages",
-    to: "/messages",
-    disabled: true,
+    submenu: [
+      { name: "단체 문자 발송", to: "/messages/bulk" },
+      { name: "문자 템플릿", to: "/messages/templates" },
+      { name: "문자 발송 내역", to: "/messages/history" },
+    ],
   },
 ];
 
@@ -85,7 +88,7 @@ const NavigationBar = ({ userName }: { userName: string }) => {
           </Typography>
         </Link>
         <Box className="flex gap-4">
-          {MENU_INFO.map(({ name, key, to, submenu, disabled }) =>
+          {MENU_INFO.map(({ name, key, to, submenu }) =>
             submenu ? (
               <div key={`${key}-menu-container`}>
                 <Button
@@ -104,7 +107,6 @@ const NavigationBar = ({ userName }: { userName: string }) => {
                       color: "#1E88E5",
                     },
                   }}
-                  disabled={disabled}
                 />
                 <Menu
                   anchorEl={submenuAnchorEl}
@@ -125,19 +127,6 @@ const NavigationBar = ({ userName }: { userName: string }) => {
                     </Link>
                   ))}
                 </Menu>
-              </div>
-            ) : disabled ? (
-              <div key={`${key}-menu-container`}>
-                <Button
-                  key={`${key}-menu`}
-                  text={name}
-                  sx={{
-                    color: "#aaa",
-                    fontWeight: "normal",
-                    cursor: "not-allowed",
-                  }}
-                  disabled={true}
-                />
               </div>
             ) : (
               <Link to={to} key={`${key}-menu`}>

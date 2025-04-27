@@ -222,7 +222,7 @@ const ContractAddModal = ({ open, handleClose, fetchContractData }: Props) => {
           sx={{
             mt: 2,
             color: "white !important",
-            backgroundColor: "#2E5D9F",
+            backgroundColor: "#164F9E",
             "&:disabled": {
               backgroundColor: "lightgray",
               color: "white",

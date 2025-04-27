@@ -197,7 +197,7 @@ function CustomerAddModal({
               value={phoneNumber}
               onChange={(e) => {
                 handleChangePhoneNumber(e);
-                setPhoneNumberError(null); 
+                setPhoneNumberError(null);
               }}
               name="phone"
               sx={{ mt: 2 }}
@@ -389,7 +389,7 @@ function CustomerAddModal({
               }}
               sx={{
                 color: "white",
-                backgroundColor: "#2E5D9F",
+                backgroundColor: "#164F9E",
                 "&:disabled": { backgroundColor: "darkgray", color: "white" },
               }}
             />

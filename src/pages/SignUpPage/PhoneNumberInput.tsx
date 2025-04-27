@@ -1,19 +1,36 @@
-import TextField from "@components/TextField";
+import { TextField } from "@mui/material";
 
-interface Props {
+interface PhoneNumberInputProps {
   phoneNumber: string;
-  handleChangePhoneNumber: React.ChangeEventHandler<HTMLInputElement>;
+  handleChangePhoneNumber: (e: React.ChangeEvent<HTMLInputElement>) => void;
 }
 
-const PhoneNumberInput = ({ phoneNumber, handleChangePhoneNumber }: Props) => {
+const PhoneNumberInput = ({
+  phoneNumber,
+  handleChangePhoneNumber,
+}: PhoneNumberInputProps) => {
   return (
     <TextField
       label="전화번호"
-      type="tel"
-      placeholder="010-1234-5678"
-      className="mb-4"
       value={phoneNumber}
       onChange={handleChangePhoneNumber}
+      fullWidth
+      required
+      variant="outlined"
+      helperText="예: 010-1234-5678"
+      sx={{
+        "& .MuiOutlinedInput-root": {
+          "&:hover fieldset": {
+            borderColor: "#164F9E",
+          },
+          "&.Mui-focused fieldset": {
+            borderColor: "#164F9E",
+          },
+        },
+        "& .MuiInputLabel-root.Mui-focused": {
+          color: "#164F9E",
+        },
+      }}
     />
   );
 };

@@ -6,18 +6,18 @@ import UserIdInput from "./UserIdInput";
 import PasswordInput from "./PasswordInput";
 import Button from "@components/Button";
 import { Box, Typography } from "@mui/material";
-import { useState } from "react"; 
+import { useState } from "react";
 
 const SignInPage = () => {
   const navigate = useNavigate();
   const [userId, handleChangeUserId] = useInput("");
   const [password, handleChangePassword] = useInput("");
-  const [errorMessage, setErrorMessage] = useState(""); 
+  const [errorMessage, setErrorMessage] = useState("");
 
   const isSignUpButtonDisabled = !userId || !password;
 
   const handleClickSignUpButton = () => {
-    setErrorMessage(""); 
+    setErrorMessage("");
 
     apiClient
       .post("/users/login", {
@@ -32,8 +32,9 @@ const SignInPage = () => {
         }
       })
       .catch((error) => {
-        const serverMessage = error.response?.data?.message || "로그인 중 오류가 발생했습니다.";
-        setErrorMessage(serverMessage); 
+        const serverMessage =
+          error.response?.data?.message || "로그인 중 오류가 발생했습니다.";
+        setErrorMessage(serverMessage);
         console.log(error);
       });
   };
@@ -65,7 +66,7 @@ const SignInPage = () => {
           width: "100%",
           color: "white",
           minHeight: "32px",
-          backgroundColor: "#2E5D9F",
+          backgroundColor: "#164F9E",
           "&:disabled": {
             backgroundColor: "lightgray",
             color: "white",
@@ -86,7 +87,7 @@ const SignInPage = () => {
           <Button
             text="회원가입"
             sx={{
-              color: "#2E5D9F",
+              color: "#164F9E",
               backgroundColor: "transparent",
               border: "none",
               padding: "0",

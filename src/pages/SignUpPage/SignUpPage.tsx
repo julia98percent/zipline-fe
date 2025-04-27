@@ -1,4 +1,3 @@
-import { useState } from "react";
 import apiClient from "@apis/apiClient";
 import { useNavigate, Link } from "react-router-dom";
 import useInput from "@hooks/useInput";
@@ -8,10 +7,11 @@ import EmailInput from "./EmailInput";
 import PasswordInput from "./PasswordInput";
 import Button from "@components/Button";
 import PhoneNumberInput from "./PhoneNumberInput";
-import BirthdayInput from "./BirthdayInput";
 import UserIdInput from "./UserIdInput";
-import { Dayjs } from "dayjs";
 import { Box, Typography } from "@mui/material";
+import { toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
+import signUpImage from "@assets/sign-up.png";
 
 const isValidUserId = (id: string) =>
   /^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{4,12}$/.test(id);
@@ -27,18 +27,14 @@ const isValidEmail = (email: string) =>
 const isValidPhoneNumber = (phone: string) =>
   /^01[0|1|6|7|8|9]-\d{3,4}-\d{4}$/.test(phone);
 
-const isValidBirthday = (birth: string) => /^\d{8}$/.test(birth); // YYYYMMDD 형식
-
 const SignUpPage = () => {
   const navigate = useNavigate();
   const [name, handleChangeName] = useInput("");
   const [userId, handleChangeUserId] = useInput("");
   const [email, handleChangeEmail] = useInput("");
-  const [birthday, setBirthday] = useState<Dayjs | null>(null);
   const [phoneNumber, handleChangePhoneNumber] = useInput("");
   const [password, handleChangePassword] = useInput("");
   const [passwordCheck, handleChangePasswordCheck] = useInput("");
-  const [errorMessage, setErrorMessage] = useState("");
 
   const isSignUpButtonDisabled =
     name == "" ||
@@ -46,36 +42,29 @@ const SignUpPage = () => {
     !email ||
     !password ||
     !passwordCheck ||
-    !phoneNumber ||
-    birthday == null;
+    !phoneNumber;
 
   const handleClickSignUpButton = () => {
     if (!isValidUserId(userId)) {
-      setErrorMessage("아이디는 영문과과 숫자를 포함해 4~12자로 입력해주세요.");
+      toast.error("아이디는 영문과과 숫자를 포함해 4~12자로 입력해주세요.");
       return;
     }
     if (!isValidPassword(password)) {
-      setErrorMessage(
+      toast.error(
         "비밀번호는 영문, 숫자, 특수문자를 포함해 8~20자로 입력해주세요."
       );
       return;
     }
     if (password !== passwordCheck) {
-      setErrorMessage("비밀번호와 비밀번호 확인이 일치하지 않습니다.");
-      return;
-    }
-    if (!birthday || !isValidBirthday(birthday.format("YYYYMMDD"))) {
-      setErrorMessage("생년월일은 8자리 (예: 19901210)로 입력해주세요.");
+      toast.error("비밀번호와 비밀번호 확인이 일치하지 않습니다.");
       return;
     }
     if (!isValidEmail(email)) {
-      setErrorMessage(
-        "유효한 이메일 형식을 입력해주세요. 예: example@domain.com"
-      );
+      toast.error("유효한 이메일 형식을 입력해주세요. 예: example@domain.com");
       return;
     }
     if (!isValidPhoneNumber(phoneNumber)) {
-      setErrorMessage("전화번호 형식이 올바르지 않습니다. 예: 010-1234-5678");
+      toast.error("전화번호 형식이 올바르지 않습니다. 예: 010-1234-5678");
       return;
     }
     apiClient
@@ -84,92 +73,128 @@ const SignUpPage = () => {
         password,
         passwordCheck,
         name,
-        birthday: Number(birthday.format("YYYYMMDD")),
         phoneNo: phoneNumber,
         email,
         noticeMonth: 0,
       })
       .then((res) => {
         if (res.status === 201) {
-          alert("회원가입에 성공했습니다.");
+          toast.success("회원가입에 성공했습니다.");
           navigate("/sign-in");
         }
       })
       .catch((error) => {
         const msg = error.response?.data?.message;
-        setErrorMessage(msg || "회원가입 중 오류가 발생했습니다.");
+        toast.error(msg || "회원가입 중 오류가 발생했습니다.");
         console.log(error);
       });
   };
 
   return (
-    <div className="p-[24px]">
-      <Header />
-      <div className="grid gap-[16px]">
-        <NameInput name={name} handleChangeName={handleChangeName} />
-        <UserIdInput userId={userId} handleChangeUserId={handleChangeUserId} />
-        <EmailInput email={email} handleChangeEmail={handleChangeEmail} />
-        <PasswordInput
-          password={password}
-          passwordCheck={passwordCheck}
-          handleChangePassword={handleChangePassword}
-          handleChangePasswordCheck={handleChangePasswordCheck}
-        />
+    <div className="h-screen bg-gray-50">
+      <div className="h-full flex">
+        {/* Left Panel - Only visible on wider screens */}
+        <div className="hidden lg:flex lg:w-1/2 bg-gradient-to-br from-[#164F9E] to-[#0D3B7D] items-center justify-center">
+          <div className="text-white text-center p-6">
+            <img
+              src={signUpImage}
+              alt="공인중개사 CRM 서비스"
+              className="w-96 mx-auto mb-8"
+            />
+            <Typography
+              variant="h4"
+              component="h1"
+              sx={{ fontWeight: "bold", mb: 1 }}
+            >
+              Zip-line
+            </Typography>
+            <Typography variant="h6" sx={{ opacity: 0.9 }}>
+              흩어진 중개 업무, 여기서 전부 관리해요!
+            </Typography>
+          </div>
+        </div>
 
-        <PhoneNumberInput
-          phoneNumber={phoneNumber}
-          handleChangePhoneNumber={handleChangePhoneNumber}
-        />
-        <BirthdayInput birthday={birthday} handleChangeBirthday={setBirthday} />
+        {/* Right Panel - Sign Up Form */}
+        <div className="w-full lg:w-1/2 flex items-center justify-center bg-white">
+          <div className="w-full max-w-md p-4">
+            <Header />
+            <div className="mt-6 flex flex-col gap-6">
+              <NameInput name={name} handleChangeName={handleChangeName} />
+              <UserIdInput
+                userId={userId}
+                handleChangeUserId={handleChangeUserId}
+              />
+              <EmailInput email={email} handleChangeEmail={handleChangeEmail} />
+              <PasswordInput
+                password={password}
+                passwordCheck={passwordCheck}
+                handleChangePassword={handleChangePassword}
+                handleChangePasswordCheck={handleChangePasswordCheck}
+              />
+              <PhoneNumberInput
+                phoneNumber={phoneNumber}
+                handleChangePhoneNumber={handleChangePhoneNumber}
+              />
+            </div>
+
+            <Button
+              text="가입하기"
+              onClick={handleClickSignUpButton}
+              disabled={isSignUpButtonDisabled}
+              sx={{
+                marginTop: "32px",
+                width: "100%",
+                color: "white",
+                minHeight: "40px",
+                backgroundColor: "#164F9E",
+                borderRadius: "8px",
+                fontSize: "16px",
+                fontWeight: "bold",
+                transition: "all 0.2s ease-in-out",
+                "&:hover": {
+                  backgroundColor: "#0D3B7D",
+                  transform: "translateY(-1px)",
+                },
+                "&:disabled": {
+                  backgroundColor: "#E5E7EB",
+                  color: "#9CA3AF",
+                  transform: "none",
+                },
+              }}
+            />
+
+            <Box
+              sx={{
+                display: "flex",
+                justifyContent: "center",
+                alignItems: "center",
+                mt: 3,
+                gap: 1,
+              }}
+            >
+              <Typography variant="body2" color="text.secondary">
+                이미 회원이신가요?
+              </Typography>
+              <Link to="/sign-in" className="flex items-center">
+                <Button
+                  text="로그인"
+                  sx={{
+                    color: "#164F9E",
+                    backgroundColor: "transparent",
+                    border: "none",
+                    padding: "0",
+                    fontWeight: "bold",
+                    "&:hover": {
+                      backgroundColor: "transparent",
+                      textDecoration: "underline",
+                    },
+                  }}
+                />
+              </Link>
+            </Box>
+          </div>
+        </div>
       </div>
-
-      <Button
-        text="가입하기"
-        onClick={handleClickSignUpButton}
-        disabled={isSignUpButtonDisabled}
-        sx={{
-          marginTop: "16px",
-          width: "100%",
-          color: "white",
-          minHeight: "32px",
-          backgroundColor: "#2E5D9F",
-          "&:disabled": {
-            backgroundColor: "lightgray",
-            color: "white",
-          },
-        }}
-      />
-      {errorMessage && (
-        <Typography color="error" sx={{ mt: 2 }}>
-          {errorMessage}
-        </Typography>
-      )}
-      <Box
-        sx={{
-          display: "flex",
-          justifyContent: "center",
-          alignItems: "center",
-          mt: 3,
-        }}
-      >
-        <Typography variant="body2">이미 회원이신가요?</Typography>
-        <Link to="/sign-in" className="flex items-center">
-          <Button
-            text="로그인"
-            sx={{
-              color: "#2E5D9F",
-              backgroundColor: "transparent",
-              border: "none",
-              padding: "0",
-              fontWeight: "bold",
-              "&:hover": {
-                backgroundColor: "transparent",
-                textDecoration: "underline",
-              },
-            }}
-          />
-        </Link>
-      </Box>
     </div>
   );
 };

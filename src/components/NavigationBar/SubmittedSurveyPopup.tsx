@@ -164,7 +164,7 @@ function SubmittedSurveyPopup() {
                         variant="body2"
                         sx={{
                           fontWeight: 500,
-                          color: "#2E5D9F",
+                          color: "#164F9E",
                         }}
                       >
                         {notification.name}님 / {notification.phoneNumber}

@@ -31,7 +31,7 @@ function MultipleChoiceAdd({
 }: Props) {
   return (
     <Box sx={{ width: "100%", maxWidth: "600px" }}>
-      <Typography sx={{ mb: 2, color: "#2E5D9F", fontWeight: 500 }}>
+      <Typography sx={{ mb: 2, color: "#164F9E", fontWeight: 500 }}>
         다중 선택 옵션
       </Typography>
       {question.choices?.map((choice, choiceIndex) => (

@@ -18,7 +18,7 @@ const ContractAddButtonList = ({ fetchContractData }: Props) => {
         text="계약 등록"
         onClick={handleOpenModal}
         sx={{
-          backgroundColor: "#2E5D9F",
+          backgroundColor: "#164F9E",
           color: "white",
           "&:hover": {
             backgroundColor: "#1E4A8B",

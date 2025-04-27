@@ -1,12 +1,34 @@
-import TextField from "@components/TextField";
+import { TextField } from "@mui/material";
 
-interface Props {
+interface NameInputProps {
   name: string;
-  handleChangeName: React.ChangeEventHandler<HTMLInputElement>;
+  handleChangeName: (e: React.ChangeEvent<HTMLInputElement>) => void;
 }
 
-const NameInput = ({ name, handleChangeName }: Props) => {
-  return <TextField label="이름" value={name} onChange={handleChangeName} />;
+const NameInput = ({ name, handleChangeName }: NameInputProps) => {
+  return (
+    <TextField
+      label="이름"
+      value={name}
+      onChange={handleChangeName}
+      fullWidth
+      required
+      variant="outlined"
+      sx={{
+        "& .MuiOutlinedInput-root": {
+          "&:hover fieldset": {
+            borderColor: "#164F9E",
+          },
+          "&.Mui-focused fieldset": {
+            borderColor: "#164F9E",
+          },
+        },
+        "& .MuiInputLabel-root.Mui-focused": {
+          color: "#164F9E",
+        },
+      }}
+    />
+  );
 };
 
 export default NameInput;

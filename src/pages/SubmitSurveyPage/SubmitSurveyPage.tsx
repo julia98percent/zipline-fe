@@ -330,7 +330,7 @@ const SubmitSurveyPage = () => {
         text="답변 제출"
         onClick={requestSubmitAnswers}
         sx={{
-          backgroundColor: "#2E5D9F",
+          backgroundColor: "#164F9E",
           color: "white",
         }}
       />

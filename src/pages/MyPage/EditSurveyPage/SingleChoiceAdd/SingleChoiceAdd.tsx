@@ -34,7 +34,7 @@ function SingleChoiceAdd({
   return (
     <Box sx={{ width: "100%", maxWidth: "600px" }}>
       <FormControl fullWidth>
-        <Typography sx={{ mb: 2, color: "#2E5D9F", fontWeight: 500 }}>
+        <Typography sx={{ mb: 2, color: "#164F9E", fontWeight: 500 }}>
           단일 선택 옵션
         </Typography>
         <RadioGroup>

@@ -29,7 +29,7 @@ function ErrorPage() {
       <Button
         onClick={handleGoHome}
         sx={{
-          backgroundColor: "#2E5D9F",
+          backgroundColor: "#164F9E",
           color: "white",
           px: 3,
           py: 1,

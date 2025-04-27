@@ -17,7 +17,7 @@ function CustomerAddButtonList({ fetchCustomerList }: any) {
           sx={{
             color: "white",
             minHeight: "32px",
-            backgroundColor: "#2E5D9F",
+            backgroundColor: "#164F9E",
             "&:disabled": {
               backgroundColor: "lightgray",
               color: "white",
@@ -31,7 +31,7 @@ function CustomerAddButtonList({ fetchCustomerList }: any) {
           sx={{
             color: "white",
             minHeight: "32px",
-            backgroundColor: "#2E5D9F",
+            backgroundColor: "#164F9E",
             "&:disabled": {
               backgroundColor: "lightgray",
               color: "white",

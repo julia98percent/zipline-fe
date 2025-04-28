@@ -23,7 +23,7 @@ const PrivateRoute = () => {
 
     if (!user) {
       apiClient
-        .get("/users/me")
+        .get("/users/info")
         .then((res) => {
           const userData = res?.data?.data;
           if (res && res.status === 200 && userData) {

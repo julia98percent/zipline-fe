@@ -98,8 +98,8 @@ const MENU_INFO = [
     name: "매물",
     key: "agent-properties",
     submenu: [
-      { name: "개인 매물", to: "/properties/private", icon: "home" },
-      { name: "공개 매물", to: "/properties/public", icon: "apartment" },
+      { name: "개인 매물", to: "/properties/private" },
+      { name: "공개 매물", to: "/properties/public" },
     ],
   },
   { name: "고객", key: "customers", to: "/customers" },
@@ -108,9 +108,9 @@ const MENU_INFO = [
     name: "문자",
     key: "messages",
     submenu: [
-      { name: "단체 문자 발송", to: "/messages/bulk", icon: "send" },
-      { name: "문자 템플릿", to: "/messages/templates", icon: "description" },
-      { name: "문자 발송 내역", to: "/messages/history", icon: "history" },
+      { name: "단체 문자 발송", to: "/messages/bulk" },
+      { name: "문자 템플릿", to: "/messages/templates" },
+      { name: "문자 발송 내역", to: "/messages/history" },
     ],
   },
 ];
@@ -124,6 +124,7 @@ const NavigationBar = ({ userName }: { userName: string }) => {
     null
   );
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
+  const [isUserMenuOpen, setIsUserMenuOpen] = useState(false);
   const [createTab, setCreateTab] = useState(0);
   const [formData, setFormData] = useState<FormData>({
     property: {
@@ -166,11 +167,21 @@ const NavigationBar = ({ userName }: { userName: string }) => {
   const open = Boolean(anchorEl);
   const submenuOpen = Boolean(submenuAnchorEl);
 
-  const handleClickLogOut = () => {
+  const handleUserMenuClick = (event: React.MouseEvent<HTMLButtonElement>) => {
+    setIsUserMenuOpen(true);
+    setAnchorEl(event.currentTarget);
+  };
+
+  const handleUserMenuClose = () => {
+    setIsUserMenuOpen(false);
+    setAnchorEl(null);
+  };
+
+  const handleLogout = () => {
     sessionStorage.removeItem("_ZA");
     clearUser();
-    navigate("sign-in");
-    handleClose();
+    navigate("/sign-in");
+    handleUserMenuClose();
   };
 
   const handleClick = (event: React.MouseEvent<HTMLButtonElement>) => {
@@ -364,7 +375,7 @@ const NavigationBar = ({ userName }: { userName: string }) => {
                 >
                   <ListItemButton
                     sx={{
-                      borderBottom: "1px solid rgba(0, 0, 0, 0.08)",
+                      borderBottom: "none",
                       "&:hover": {
                         backgroundColor: "rgba(0, 0, 0, 0.04)",
                       },
@@ -467,63 +478,6 @@ const NavigationBar = ({ userName }: { userName: string }) => {
                           px: { xs: 0, md: 2 },
                         }}
                       >
-                        <ListItemIcon
-                          sx={{
-                            minWidth: { xs: 0, md: 40 },
-                            mr: { xs: 0, md: 2 },
-                          }}
-                        >
-                          {sub.icon === "home" && (
-                            <HomeIcon
-                              sx={{
-                                color:
-                                  currentPath === sub.to
-                                    ? "#164F9E"
-                                    : "#222222",
-                              }}
-                            />
-                          )}
-                          {sub.icon === "apartment" && (
-                            <ApartmentIcon
-                              sx={{
-                                color:
-                                  currentPath === sub.to
-                                    ? "#164F9E"
-                                    : "#222222",
-                              }}
-                            />
-                          )}
-                          {sub.icon === "send" && (
-                            <SendIcon
-                              sx={{
-                                color:
-                                  currentPath === sub.to
-                                    ? "#164F9E"
-                                    : "#222222",
-                              }}
-                            />
-                          )}
-                          {sub.icon === "description" && (
-                            <DescriptionIcon
-                              sx={{
-                                color:
-                                  currentPath === sub.to
-                                    ? "#164F9E"
-                                    : "#222222",
-                              }}
-                            />
-                          )}
-                          {sub.icon === "history" && (
-                            <HistoryIcon
-                              sx={{
-                                color:
-                                  currentPath === sub.to
-                                    ? "#164F9E"
-                                    : "#222222",
-                              }}
-                            />
-                          )}
-                        </ListItemIcon>
                         <ListItemText
                           primary={sub.name}
                           sx={{
@@ -607,7 +561,7 @@ const NavigationBar = ({ userName }: { userName: string }) => {
       </List>
       <Box sx={{ mt: "auto", p: 2 }}>
         <MuiButton
-          onClick={handleClick}
+          onClick={handleUserMenuClick}
           sx={{
             color: "#222222",
             justifyContent: "flex-start",
@@ -633,8 +587,8 @@ const NavigationBar = ({ userName }: { userName: string }) => {
         </MuiButton>
         <Menu
           anchorEl={anchorEl}
-          open={open}
-          onClose={handleClose}
+          open={isUserMenuOpen}
+          onClose={handleUserMenuClose}
           anchorOrigin={{
             vertical: "top",
             horizontal: "left",
@@ -667,7 +621,7 @@ const NavigationBar = ({ userName }: { userName: string }) => {
         >
           <Link to="/my" style={{ textDecoration: "none" }}>
             <MenuItem
-              onClick={handleClose}
+              onClick={handleUserMenuClose}
               sx={{
                 fontWeight: currentPath === "/my" ? "bold" : "normal",
                 color: "#222222",
@@ -676,7 +630,7 @@ const NavigationBar = ({ userName }: { userName: string }) => {
               마이페이지
             </MenuItem>
           </Link>
-          <MenuItem onClick={handleClickLogOut} sx={{ color: "#222222" }}>
+          <MenuItem onClick={handleLogout} sx={{ color: "#222222" }}>
             로그아웃
           </MenuItem>
         </Menu>

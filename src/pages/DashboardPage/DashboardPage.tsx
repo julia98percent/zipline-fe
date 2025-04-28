@@ -25,6 +25,7 @@ import ChevronRightIcon from "@mui/icons-material/ChevronRight";
 import { useState } from "react";
 import dayjs from "dayjs";
 import { useNavigate } from "react-router-dom";
+import PageHeader from "@components/PageHeader/PageHeader";
 
 interface Schedule {
   id: number;
@@ -385,37 +386,28 @@ const DashboardPage = () => {
   return (
     <Box
       sx={{
-        display: "flex",
-        flexDirection: "column",
-        gap: 2,
-        pt: 0,
-        pb: 3,
-        ml: 30,
-        backgroundColor: "#f5f5f5",
-        minHeight: "100vh",
+        flexGrow: 1,
+        height: "100vh",
+        overflow: "auto",
         width: "calc(100% - 240px)",
+        ml: "240px",
+        backgroundColor: "#f5f5f5",
+        p: 0,
       }}
     >
-      <Box
-        sx={{
-          backgroundColor: "#FFFFFF",
-          borderBottom: "1px solid #E0E0E0",
-          display: "flex",
-          alignItems: "center",
-          height: "70px",
-        }}
-      >
-        <Typography
-          variant="h5"
-          component="h1"
-          sx={{ fontWeight: "bold", color: "#222222", p: 2 }}
-        >
-          대시보드
-        </Typography>
-      </Box>
+      <PageHeader title="대시보드" userName="사용자 이름" />
 
       {/* 통계 카드 영역 */}
-      <Box sx={{ display: "flex", flexWrap: "wrap", gap: 1.5, mb: 2, px: 3 }}>
+      <Box
+        sx={{
+          display: "flex",
+          flexWrap: "wrap",
+          gap: 1.5,
+          mb: 2,
+          mt: 2,
+          px: 3,
+        }}
+      >
         {statCards.map((card, index) => (
           <Box
             key={index}
@@ -508,7 +500,6 @@ const DashboardPage = () => {
           gap: 2,
           flexDirection: { xs: "column", lg: "row" },
           minWidth: 0,
-          px: 3,
         }}
       >
         {/* 캘린더 */}
@@ -789,7 +780,6 @@ const DashboardPage = () => {
           display: "flex",
           gap: 2,
           flexDirection: { xs: "column", lg: "row" },
-          px: 3,
         }}
       >
         {/* 계약 현황 */}

@@ -1,4 +1,6 @@
 import { Routes, Route, Navigate } from "react-router-dom";
+import { ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 import PrivateRoute from "./components/layout/PrivateRoute";
 import GuestRoute from "./components/layout/GuestRoute";
 import SignUpPage from "@pages/SignUpPage";
@@ -20,40 +22,60 @@ import SchedulePage from "@pages/SchedulePage";
 
 const App = () => {
   return (
-    <Routes>
-      <Route path="form" element={<Navigate to="/error" replace />} />
-      <Route path="form/:surveyId" element={<NewbieSurveyRoute />}>
-        <Route index element={<SubmitSurveyPage />} />
-        <Route path="thank-you" element={<SubmitSurveySuccessPage />} />
-      </Route>
-
-      <Route element={<PrivateRoute />}>
-        <Route index element={<DashboardPage />} />
-        <Route path="customers" element={<CustomerListPage />} />
-        <Route path="customers/:customerId" element={<CustomerDetailPage />} />
-
-        <Route
-          path="properties/private"
-          element={<PrivatePropertyListPage />}
-        />
-        <Route path="properties/public" element={<PublicPropertyListPage />} />
-        <Route path="messages/bulk" element={<BulkMessagePage />} />
-        <Route path="/contracts" element={<ContractListPage />} />
-        <Route path="my">
-          <Route index element={<MyPage />} />
-          <Route path="edit-survey" element={<EditSurveyPage />} />
+    <>
+      <ToastContainer
+        position="top-right"
+        autoClose={3000}
+        hideProgressBar={false}
+        newestOnTop={false}
+        closeOnClick
+        rtl={false}
+        pauseOnFocusLoss
+        draggable
+        pauseOnHover
+        theme="light"
+      />
+      <Routes>
+        <Route path="form" element={<Navigate to="/error" replace />} />
+        <Route path="form/:surveyId" element={<NewbieSurveyRoute />}>
+          <Route index element={<SubmitSurveyPage />} />
+          <Route path="thank-you" element={<SubmitSurveySuccessPage />} />
         </Route>
 
-        <Route path="schedules" element={<SchedulePage />} />
-      </Route>
+        <Route element={<PrivateRoute />}>
+          <Route index element={<DashboardPage />} />
+          <Route path="customers" element={<CustomerListPage />} />
+          <Route
+            path="customers/:customerId"
+            element={<CustomerDetailPage />}
+          />
 
-      <Route element={<GuestRoute />}>
-        <Route path="sign-up" element={<SignUpPage />} />
-        <Route path="sign-in" element={<SignInPage />} />
-      </Route>
+          <Route
+            path="properties/private"
+            element={<PrivatePropertyListPage />}
+          />
+          <Route
+            path="properties/public"
+            element={<PublicPropertyListPage />}
+          />
+          <Route path="messages/bulk" element={<BulkMessagePage />} />
+          <Route path="/contracts" element={<ContractListPage />} />
+          <Route path="my">
+            <Route index element={<MyPage />} />
+            <Route path="edit-survey" element={<EditSurveyPage />} />
+          </Route>
 
-      <Route path="error" element={<ErrorPage />} />
-    </Routes>
+          <Route path="schedules" element={<SchedulePage />} />
+        </Route>
+
+        <Route element={<GuestRoute />}>
+          <Route path="sign-up" element={<SignUpPage />} />
+          <Route path="sign-in" element={<SignInPage />} />
+        </Route>
+
+        <Route path="error" element={<ErrorPage />} />
+      </Routes>
+    </>
   );
 };
 

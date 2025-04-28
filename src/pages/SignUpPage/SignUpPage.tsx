@@ -1,17 +1,29 @@
 import apiClient from "@apis/apiClient";
 import { useNavigate, Link } from "react-router-dom";
 import useInput from "@hooks/useInput";
-import Header from "./Header";
 import NameInput from "./NameInput";
 import EmailInput from "./EmailInput";
 import PasswordInput from "./PasswordInput";
 import Button from "@components/Button";
 import PhoneNumberInput from "./PhoneNumberInput";
 import UserIdInput from "./UserIdInput";
-import { Box, Typography } from "@mui/material";
+import {
+  Box,
+  Typography,
+  FormControl,
+  InputLabel,
+  Select,
+  MenuItem,
+  TextField,
+} from "@mui/material";
 import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import signUpImage from "@assets/sign-up.png";
+import { useState } from "react";
+
+const isValidName = (name: string) => {
+  return name.length >= 2 && name.length <= 20;
+};
 
 const isValidUserId = (id: string) =>
   /^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{4,12}$/.test(id);
@@ -35,47 +47,68 @@ const SignUpPage = () => {
   const [phoneNumber, handleChangePhoneNumber] = useInput("");
   const [password, handleChangePassword] = useInput("");
   const [passwordCheck, handleChangePasswordCheck] = useInput("");
+  const [passwordQuestionUid, setPasswordQuestionUid] = useState("1");
+  const [questionAnswer, setQuestionAnswer] = useState("");
 
-  const isSignUpButtonDisabled =
-    name == "" ||
-    userId == "" ||
-    !email ||
-    !password ||
-    !passwordCheck ||
-    !phoneNumber;
+  const PASSWORD_QUESTIONS = [
+    { uid: 1, question: "당신이 태어난 도시는 어디인가요?" },
+    { uid: 2, question: "당신이 처음 다닌 학교의 이름은 무엇인가요?" },
+    { uid: 3, question: "기억에 남는 선생님의 성함은 무엇인가요?" },
+    { uid: 4, question: "당신이 가장 좋아하는 음식은 무엇인가요?" },
+    { uid: 5, question: "당신이 처음 키운 반려동물의 이름은 무엇인가요?" },
+    { uid: 6, question: "어릴 적 가장 친했던 친구의 이름은 무엇인가요?" },
+    { uid: 7, question: "당신이 가장 좋아하는 영화는 무엇인가요?" },
+    { uid: 8, question: "어릴 적 장래희망은 무엇이었나요?" },
+  ];
+
+  const handleBlur = (field: string, value: string) => {
+    if (field === "passwordCheck") {
+      if (password !== value) {
+        toast.error("비밀번호가 일치하지 않습니다.");
+      }
+    }
+  };
 
   const handleClickSignUpButton = () => {
+    if (!isValidName(name)) {
+      toast.error("이름을 올바르게 입력해주세요.");
+      return;
+    }
     if (!isValidUserId(userId)) {
-      toast.error("아이디는 영문과과 숫자를 포함해 4~12자로 입력해주세요.");
-      return;
-    }
-    if (!isValidPassword(password)) {
-      toast.error(
-        "비밀번호는 영문, 숫자, 특수문자를 포함해 8~20자로 입력해주세요."
-      );
-      return;
-    }
-    if (password !== passwordCheck) {
-      toast.error("비밀번호와 비밀번호 확인이 일치하지 않습니다.");
+      toast.error("아이디를 올바르게 입력해주세요.");
       return;
     }
     if (!isValidEmail(email)) {
-      toast.error("유효한 이메일 형식을 입력해주세요. 예: example@domain.com");
+      toast.error("이메일을 올바르게 입력해주세요.");
+      return;
+    }
+    if (!isValidPassword(password)) {
+      toast.error("비밀번호를 올바르게 입력해주세요.");
+      return;
+    }
+    if (password !== passwordCheck) {
+      toast.error("비밀번호가 일치하지 않습니다.");
       return;
     }
     if (!isValidPhoneNumber(phoneNumber)) {
-      toast.error("전화번호 형식이 올바르지 않습니다. 예: 010-1234-5678");
+      toast.error("전화번호를 올바르게 입력해주세요.");
       return;
     }
+    if (!questionAnswer) {
+      toast.error("비밀번호 찾기 답변을 입력해주세요.");
+      return;
+    }
+
     apiClient
       .post("/users/signup", {
         id: userId,
         password,
         passwordCheck,
+        passwordQuestionUid: Number(passwordQuestionUid),
+        questionAnswer,
         name,
         phoneNo: phoneNumber,
         email,
-        noticeMonth: 0,
       })
       .then((res) => {
         if (res.status === 201) {
@@ -86,7 +119,6 @@ const SignUpPage = () => {
       .catch((error) => {
         const msg = error.response?.data?.message;
         toast.error(msg || "회원가입 중 오류가 발생했습니다.");
-        console.log(error);
       });
   };
 
@@ -116,15 +148,35 @@ const SignUpPage = () => {
 
         {/* Right Panel - Sign Up Form */}
         <div className="w-full lg:w-1/2 flex items-center justify-center bg-white">
-          <div className="w-full max-w-md p-4">
-            <Header />
-            <div className="mt-6 flex flex-col gap-6">
-              <NameInput name={name} handleChangeName={handleChangeName} />
+          <div className="w-full max-w-md p-3">
+            <Typography
+              variant="h5"
+              component="h2"
+              sx={{
+                fontWeight: "bold",
+                color: "#164F9E",
+                mb: 2,
+                textAlign: "center",
+              }}
+            >
+              회원가입
+            </Typography>
+            <div className="flex flex-col gap-4">
+              <NameInput
+                name={name}
+                handleChangeName={handleChangeName}
+                onBlur={() => handleBlur("name", name)}
+              />
               <UserIdInput
                 userId={userId}
                 handleChangeUserId={handleChangeUserId}
+                onBlur={() => handleBlur("userId", userId)}
               />
-              <EmailInput email={email} handleChangeEmail={handleChangeEmail} />
+              <EmailInput
+                email={email}
+                handleChangeEmail={handleChangeEmail}
+                onBlur={() => handleBlur("email", email)}
+              />
               <PasswordInput
                 password={password}
                 passwordCheck={passwordCheck}
@@ -134,15 +186,55 @@ const SignUpPage = () => {
               <PhoneNumberInput
                 phoneNumber={phoneNumber}
                 handleChangePhoneNumber={handleChangePhoneNumber}
+                onBlur={() => handleBlur("phoneNumber", phoneNumber)}
+              />
+
+              {/* Password Question Fields */}
+              <FormControl fullWidth required>
+                <InputLabel>비밀번호 찾기 질문</InputLabel>
+                <Select
+                  value={passwordQuestionUid}
+                  onChange={(e) => setPasswordQuestionUid(e.target.value)}
+                  label="비밀번호 찾기 질문"
+                >
+                  {PASSWORD_QUESTIONS.map((q) => (
+                    <MenuItem key={q.uid} value={q.uid}>
+                      {q.question}
+                    </MenuItem>
+                  ))}
+                </Select>
+              </FormControl>
+
+              <TextField
+                fullWidth
+                required
+                label="비밀번호 찾기 답변"
+                value={questionAnswer}
+                onChange={(e) => setQuestionAnswer(e.target.value)}
+                placeholder="질문에 대한 답변을 입력해주세요"
               />
             </div>
 
             <Button
               text="가입하기"
               onClick={handleClickSignUpButton}
-              disabled={isSignUpButtonDisabled}
+              disabled={
+                !name ||
+                !userId ||
+                !email ||
+                !password ||
+                !passwordCheck ||
+                !phoneNumber ||
+                !questionAnswer ||
+                !isValidName(name) ||
+                !isValidUserId(userId) ||
+                !isValidEmail(email) ||
+                !isValidPassword(password) ||
+                !isValidPhoneNumber(phoneNumber) ||
+                password !== passwordCheck
+              }
               sx={{
-                marginTop: "32px",
+                marginTop: "20px",
                 width: "100%",
                 color: "white",
                 minHeight: "40px",
@@ -168,7 +260,7 @@ const SignUpPage = () => {
                 display: "flex",
                 justifyContent: "center",
                 alignItems: "center",
-                mt: 3,
+                mt: 2,
                 gap: 1,
               }}
             >

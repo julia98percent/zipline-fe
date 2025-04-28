@@ -1,33 +1,53 @@
-import { TextField } from "@mui/material";
+import { ChangeEvent } from "react";
+import { TextField, Tooltip } from "@mui/material";
+import ErrorOutlineIcon from "@mui/icons-material/ErrorOutline";
 
-interface NameInputProps {
+export interface NameInputProps {
   name: string;
-  handleChangeName: (e: React.ChangeEvent<HTMLInputElement>) => void;
+  handleChangeName: (e: ChangeEvent<HTMLInputElement>) => void;
+  error?: boolean;
+  helperText?: string;
+  onBlur?: () => void;
 }
 
-const NameInput = ({ name, handleChangeName }: NameInputProps) => {
+const isValidName = (name: string) => {
+  return name.length >= 2 && name.length <= 20;
+};
+
+const NameInput = ({
+  name,
+  handleChangeName,
+  error,
+  helperText,
+  onBlur,
+}: NameInputProps) => {
+  const isError = error || (name && !isValidName(name));
+  const errorMessage =
+    helperText ||
+    (name && !isValidName(name)
+      ? "이름은 2자 이상 20자 이하로 입력해주세요"
+      : "");
+
   return (
-    <TextField
-      label="이름"
-      value={name}
-      onChange={handleChangeName}
-      fullWidth
-      required
-      variant="outlined"
-      sx={{
-        "& .MuiOutlinedInput-root": {
-          "&:hover fieldset": {
-            borderColor: "#164F9E",
-          },
-          "&.Mui-focused fieldset": {
-            borderColor: "#164F9E",
-          },
-        },
-        "& .MuiInputLabel-root.Mui-focused": {
-          color: "#164F9E",
-        },
-      }}
-    />
+    <div style={{ position: "relative" }}>
+      <TextField
+        fullWidth
+        required
+        label="이름"
+        value={name}
+        onChange={handleChangeName}
+        onBlur={onBlur}
+        error={isError}
+        placeholder="2자 이상 20자 이하로 입력해주세요"
+        InputProps={{
+          endAdornment: isError && (
+            <Tooltip title={errorMessage} arrow placement="right">
+              <ErrorOutlineIcon color="error" sx={{ cursor: "help" }} />
+            </Tooltip>
+          ),
+        }}
+      />
+    </div>
   );
 };
 

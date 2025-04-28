@@ -1,101 +1,94 @@
-import { useState } from "react";
-import { TextField, InputAdornment, IconButton } from "@mui/material";
-import { Visibility, VisibilityOff } from "@mui/icons-material";
+import { ChangeEvent } from "react";
+import { TextField, Tooltip } from "@mui/material";
+import ErrorOutlineIcon from "@mui/icons-material/ErrorOutline";
 
-interface PasswordInputProps {
+export interface PasswordInputProps {
   password: string;
   passwordCheck: string;
-  handleChangePassword: (e: React.ChangeEvent<HTMLInputElement>) => void;
-  handleChangePasswordCheck: (e: React.ChangeEvent<HTMLInputElement>) => void;
+  handleChangePassword: (e: ChangeEvent<HTMLInputElement>) => void;
+  handleChangePasswordCheck: (e: ChangeEvent<HTMLInputElement>) => void;
+  error?: boolean;
+  helperText?: string;
+  onBlur?: () => void;
 }
+
+const isValidPassword = (pw: string) =>
+  /^(?=.*[A-Za-z])(?=.*\d)(?=.*[!@#$%^&*()_+])[A-Za-z\d!@#$%^&*()_+]{8,20}$/.test(
+    pw
+  );
 
 const PasswordInput = ({
   password,
   passwordCheck,
   handleChangePassword,
   handleChangePasswordCheck,
+  error,
+  helperText,
+  onBlur,
 }: PasswordInputProps) => {
-  const [showPassword, setShowPassword] = useState(false);
-  const [showPasswordCheck, setShowPasswordCheck] = useState(false);
+  const isPasswordError = error || (password && !isValidPassword(password));
+  const isPasswordCheckError =
+    error || (passwordCheck && password !== passwordCheck);
 
-  const handleClickShowPassword = () => setShowPassword((show) => !show);
-  const handleClickShowPasswordCheck = () =>
-    setShowPasswordCheck((show) => !show);
+  const passwordErrorMessage =
+    helperText ||
+    (password && !isValidPassword(password)
+      ? "영문, 숫자, 특수문자를 포함해 8~20자로 입력해주세요"
+      : "");
+
+  const passwordCheckErrorMessage =
+    helperText ||
+    (passwordCheck && password !== passwordCheck
+      ? "비밀번호가 일치하지 않습니다"
+      : "");
 
   return (
-    <div className="flex flex-col gap-4">
-      <TextField
-        label="비밀번호"
-        type={showPassword ? "text" : "password"}
-        value={password}
-        onChange={handleChangePassword}
-        fullWidth
-        required
-        variant="outlined"
-        helperText="영문, 숫자, 특수문자를 포함해 8~20자로 입력해주세요."
-        InputProps={{
-          endAdornment: (
-            <InputAdornment position="end">
-              <IconButton
-                aria-label="toggle password visibility"
-                onClick={handleClickShowPassword}
-                edge="end"
+    <>
+      <div style={{ position: "relative" }}>
+        <TextField
+          fullWidth
+          required
+          type="password"
+          label="비밀번호"
+          value={password}
+          onChange={handleChangePassword}
+          onBlur={onBlur}
+          error={isPasswordError}
+          placeholder="영문, 숫자, 특수문자를 포함해 8~20자로 입력해주세요"
+          InputProps={{
+            endAdornment: isPasswordError && (
+              <Tooltip title={passwordErrorMessage} arrow placement="right">
+                <ErrorOutlineIcon color="error" sx={{ cursor: "help" }} />
+              </Tooltip>
+            ),
+          }}
+        />
+      </div>
+      <div style={{ position: "relative" }}>
+        <TextField
+          fullWidth
+          required
+          type="password"
+          label="비밀번호 확인"
+          value={passwordCheck}
+          onChange={handleChangePasswordCheck}
+          onBlur={onBlur}
+          error={isPasswordCheckError}
+          placeholder="비밀번호를 다시 입력해주세요"
+          InputProps={{
+            endAdornment: isPasswordCheckError && (
+              <Tooltip
+                title={passwordCheckErrorMessage}
+                arrow
+                placement="right"
               >
-                {showPassword ? <VisibilityOff /> : <Visibility />}
-              </IconButton>
-            </InputAdornment>
-          ),
-        }}
-        sx={{
-          "& .MuiOutlinedInput-root": {
-            "&:hover fieldset": {
-              borderColor: "#164F9E",
-            },
-            "&.Mui-focused fieldset": {
-              borderColor: "#164F9E",
-            },
-          },
-          "& .MuiInputLabel-root.Mui-focused": {
-            color: "#164F9E",
-          },
-        }}
-      />
-      <TextField
-        label="비밀번호 확인"
-        type={showPasswordCheck ? "text" : "password"}
-        value={passwordCheck}
-        onChange={handleChangePasswordCheck}
-        fullWidth
-        required
-        variant="outlined"
-        InputProps={{
-          endAdornment: (
-            <InputAdornment position="end">
-              <IconButton
-                aria-label="toggle password visibility"
-                onClick={handleClickShowPasswordCheck}
-                edge="end"
-              >
-                {showPasswordCheck ? <VisibilityOff /> : <Visibility />}
-              </IconButton>
-            </InputAdornment>
-          ),
-        }}
-        sx={{
-          "& .MuiOutlinedInput-root": {
-            "&:hover fieldset": {
-              borderColor: "#164F9E",
-            },
-            "&.Mui-focused fieldset": {
-              borderColor: "#164F9E",
-            },
-          },
-          "& .MuiInputLabel-root.Mui-focused": {
-            color: "#164F9E",
-          },
-        }}
-      />
-    </div>
+                <ErrorOutlineIcon color="error" sx={{ cursor: "help" }} />
+              </Tooltip>
+            ),
+          }}
+        />
+      </div>
+    </>
   );
 };
 

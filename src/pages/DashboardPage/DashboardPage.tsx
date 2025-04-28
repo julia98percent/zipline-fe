@@ -397,561 +397,562 @@ const DashboardPage = () => {
     >
       <PageHeader title="대시보드" userName="사용자 이름" />
 
-      {/* 통계 카드 영역 */}
-      <Box
-        sx={{
-          display: "flex",
-          flexWrap: "wrap",
-          gap: 1.5,
-          mb: 2,
-          mt: 2,
-          px: 3,
-        }}
-      >
-        {statCards.map((card, index) => (
-          <Box
-            key={index}
-            sx={{
-              flex: {
-                xs: "1 1 100%",
-                sm: "1 1 calc(50% - 12px)",
-                md: "1 1 calc(25% - 12px)",
-              },
-              height: "120px",
-            }}
-          >
-            <Card
-              sx={{
-                height: "100%",
-                display: "flex",
-                flexDirection: "column",
-                boxShadow: "none",
-                borderRadius: "16px",
-                backgroundColor: "#fff",
-                transition: "background-color 0.2s ease",
-                "&:hover": {
-                  backgroundColor: "#f8f9fa",
-                },
-              }}
-            >
-              <CardContent
-                sx={{
-                  flex: 1,
-                  display: "flex",
-                  flexDirection: "column",
-                  justifyContent: "space-between",
-                  p: 2,
-                }}
-              >
-                <Box sx={{ display: "flex", alignItems: "center", mb: 1 }}>
-                  {card.icon}
-                  <Typography
-                    variant="subtitle1"
-                    component="h2"
-                    sx={{ ml: 2, color: "#222222", fontWeight: "bold" }}
-                  >
-                    {card.title}
-                  </Typography>
-                </Box>
-                <Box>
-                  <Box sx={{ display: "flex", alignItems: "baseline" }}>
-                    <Typography
-                      variant="h5"
-                      component="p"
-                      sx={{
-                        fontWeight: "bold",
-                        color: "#164F9E",
-                        ...(card.isContract &&
-                          card.value > 0 && {
-                            cursor: "pointer",
-                            textDecoration: "underline",
-                            "&:hover": {
-                              color: "#0D3B7A",
-                            },
-                          }),
-                      }}
-                      onClick={() => {
-                        if (card.isContract && card.value > 0) {
-                          navigate("/contracts");
-                        }
-                      }}
-                    >
-                      {card.value}
-                    </Typography>
-                    <Typography
-                      component="span"
-                      variant="body2"
-                      sx={{ ml: 1, color: "#222222" }}
-                    >
-                      {card.unit}
-                    </Typography>
-                  </Box>
-                </Box>
-              </CardContent>
-            </Card>
-          </Box>
-        ))}
-      </Box>
-
-      {/* 캘린더와 문의 리스트 영역 */}
-      <Box
-        sx={{
-          display: "flex",
-          gap: 2,
-          flexDirection: { xs: "column", lg: "row" },
-          minWidth: 0,
-        }}
-      >
-        {/* 캘린더 */}
-        <Card
+      <Box sx={{ p: 3, pt: 0 }}>
+        {/* 통계 카드 영역 */}
+        <Box
           sx={{
-            width: { xs: "100%", lg: "60%" },
-            boxShadow: "none",
-            borderRadius: "16px",
-            backgroundColor: "#fff",
+            display: "flex",
+            flexWrap: "wrap",
+            gap: 1.5,
+            mb: 2,
+            mt: 2,
           }}
         >
-          <CardContent>
+          {statCards.map((card, index) => (
             <Box
+              key={index}
               sx={{
-                display: "flex",
-                justifyContent: "space-between",
-                alignItems: "center",
-                mb: 2,
+                flex: {
+                  xs: "1 1 100%",
+                  sm: "1 1 calc(50% - 12px)",
+                  md: "1 1 calc(25% - 12px)",
+                },
+                height: "120px",
               }}
             >
-              <Box>
-                <Typography
-                  variant="h6"
-                  sx={{ color: "#164F9E", fontWeight: "bold" }}
-                >
-                  주간 일정
-                </Typography>
-                <Typography variant="body2" sx={{ color: "#666" }}>
-                  {currentWeekRange()}
-                </Typography>
-              </Box>
-              <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
-                <Box
-                  onClick={() => navigate("/schedules")}
+              <Card
+                sx={{
+                  height: "100%",
+                  display: "flex",
+                  flexDirection: "column",
+                  boxShadow: "none",
+                  borderRadius: "16px",
+                  backgroundColor: "#fff",
+                  transition: "background-color 0.2s ease",
+                  "&:hover": {
+                    backgroundColor: "#f8f9fa",
+                  },
+                }}
+              >
+                <CardContent
                   sx={{
+                    flex: 1,
                     display: "flex",
-                    alignItems: "center",
-                    px: 2,
-                    py: 0.5,
-                    border: "1px solid #164F9E",
-                    borderRadius: "4px",
-                    cursor: "pointer",
-                    color: "#164F9E",
-                    transition: "all 0.2s ease-in-out",
-                    "&:hover": {
-                      backgroundColor: "#164F9E",
-                      color: "#fff",
-                    },
+                    flexDirection: "column",
+                    justifyContent: "space-between",
+                    p: 2,
                   }}
                 >
-                  <Typography variant="body2">전체 일정 보기</Typography>
-                </Box>
-                <IconButton
-                  onClick={handlePrevWeek}
-                  size="small"
-                  sx={{
-                    border: "1px solid #e0e0e0",
-                    borderRadius: "4px",
-                    "&:hover": {
-                      backgroundColor: "rgba(22, 79, 158, 0.04)",
-                    },
-                  }}
-                >
-                  <ChevronLeftIcon fontSize="small" />
-                </IconButton>
-                <Box
-                  onClick={() => setSelectedDate(new Date())}
-                  sx={{
-                    px: 2,
-                    py: 0.5,
-                    border: "1px solid #e0e0e0",
-                    borderRadius: "4px",
-                    cursor: "pointer",
-                    "&:hover": {
-                      backgroundColor: "rgba(22, 79, 158, 0.04)",
-                    },
-                  }}
-                >
-                  <Typography variant="body2">오늘</Typography>
-                </Box>
-                <IconButton
-                  onClick={handleNextWeek}
-                  size="small"
-                  sx={{
-                    border: "1px solid #e0e0e0",
-                    borderRadius: "4px",
-                    "&:hover": {
-                      backgroundColor: "rgba(22, 79, 158, 0.04)",
-                    },
-                  }}
-                >
-                  <ChevronRightIcon fontSize="small" />
-                </IconButton>
-              </Box>
-            </Box>
-
-            {/* 일정 표시 */}
-            <TableContainer
-              component={Paper}
-              sx={{
-                mt: 2,
-                boxShadow: "none",
-                border: "1px solid #e0e0e0",
-                borderRadius: "8px",
-              }}
-            >
-              <Table>
-                <TableHead>
-                  <TableRow>
-                    {getWeekDates().map((date) => (
-                      <TableCell
-                        key={date.format("YYYY-MM-DD")}
-                        align="center"
+                  <Box sx={{ display: "flex", alignItems: "center", mb: 1 }}>
+                    {card.icon}
+                    <Typography
+                      variant="subtitle1"
+                      component="h2"
+                      sx={{ ml: 2, color: "#222222", fontWeight: "bold" }}
+                    >
+                      {card.title}
+                    </Typography>
+                  </Box>
+                  <Box>
+                    <Box sx={{ display: "flex", alignItems: "baseline" }}>
+                      <Typography
+                        variant="h5"
+                        component="p"
                         sx={{
                           fontWeight: "bold",
-                          color:
-                            date.day() === 0
-                              ? "#d10000"
-                              : date.day() === 6
-                              ? "#164f9e"
-                              : "#333",
-                          borderBottom: "1px solid #e0e0e0",
-                          width: `${100 / 7}%`,
-                          py: 1,
+                          color: "#164F9E",
+                          ...(card.isContract &&
+                            card.value > 0 && {
+                              cursor: "pointer",
+                              textDecoration: "underline",
+                              "&:hover": {
+                                color: "#0D3B7A",
+                              },
+                            }),
+                        }}
+                        onClick={() => {
+                          if (card.isContract && card.value > 0) {
+                            navigate("/contracts");
+                          }
                         }}
                       >
-                        {getDayName(date)}
-                      </TableCell>
-                    ))}
-                  </TableRow>
-                </TableHead>
-                <TableBody>
-                  <TableRow sx={{ height: "400px" }}>
-                    {getWeekDates().map((date) => (
-                      <TableCell
-                        key={date.format("YYYY-MM-DD")}
+                        {card.value}
+                      </Typography>
+                      <Typography
+                        component="span"
+                        variant="body2"
+                        sx={{ ml: 1, color: "#222222" }}
+                      >
+                        {card.unit}
+                      </Typography>
+                    </Box>
+                  </Box>
+                </CardContent>
+              </Card>
+            </Box>
+          ))}
+        </Box>
+
+        {/* 캘린더와 문의 리스트 영역 */}
+        <Box
+          sx={{
+            display: "flex",
+            gap: 2,
+            flexDirection: { xs: "column", lg: "row" },
+            minWidth: 0,
+          }}
+        >
+          {/* 캘린더 */}
+          <Card
+            sx={{
+              width: { xs: "100%", lg: "60%" },
+              boxShadow: "none",
+              borderRadius: "16px",
+              backgroundColor: "#fff",
+            }}
+          >
+            <CardContent>
+              <Box
+                sx={{
+                  display: "flex",
+                  justifyContent: "space-between",
+                  alignItems: "center",
+                  mb: 2,
+                }}
+              >
+                <Box>
+                  <Typography
+                    variant="h6"
+                    sx={{ color: "#164F9E", fontWeight: "bold" }}
+                  >
+                    주간 일정
+                  </Typography>
+                  <Typography variant="body2" sx={{ color: "#666" }}>
+                    {currentWeekRange()}
+                  </Typography>
+                </Box>
+                <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
+                  <Box
+                    onClick={() => navigate("/schedules")}
+                    sx={{
+                      display: "flex",
+                      alignItems: "center",
+                      px: 2,
+                      py: 0.5,
+                      border: "1px solid #164F9E",
+                      borderRadius: "4px",
+                      cursor: "pointer",
+                      color: "#164F9E",
+                      transition: "all 0.2s ease-in-out",
+                      "&:hover": {
+                        backgroundColor: "#164F9E",
+                        color: "#fff",
+                      },
+                    }}
+                  >
+                    <Typography variant="body2">전체 일정 보기</Typography>
+                  </Box>
+                  <IconButton
+                    onClick={handlePrevWeek}
+                    size="small"
+                    sx={{
+                      border: "1px solid #e0e0e0",
+                      borderRadius: "4px",
+                      "&:hover": {
+                        backgroundColor: "rgba(22, 79, 158, 0.04)",
+                      },
+                    }}
+                  >
+                    <ChevronLeftIcon fontSize="small" />
+                  </IconButton>
+                  <Box
+                    onClick={() => setSelectedDate(new Date())}
+                    sx={{
+                      px: 2,
+                      py: 0.5,
+                      border: "1px solid #e0e0e0",
+                      borderRadius: "4px",
+                      cursor: "pointer",
+                      "&:hover": {
+                        backgroundColor: "rgba(22, 79, 158, 0.04)",
+                      },
+                    }}
+                  >
+                    <Typography variant="body2">오늘</Typography>
+                  </Box>
+                  <IconButton
+                    onClick={handleNextWeek}
+                    size="small"
+                    sx={{
+                      border: "1px solid #e0e0e0",
+                      borderRadius: "4px",
+                      "&:hover": {
+                        backgroundColor: "rgba(22, 79, 158, 0.04)",
+                      },
+                    }}
+                  >
+                    <ChevronRightIcon fontSize="small" />
+                  </IconButton>
+                </Box>
+              </Box>
+
+              {/* 일정 표시 */}
+              <TableContainer
+                component={Paper}
+                sx={{
+                  mt: 2,
+                  boxShadow: "none",
+                  border: "1px solid #e0e0e0",
+                  borderRadius: "8px",
+                }}
+              >
+                <Table>
+                  <TableHead>
+                    <TableRow>
+                      {getWeekDates().map((date) => (
+                        <TableCell
+                          key={date.format("YYYY-MM-DD")}
+                          align="center"
+                          sx={{
+                            fontWeight: "bold",
+                            color:
+                              date.day() === 0
+                                ? "#d10000"
+                                : date.day() === 6
+                                ? "#164f9e"
+                                : "#333",
+                            borderBottom: "1px solid #e0e0e0",
+                            width: `${100 / 7}%`,
+                            py: 1,
+                          }}
+                        >
+                          {getDayName(date)}
+                        </TableCell>
+                      ))}
+                    </TableRow>
+                  </TableHead>
+                  <TableBody>
+                    <TableRow sx={{ height: "400px" }}>
+                      {getWeekDates().map((date) => (
+                        <TableCell
+                          key={date.format("YYYY-MM-DD")}
+                          sx={{
+                            verticalAlign: "top",
+                            p: 1,
+                            position: "relative",
+                            borderRight: "1px solid #e0e0e0",
+                            "&:last-child": {
+                              borderRight: "none",
+                            },
+                          }}
+                        >
+                          <Typography
+                            variant="body2"
+                            sx={{
+                              color: "#666",
+                              mb: 1,
+                              textAlign: "center",
+                            }}
+                          >
+                            {date.format("DD")}
+                          </Typography>
+                          {schedules
+                            .filter(
+                              (schedule) =>
+                                dayjs(schedule.date).format("YYYY-MM-DD") ===
+                                date.format("YYYY-MM-DD")
+                            )
+                            .map((schedule) => (
+                              <Box
+                                key={schedule.id}
+                                sx={{
+                                  p: 1,
+                                  mb: 1,
+                                  borderRadius: 1,
+                                  backgroundColor: getScheduleColor(
+                                    schedule.type
+                                  ),
+                                  cursor: "pointer",
+                                  "&:hover": {
+                                    filter: "brightness(0.95)",
+                                  },
+                                  fontSize: "0.875rem",
+                                  border: "1px solid rgba(0,0,0,0.1)",
+                                }}
+                              >
+                                <Typography
+                                  variant="body2"
+                                  sx={{
+                                    fontWeight: "bold",
+                                    fontSize: "0.75rem",
+                                    color: "#666",
+                                  }}
+                                >
+                                  {schedule.time}
+                                </Typography>
+                                <Typography
+                                  variant="body2"
+                                  sx={{
+                                    fontWeight: "bold",
+                                    color: "#333",
+                                  }}
+                                >
+                                  {schedule.title}
+                                </Typography>
+                              </Box>
+                            ))}
+                        </TableCell>
+                      ))}
+                    </TableRow>
+                  </TableBody>
+                </Table>
+              </TableContainer>
+            </CardContent>
+          </Card>
+
+          {/* 문의 리스트 */}
+          <Card
+            sx={{
+              width: { xs: "100%", lg: "40%" },
+              boxShadow: "none",
+              borderRadius: "16px",
+              backgroundColor: "#fff",
+            }}
+          >
+            <CardContent>
+              <Typography
+                variant="h6"
+                sx={{ mb: 2, color: "#164F9E", fontWeight: "bold" }}
+              >
+                신규 설문
+              </Typography>
+              <TableContainer sx={{ maxHeight: 400 }}>
+                <Table stickyHeader>
+                  <TableHead>
+                    <TableRow>
+                      <TableCell>고객명</TableCell>
+                      <TableCell>연락처</TableCell>
+                      <TableCell>제출일</TableCell>
+                      <TableCell>상태</TableCell>
+                    </TableRow>
+                  </TableHead>
+                  <TableBody>
+                    {inquiries.map((inquiry) => (
+                      <TableRow
+                        key={inquiry.id}
+                        hover
                         sx={{
-                          verticalAlign: "top",
-                          p: 1,
-                          position: "relative",
-                          borderRight: "1px solid #e0e0e0",
-                          "&:last-child": {
-                            borderRight: "none",
+                          cursor: "pointer",
+                          "&:hover": {
+                            backgroundColor: "rgba(22, 79, 158, 0.04)",
                           },
                         }}
                       >
-                        <Typography
-                          variant="body2"
-                          sx={{
-                            color: "#666",
-                            mb: 1,
-                            textAlign: "center",
-                          }}
-                        >
-                          {date.format("DD")}
-                        </Typography>
-                        {schedules
-                          .filter(
-                            (schedule) =>
-                              dayjs(schedule.date).format("YYYY-MM-DD") ===
-                              date.format("YYYY-MM-DD")
-                          )
-                          .map((schedule) => (
-                            <Box
-                              key={schedule.id}
-                              sx={{
-                                p: 1,
-                                mb: 1,
-                                borderRadius: 1,
-                                backgroundColor: getScheduleColor(
-                                  schedule.type
-                                ),
-                                cursor: "pointer",
-                                "&:hover": {
-                                  filter: "brightness(0.95)",
-                                },
-                                fontSize: "0.875rem",
-                                border: "1px solid rgba(0,0,0,0.1)",
-                              }}
-                            >
-                              <Typography
-                                variant="body2"
+                        <TableCell>{inquiry.customerName}</TableCell>
+                        <TableCell>{inquiry.phoneNumber}</TableCell>
+                        <TableCell>{inquiry.submittedDate}</TableCell>
+                        <TableCell>
+                          <Chip
+                            label={inquiry.isRead ? "읽음" : "미읽음"}
+                            color={inquiry.isRead ? "default" : "primary"}
+                            size="small"
+                            sx={{
+                              backgroundColor: inquiry.isRead
+                                ? "#e0e0e0"
+                                : "#164F9E",
+                              color: inquiry.isRead ? "#666" : "white",
+                            }}
+                          />
+                        </TableCell>
+                      </TableRow>
+                    ))}
+                  </TableBody>
+                </Table>
+              </TableContainer>
+            </CardContent>
+          </Card>
+        </Box>
+
+        {/* 계약 및 상담 영역 */}
+        <Box
+          sx={{
+            mt: 2,
+            display: "flex",
+            gap: 2,
+            flexDirection: { xs: "column", lg: "row" },
+          }}
+        >
+          {/* 계약 현황 */}
+          <Card
+            sx={{
+              flex: { xs: "1 1 100%", lg: 1 },
+              display: "flex",
+              flexDirection: "column",
+              maxHeight: { xs: "500px", lg: "600px" },
+              boxShadow: "none",
+              border: "1px solid #e0e0e0",
+              borderRadius: "16px",
+              backgroundColor: "#fff",
+            }}
+          >
+            <CardContent
+              sx={{ flex: 1, display: "flex", flexDirection: "column", p: 0 }}
+            >
+              <Box sx={{ p: 2 }}>
+                <Typography
+                  variant="h6"
+                  sx={{ color: "#164F9E", fontWeight: "bold", mb: 2 }}
+                >
+                  계약
+                </Typography>
+                <Tabs
+                  value={contractTab}
+                  onChange={handleContractTabChange}
+                  sx={{
+                    minHeight: 36,
+                    "& .MuiTab-root": {
+                      minHeight: 36,
+                      textTransform: "none",
+                      fontSize: "0.875rem",
+                      fontWeight: "medium",
+                      color: "#666",
+                      "&.Mui-selected": {
+                        color: "#164F9E",
+                      },
+                    },
+                    "& .MuiTabs-indicator": {
+                      backgroundColor: "#164F9E",
+                    },
+                  }}
+                >
+                  <Tab value="expiring" label="만료 예정 계약" />
+                  <Tab value="recent" label="최근 계약" />
+                </Tabs>
+              </Box>
+
+              <TableContainer sx={{ flex: 1, overflow: "auto" }}>
+                <Table stickyHeader>
+                  <TableHead>
+                    <TableRow>
+                      <TableCell>고객명</TableCell>
+                      <TableCell>고객 타입</TableCell>
+                      <TableCell>계약 종료일</TableCell>
+                      <TableCell>카테고리</TableCell>
+                    </TableRow>
+                  </TableHead>
+                  <TableBody>
+                    {getFilteredContracts().map((contract) => (
+                      <TableRow
+                        key={contract.id}
+                        hover
+                        sx={{ cursor: "pointer" }}
+                      >
+                        <TableCell>{contract.customerName}</TableCell>
+                        <TableCell>
+                          <Box sx={{ display: "flex", gap: 1 }}>
+                            {contract.customerTypes.map((type, index) => (
+                              <Chip
+                                key={index}
+                                label={type}
+                                size="small"
                                 sx={{
-                                  fontWeight: "bold",
-                                  fontSize: "0.75rem",
-                                  color: "#666",
-                                }}
-                              >
-                                {schedule.time}
-                              </Typography>
-                              <Typography
-                                variant="body2"
-                                sx={{
-                                  fontWeight: "bold",
+                                  backgroundColor: getContractTypeColor(type),
                                   color: "#333",
                                 }}
-                              >
-                                {schedule.title}
-                              </Typography>
-                            </Box>
-                          ))}
-                      </TableCell>
+                              />
+                            ))}
+                          </Box>
+                        </TableCell>
+                        <TableCell>
+                          {dayjs(contract.endDate).format("YYYY-MM-DD")}
+                        </TableCell>
+                        <TableCell>{contract.category}</TableCell>
+                      </TableRow>
                     ))}
-                  </TableRow>
-                </TableBody>
-              </Table>
-            </TableContainer>
-          </CardContent>
-        </Card>
+                  </TableBody>
+                </Table>
+              </TableContainer>
+            </CardContent>
+          </Card>
 
-        {/* 문의 리스트 */}
-        <Card
-          sx={{
-            width: { xs: "100%", lg: "40%" },
-            boxShadow: "none",
-            borderRadius: "16px",
-            backgroundColor: "#fff",
-          }}
-        >
-          <CardContent>
-            <Typography
-              variant="h6"
-              sx={{ mb: 2, color: "#164F9E", fontWeight: "bold" }}
+          {/* 상담 현황 */}
+          <Card
+            sx={{
+              flex: { xs: "1 1 100%", lg: 1 },
+              display: "flex",
+              flexDirection: "column",
+              maxHeight: { xs: "500px", lg: "600px" },
+              boxShadow: "none",
+              borderRadius: "16px",
+              backgroundColor: "#fff",
+            }}
+          >
+            <CardContent
+              sx={{ flex: 1, display: "flex", flexDirection: "column", p: 0 }}
             >
-              신규 설문
-            </Typography>
-            <TableContainer sx={{ maxHeight: 400 }}>
-              <Table stickyHeader>
-                <TableHead>
-                  <TableRow>
-                    <TableCell>고객명</TableCell>
-                    <TableCell>연락처</TableCell>
-                    <TableCell>제출일</TableCell>
-                    <TableCell>상태</TableCell>
-                  </TableRow>
-                </TableHead>
-                <TableBody>
-                  {inquiries.map((inquiry) => (
-                    <TableRow
-                      key={inquiry.id}
-                      hover
-                      sx={{
-                        cursor: "pointer",
-                        "&:hover": {
-                          backgroundColor: "rgba(22, 79, 158, 0.04)",
-                        },
-                      }}
-                    >
-                      <TableCell>{inquiry.customerName}</TableCell>
-                      <TableCell>{inquiry.phoneNumber}</TableCell>
-                      <TableCell>{inquiry.submittedDate}</TableCell>
-                      <TableCell>
-                        <Chip
-                          label={inquiry.isRead ? "읽음" : "미읽음"}
-                          color={inquiry.isRead ? "default" : "primary"}
-                          size="small"
-                          sx={{
-                            backgroundColor: inquiry.isRead
-                              ? "#e0e0e0"
-                              : "#164F9E",
-                            color: inquiry.isRead ? "#666" : "white",
-                          }}
-                        />
-                      </TableCell>
-                    </TableRow>
-                  ))}
-                </TableBody>
-              </Table>
-            </TableContainer>
-          </CardContent>
-        </Card>
-      </Box>
-
-      {/* 계약 및 상담 영역 */}
-      <Box
-        sx={{
-          mt: 2,
-          display: "flex",
-          gap: 2,
-          flexDirection: { xs: "column", lg: "row" },
-        }}
-      >
-        {/* 계약 현황 */}
-        <Card
-          sx={{
-            flex: { xs: "1 1 100%", lg: 1 },
-            display: "flex",
-            flexDirection: "column",
-            maxHeight: { xs: "500px", lg: "600px" },
-            boxShadow: "none",
-            border: "1px solid #e0e0e0",
-            borderRadius: "16px",
-            backgroundColor: "#fff",
-          }}
-        >
-          <CardContent
-            sx={{ flex: 1, display: "flex", flexDirection: "column", p: 0 }}
-          >
-            <Box sx={{ p: 2 }}>
-              <Typography
-                variant="h6"
-                sx={{ color: "#164F9E", fontWeight: "bold", mb: 2 }}
-              >
-                계약
-              </Typography>
-              <Tabs
-                value={contractTab}
-                onChange={handleContractTabChange}
-                sx={{
-                  minHeight: 36,
-                  "& .MuiTab-root": {
+              <Box sx={{ p: 2 }}>
+                <Typography
+                  variant="h6"
+                  sx={{ color: "#164F9E", fontWeight: "bold", mb: 2 }}
+                >
+                  상담
+                </Typography>
+                <Tabs
+                  value={consultationTab}
+                  onChange={handleConsultationTabChange}
+                  sx={{
                     minHeight: 36,
-                    textTransform: "none",
-                    fontSize: "0.875rem",
-                    fontWeight: "medium",
-                    color: "#666",
-                    "&.Mui-selected": {
-                      color: "#164F9E",
+                    "& .MuiTab-root": {
+                      minHeight: 36,
+                      textTransform: "none",
+                      fontSize: "0.875rem",
+                      fontWeight: "medium",
+                      color: "#666",
+                      "&.Mui-selected": {
+                        color: "#164F9E",
+                      },
                     },
-                  },
-                  "& .MuiTabs-indicator": {
-                    backgroundColor: "#164F9E",
-                  },
-                }}
-              >
-                <Tab value="expiring" label="만료 예정 계약" />
-                <Tab value="recent" label="최근 계약" />
-              </Tabs>
-            </Box>
-
-            <TableContainer sx={{ flex: 1, overflow: "auto" }}>
-              <Table stickyHeader>
-                <TableHead>
-                  <TableRow>
-                    <TableCell>고객명</TableCell>
-                    <TableCell>고객 타입</TableCell>
-                    <TableCell>계약 종료일</TableCell>
-                    <TableCell>카테고리</TableCell>
-                  </TableRow>
-                </TableHead>
-                <TableBody>
-                  {getFilteredContracts().map((contract) => (
-                    <TableRow
-                      key={contract.id}
-                      hover
-                      sx={{ cursor: "pointer" }}
-                    >
-                      <TableCell>{contract.customerName}</TableCell>
-                      <TableCell>
-                        <Box sx={{ display: "flex", gap: 1 }}>
-                          {contract.customerTypes.map((type, index) => (
-                            <Chip
-                              key={index}
-                              label={type}
-                              size="small"
-                              sx={{
-                                backgroundColor: getContractTypeColor(type),
-                                color: "#333",
-                              }}
-                            />
-                          ))}
-                        </Box>
-                      </TableCell>
-                      <TableCell>
-                        {dayjs(contract.endDate).format("YYYY-MM-DD")}
-                      </TableCell>
-                      <TableCell>{contract.category}</TableCell>
-                    </TableRow>
-                  ))}
-                </TableBody>
-              </Table>
-            </TableContainer>
-          </CardContent>
-        </Card>
-
-        {/* 상담 현황 */}
-        <Card
-          sx={{
-            flex: { xs: "1 1 100%", lg: 1 },
-            display: "flex",
-            flexDirection: "column",
-            maxHeight: { xs: "500px", lg: "600px" },
-            boxShadow: "none",
-            borderRadius: "16px",
-            backgroundColor: "#fff",
-          }}
-        >
-          <CardContent
-            sx={{ flex: 1, display: "flex", flexDirection: "column", p: 0 }}
-          >
-            <Box sx={{ p: 2 }}>
-              <Typography
-                variant="h6"
-                sx={{ color: "#164F9E", fontWeight: "bold", mb: 2 }}
-              >
-                상담
-              </Typography>
-              <Tabs
-                value={consultationTab}
-                onChange={handleConsultationTabChange}
-                sx={{
-                  minHeight: 36,
-                  "& .MuiTab-root": {
-                    minHeight: 36,
-                    textTransform: "none",
-                    fontSize: "0.875rem",
-                    fontWeight: "medium",
-                    color: "#666",
-                    "&.Mui-selected": {
-                      color: "#164F9E",
+                    "& .MuiTabs-indicator": {
+                      backgroundColor: "#164F9E",
                     },
-                  },
-                  "& .MuiTabs-indicator": {
-                    backgroundColor: "#164F9E",
-                  },
-                }}
-              >
-                <Tab value="request" label="의뢰일 임박순" />
-                <Tab value="latest" label="최신순" />
-              </Tabs>
-            </Box>
+                  }}
+                >
+                  <Tab value="request" label="의뢰일 임박순" />
+                  <Tab value="latest" label="최신순" />
+                </Tabs>
+              </Box>
 
-            <TableContainer sx={{ flex: 1, overflow: "auto" }}>
-              <Table stickyHeader>
-                <TableHead>
-                  <TableRow>
-                    <TableCell>상담 일시</TableCell>
-                    <TableCell>고객명</TableCell>
-                    <TableCell>상담 제목</TableCell>
-                  </TableRow>
-                </TableHead>
-                <TableBody>
-                  {getSortedConsultations().map((consultation) => (
-                    <TableRow
-                      key={consultation.id}
-                      hover
-                      sx={{ cursor: "pointer" }}
-                    >
-                      <TableCell>
-                        {dayjs(consultation.consultationDate).format(
-                          "YYYY-MM-DD HH:mm"
-                        )}
-                      </TableCell>
-                      <TableCell>{consultation.customerName}</TableCell>
-                      <TableCell>{consultation.title}</TableCell>
+              <TableContainer sx={{ flex: 1, overflow: "auto" }}>
+                <Table stickyHeader>
+                  <TableHead>
+                    <TableRow>
+                      <TableCell>상담 일시</TableCell>
+                      <TableCell>고객명</TableCell>
+                      <TableCell>상담 제목</TableCell>
                     </TableRow>
-                  ))}
-                </TableBody>
-              </Table>
-            </TableContainer>
-          </CardContent>
-        </Card>
+                  </TableHead>
+                  <TableBody>
+                    {getSortedConsultations().map((consultation) => (
+                      <TableRow
+                        key={consultation.id}
+                        hover
+                        sx={{ cursor: "pointer" }}
+                      >
+                        <TableCell>
+                          {dayjs(consultation.consultationDate).format(
+                            "YYYY-MM-DD HH:mm"
+                          )}
+                        </TableCell>
+                        <TableCell>{consultation.customerName}</TableCell>
+                        <TableCell>{consultation.title}</TableCell>
+                      </TableRow>
+                    ))}
+                  </TableBody>
+                </Table>
+              </TableContainer>
+            </CardContent>
+          </Card>
+        </Box>
       </Box>
     </Box>
   );

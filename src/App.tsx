@@ -3,7 +3,6 @@ import PrivateRoute from "./components/layout/PrivateRoute";
 import GuestRoute from "./components/layout/GuestRoute";
 import SignUpPage from "@pages/SignUpPage";
 import SignInPage from "@pages/SignInPage";
-// import DashboardPage from "@pages/DashboardPage";
 import CustomerListPage from "@pages/CustomerListPage";
 import PrivatePropertyListPage from "@pages/PrivatePropertyListPage";
 import MyPage from "@pages/MyPage";
@@ -16,6 +15,7 @@ import ContractListPage from "@pages/ContractListPage/ContractListPage";
 import PublicPropertyListPage from "@pages/PublicPropertyListPage";
 import CustomerDetailPage from "@pages/CustomerDetailPage";
 import BulkMessagePage from "@pages/BulkMessagePage";
+import DashboardPage from "@pages/DashboardPage";
 
 const App = () => {
   return (
@@ -27,7 +27,7 @@ const App = () => {
       </Route>
 
       <Route element={<PrivateRoute />}>
-        <Route index element={<Navigate to="/properties/private" replace />} />
+        <Route index element={<DashboardPage />} />
         <Route path="customers" element={<CustomerListPage />} />
         <Route path="customers/:customerId" element={<CustomerDetailPage />} />
 

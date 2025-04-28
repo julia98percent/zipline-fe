@@ -1,20 +1,19 @@
-import Box from "@mui/material/Box";
-import Typography from "@mui/material/Typography";
+import { Typography } from "@mui/material";
 
 const Header = () => {
   return (
-    <Box sx={{ marginBottom: "24px" }}>
+    <div className="text-center mb-4">
       <Typography
+        variant="h5"
+        component="h1"
         sx={{
-          fontSize: "24px",
-          fontWeight: "extrabold",
-          lineHeight: "normal",
-          letterSpacing: "0.08px",
+          color: "#164F9E",
+          fontWeight: "bold",
         }}
       >
         로그인
       </Typography>
-    </Box>
+    </div>
   );
 };
 

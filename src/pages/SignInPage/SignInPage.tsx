@@ -6,19 +6,18 @@ import UserIdInput from "./UserIdInput";
 import PasswordInput from "./PasswordInput";
 import Button from "@components/Button";
 import { Box, Typography } from "@mui/material";
-import { useState } from "react";
+import { toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
+import signInImage from "@assets/sign-up.png";
 
 const SignInPage = () => {
   const navigate = useNavigate();
   const [userId, handleChangeUserId] = useInput("");
   const [password, handleChangePassword] = useInput("");
-  const [errorMessage, setErrorMessage] = useState("");
 
-  const isSignUpButtonDisabled = !userId || !password;
+  const isSignInButtonDisabled = !userId || !password;
 
-  const handleClickSignUpButton = () => {
-    setErrorMessage("");
-
+  const handleClickSignInButton = () => {
     apiClient
       .post("/users/login", {
         id: userId,
@@ -28,78 +27,115 @@ const SignInPage = () => {
         const accessToken = res?.data?.data?.accessToken;
         if (res.status === 200 && accessToken) {
           sessionStorage.setItem("_ZA", accessToken);
+          toast.success("로그인에 성공했습니다.");
           navigate("/");
         }
       })
       .catch((error) => {
         const serverMessage =
           error.response?.data?.message || "로그인 중 오류가 발생했습니다.";
-        setErrorMessage(serverMessage);
+        toast.error(serverMessage);
         console.log(error);
       });
   };
 
   return (
-    <div className="p-[24px]">
-      <Header />
-      <div className="grid gap-[16px]">
-        <UserIdInput userId={userId} handleChangeUserId={handleChangeUserId} />
-        <PasswordInput
-          password={password}
-          handleChangePassword={handleChangePassword}
-        />
+    <div className="h-screen bg-gray-50">
+      <div className="h-full flex">
+        {/* Left Panel - Only visible on wider screens */}
+        <div className="hidden lg:flex lg:w-1/2 bg-gradient-to-br from-[#164F9E] to-[#0D3B7D] items-center justify-center">
+          <div className="text-white text-center p-6">
+            <img
+              src={signInImage}
+              alt="공인중개사 CRM 서비스"
+              className="w-96 mx-auto mb-8"
+            />
+            <Typography
+              variant="h4"
+              component="h1"
+              sx={{ fontWeight: "bold", mb: 1 }}
+            >
+              Zip-line
+            </Typography>
+            <Typography variant="h6" sx={{ opacity: 0.9 }}>
+              흩어진 중개 업무, 여기서 전부 관리해요!
+            </Typography>
+          </div>
+        </div>
+
+        {/* Right Panel - Sign In Form */}
+        <div className="w-full lg:w-1/2 flex items-center justify-center bg-white">
+          <div className="w-full max-w-md p-4">
+            <Header />
+            <div className="mt-6 flex flex-col gap-6">
+              <UserIdInput
+                userId={userId}
+                handleChangeUserId={handleChangeUserId}
+              />
+              <PasswordInput
+                password={password}
+                handleChangePassword={handleChangePassword}
+              />
+            </div>
+
+            <Button
+              text="로그인"
+              onClick={handleClickSignInButton}
+              disabled={isSignInButtonDisabled}
+              sx={{
+                marginTop: "32px",
+                width: "100%",
+                color: "white",
+                minHeight: "40px",
+                backgroundColor: "#164F9E",
+                borderRadius: "8px",
+                fontSize: "16px",
+                fontWeight: "bold",
+                transition: "all 0.2s ease-in-out",
+                "&:hover": {
+                  backgroundColor: "#0D3B7D",
+                  transform: "translateY(-1px)",
+                },
+                "&:disabled": {
+                  backgroundColor: "#E5E7EB",
+                  color: "#9CA3AF",
+                  transform: "none",
+                },
+              }}
+            />
+
+            <Box
+              sx={{
+                display: "flex",
+                justifyContent: "center",
+                alignItems: "center",
+                mt: 3,
+                gap: 1,
+              }}
+            >
+              <Typography variant="body2" color="text.secondary">
+                회원이 아니신가요?
+              </Typography>
+              <Link to="/sign-up" className="flex items-center">
+                <Button
+                  text="회원가입"
+                  sx={{
+                    color: "#164F9E",
+                    backgroundColor: "transparent",
+                    border: "none",
+                    padding: "0",
+                    fontWeight: "bold",
+                    "&:hover": {
+                      backgroundColor: "transparent",
+                      textDecoration: "underline",
+                    },
+                  }}
+                />
+              </Link>
+            </Box>
+          </div>
+        </div>
       </div>
-
-      {/* 에러 메시지 */}
-      {errorMessage && (
-        <Typography color="error" sx={{ mt: 2 }}>
-          {errorMessage}
-        </Typography>
-      )}
-
-      <Button
-        text="로그인"
-        onClick={handleClickSignUpButton}
-        disabled={isSignUpButtonDisabled}
-        sx={{
-          marginTop: "16px",
-          width: "100%",
-          color: "white",
-          minHeight: "32px",
-          backgroundColor: "#164F9E",
-          "&:disabled": {
-            backgroundColor: "lightgray",
-            color: "white",
-          },
-        }}
-      />
-
-      <Box
-        sx={{
-          display: "flex",
-          justifyContent: "center",
-          alignItems: "center",
-          mt: 3,
-        }}
-      >
-        <Typography variant="body2">회원이 아니신가요?</Typography>
-        <Link to="/sign-up" className="flex items-center">
-          <Button
-            text="회원가입"
-            sx={{
-              color: "#164F9E",
-              backgroundColor: "transparent",
-              border: "none",
-              padding: "0",
-              fontWeight: "bold",
-              "&:hover": {
-                backgroundColor: "transparent",
-                textDecoration: "underline",
-              },
-            }}
-          />
-        </Link>
-      </Box>
     </div>
   );
 };

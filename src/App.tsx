@@ -16,6 +16,7 @@ import PublicPropertyListPage from "@pages/PublicPropertyListPage";
 import CustomerDetailPage from "@pages/CustomerDetailPage";
 import BulkMessagePage from "@pages/BulkMessagePage";
 import DashboardPage from "@pages/DashboardPage";
+import SchedulePage from "@pages/SchedulePage";
 
 const App = () => {
   return (
@@ -42,6 +43,8 @@ const App = () => {
           <Route index element={<MyPage />} />
           <Route path="edit-survey" element={<EditSurveyPage />} />
         </Route>
+
+        <Route path="schedules" element={<SchedulePage />} />
       </Route>
 
       <Route element={<GuestRoute />}>

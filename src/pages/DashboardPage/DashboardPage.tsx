@@ -24,6 +24,7 @@ import ChevronLeftIcon from "@mui/icons-material/ChevronLeft";
 import ChevronRightIcon from "@mui/icons-material/ChevronRight";
 import { useState } from "react";
 import dayjs from "dayjs";
+import { useNavigate } from "react-router-dom";
 
 interface Schedule {
   id: number;
@@ -59,6 +60,7 @@ const DashboardPage = () => {
   const [contractTab, setContractTab] = useState<"expiring" | "recent">(
     "expiring"
   );
+  const navigate = useNavigate();
 
   // 샘플 일정 데이터
   const schedules: Schedule[] = [
@@ -245,24 +247,28 @@ const DashboardPage = () => {
       value: stats.recentContracts,
       icon: <AssignmentIcon sx={{ fontSize: 40, color: "#222222" }} />,
       unit: "건",
+      isContract: true,
     },
     {
       title: "진행중인 계약 건수",
       value: stats.ongoingContracts,
       icon: <TrendingUpIcon sx={{ fontSize: 40, color: "#222222" }} />,
       unit: "건",
+      isContract: true,
     },
     {
       title: "완료 계약 건수",
       value: stats.completedContracts,
       icon: <CheckCircleIcon sx={{ fontSize: 40, color: "#222222" }} />,
       unit: "건",
+      isContract: true,
     },
     {
       title: "최근 유입 고객 수",
       value: stats.newCustomers,
       icon: <PersonAddIcon sx={{ fontSize: 40, color: "#222222" }} />,
       unit: "건",
+      isContract: false,
     },
   ];
 
@@ -382,23 +388,34 @@ const DashboardPage = () => {
         display: "flex",
         flexDirection: "column",
         gap: 2,
-        p: 3,
+        pt: 0,
+        pb: 3,
         ml: 30,
         backgroundColor: "#f5f5f5",
         minHeight: "100vh",
         width: "calc(100% - 240px)",
       }}
     >
-      <Typography
-        variant="h4"
-        component="h1"
-        sx={{ mb: 2, fontWeight: "bold", color: "#222222" }}
+      <Box
+        sx={{
+          backgroundColor: "#FFFFFF",
+          borderBottom: "1px solid #E0E0E0",
+          display: "flex",
+          alignItems: "center",
+          height: "70px",
+        }}
       >
-        대시보드
-      </Typography>
+        <Typography
+          variant="h5"
+          component="h1"
+          sx={{ fontWeight: "bold", color: "#222222", p: 2 }}
+        >
+          대시보드
+        </Typography>
+      </Box>
 
       {/* 통계 카드 영역 */}
-      <Box sx={{ display: "flex", flexWrap: "wrap", gap: 1.5, mb: 2 }}>
+      <Box sx={{ display: "flex", flexWrap: "wrap", gap: 1.5, mb: 2, px: 3 }}>
         {statCards.map((card, index) => (
           <Box
             key={index}
@@ -416,13 +433,12 @@ const DashboardPage = () => {
                 height: "100%",
                 display: "flex",
                 flexDirection: "column",
-                transition: "transform 0.2s ease-in-out",
                 boxShadow: "none",
                 borderRadius: "16px",
                 backgroundColor: "#fff",
+                transition: "background-color 0.2s ease",
                 "&:hover": {
-                  transform: "translateY(-4px)",
-                  boxShadow: "0 4px 20px rgba(0,0,0,0.1)",
+                  backgroundColor: "#f8f9fa",
                 },
               }}
             >
@@ -446,12 +462,30 @@ const DashboardPage = () => {
                   </Typography>
                 </Box>
                 <Box>
-                  <Typography
-                    variant="h5"
-                    component="p"
-                    sx={{ fontWeight: "bold", color: "#164F9E" }}
-                  >
-                    {card.value}
+                  <Box sx={{ display: "flex", alignItems: "baseline" }}>
+                    <Typography
+                      variant="h5"
+                      component="p"
+                      sx={{
+                        fontWeight: "bold",
+                        color: "#164F9E",
+                        ...(card.isContract &&
+                          card.value > 0 && {
+                            cursor: "pointer",
+                            textDecoration: "underline",
+                            "&:hover": {
+                              color: "#0D3B7A",
+                            },
+                          }),
+                      }}
+                      onClick={() => {
+                        if (card.isContract && card.value > 0) {
+                          navigate("/contracts");
+                        }
+                      }}
+                    >
+                      {card.value}
+                    </Typography>
                     <Typography
                       component="span"
                       variant="body2"
@@ -459,7 +493,7 @@ const DashboardPage = () => {
                     >
                       {card.unit}
                     </Typography>
-                  </Typography>
+                  </Box>
                 </Box>
               </CardContent>
             </Card>
@@ -474,6 +508,7 @@ const DashboardPage = () => {
           gap: 2,
           flexDirection: { xs: "column", lg: "row" },
           minWidth: 0,
+          px: 3,
         }}
       >
         {/* 캘린더 */}
@@ -506,6 +541,26 @@ const DashboardPage = () => {
                 </Typography>
               </Box>
               <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
+                <Box
+                  onClick={() => navigate("/schedules")}
+                  sx={{
+                    display: "flex",
+                    alignItems: "center",
+                    px: 2,
+                    py: 0.5,
+                    border: "1px solid #164F9E",
+                    borderRadius: "4px",
+                    cursor: "pointer",
+                    color: "#164F9E",
+                    transition: "all 0.2s ease-in-out",
+                    "&:hover": {
+                      backgroundColor: "#164F9E",
+                      color: "#fff",
+                    },
+                  }}
+                >
+                  <Typography variant="body2">전체 일정 보기</Typography>
+                </Box>
                 <IconButton
                   onClick={handlePrevWeek}
                   size="small"
@@ -734,6 +789,7 @@ const DashboardPage = () => {
           display: "flex",
           gap: 2,
           flexDirection: { xs: "column", lg: "row" },
+          px: 3,
         }}
       >
         {/* 계약 현황 */}

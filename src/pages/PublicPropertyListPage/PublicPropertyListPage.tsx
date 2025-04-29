@@ -1,26 +1,47 @@
-import { useState, useCallback, useEffect } from "react";
 import apiClient from "@apis/apiClient";
-import PublicPropertyTable from "./PublicPropertyTable";
+import FilterListIcon from "@mui/icons-material/FilterList";
 import {
   Box,
-  Typography,
-  CircularProgress,
-  FormControl,
-  InputLabel,
-  Select,
-  MenuItem,
   Button,
-  TextField,
-  Slider,
-  Grid,
-  Divider,
+  CircularProgress,
   Paper,
-  IconButton,
+  SelectChangeEvent,
+  Typography
 } from "@mui/material";
-import SearchIcon from "@mui/icons-material/Search";
-import FilterListIcon from "@mui/icons-material/FilterList";
-import ClearIcon from "@mui/icons-material/Clear";
+import { useCallback, useEffect, useState } from "react";
+import PublicPropertyFilterModal from "./PublicPropertyFilterModal/PublicPropertyFilterModal";
+import PublicPropertyTable from "./PublicPropertyTable";
 import CORTAR_NO from "./PublicPropertyTable/cortarNo.json";
+
+export interface KakaoAddress {
+  road_address?: {
+    address_name: string;
+    region_1depth_name: string;
+    region_2depth_name: string;
+    region_3depth_name: string;
+    road_name: string;
+    underground_yn: string;
+    main_building_no: string;
+    sub_building_no: string;
+    building_name: string;
+    zone_no: string;
+  };
+  address?: {
+    address_name: string;
+    region_1depth_name: string;
+    region_2depth_name: string;
+    region_3depth_name: string;
+    mountain_yn: string;
+    main_address_no: string;
+    sub_address_no: string;
+  };
+}
+
+export interface Address {
+  text: string;
+  type: string;
+  zipcode: string;
+}
 
 export interface PublicPropertyItem {
   id: number;
@@ -41,6 +62,7 @@ export interface PublicPropertyItem {
   platformUrl: string;
   createdAt: string;
   updatedAt: string;
+  address?: KakaoAddress;
 }
 
 export interface SearchParams {
@@ -59,8 +81,10 @@ export interface SearchParams {
   maxDeposit?: number;
   minMonthlyRent?: number;
   maxMonthlyRent?: number;
-  minArea?: number;
-  maxArea?: number;
+  minExclusiveArea?: number;
+  maxExclusiveArea?: number;
+  minSupplyArea?: number;
+  maxSupplyArea?: number;
 }
 
 const BUILDING_TYPES = [
@@ -96,14 +120,17 @@ const CATEGORY_OPTIONS = [
 function PublicPropertyListPage() {
   const [publicPropertyList, setPublicPropertyList] = useState<PublicPropertyItem[]>([]);
   const [loading, setLoading] = useState<boolean>(false);
-  const [showAdvancedFilters, setShowAdvancedFilters] = useState<boolean>(false);
+  const [showFilterModal, setShowFilterModal] = useState<boolean>(false);
+  const [totalElements, setTotalElements] = useState<number>(0);
+  const [totalPages, setTotalPages] = useState<number>(0);
 
   // Location fields
+  const [selectedSido, setSelectedSido] = useState("");
   const [selectedGu, setSelectedGu] = useState("");
   const [selectedDong, setSelectedDong] = useState("");
   const [selectedRegionCode, setSelectedRegionCode] = useState("");
 
-  // Search params
+  // Search params - manage all filter state here
   const [searchParams, setSearchParams] = useState<SearchParams>({
     page: 0,
     size: 20,
@@ -117,37 +144,39 @@ function PublicPropertyListPage() {
     maxDeposit: undefined,
     minMonthlyRent: undefined,
     maxMonthlyRent: undefined,
-    minArea: undefined,
-    maxArea: undefined,
+    minExclusiveArea: undefined,
+    maxExclusiveArea: undefined,
+    minSupplyArea: undefined,
+    maxSupplyArea: undefined,
   });
 
-  // Area slider values
-  const [areaRange, setAreaRange] = useState<number[]>([10, 185]);
-
-  // Price slider values based on category
-  const [priceRange, setPriceRange] = useState<number[]>([100000, 2000000]);
-  const [depositRange, setDepositRange] = useState<number[]>([100000, 2000000]);
-  const [monthlyRentRange, setMonthlyRentRange] = useState<number[]>([50, 2000]);
-
   // Handle location selection
-  const handleGuChange = (e: React.ChangeEvent<{ value: unknown }>) => {
-    const value = e.target.value as string;
+  const handleSidoChange = (event: SelectChangeEvent<string>) => {
+    const value = event.target.value;
+    setSelectedSido(value);
+    setSelectedGu("");
+    setSelectedDong("");
+    setSelectedRegionCode("");
+  };
+
+  const handleGuChange = (event: SelectChangeEvent<string>) => {
+    const value = event.target.value;
     setSelectedGu(value);
     setSelectedDong("");
     setSelectedRegionCode("");
   };
 
-  const handleDongChange = (e: React.ChangeEvent<{ value: unknown }>) => {
-    const value = e.target.value as string;
+  const handleDongChange = (event: SelectChangeEvent<string>) => {
+    const value = event.target.value;
     setSelectedDong(value);
 
     // Find the selected dong code
     if (value) {
-      const selectedGu = CORTAR_NO["서울시"].find(gu => gu.name === selectedGu);
-      const selectedDongObj = selectedGu?.districts.find(dong => dong.name === value);
+      const selectedSidoObj = CORTAR_NO[selectedSido as keyof typeof CORTAR_NO];
+      const selectedGuObj = selectedSidoObj.find((gu: { name: string }) => gu.name === selectedGu);
+      const selectedDongObj = selectedGuObj?.districts.find((dong: { name: string }) => dong.name === value);
       if (selectedDongObj) {
         setSelectedRegionCode(selectedDongObj.code);
-        // Update search params with the new region code
         setSearchParams(prev => ({ ...prev, regionCode: selectedDongObj.code }));
       }
     } else {
@@ -155,104 +184,109 @@ function PublicPropertyListPage() {
     }
   };
 
-  // Handle category change and show/hide relevant price fields
-  const handleCategoryChange = (e: React.ChangeEvent<{ value: unknown }>) => {
-    const value = e.target.value as string;
-    setSearchParams(prev => ({ ...prev, category: value }));
+  // Handle filter modal
+  const handleFilterApply = (newFilters: Partial<SearchParams>) => {
+    // If newFilters is empty (reset case), set to initial state
+    if (Object.keys(newFilters).length === 0) {
+      setSearchParams({
+        page: 0,
+        size: 20,
+        sortFields: { id: "ASC" },
+        category: "",
+        buildingType: "",
+        buildingName: "",
+        minPrice: undefined,
+        maxPrice: undefined,
+        minDeposit: undefined,
+        maxDeposit: undefined,
+        minMonthlyRent: undefined,
+        maxMonthlyRent: undefined,
+        minExclusiveArea: undefined,
+        maxExclusiveArea: undefined,
+        minSupplyArea: undefined,
+        maxSupplyArea: undefined,
+      });
+    } else {
+      // Normal apply case - update only the changed fields
+      setSearchParams(prev => ({
+        ...prev,
+        ...newFilters,
+        page: 0 // Reset to first page when filters change
+      }));
+    }
   };
 
-  // Handle building type change
-  const handleBuildingTypeChange = (e: React.ChangeEvent<{ value: unknown }>) => {
-    const value = e.target.value as string;
-    setSearchParams(prev => ({ ...prev, buildingType: value }));
-  };
+  // Handle sort
+  const handleSort = (field: string) => {
+    setSearchParams(prev => {
+      const currentSort = prev.sortFields[field];
+      const newSortFields: { [key: string]: string } = {};
 
-  // Handle building name change
-  const handleBuildingNameChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const value = e.target.value;
-    setSearchParams(prev => ({ ...prev, buildingName: value }));
-  };
+      // If clicking on the active sort, toggle direction
+      if (currentSort) {
+        newSortFields[field] = currentSort === "ASC" ? "DESC" : "ASC";
+      } else {
+        // If clicking on a new sort, make it the only active sort
+        newSortFields[field] = "ASC";
+      }
 
-  // Handle area range change
-  const handleAreaRangeChange = (event: Event, newValue: number | number[]) => {
-    const values = newValue as number[];
-    setAreaRange(values);
-    setSearchParams(prev => ({
-      ...prev,
-      minArea: values[0],
-      maxArea: values[1]
-    }));
-  };
-
-  // Handle price range changes
-  const handlePriceRangeChange = (event: Event, newValue: number | number[]) => {
-    const values = newValue as number[];
-    setPriceRange(values);
-    setSearchParams(prev => ({
-      ...prev,
-      minPrice: values[0],
-      maxPrice: values[1]
-    }));
-  };
-
-  const handleDepositRangeChange = (event: Event, newValue: number | number[]) => {
-    const values = newValue as number[];
-    setDepositRange(values);
-    setSearchParams(prev => ({
-      ...prev,
-      minDeposit: values[0],
-      maxDeposit: values[1]
-    }));
-  };
-
-  const handleMonthlyRentRangeChange = (event: Event, newValue: number | number[]) => {
-    const values = newValue as number[];
-    setMonthlyRentRange(values);
-    setSearchParams(prev => ({
-      ...prev,
-      minMonthlyRent: values[0],
-      maxMonthlyRent: values[1]
-    }));
-  };
-
-  // Reset all filters
-  const handleResetFilters = () => {
-    setSelectedGu("");
-    setSelectedDong("");
-    setSelectedRegionCode("");
-    setAreaRange([10, 185]);
-    setPriceRange([100000, 2000000]);
-    setDepositRange([100000, 2000000]);
-    setMonthlyRentRange([50, 2000]);
-    setSearchParams({
-      page: 0,
-      size: 20,
-      sortFields: { id: "ASC" },
-      category: "",
-      buildingType: "",
-      buildingName: "",
-      regionCode: "",
+      return {
+        ...prev,
+        sortFields: newSortFields,
+        page: 0 // Reset to first page when sort changes
+      };
     });
   };
 
+  // Function to get address from coordinates using Kakao API
+  const getAddressFromCoordinates = async (latitude: number, longitude: number): Promise<KakaoAddress | null> => {
+    try {
+      const KAKAO_API_KEY = import.meta.env.VITE_KAKAO_MAP_SECRET;
+      const response = await fetch(
+        `https://dapi.kakao.com/v2/local/geo/coord2address.json?` +
+        `x=${longitude}&` +
+        `y=${latitude}&` +
+        `input_coord=WGS84`,
+        {
+          headers: {
+            'Authorization': `KakaoAK ${KAKAO_API_KEY}`,
+            'Content-Type': 'application/json',
+          }
+        }
+      );
+
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+
+      const data = await response.json();
+      if (data.documents && data.documents.length > 0) {
+        return data.documents[0];
+      }
+      return null;
+    } catch (error) {
+      console.error("Failed to get address from Kakao API:", error);
+      return null;
+    }
+  };
+
   // Fetch property data with all search parameters
-  const fetchPropertyData = useCallback(() => {
+  const fetchPropertyData = useCallback(async () => {
     setLoading(true);
 
     // Construct query parameters
     const queryParams = new URLSearchParams();
 
-    // Add pagination and sorting
+    // Add only essential parameters
     queryParams.append("page", searchParams.page.toString());
     queryParams.append("size", searchParams.size.toString());
     queryParams.append("sortFields", JSON.stringify(searchParams.sortFields));
 
-    // Add region code if available
+    // Only add other parameters if they have actual values
     if (searchParams.regionCode) {
       queryParams.append("regionCode", searchParams.regionCode);
     }
 
-    // Add building filters if available
     if (searchParams.buildingName) {
       queryParams.append("buildingName", searchParams.buildingName);
     }
@@ -261,78 +295,94 @@ function PublicPropertyListPage() {
       queryParams.append("buildingType", searchParams.buildingType);
     }
 
-    // Add category if available
     if (searchParams.category) {
       queryParams.append("category", searchParams.category);
     }
 
-    // Add price ranges based on category
-    if (searchParams.category === "SALE" || !searchParams.category) {
-      if (searchParams.minPrice !== undefined) {
-        queryParams.append("minPrice", searchParams.minPrice.toString());
-      }
-      if (searchParams.maxPrice !== undefined) {
-        queryParams.append("maxPrice", searchParams.maxPrice.toString());
-      }
+    // Add price ranges only if they have non-zero values
+    if (searchParams.minPrice) {
+      queryParams.append("minPrice", searchParams.minPrice.toString());
+    }
+    if (searchParams.maxPrice) {
+      queryParams.append("maxPrice", searchParams.maxPrice.toString());
     }
 
-    if (searchParams.category === "MONTHLY" || searchParams.category === "DEPOSIT" || !searchParams.category) {
-      if (searchParams.minDeposit !== undefined) {
-        queryParams.append("minDeposit", searchParams.minDeposit.toString());
-      }
-      if (searchParams.maxDeposit !== undefined) {
-        queryParams.append("maxDeposit", searchParams.maxDeposit.toString());
-      }
+    if (searchParams.minDeposit) {
+      queryParams.append("minDeposit", searchParams.minDeposit.toString());
+    }
+    if (searchParams.maxDeposit) {
+      queryParams.append("maxDeposit", searchParams.maxDeposit.toString());
     }
 
-    if (searchParams.category === "MONTHLY" || !searchParams.category) {
-      if (searchParams.minMonthlyRent !== undefined) {
-        queryParams.append("minMonthlyRent", searchParams.minMonthlyRent.toString());
-      }
-      if (searchParams.maxMonthlyRent !== undefined) {
-        queryParams.append("maxMonthlyRent", searchParams.maxMonthlyRent.toString());
-      }
+    if (searchParams.minMonthlyRent) {
+      queryParams.append("minMonthlyRent", searchParams.minMonthlyRent.toString());
+    }
+    if (searchParams.maxMonthlyRent) {
+      queryParams.append("maxMonthlyRent", searchParams.maxMonthlyRent.toString());
     }
 
-    // Add area range if available
-    if (searchParams.minArea !== undefined && searchParams.minArea !== 10) {
-      queryParams.append("minArea", searchParams.minArea.toString());
+    // Add area ranges only if they have non-zero values
+    if (searchParams.minExclusiveArea) {
+      queryParams.append("minExclusiveArea", searchParams.minExclusiveArea.toString());
     }
-    if (searchParams.maxArea !== undefined && searchParams.maxArea !== 185) {
-      queryParams.append("maxArea", searchParams.maxArea.toString());
+    if (searchParams.maxExclusiveArea) {
+      queryParams.append("maxExclusiveArea", searchParams.maxExclusiveArea.toString());
     }
 
-    // Make API call
-    apiClient
-      .get(`/property-articles/search?${queryParams.toString()}`)
-      .then((res) => {
-        const propertyData = res?.data?.content;
-        if (propertyData) {
-          setPublicPropertyList(propertyData);
-        } else {
-          setPublicPropertyList([]);
-        }
-      })
-      .catch((error) => {
-        console.error("Failed to fetch properties:", error);
+    if (searchParams.minSupplyArea) {
+      queryParams.append("minSupplyArea", searchParams.minSupplyArea.toString());
+    }
+    if (searchParams.maxSupplyArea) {
+      queryParams.append("maxSupplyArea", searchParams.maxSupplyArea.toString());
+    }
+
+    try {
+      const res = await apiClient.get(`/property-articles/search?${queryParams.toString()}`);
+      const propertyData = res?.data?.content;
+      const total = res?.data?.totalElements;
+      const pages = res?.data?.totalPages;
+      
+      if (propertyData) {
+        // Set the property data first
+        setPublicPropertyList(propertyData);
+        setTotalElements(total);
+        setTotalPages(pages);
+
+        // Then fetch addresses in the background
+        const fetchAddresses = async () => {
+          const propertiesWithAddresses = await Promise.all(
+            propertyData.map(async (property: PublicPropertyItem) => {
+              const address = await getAddressFromCoordinates(property.latitude, property.longitude);
+              return {
+                ...property,
+                address: address || {}
+              };
+            })
+          );
+          setPublicPropertyList(propertiesWithAddresses);
+        };
+
+        // Start fetching addresses without waiting
+        fetchAddresses();
+      } else {
         setPublicPropertyList([]);
-      })
-      .finally(() => {
-        setLoading(false);
-      });
+        setTotalElements(0);
+        setTotalPages(0);
+      }
+    } catch (error) {
+      console.error("Failed to fetch properties:", error);
+      setPublicPropertyList([]);
+      setTotalElements(0);
+      setTotalPages(0);
+    } finally {
+      setLoading(false);
+    }
   }, [searchParams]);
 
-  // Search button handler
-  const handleSearch = () => {
+  // Fetch data on initial load and when search params change
+  useEffect(() => {
     fetchPropertyData();
-  };
-
-  // Format currency for display
-  const formatCurrency = (value: number) => {
-    return value >= 10000
-      ? `${Math.floor(value / 10000)}억 ${value % 10000 > 0 ? `${value % 10000}만` : ''}`
-      : `${value}만`;
-  };
+  }, [fetchPropertyData]);
 
   if (loading) {
     return (
@@ -344,259 +394,53 @@ function PublicPropertyListPage() {
 
   return (
     <Box sx={{ padding: "32px" }}>
-      <Paper elevation={3} sx={{ padding: 3, marginBottom: 4 }}>
-        <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 2 }}>
+      <Paper elevation={3} sx={{ padding: 3, marginBottom: 3 }}>
+        <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 1 }}>
           <Typography variant="h5" fontWeight="bold">
-            공개 매물 검색
-          </Typography>
-
-          <Box sx={{ display: "flex", justifyContent: "center", mt: 4, gap: 2 }}>
-            <Button
-              variant="outlined"
-              color="secondary"
-              startIcon={<ClearIcon />}
-              onClick={handleResetFilters}
-            >
-              초기화
-            </Button>
+            공개 매물 검색 결과 : {totalElements} 건
+        </Typography>
+        
+          <Box sx={{ display: "flex", justifyContent: "center", mt: 1}}>
             <Button
               startIcon={<FilterListIcon />}
-              color={showAdvancedFilters ? "primary" : "inherit"}
-              variant={showAdvancedFilters ? "contained" : "outlined"}
-              onClick={() => setShowAdvancedFilters(!showAdvancedFilters)}
+              color={showFilterModal ? "primary" : "inherit"}
+              variant={showFilterModal ? "contained" : "outlined"}
+              onClick={() => setShowFilterModal(true)}
             >
-              범위 검색
-            </Button>
-            <Button
-              variant="contained"
-              color="primary"
-              startIcon={<SearchIcon />}
-              onClick={handleSearch}
-            >
-              검색
+              상세 필터
             </Button>
           </Box>
         </Box>
-
-        <Grid container spacing={3}>
-          {/* Basic Search Section */}
-          <Grid item xs={12} md={4}>
-            <FormControl fullWidth margin="normal">
-              <InputLabel id="gu-label">구</InputLabel>
-              <Select
-                labelId="gu-label"
-                value={selectedGu}
-                onChange={handleGuChange}
-                label="구"
-              >
-                <MenuItem value="">
-                  <em>구 선택</em>
-                </MenuItem>
-                {CORTAR_NO["서울시"].map((gu) => (
-                  <MenuItem key={gu.code} value={gu.name}>
-                    {gu.name}
-                  </MenuItem>
-                ))}
-              </Select>
-            </FormControl>
-          </Grid>
-
-          <Grid item xs={12} md={4}>
-            <FormControl fullWidth margin="normal" disabled={!selectedGu}>
-              <InputLabel id="dong-label">동</InputLabel>
-              <Select
-                labelId="dong-label"
-                value={selectedDong}
-                onChange={handleDongChange}
-                label="동"
-              >
-                <MenuItem value="">
-                  <em>동 선택</em>
-                </MenuItem>
-                {selectedGu &&
-                  CORTAR_NO["서울시"]
-                    .find((gu) => gu.name === selectedGu)
-                    ?.districts.map((dong) => (
-                      <MenuItem key={dong.code} value={dong.name}>
-                        {dong.name}
-                      </MenuItem>
-                    ))}
-              </Select>
-            </FormControl>
-          </Grid>
-
-          <Grid item xs={12} md={4}>
-            <FormControl fullWidth margin="normal">
-              <InputLabel id="category-label">매물 유형</InputLabel>
-              <Select
-                labelId="category-label"
-                value={searchParams.category}
-                onChange={handleCategoryChange}
-                label="매물 유형"
-              >
-                <MenuItem value="">
-                  <em>전체</em>
-                </MenuItem>
-                {CATEGORY_OPTIONS.map((option) => (
-                  <MenuItem key={option.value} value={option.value}>
-                    {option.label}
-                  </MenuItem>
-                ))}
-              </Select>
-            </FormControl>
-          </Grid>
-          <Grid item xs={12} md={6}>
-            <FormControl fullWidth margin="normal">
-              <InputLabel id="building-type-label">건물 유형</InputLabel>
-              <Select
-                labelId="building-type-label"
-                value={searchParams.buildingType}
-                onChange={handleBuildingTypeChange}
-                label="건물 유형"
-              >
-                <MenuItem value="">
-                  <em>전체</em>
-                </MenuItem>
-                {BUILDING_TYPES.map((type) => (
-                  <MenuItem key={type} value={type}>
-                    {type}
-                  </MenuItem>
-                ))}
-              </Select>
-            </FormControl>
-          </Grid>
-
-          <Grid item xs={12} md={6}>
-            <TextField
-              fullWidth
-              margin="normal"
-              label="건물명"
-              value={searchParams.buildingName || ""}
-              onChange={handleBuildingNameChange}
-              placeholder="건물명 입력"
-            />
-          </Grid>
-        </Grid>
-
-        {/* Advanced Filters Section */}
-        {showAdvancedFilters && (
-          <>
-            <Divider sx={{ my: 3 }} />
-
-            <Typography variant="subtitle1" sx={{ mt: 3, mb: 1 }}>
-              면적 범위 (㎡)
-            </Typography>
-            <Box sx={{ px: 2 }}>
-              <Slider
-                value={areaRange}
-                onChange={handleAreaRangeChange}
-                valueLabelDisplay="auto"
-                min={10}
-                max={185}
-                step={5}
-              />
-              <Box sx={{ display: "flex", justifyContent: "space-between", mt: 1 }}>
-                <Typography variant="body2" color="text.secondary">
-                  {areaRange[0]} ㎡
-                </Typography>
-                <Typography variant="body2" color="text.secondary">
-                  {areaRange[1]} ㎡
-                </Typography>
-              </Box>
-            </Box>
-
-            {/* Show price sliders based on category */}
-            {(!searchParams.category || searchParams.category === "SALE") && (
-              <>
-                <Typography variant="subtitle1" sx={{ mt: 3, mb: 1 }}>
-                  매매가 범위 (만원)
-                </Typography>
-                <Box sx={{ px: 2 }}>
-                  <Slider
-                    value={priceRange}
-                    onChange={handlePriceRangeChange}
-                    valueLabelDisplay="auto"
-                    min={100000}
-                    max={2000000}
-                    step={10000}
-                    valueLabelFormat={(value) => formatCurrency(value)}
-                  />
-                  <Box sx={{ display: "flex", justifyContent: "space-between", mt: 1 }}>
-                    <Typography variant="body2" color="text.secondary">
-                      {formatCurrency(priceRange[0])}
-                    </Typography>
-                    <Typography variant="body2" color="text.secondary">
-                      {formatCurrency(priceRange[1])}
-                    </Typography>
-                  </Box>
-                </Box>
-              </>
-            )}
-
-            {(!searchParams.category || searchParams.category === "DEPOSIT" || searchParams.category === "MONTHLY") && (
-              <>
-                <Typography variant="subtitle1" sx={{ mt: 3, mb: 1 }}>
-                  보증금 범위 (만원)
-                </Typography>
-                <Box sx={{ px: 2 }}>
-                  <Slider
-                    value={depositRange}
-                    onChange={handleDepositRangeChange}
-                    valueLabelDisplay="auto"
-                    min={100000}
-                    max={2000000}
-                    step={10000}
-                    valueLabelFormat={(value) => formatCurrency(value)}
-                  />
-                  <Box sx={{ display: "flex", justifyContent: "space-between", mt: 1 }}>
-                    <Typography variant="body2" color="text.secondary">
-                      {formatCurrency(depositRange[0])}
-                    </Typography>
-                    <Typography variant="body2" color="text.secondary">
-                      {formatCurrency(depositRange[1])}
-                    </Typography>
-                  </Box>
-                </Box>
-              </>
-            )}
-
-            {(!searchParams.category || searchParams.category === "MONTHLY") && (
-              <>
-                <Typography variant="subtitle1" sx={{ mt: 3, mb: 1 }}>
-                  월세 범위 (만원)
-                </Typography>
-                <Box sx={{ px: 2 }}>
-                  <Slider
-                    value={monthlyRentRange}
-                    onChange={handleMonthlyRentRangeChange}
-                    valueLabelDisplay="auto"
-                    min={50}
-                    max={2000}
-                    step={50}
-                  />
-                  <Box sx={{ display: "flex", justifyContent: "space-between", mt: 1 }}>
-                    <Typography variant="body2" color="text.secondary">
-                      {monthlyRentRange[0]} 만원
-                    </Typography>
-                    <Typography variant="body2" color="text.secondary">
-                      {monthlyRentRange[1]} 만원
-                    </Typography>
-                  </Box>
-                </Box>
-              </>
-            )}
-          </>
-        )}
       </Paper>
 
       {/* Results Section */}
       <Paper elevation={3} sx={{ padding: 3 }}>
-        <Typography variant="h6" sx={{ mb: 2 }}>
-          검색 결과 {publicPropertyList.length}건
-        </Typography>
-        <PublicPropertyTable propertyList={publicPropertyList} />
+        <PublicPropertyTable 
+          propertyList={publicPropertyList} 
+          totalElements={totalElements}
+          totalPages={totalPages}
+          page={searchParams.page}
+          rowsPerPage={searchParams.size}
+          onPageChange={(newPage) => setSearchParams(prev => ({ ...prev, page: newPage }))}
+          onRowsPerPageChange={(newSize) => setSearchParams(prev => ({ ...prev, size: newSize, page: 0 }))}
+          onSort={handleSort}
+          sortFields={searchParams.sortFields}
+        />
       </Paper>
-    </Box >
+
+      <PublicPropertyFilterModal
+        open={showFilterModal}
+        onClose={() => setShowFilterModal(false)}
+        onApply={handleFilterApply}
+        filters={searchParams}
+        selectedSido={selectedSido}
+        selectedGu={selectedGu}
+        selectedDong={selectedDong}
+        onSidoChange={handleSidoChange}
+        onGuChange={handleGuChange}
+        onDongChange={handleDongChange}
+      />
+    </Box>
   );
 }
 

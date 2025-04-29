@@ -2,60 +2,26 @@ import { useState } from "react";
 import {
   Box,
   Typography,
-  Menu,
-  MenuItem,
   Drawer,
   List,
   ListItem,
   ListItemButton,
   ListItemText,
   Divider,
-  Dialog,
-  DialogTitle,
-  DialogContent,
-  DialogActions,
-  Tabs,
-  Tab,
-  TextField,
-  FormControl,
-  InputLabel,
-  Select,
-  MenuItem as SelectMenuItem,
   ListItemIcon,
-  Collapse,
   Button as MuiButton,
 } from "@mui/material";
-import { useLocation, Link, useNavigate } from "react-router-dom";
-import useUserStore from "@stores/useUserStore";
-import SubmittedSurveyPopup from "./SubmittedSurveyPopup";
+import { Link, useLocation } from "react-router-dom";
+import CreateModal from "@components/CreateModal/CreateModal";
 import DashboardIcon from "@mui/icons-material/Dashboard";
+import AddIcon from "@mui/icons-material/Add";
+import Logo from "@assets/logo.png";
 import BusinessIcon from "@mui/icons-material/Business";
 import PeopleIcon from "@mui/icons-material/People";
 import SettingsIcon from "@mui/icons-material/Settings";
-import LogoutIcon from "@mui/icons-material/Logout";
-import AccountCircleIcon from "@mui/icons-material/AccountCircle";
-import MenuIcon from "@mui/icons-material/Menu";
-import ChevronLeftIcon from "@mui/icons-material/ChevronLeft";
-import ChevronRightIcon from "@mui/icons-material/ChevronRight";
-import HomeIcon from "@mui/icons-material/Home";
-import ApartmentIcon from "@mui/icons-material/Apartment";
-import AssessmentIcon from "@mui/icons-material/Assessment";
-import DescriptionIcon from "@mui/icons-material/Description";
 import CalendarMonthIcon from "@mui/icons-material/CalendarMonth";
-import ChatIcon from "@mui/icons-material/Chat";
-import GroupIcon from "@mui/icons-material/Group";
-import PersonIcon from "@mui/icons-material/Person";
-import BusinessCenterIcon from "@mui/icons-material/BusinessCenter";
-import AccountBalanceIcon from "@mui/icons-material/AccountBalance";
-import ReceiptIcon from "@mui/icons-material/Receipt";
-import LocalOfferIcon from "@mui/icons-material/LocalOffer";
-import HelpIcon from "@mui/icons-material/Help";
-import InfoIcon from "@mui/icons-material/Info";
-import AddIcon from "@mui/icons-material/Add";
-import SendIcon from "@mui/icons-material/Send";
-import HistoryIcon from "@mui/icons-material/History";
-import Logo from "@assets/logo.png";
-import CreateModal from "@components/CreateModal/CreateModal";
+import ForumIcon from "@mui/icons-material/Forum";
+import EmailIcon from "@mui/icons-material/Email";
 
 interface FormData {
   property: {
@@ -104,6 +70,8 @@ const MENU_INFO = [
   },
   { name: "고객", key: "customers", to: "/customers" },
   { name: "계약", key: "contracts", to: "/contracts" },
+  { name: "일정", key: "schedules", to: "/schedules" },
+  { name: "상담", key: "counsels", to: "/counsels" },
   {
     name: "문자",
     key: "messages",
@@ -115,92 +83,10 @@ const MENU_INFO = [
   },
 ];
 
-
-
-const NavigationBar = ({ userName }: { userName: string }) => {
-  const navigate = useNavigate();
+const NavigationBar = () => {
+  const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
   const location = useLocation();
   const currentPath = location.pathname;
-  const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
-  const [submenuAnchorEl, setSubmenuAnchorEl] = useState<null | HTMLElement>(
-    null
-  );
-  const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
-  const [isUserMenuOpen, setIsUserMenuOpen] = useState(false);
-  const [createTab, setCreateTab] = useState(0);
-  const [formData, setFormData] = useState<FormData>({
-    property: {
-      title: "",
-      type: "",
-      price: "",
-      address: "",
-    },
-    customer: {
-      name: "",
-      phone: "",
-      email: "",
-      type: "",
-    },
-    contract: {
-      customerId: "",
-      propertyId: "",
-      type: "",
-      startDate: "",
-      endDate: "",
-    },
-    schedule: {
-      title: "",
-      date: "",
-      time: "",
-      type: "",
-      description: "",
-    },
-    consultation: {
-      customerName: "",
-      title: "",
-      date: "",
-      time: "",
-      description: "",
-    },
-  });
-
-  const { clearUser } = useUserStore();
-
-  const open = Boolean(anchorEl);
-  const submenuOpen = Boolean(submenuAnchorEl);
-
-  const handleUserMenuClick = (event: React.MouseEvent<HTMLButtonElement>) => {
-    setIsUserMenuOpen(true);
-    setAnchorEl(event.currentTarget);
-  };
-
-  const handleUserMenuClose = () => {
-    setIsUserMenuOpen(false);
-    setAnchorEl(null);
-  };
-
-  const handleLogout = () => {
-    sessionStorage.removeItem("_ZA");
-    clearUser();
-    navigate("/sign-in");
-    handleUserMenuClose();
-  };
-
-  const handleClick = (event: React.MouseEvent<HTMLButtonElement>) => {
-    setAnchorEl(event.currentTarget);
-  };
-
-  const handleClose = () => {
-    setAnchorEl(null);
-  };
-
-  const handleSubmenuClick = (event: React.MouseEvent<HTMLDivElement>) => {
-    setSubmenuAnchorEl(event.currentTarget);
-  };
-
-  const handleSubmenuClose = () => {
-    setSubmenuAnchorEl(null);
-  };
 
   const handleCreateClick = () => {
     setIsCreateModalOpen(true);
@@ -208,27 +94,6 @@ const NavigationBar = ({ userName }: { userName: string }) => {
 
   const handleCreateModalClose = () => {
     setIsCreateModalOpen(false);
-  };
-
-  const handleCreateTabChange = (
-    event: React.SyntheticEvent,
-    newValue: number
-  ) => {
-    setCreateTab(newValue);
-  };
-
-  const handleFormChange = (
-    section: keyof FormData,
-    field: string,
-    value: string
-  ) => {
-    setFormData((prev) => ({
-      ...prev,
-      [section]: {
-        ...prev[section],
-        [field]: value,
-      },
-    }));
   };
 
   const handleCreateSubmit = (formData: FormData) => {
@@ -242,8 +107,8 @@ const NavigationBar = ({ userName }: { userName: string }) => {
       sx={{
         width: 240,
         flexShrink: 0,
-        height: '100vh',
-        overflow: 'auto',
+        height: "100vh",
+        overflow: "auto",
         "& .MuiDrawer-paper": {
           width: 240,
           boxSizing: "border-box",
@@ -270,7 +135,7 @@ const NavigationBar = ({ userName }: { userName: string }) => {
           </Box>
         </Link>
       </Box>
-      <Box sx={{ mt: 3, mb: 1 }}>
+      <Box sx={{ mt: "2px", mb: 1 }}>
         <Box>
           <MuiButton
             variant="contained"
@@ -336,7 +201,7 @@ const NavigationBar = ({ userName }: { userName: string }) => {
                   sx={{
                     color:
                       currentPath === "/" ||
-                        currentPath.startsWith("/dashboard")
+                      currentPath.startsWith("/dashboard")
                         ? "#164F9E"
                         : "#222222",
                     fontSize: 24,
@@ -385,12 +250,12 @@ const NavigationBar = ({ userName }: { userName: string }) => {
                       },
                       borderLeft:
                         currentPath.startsWith(submenu[0].to) &&
-                          !submenu.some((sub) => currentPath === sub.to)
+                        !submenu.some((sub) => currentPath === sub.to)
                           ? "4px solid #164F9E"
                           : "none",
                       backgroundColor:
                         currentPath.startsWith(submenu[0].to) &&
-                          !submenu.some((sub) => currentPath === sub.to)
+                        !submenu.some((sub) => currentPath === sub.to)
                           ? "rgba(22, 79, 158, 0.04)"
                           : "transparent",
                     }}
@@ -401,7 +266,7 @@ const NavigationBar = ({ userName }: { userName: string }) => {
                           sx={{
                             color:
                               currentPath.startsWith(submenu[0].to) ||
-                                submenu.some((sub) => currentPath === sub.to)
+                              submenu.some((sub) => currentPath === sub.to)
                                 ? "#164F9E"
                                 : "#222222",
                           }}
@@ -412,7 +277,7 @@ const NavigationBar = ({ userName }: { userName: string }) => {
                           sx={{
                             color:
                               currentPath.startsWith(submenu[0].to) &&
-                                !submenu.some((sub) => currentPath === sub.to)
+                              !submenu.some((sub) => currentPath === sub.to)
                                 ? "#164F9E"
                                 : "#222222",
                           }}
@@ -423,18 +288,40 @@ const NavigationBar = ({ userName }: { userName: string }) => {
                           sx={{
                             color:
                               currentPath.startsWith(submenu[0].to) &&
-                                !submenu.some((sub) => currentPath === sub.to)
+                              !submenu.some((sub) => currentPath === sub.to)
+                                ? "#164F9E"
+                                : "#222222",
+                          }}
+                        />
+                      )}
+                      {name === "일정" && (
+                        <CalendarMonthIcon
+                          sx={{
+                            color:
+                              currentPath.startsWith(submenu[0].to) &&
+                              !submenu.some((sub) => currentPath === sub.to)
                                 ? "#164F9E"
                                 : "#222222",
                           }}
                         />
                       )}
                       {name === "문자" && (
-                        <ChatIcon
+                        <EmailIcon
                           sx={{
                             color:
                               currentPath.startsWith(submenu[0].to) ||
-                                submenu.some((sub) => currentPath === sub.to)
+                              submenu.some((sub) => currentPath === sub.to)
+                                ? "#164F9E"
+                                : "#222222",
+                          }}
+                        />
+                      )}
+                      {name === "상담" && (
+                        <ForumIcon
+                          sx={{
+                            color:
+                              currentPath.startsWith(submenu[0].to) &&
+                              !submenu.some((sub) => currentPath === sub.to)
                                 ? "#164F9E"
                                 : "#222222",
                           }}
@@ -446,19 +333,19 @@ const NavigationBar = ({ userName }: { userName: string }) => {
                       sx={{
                         color:
                           currentPath.startsWith(submenu[0].to) ||
-                            submenu.some((sub) => currentPath === sub.to)
+                          submenu.some((sub) => currentPath === sub.to)
                             ? "#164F9E"
                             : "#222222",
                         fontWeight:
                           currentPath.startsWith(submenu[0].to) ||
-                            submenu.some((sub) => currentPath === sub.to)
+                          submenu.some((sub) => currentPath === sub.to)
                             ? "bold"
                             : "normal",
                       }}
                     />
                   </ListItemButton>
                 </Link>
-                <List sx={{ pl: { xs: 0, md: 2 } }}>
+                <List sx={{ mt: 0, mb: 0 }}>
                   {submenu.map((sub) => (
                     <Link
                       to={sub.to}
@@ -480,12 +367,14 @@ const NavigationBar = ({ userName }: { userName: string }) => {
                               : "transparent",
                           justifyContent: { xs: "center", md: "flex-start" },
                           px: { xs: 0, md: 2 },
+                          ml: 4,
+                          py: 0.5,
+                          mb: 0.25,
                         }}
                       >
                         <ListItemText
                           primary={sub.name}
                           sx={{
-                            display: { xs: "none", md: "block" },
                             color:
                               currentPath === sub.to ? "#164F9E" : "#222222",
                             fontWeight:
@@ -519,8 +408,8 @@ const NavigationBar = ({ userName }: { userName: string }) => {
                         sx={{
                           color:
                             currentPath.startsWith(to!) ||
-                              to === "/properties/private" ||
-                              to === "/properties/public"
+                            to === "/properties/private" ||
+                            to === "/properties/public"
                               ? "#164F9E"
                               : "#222222",
                         }}
@@ -544,11 +433,37 @@ const NavigationBar = ({ userName }: { userName: string }) => {
                         }}
                       />
                     )}
+                    {name === "일정" && (
+                      <CalendarMonthIcon
+                        sx={{
+                          color: currentPath.startsWith(to!)
+                            ? "#164F9E"
+                            : "#222222",
+                        }}
+                      />
+                    )}
+                    {name === "문자" && (
+                      <EmailIcon
+                        sx={{
+                          color: currentPath.startsWith(to!)
+                            ? "#164F9E"
+                            : "#222222",
+                        }}
+                      />
+                    )}
+                    {name === "상담" && (
+                      <ForumIcon
+                        sx={{
+                          color: currentPath.startsWith(to!)
+                            ? "#164F9E"
+                            : "#222222",
+                        }}
+                      />
+                    )}
                   </ListItemIcon>
                   <ListItemText
                     primary={name}
                     sx={{
-                      display: { xs: "none", md: "block" },
                       color: currentPath.startsWith(to!)
                         ? "#164F9E"
                         : "#222222",

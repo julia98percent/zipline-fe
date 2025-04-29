@@ -14,13 +14,13 @@ import {
 } from "@mui/material";
 import { Schedule } from "../../interfaces/schedule";
 import dayjs from "dayjs";
+import apiClient from "@apis/apiClient";
 
 interface Props {
   open: boolean;
   onClose: () => void;
   schedule: Schedule | null;
   onSave: (schedule: Schedule) => void;
-  customers?: Array<{ uid: number; name: string }>;
   isUpdating?: boolean;
 }
 
@@ -29,7 +29,6 @@ const ScheduleDetailModal = ({
   onClose,
   schedule,
   onSave,
-  customers,
   isUpdating = false,
 }: Props) => {
   const [editingSchedule, setEditingSchedule] = useState<Schedule | null>(
@@ -51,6 +50,9 @@ const ScheduleDetailModal = ({
   const [endDate, setEndDate] = useState("");
   const [startTime, setStartTime] = useState("00:00");
   const [endTime, setEndTime] = useState("00:00");
+  const [customerOptions, setCustomerOptions] = useState<
+    Array<{ uid: number; name: string }>
+  >([]);
 
   useEffect(() => {
     if (schedule) {
@@ -76,6 +78,20 @@ const ScheduleDetailModal = ({
     }
   }, [schedule]);
 
+  useEffect(() => {
+    // 고객 목록 조회
+    apiClient
+      .get("/customers", { params: { page: 0, size: 1000 } })
+      .then((res) => {
+        const customers: Array<{ uid: number; name: string }> =
+          res.data?.data?.customers?.map(
+            (c: { uid: number; name: string }) => ({ uid: c.uid, name: c.name })
+          ) || [];
+        setCustomerOptions(customers);
+      })
+      .catch(() => setCustomerOptions([]));
+  }, []);
+
   const handleScheduleChange = (field: keyof Schedule, value: string) => {
     if (!editingSchedule) return;
 
@@ -88,20 +104,23 @@ const ScheduleDetailModal = ({
   const handleSave = () => {
     if (!editingSchedule) return;
 
-    const { uid, customerName, ...scheduleWithoutUidAndName } = editingSchedule;
+    const { uid, ...scheduleWithoutUidAndName } = editingSchedule;
+    const start = includeTime
+      ? dayjs(`${startDate}T${startTime}:00`).toISOString()
+      : dayjs(`${startDate}T00:00:00`).toISOString();
+    const end = includeTime
+      ? dayjs(`${endDate}T${endTime}:00`).toISOString()
+      : dayjs(`${endDate}T23:59:59`).toISOString();
     const updatedSchedule = {
       ...scheduleWithoutUidAndName,
       customerUid: selectedCustomer?.uid || null,
-      startDate: includeTime
-        ? `${startDate}T${startTime}:00`
-        : `${startDate}T00:00:00`,
-      endDate: includeTime ? `${endDate}T${endTime}:00` : `${endDate}T23:59:59`,
+      startDate: start,
+      endDate: end,
     };
 
     onSave({
       ...updatedSchedule,
       uid,
-      customerName: selectedCustomer?.name || null,
     });
   };
 
@@ -320,63 +339,61 @@ const ScheduleDetailModal = ({
             </Box>
           </Box>
 
-          {customers && (
-            <Box>
-              <Typography
-                sx={{
-                  fontSize: "14px",
-                  color: "#666666",
-                  mb: "4px",
-                }}
-              >
-                고객
-              </Typography>
-              <Autocomplete
-                fullWidth
-                options={customers}
-                value={selectedCustomer}
-                onChange={(_, newValue) => {
-                  setSelectedCustomer(newValue);
-                }}
-                getOptionLabel={(option) => `${option.name} (${option.uid})`}
-                renderInput={(params) => (
-                  <TextField
-                    {...params}
-                    placeholder="고객명 또는 ID를 입력하세요"
-                    sx={{
-                      "& .MuiOutlinedInput-root": {
-                        backgroundColor: "#FFFFFF",
-                        "& fieldset": {
-                          borderColor: "#E0E0E0",
-                        },
-                        "&:hover fieldset": {
-                          borderColor: "#164F9E",
-                        },
-                        "&.Mui-focused fieldset": {
-                          borderColor: "#164F9E",
-                        },
+          <Box>
+            <Typography
+              sx={{
+                fontSize: "14px",
+                color: "#666666",
+                mb: "4px",
+              }}
+            >
+              고객
+            </Typography>
+            <Autocomplete
+              fullWidth
+              options={customerOptions}
+              value={selectedCustomer}
+              onChange={(_, newValue) => {
+                setSelectedCustomer(newValue);
+              }}
+              getOptionLabel={(option) => `${option.name} (${option.uid})`}
+              renderInput={(params) => (
+                <TextField
+                  {...params}
+                  placeholder="고객명 또는 ID를 입력하세요"
+                  sx={{
+                    "& .MuiOutlinedInput-root": {
+                      backgroundColor: "#FFFFFF",
+                      "& fieldset": {
+                        borderColor: "#E0E0E0",
                       },
-                    }}
-                  />
-                )}
-                renderOption={(props, option) => (
-                  <li {...props}>
-                    <Typography>
-                      {option.name} ({option.uid})
-                    </Typography>
-                  </li>
-                )}
-                filterOptions={(options, { inputValue }) => {
-                  const searchValue = inputValue.toLowerCase();
-                  return options.filter(
-                    (option) =>
-                      option.name.toLowerCase().includes(searchValue) ||
-                      option.uid.toString().includes(searchValue)
-                  );
-                }}
-              />
-            </Box>
-          )}
+                      "&:hover fieldset": {
+                        borderColor: "#164F9E",
+                      },
+                      "&.Mui-focused fieldset": {
+                        borderColor: "#164F9E",
+                      },
+                    },
+                  }}
+                />
+              )}
+              renderOption={(props, option) => (
+                <li {...props}>
+                  <Typography>
+                    {option.name} ({option.uid})
+                  </Typography>
+                </li>
+              )}
+              filterOptions={(options, { inputValue }) => {
+                const searchValue = inputValue.toLowerCase();
+                return options.filter(
+                  (option) =>
+                    option.name.toLowerCase().includes(searchValue) ||
+                    option.uid.toString().includes(searchValue)
+                );
+              }}
+            />
+          </Box>
 
           <Box>
             <Typography

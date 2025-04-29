@@ -1,59 +1,32 @@
 import { useState, useEffect } from "react";
-import {
-  Box,
-  Paper,
-  Typography,
-  Button,
-  Dialog,
-  DialogTitle,
-  DialogContent,
-  DialogActions,
-  IconButton,
-  TextField,
-  FormControlLabel,
-  Checkbox,
-  Autocomplete,
-  Snackbar,
-  Alert,
-} from "@mui/material";
+import { Box, Paper, Button, Snackbar, Alert } from "@mui/material";
 import dayjs from "dayjs";
 import AddIcon from "@mui/icons-material/Add";
-import DeleteIcon from "@mui/icons-material/Delete";
-import EditIcon from "@mui/icons-material/Edit";
 import FullCalendar from "@fullcalendar/react";
 import dayGridPlugin from "@fullcalendar/daygrid";
 import interactionPlugin from "@fullcalendar/interaction";
-import { EventInput, EventClickArg, DatesSetArg } from "@fullcalendar/core";
+import { EventClickArg, DatesSetArg } from "@fullcalendar/core";
 import koLocale from "@fullcalendar/core/locales/ko";
 import CreateModal, { FormData } from "@components/CreateModal/CreateModal";
 import apiClient from "@apis/apiClient";
 import PageHeader from "@components/PageHeader/PageHeader";
 import ScheduleDetailModal from "@components/ScheduleDetailModal/ScheduleDetailModal";
-import { Schedule } from "@interfaces/schedule";
-
-interface Schedule {
-  uid: number;
-  title: string;
-  description: string | null;
-  startDate: string;
-  endDate: string;
-  customerUid: number | null;
-  customerName: string | null;
-}
+import { Schedule } from "../../interfaces/schedule";
 
 const SchedulePage = () => {
-  const [selectedDate, setSelectedDate] = useState<dayjs.Dayjs>(dayjs());
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
   const [isDetailModalOpen, setIsDetailModalOpen] = useState(false);
   const [selectedSchedule, setSelectedSchedule] = useState<Schedule | null>(
     null
   );
   const [schedules, setSchedules] = useState<Schedule[]>([]);
-  const [isLoading, setIsLoading] = useState(false);
-  const [includeTime, setIncludeTime] = useState(false);
-  const [customers, setCustomers] = useState<
-    Array<{ uid: number; name: string }>
-  >([
+  const [isUpdating, setIsUpdating] = useState(false);
+  const [toast, setToast] = useState({
+    open: false,
+    message: "",
+    severity: "success" as "success" | "error",
+  });
+  const [customers] = useState<Array<{ uid: number; name: string }>>([
     { uid: 1, name: "김지원" },
     { uid: 2, name: "이민수" },
     { uid: 3, name: "박서연" },
@@ -155,33 +128,12 @@ const SchedulePage = () => {
     { uid: 99, name: "박준호" },
     { uid: 100, name: "최은서" },
   ]);
-  const [selectedCustomer, setSelectedCustomer] = useState<{
-    uid: number;
-    name: string;
-  } | null>(
-    selectedSchedule?.customerUid
-      ? {
-          uid: selectedSchedule.customerUid,
-          name: selectedSchedule.customerName || "",
-        }
-      : null
-  );
-  const [isUpdating, setIsUpdating] = useState(false);
-  const [toast, setToast] = useState({
-    open: false,
-    message: "",
-    severity: "success" as "success" | "error",
-  });
 
   const fetchSchedules = (startDate: string, endDate: string) => {
-    setIsLoading(true);
     apiClient
       .get(`/schedules?startDate=${startDate}&endDate=${endDate}`)
       .then((res) => {
         setSchedules(res.data.data);
-      })
-      .finally(() => {
-        setIsLoading(false);
       });
   };
 
@@ -212,20 +164,7 @@ const SchedulePage = () => {
       (s) => s.uid === parseInt(clickInfo.event.id)
     );
     if (schedule) {
-      const startTime = dayjs(schedule.startDate).format("HH:mm");
-      const endTime = dayjs(schedule.endDate).format("HH:mm");
-      const hasTime = startTime !== "00:00" || endTime !== "00:00";
-
-      setIncludeTime(hasTime);
       setSelectedSchedule(schedule);
-      setSelectedCustomer(
-        schedule.customerUid && schedule.customerName
-          ? {
-              uid: schedule.customerUid,
-              name: schedule.customerName,
-            }
-          : null
-      );
       setIsDetailModalOpen(true);
     }
   };
@@ -234,14 +173,7 @@ const SchedulePage = () => {
     setIsDetailModalOpen(false);
     setTimeout(() => {
       setSelectedSchedule(null);
-      setSelectedCustomer(null);
-      setIncludeTime(false);
     }, 200);
-  };
-
-  const handleDeleteSchedule = (id: number) => {
-    setSchedules((prev) => prev.filter((schedule) => schedule.uid !== id));
-    handleCloseDetailModal();
   };
 
   const handleSubmitSchedule = (formData: FormData) => {
@@ -255,10 +187,6 @@ const SchedulePage = () => {
       customerName: null,
     };
     setSchedules((prev) => [...prev, newScheduleWithId]);
-  };
-
-  const handleCustomerChange = (event: SelectChangeEvent<number>) => {
-    setSelectedCustomer(event.target.value as number);
   };
 
   // 고객별 색상 매핑
@@ -301,9 +229,13 @@ const SchedulePage = () => {
   const handleUpdateSchedule = async (updatedSchedule: Schedule) => {
     try {
       setIsUpdating(true);
+      // uid와 customerName을 제거하여 API에 전달
+      const { uid, customerName, ...scheduleForApi } = updatedSchedule;
+      void uid;
+      void customerName;
       const response = await apiClient.patch(
         `/schedules/${updatedSchedule.uid}`,
-        updatedSchedule
+        scheduleForApi
       );
 
       if (response.data.success) {

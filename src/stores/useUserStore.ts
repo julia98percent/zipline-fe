@@ -3,11 +3,11 @@ import { create } from "zustand";
 type UserRole = "ROLE_ADMIN" | "ROLE_AGENT";
 
 interface User {
-  birthday: string | null;
   email: string;
   id: string;
   name: string;
   noticeMonth: number;
+  noticeTime: string;
   phoneNo: string;
   role: UserRole;
   uid: string;

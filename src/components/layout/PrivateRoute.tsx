@@ -61,14 +61,13 @@ const PrivateRoute = () => {
       </Box>
     );
   }
-
   return (
-    <>
+    <Box sx={{ display: 'flex', flexDirection: 'row', width: '100%', height: '100vh' }}>
       <NavigationBar userName={user.name} />
-      <div className="flex-1">
+      <Box sx={{ width: '100%' }}>
         <Outlet />
-      </div>
-    </>
+      </Box>
+    </Box>
   );
 };
 

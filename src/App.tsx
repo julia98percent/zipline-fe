@@ -22,6 +22,7 @@ import SchedulePage from "@pages/SchedulePage";
 import MessageTemplatePage from "@pages/MessageTemplatePage";
 import MessageHistoryPage from "@pages/MessageHistoryPage";
 import AgentPropertyDetailPage from "@pages/PrivatePropertyListPage/AgentPropertyDetailPage";
+import CounselListPage from "@pages/CounselListPage";
 
 const App = () => {
   return (
@@ -68,6 +69,7 @@ const App = () => {
           <Route path="messages/templates" element={<MessageTemplatePage />} />
           <Route path="messages/bulk" element={<BulkMessagePage />} />
           <Route path="messages/history" element={<MessageHistoryPage />} />
+          <Route path="counsels" element={<CounselListPage />} />
           <Route path="/contracts" element={<ContractListPage />} />
           <Route path="my">
             <Route index element={<MyPage />} />

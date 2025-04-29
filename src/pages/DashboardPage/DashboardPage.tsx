@@ -18,6 +18,8 @@ import {
   DialogContent,
   DialogActions,
   Button,
+  Snackbar,
+  Alert,
 } from "@mui/material";
 import "./DashboardPage.css";
 import AssignmentIcon from "@mui/icons-material/Assignment";
@@ -35,6 +37,7 @@ import PageHeader from "@components/PageHeader/PageHeader";
 import apiClient from "@apis/apiClient";
 import ScheduleDetailModal from "@components/ScheduleDetailModal/ScheduleDetailModal";
 import { Schedule } from "../../interfaces/schedule";
+import useUserStore from "@stores/useUserStore";
 
 dayjs.extend(isSameOrAfter);
 dayjs.extend(isSameOrBefore);
@@ -84,7 +87,10 @@ const DashboardPage = () => {
   );
   const navigate = useNavigate();
   const [recentCustomers, setRecentCustomers] = useState<number>(0);
-  const [recentContracts, setRecentContracts] = useState<Contract[]>([]);
+  const [recentContracts, setRecentContracts] = useState<number>(0);
+  const [recentContractsList, setRecentContractsList] = useState<Contract[]>(
+    []
+  );
   const [ongoingContracts, setOngoingContracts] = useState<number>(0);
   const [completedContracts, setCompletedContracts] = useState<number>(0);
   const [isLoading, setIsLoading] = useState<boolean>(true);
@@ -103,6 +109,12 @@ const DashboardPage = () => {
   const [contractLoading, setContractLoading] = useState(true);
   const [counselList, setCounselList] = useState<Consultation[]>([]);
   const [counselLoading, setCounselLoading] = useState(false);
+  const { user } = useUserStore();
+  const [toast, setToast] = useState({
+    open: false,
+    message: "",
+    severity: "success" as "success" | "error",
+  });
 
   const fetchWeeklySchedules = async () => {
     try {
@@ -287,10 +299,10 @@ const DashboardPage = () => {
           }),
         ]);
         setExpiringContracts(expiringRes.data?.data?.contracts ?? []);
-        setRecentContracts(recentRes.data?.data?.contracts ?? []);
-      } catch (e) {
+        setRecentContractsList(recentRes.data?.data?.contracts ?? []);
+      } catch {
         setExpiringContracts([]);
-        setRecentContracts([]);
+        setRecentContractsList([]);
       } finally {
         setContractLoading(false);
       }
@@ -317,9 +329,12 @@ const DashboardPage = () => {
 
   const handleSaveSchedule = async (updatedSchedule: Schedule) => {
     try {
+      // customerName을 제거하여 API에 전달
+      const { customerName, uid, ...scheduleForApi } = updatedSchedule;
+      void customerName;
       const response = await apiClient.patch(
         `/schedules/${updatedSchedule.uid}`,
-        updatedSchedule
+        scheduleForApi
       );
       if (response.data.success) {
         setSchedules((prev) =>
@@ -329,9 +344,19 @@ const DashboardPage = () => {
         );
         setIsDetailModalOpen(false);
         setSelectedSchedule(null);
+        setToast({
+          open: true,
+          message: "일정이 성공적으로 수정되었습니다.",
+          severity: "success",
+        });
       }
     } catch (error) {
       console.error("Failed to update schedule:", error);
+      setToast({
+        open: true,
+        message: "일정 수정에 실패했습니다.",
+        severity: "error",
+      });
     }
   };
 
@@ -384,7 +409,7 @@ const DashboardPage = () => {
         p: 0,
       }}
     >
-      <PageHeader title="대시보드" userName="사용자 이름" />
+      <PageHeader title="대시보드" userName={user?.name || ""} />
 
       <Box sx={{ p: 3, pt: 0 }}>
         {/* 통계 카드 영역 */}
@@ -401,8 +426,8 @@ const DashboardPage = () => {
             sx={{
               flex: {
                 xs: "1 1 100%",
-                sm: "1 1 calc(50% - 12px)",
-                md: "1 1 calc(25% - 12px)",
+                md: "1 1 calc(50% - 12px)",
+                lg: "1 1 calc(25% - 12px)",
               },
               height: "120px",
             }}
@@ -489,8 +514,8 @@ const DashboardPage = () => {
             sx={{
               flex: {
                 xs: "1 1 100%",
-                sm: "1 1 calc(50% - 12px)",
-                md: "1 1 calc(25% - 12px)",
+                md: "1 1 calc(50% - 12px)",
+                lg: "1 1 calc(25% - 12px)",
               },
               height: "120px",
             }}
@@ -545,7 +570,7 @@ const DashboardPage = () => {
                         sx={{
                           fontWeight: "bold",
                           color: "#164F9E",
-                          ...(recentContracts.length > 0 && {
+                          ...(recentContracts > 0 && {
                             cursor: "pointer",
                             textDecoration: "underline",
                             "&:hover": {
@@ -554,10 +579,10 @@ const DashboardPage = () => {
                           }),
                         }}
                         onClick={() =>
-                          recentContracts.length > 0 && navigate("/contracts")
+                          recentContracts > 0 && navigate("/contracts")
                         }
                       >
-                        {recentContracts.length}
+                        {recentContracts}
                       </Typography>
                     )}
                     <Typography
@@ -577,8 +602,8 @@ const DashboardPage = () => {
             sx={{
               flex: {
                 xs: "1 1 100%",
-                sm: "1 1 calc(50% - 12px)",
-                md: "1 1 calc(25% - 12px)",
+                md: "1 1 calc(50% - 12px)",
+                lg: "1 1 calc(25% - 12px)",
               },
               height: "120px",
             }}
@@ -665,8 +690,8 @@ const DashboardPage = () => {
             sx={{
               flex: {
                 xs: "1 1 100%",
-                sm: "1 1 calc(50% - 12px)",
-                md: "1 1 calc(25% - 12px)",
+                md: "1 1 calc(50% - 12px)",
+                lg: "1 1 calc(25% - 12px)",
               },
               height: "120px",
             }}
@@ -1143,7 +1168,7 @@ const DashboardPage = () => {
                       const contractList =
                         contractTab === "expiring"
                           ? expiringContracts
-                          : recentContracts;
+                          : recentContractsList;
                       if (contractLoading) {
                         return (
                           <TableRow>
@@ -1152,14 +1177,17 @@ const DashboardPage = () => {
                             </TableCell>
                           </TableRow>
                         );
-                      } else if (
+                      }
+                      if (
                         Array.isArray(contractList) &&
                         contractList.length === 0
                       ) {
                         return (
                           <TableRow>
                             <TableCell colSpan={4} align="center">
-                              계약이 없습니다.
+                              {contractTab === "expiring"
+                                ? "6개월 이내 만료 예정인 계약이 없습니다."
+                                : "계약이 없습니다."}
                             </TableCell>
                           </TableRow>
                         );
@@ -1167,7 +1195,14 @@ const DashboardPage = () => {
                         return (
                           Array.isArray(contractList) &&
                           contractList.map((contract: Contract) => (
-                            <TableRow key={contract.uid} hover>
+                            <TableRow
+                              key={contract.uid}
+                              hover
+                              sx={{ cursor: "pointer" }}
+                              onClick={() =>
+                                navigate(`/contracts/${contract.uid}`)
+                              }
+                            >
                               <TableCell>
                                 {contract.lessorOrSellerName}
                                 {contract.lesseeOrBuyerName &&
@@ -1392,6 +1427,22 @@ const DashboardPage = () => {
         schedule={selectedSchedule}
         onSave={handleSaveSchedule}
       />
+      {/* Toast 메시지 */}
+      <Snackbar
+        open={toast.open}
+        autoHideDuration={2000}
+        onClose={() => setToast({ ...toast, open: false })}
+        anchorOrigin={{ vertical: "bottom", horizontal: "center" }}
+        sx={{ bottom: "24px !important" }}
+      >
+        <Alert
+          onClose={() => setToast({ ...toast, open: false })}
+          severity={toast.severity}
+          sx={{ width: "100%", minWidth: "240px", borderRadius: "8px" }}
+        >
+          {toast.message}
+        </Alert>
+      </Snackbar>
     </Box>
   );
 };

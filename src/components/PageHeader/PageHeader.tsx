@@ -7,9 +7,10 @@ import AccountCircleIcon from "@mui/icons-material/AccountCircle";
 interface PageHeaderProps {
   title: string;
   userName: string;
+  action?: React.ReactNode;
 }
 
-const PageHeader = ({ title, userName }: PageHeaderProps) => {
+const PageHeader = ({ title, userName, action }: PageHeaderProps) => {
   const navigate = useNavigate();
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
   const { clearUser } = useUserStore();
@@ -49,7 +50,8 @@ const PageHeader = ({ title, userName }: PageHeaderProps) => {
         {title}
       </Typography>
 
-      <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
+      <Box sx={{ display: "flex", alignItems: "center", gap: 2 }}>
+        {action}
         <Button
           onClick={handleClick}
           sx={{

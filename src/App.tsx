@@ -24,6 +24,7 @@ import MessageHistoryPage from "@pages/MessageHistoryPage";
 import AgentPropertyDetailPage from "@pages/PrivatePropertyListPage/AgentPropertyDetailPage";
 import CounselListPage from "@pages/CounselListPage";
 import ContractDetailPage from "@pages/ContractDetailPage";
+import CounselDetailPage from "@pages/CounselDetailPage";
 
 const App = () => {
   return (
@@ -71,6 +72,7 @@ const App = () => {
           <Route path="messages/bulk" element={<BulkMessagePage />} />
           <Route path="messages/history" element={<MessageHistoryPage />} />
           <Route path="counsels" element={<CounselListPage />} />
+          <Route path="/counsels/:counselUid" element={<CounselDetailPage />} />
           <Route path="/contracts" element={<ContractListPage />} />
           <Route
             path="/contracts/:contractUid"

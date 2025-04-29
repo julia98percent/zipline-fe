@@ -240,6 +240,8 @@ const NavigationBar = ({ userName }: { userName: string }) => {
       sx={{
         width: 240,
         flexShrink: 0,
+        height: '100vh',
+        overflow: 'auto',
         "& .MuiDrawer-paper": {
           width: 240,
           boxSizing: "border-box",
@@ -332,7 +334,7 @@ const NavigationBar = ({ userName }: { userName: string }) => {
                   sx={{
                     color:
                       currentPath === "/" ||
-                      currentPath.startsWith("/dashboard")
+                        currentPath.startsWith("/dashboard")
                         ? "#164F9E"
                         : "#222222",
                     fontSize: 24,
@@ -381,12 +383,12 @@ const NavigationBar = ({ userName }: { userName: string }) => {
                       },
                       borderLeft:
                         currentPath.startsWith(submenu[0].to) &&
-                        !submenu.some((sub) => currentPath === sub.to)
+                          !submenu.some((sub) => currentPath === sub.to)
                           ? "4px solid #164F9E"
                           : "none",
                       backgroundColor:
                         currentPath.startsWith(submenu[0].to) &&
-                        !submenu.some((sub) => currentPath === sub.to)
+                          !submenu.some((sub) => currentPath === sub.to)
                           ? "rgba(22, 79, 158, 0.04)"
                           : "transparent",
                     }}
@@ -397,7 +399,7 @@ const NavigationBar = ({ userName }: { userName: string }) => {
                           sx={{
                             color:
                               currentPath.startsWith(submenu[0].to) ||
-                              submenu.some((sub) => currentPath === sub.to)
+                                submenu.some((sub) => currentPath === sub.to)
                                 ? "#164F9E"
                                 : "#222222",
                           }}
@@ -408,7 +410,7 @@ const NavigationBar = ({ userName }: { userName: string }) => {
                           sx={{
                             color:
                               currentPath.startsWith(submenu[0].to) &&
-                              !submenu.some((sub) => currentPath === sub.to)
+                                !submenu.some((sub) => currentPath === sub.to)
                                 ? "#164F9E"
                                 : "#222222",
                           }}
@@ -419,7 +421,7 @@ const NavigationBar = ({ userName }: { userName: string }) => {
                           sx={{
                             color:
                               currentPath.startsWith(submenu[0].to) &&
-                              !submenu.some((sub) => currentPath === sub.to)
+                                !submenu.some((sub) => currentPath === sub.to)
                                 ? "#164F9E"
                                 : "#222222",
                           }}
@@ -430,7 +432,7 @@ const NavigationBar = ({ userName }: { userName: string }) => {
                           sx={{
                             color:
                               currentPath.startsWith(submenu[0].to) ||
-                              submenu.some((sub) => currentPath === sub.to)
+                                submenu.some((sub) => currentPath === sub.to)
                                 ? "#164F9E"
                                 : "#222222",
                           }}
@@ -442,12 +444,12 @@ const NavigationBar = ({ userName }: { userName: string }) => {
                       sx={{
                         color:
                           currentPath.startsWith(submenu[0].to) ||
-                          submenu.some((sub) => currentPath === sub.to)
+                            submenu.some((sub) => currentPath === sub.to)
                             ? "#164F9E"
                             : "#222222",
                         fontWeight:
                           currentPath.startsWith(submenu[0].to) ||
-                          submenu.some((sub) => currentPath === sub.to)
+                            submenu.some((sub) => currentPath === sub.to)
                             ? "bold"
                             : "normal",
                       }}
@@ -515,8 +517,8 @@ const NavigationBar = ({ userName }: { userName: string }) => {
                         sx={{
                           color:
                             currentPath.startsWith(to!) ||
-                            to === "/properties/private" ||
-                            to === "/properties/public"
+                              to === "/properties/private" ||
+                              to === "/properties/public"
                               ? "#164F9E"
                               : "#222222",
                         }}

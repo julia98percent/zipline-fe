@@ -121,7 +121,7 @@ function PrivatePropertyListPage() {
       {/* ✅ 대시보드와 동일한 헤더 */}
       <PageHeader title="내 매물 목록" userName="사용자 이름" />
 
-      <Box sx={{ padding: 3 }}>
+      <Box sx={{ paddingTop: 3 }}>
         {/* 🔍 필터 + 등록 버튼 */}
         <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "center", mb: 2 }}>
           <Box display="flex" gap={1}>

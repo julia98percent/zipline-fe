@@ -65,7 +65,7 @@ function AgentPropertyDetailPage() {
   };
 
   const handleEdit = () => {
-    navigate(`/properties/${propertyUid}/edit`);
+    navigate(`/properties/${propertyUid}`);
   };
 
   if (!property) return <div>Loading...</div>;
@@ -105,7 +105,7 @@ function AgentPropertyDetailPage() {
           </Box>
         </Box>
 
-        {/* 지도 */}
+        {/* 지도
         {property.latitude && property.longitude && (
           <Box mb={4}>
             <reactKakaoMapsSdk.Map
@@ -118,7 +118,7 @@ function AgentPropertyDetailPage() {
               />
             </reactKakaoMapsSdk.Map>
           </Box>
-        )}
+        )} */}
 
         {/* 매물 정보 카드 */}
         <Card sx={{ mb: 4 }}>

@@ -1,41 +1,60 @@
 import { useEffect, useState, useCallback } from "react";
+import { useNavigate } from "react-router-dom";
 import apiClient from "@apis/apiClient";
-import { Box, Typography, CircularProgress } from "@mui/material";
+import { Box, CircularProgress, Button } from "@mui/material";
 import ContractTable from "./ContractTable";
 import ContractAddButtonList from "./ContractAddButtonList";
-import ContractDetailModal from "./ContractAddButtonList/ContractDetailModal/ContractDetailModal";
+import ContractFilterModal from "./ContractFilterModal/ContractFilterModal";
+import PageHeader from "@components/PageHeader/PageHeader";
 
 export interface ContractItem {
   uid: number;
-  category: string;
-  contractDate: string;
-  contractStartDate: string;
-  contractEndDate: string;
-  status: "PENDING" | "ACTIVE" | "EXPIRED";
-  customerName: string;
+  lessorOrSellerName: string;
+  lesseeOrBuyerName: string | null;
+  category: "SALE" | "DEPOSIT" | "MONTHLY" | null;
+  contractDate: string | null;
+  contractStartDate: string | null;
+  contractEndDate: string | null;
+  status:
+    | "LISTED"
+    | "NEGOTIATING"
+    | "INTENT_SIGNED"
+    | "CANCELLED"
+    | "CONTRACTED"
+    | "IN_PROGRESS"
+    | "PAID_COMPLETE"
+    | "REGISTERED"
+    | "MOVED_IN"
+    | "TERMINATED";
+  address: string;
 }
 
 function ContractListPage() {
   const [contractList, setContractList] = useState<ContractItem[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
 
-  const [selectedContract, setSelectedContract] = useState<ContractItem | null>(
-    null
-  );
-  const handleCloseDetailModal = () => setSelectedContract(null);
+  const [filterModalOpen, setFilterModalOpen] = useState(false);
+  const [filter, setFilter] = useState<{ period: string; status: string }>({
+    period: "",
+    status: "",
+  });
+  
+
+  const navigate = useNavigate();
 
   const fetchContractData = useCallback(() => {
     setLoading(true);
-
     apiClient
-      .get("/contracts")
+      .get("/contracts", {
+        params: {
+          ...filter,
+          page: 0,
+          size: 10,
+        },
+      })
       .then((res) => {
         const contractData = res?.data?.data?.contracts;
-        if (contractData) {
-          setContractList(contractData);
-        } else {
-          setContractList([]);
-        }
+        setContractList(contractData || []);
       })
       .catch((error) => {
         console.error("Failed to fetch contracts:", error);
@@ -43,48 +62,70 @@ function ContractListPage() {
       })
       .finally(() => {
         setLoading(false);
+        setFilterModalOpen(false);
       });
-  }, []);
+  }, [filter]);
 
   useEffect(() => {
     fetchContractData();
   }, [fetchContractData]);
 
-  if (loading)
+  if (loading) {
     return (
       <Box
         sx={{
-          display: "flex",
-          justifyContent: "center",
-          alignItems: "center",
-          height: "100vh",
+          flexGrow: 1,
+          backgroundColor: "#f5f5f5",
+          minHeight: "100vh",
+          padding: 3,
         }}
       >
         <CircularProgress color="primary" />
       </Box>
     );
+  }
 
   return (
-    <Box sx={{ padding: "32px" }}>
-      <div className="flex items-center justify-between">
-        <Typography
-          variant="h6"
-          sx={{ mb: 2, minWidth: "max-content", display: "inline", margin: 0 }}
-        >
-          내 계약 목록
-        </Typography>
-        <ContractAddButtonList fetchContractData={fetchContractData} />
-      </div>
+    <Box
+      sx={{
+        flexGrow: 1,
+        backgroundColor: "#f5f5f5",
+        minHeight: "100vh",
+        padding: 3,
+      }}
+    >
+      {/* ✅ 헤더 */}
+      <PageHeader title="내 계약 목록" userName="사용자 이름" />
 
-      <ContractTable
-        contractList={contractList}
-        onRowClick={(contract: ContractItem) => setSelectedContract(contract)}
-      />
-      <ContractDetailModal
-        open={!!selectedContract}
-        onClose={handleCloseDetailModal}
-        contract={selectedContract}
-      />
+      <Box sx={{ paddingTop: 3 }}>
+        {/* 🔍 필터 + 등록 버튼 */}
+        <Box
+          sx={{ display: "flex", justifyContent: "space-between", alignItems: "center", mb: 0 }}
+        >
+          <Box display="flex" gap={1}>
+            <Button variant="outlined" onClick={() => setFilterModalOpen(true)}>
+              상세 필터
+            </Button>
+          </Box>
+          <ContractAddButtonList fetchContractData={fetchContractData} />
+        </Box>
+
+        {/* 📋 계약 테이블 */}
+        <ContractTable
+          contractList={contractList}
+          onRowClick={(contract) => navigate(`/contracts/${contract.uid}`)}
+        />
+
+        {/* 🎛️ 필터 모달 */}
+        <ContractFilterModal
+          open={filterModalOpen}
+          onClose={() => setFilterModalOpen(false)}
+          initialFilter={filter}
+          onApply={(newFilter) => {
+            setFilter(newFilter);
+          }}
+        />
+      </Box>
     </Box>
   );
 }

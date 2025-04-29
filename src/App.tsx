@@ -43,7 +43,7 @@ const App = () => {
       />
       <Routes>
         <Route path="form" element={<Navigate to="/error" replace />} />
-        <Route path="form/:surveyId" element={<NewbieSurveyRoute />}>
+        <Route path=":surveyId" element={<NewbieSurveyRoute />}>
           <Route index element={<SubmitSurveyPage />} />
           <Route path="thank-you" element={<SubmitSurveySuccessPage />} />
         </Route>

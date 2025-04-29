@@ -12,6 +12,8 @@ import {
   InputLabel,
   Select,
   MenuItem,
+  FormControlLabel,
+  Checkbox,
 } from "@mui/material";
 import { useState } from "react";
 
@@ -41,6 +43,8 @@ export interface FormData {
     time: string;
     type: string;
     description: string;
+    customerId?: string;
+    includeTime: boolean;
   };
   consultation: {
     customerName: string;
@@ -56,6 +60,7 @@ interface CreateModalProps {
   onClose: () => void;
   onSubmit: (formData: FormData) => void;
   initialTab?: number;
+  customers?: { uid: string; name: string }[];
 }
 
 const initialFormData: FormData = {
@@ -84,6 +89,7 @@ const initialFormData: FormData = {
     time: "",
     type: "",
     description: "",
+    includeTime: true,
   },
   consultation: {
     customerName: "",
@@ -94,11 +100,33 @@ const initialFormData: FormData = {
   },
 };
 
+const inputStyle = {
+  "& .MuiOutlinedInput-root": {
+    backgroundColor: "#FFFFFF",
+    "& fieldset": {
+      borderColor: "#E0E0E0",
+    },
+    "&:hover fieldset": {
+      borderColor: "#164F9E",
+    },
+    "&.Mui-focused fieldset": {
+      borderColor: "#164F9E",
+    },
+    "&.Mui-disabled": {
+      backgroundColor: "#F8F9FA",
+      "& fieldset": {
+        borderColor: "#E0E0E0",
+      },
+    },
+  },
+};
+
 const CreateModal = ({
   open,
   onClose,
   onSubmit,
   initialTab = 0,
+  customers = [],
 }: CreateModalProps) => {
   const [createTab, setCreateTab] = useState(initialTab);
   const [formData, setFormData] = useState<FormData>(initialFormData);
@@ -175,11 +203,12 @@ const CreateModal = ({
                 onChange={(e) =>
                   handleFormChange("property", "title", e.target.value)
                 }
+                sx={inputStyle}
               />
             </Box>
             <Box sx={{ display: "flex", gap: 2, flexWrap: "wrap" }}>
               <Box sx={{ flex: "1 1 calc(50% - 8px)", minWidth: "240px" }}>
-                <FormControl fullWidth>
+                <FormControl fullWidth sx={inputStyle}>
                   <InputLabel>매물 유형</InputLabel>
                   <Select
                     value={formData.property.type}
@@ -202,6 +231,7 @@ const CreateModal = ({
                   onChange={(e) =>
                     handleFormChange("property", "price", e.target.value)
                   }
+                  sx={inputStyle}
                 />
               </Box>
             </Box>
@@ -213,6 +243,7 @@ const CreateModal = ({
                 onChange={(e) =>
                   handleFormChange("property", "address", e.target.value)
                 }
+                sx={inputStyle}
               />
             </Box>
           </Box>
@@ -228,6 +259,7 @@ const CreateModal = ({
                 onChange={(e) =>
                   handleFormChange("customer", "name", e.target.value)
                 }
+                sx={inputStyle}
               />
             </Box>
             <Box sx={{ width: "100%" }}>
@@ -238,6 +270,7 @@ const CreateModal = ({
                 onChange={(e) =>
                   handleFormChange("customer", "phone", e.target.value)
                 }
+                sx={inputStyle}
               />
             </Box>
             <Box sx={{ width: "100%" }}>
@@ -248,10 +281,11 @@ const CreateModal = ({
                 onChange={(e) =>
                   handleFormChange("customer", "email", e.target.value)
                 }
+                sx={inputStyle}
               />
             </Box>
             <Box sx={{ width: "100%" }}>
-              <FormControl fullWidth>
+              <FormControl fullWidth sx={inputStyle}>
                 <InputLabel>고객 유형</InputLabel>
                 <Select
                   value={formData.customer.type}
@@ -280,6 +314,7 @@ const CreateModal = ({
                 onChange={(e) =>
                   handleFormChange("contract", "customerId", e.target.value)
                 }
+                sx={inputStyle}
               />
             </Box>
             <Box sx={{ width: "100%" }}>
@@ -290,10 +325,11 @@ const CreateModal = ({
                 onChange={(e) =>
                   handleFormChange("contract", "propertyId", e.target.value)
                 }
+                sx={inputStyle}
               />
             </Box>
             <Box sx={{ width: "100%" }}>
-              <FormControl fullWidth>
+              <FormControl fullWidth sx={inputStyle}>
                 <InputLabel>계약 유형</InputLabel>
                 <Select
                   value={formData.contract.type}
@@ -317,6 +353,7 @@ const CreateModal = ({
                   handleFormChange("contract", "startDate", e.target.value)
                 }
                 InputLabelProps={{ shrink: true }}
+                sx={inputStyle}
               />
             </Box>
             <Box sx={{ width: "100%" }}>
@@ -329,13 +366,32 @@ const CreateModal = ({
                   handleFormChange("contract", "endDate", e.target.value)
                 }
                 InputLabelProps={{ shrink: true }}
+                sx={inputStyle}
               />
             </Box>
           </Box>
         )}
 
         {createTab === 3 && (
-          <Box sx={{ display: "flex", flexDirection: "column", gap: 2 }}>
+          <Box sx={{ display: "flex", flexDirection: "column", gap: 1.5 }}>
+            <Box sx={{ width: "100%" }}>
+              <FormControl fullWidth sx={inputStyle}>
+                <InputLabel>고객</InputLabel>
+                <Select
+                  value={formData.schedule.customerId || ""}
+                  label="고객"
+                  onChange={(e) =>
+                    handleFormChange("schedule", "customerId", e.target.value)
+                  }
+                >
+                  {customers.map((customer) => (
+                    <MenuItem key={customer.uid} value={customer.uid}>
+                      {customer.name}
+                    </MenuItem>
+                  ))}
+                </Select>
+              </FormControl>
+            </Box>
             <Box sx={{ width: "100%" }}>
               <TextField
                 fullWidth
@@ -344,36 +400,11 @@ const CreateModal = ({
                 onChange={(e) =>
                   handleFormChange("schedule", "title", e.target.value)
                 }
+                sx={inputStyle}
               />
             </Box>
-            <Box sx={{ display: "flex", gap: 2, flexWrap: "wrap" }}>
-              <Box sx={{ flex: "1 1 calc(50% - 8px)", minWidth: "240px" }}>
-                <TextField
-                  fullWidth
-                  label="날짜"
-                  type="date"
-                  value={formData.schedule.date}
-                  onChange={(e) =>
-                    handleFormChange("schedule", "date", e.target.value)
-                  }
-                  InputLabelProps={{ shrink: true }}
-                />
-              </Box>
-              <Box sx={{ flex: "1 1 calc(50% - 8px)", minWidth: "240px" }}>
-                <TextField
-                  fullWidth
-                  label="시간"
-                  type="time"
-                  value={formData.schedule.time}
-                  onChange={(e) =>
-                    handleFormChange("schedule", "time", e.target.value)
-                  }
-                  InputLabelProps={{ shrink: true }}
-                />
-              </Box>
-            </Box>
             <Box sx={{ width: "100%" }}>
-              <FormControl fullWidth>
+              <FormControl fullWidth sx={inputStyle}>
                 <InputLabel>일정 유형</InputLabel>
                 <Select
                   value={formData.schedule.type}
@@ -388,12 +419,60 @@ const CreateModal = ({
                 </Select>
               </FormControl>
             </Box>
+            <Box sx={{ display: "flex", gap: 1.5, flexWrap: "wrap" }}>
+              <Box sx={{ flex: "1 1 calc(50% - 6px)", minWidth: "240px" }}>
+                <TextField
+                  fullWidth
+                  label="날짜"
+                  type="date"
+                  value={formData.schedule.date}
+                  onChange={(e) =>
+                    handleFormChange("schedule", "date", e.target.value)
+                  }
+                  InputLabelProps={{ shrink: true }}
+                  sx={inputStyle}
+                />
+              </Box>
+              <Box sx={{ flex: "1 1 calc(50% - 6px)", minWidth: "240px" }}>
+                <TextField
+                  fullWidth
+                  label="시간"
+                  type="time"
+                  value={formData.schedule.time}
+                  onChange={(e) =>
+                    handleFormChange("schedule", "time", e.target.value)
+                  }
+                  disabled={!formData.schedule.includeTime}
+                  InputLabelProps={{ shrink: true }}
+                  sx={inputStyle}
+                />
+              </Box>
+            </Box>
+            <Box>
+              <FormControlLabel
+                control={
+                  <Checkbox
+                    checked={formData.schedule.includeTime}
+                    onChange={(e) =>
+                      handleFormChange(
+                        "schedule",
+                        "includeTime",
+                        e.target.checked.toString()
+                      )
+                    }
+                    size="small"
+                  />
+                }
+                label="시간 포함"
+                sx={{ mb: 1.5 }}
+              />
+            </Box>
             <Box sx={{ width: "100%" }}>
               <TextField
                 fullWidth
-                label="설명"
+                label="세부사항"
                 multiline
-                rows={4}
+                rows={3}
                 value={formData.schedule.description}
                 onChange={(e) =>
                   handleFormChange("schedule", "description", e.target.value)
@@ -417,6 +496,7 @@ const CreateModal = ({
                     e.target.value
                   )
                 }
+                sx={inputStyle}
               />
             </Box>
             <Box sx={{ width: "100%" }}>
@@ -427,6 +507,7 @@ const CreateModal = ({
                 onChange={(e) =>
                   handleFormChange("consultation", "title", e.target.value)
                 }
+                sx={inputStyle}
               />
             </Box>
             <Box sx={{ width: "100%" }}>
@@ -439,6 +520,7 @@ const CreateModal = ({
                   handleFormChange("consultation", "date", e.target.value)
                 }
                 InputLabelProps={{ shrink: true }}
+                sx={inputStyle}
               />
             </Box>
             <Box sx={{ width: "100%" }}>
@@ -451,6 +533,7 @@ const CreateModal = ({
                   handleFormChange("consultation", "time", e.target.value)
                 }
                 InputLabelProps={{ shrink: true }}
+                sx={inputStyle}
               />
             </Box>
             <Box sx={{ width: "100%" }}>

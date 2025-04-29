@@ -10,39 +10,45 @@ import {
   TableHead,
   TableRow,
   Paper,
-  Chip,
   IconButton,
   Tabs,
   Tab,
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  DialogActions,
+  Button,
 } from "@mui/material";
 import "./DashboardPage.css";
 import AssignmentIcon from "@mui/icons-material/Assignment";
-import TrendingUpIcon from "@mui/icons-material/TrendingUp";
+import DonutLargeIcon from "@mui/icons-material/DonutLarge";
 import CheckCircleIcon from "@mui/icons-material/CheckCircle";
 import PersonAddIcon from "@mui/icons-material/PersonAdd";
 import ChevronLeftIcon from "@mui/icons-material/ChevronLeft";
 import ChevronRightIcon from "@mui/icons-material/ChevronRight";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import dayjs from "dayjs";
+import isSameOrAfter from "dayjs/plugin/isSameOrAfter";
+import isSameOrBefore from "dayjs/plugin/isSameOrBefore";
 import { useNavigate } from "react-router-dom";
 import PageHeader from "@components/PageHeader/PageHeader";
+import apiClient from "@apis/apiClient";
+import ScheduleDetailModal from "@components/ScheduleDetailModal/ScheduleDetailModal";
+import { Schedule } from "../../interfaces/schedule";
 
-interface Schedule {
-  id: number;
-  title: string;
-  date: Date;
-  time: string;
-  type: "meeting" | "task" | "event";
-  description?: string;
-}
+dayjs.extend(isSameOrAfter);
+dayjs.extend(isSameOrBefore);
 
 interface Contract {
-  id: number;
-  customerName: string;
-  customerTypes: ("임대" | "임차" | "매도" | "매수")[];
-  endDate: Date;
+  uid: number;
+  lessorOrSellerName: string;
+  lesseeOrBuyerName: string;
   category: string;
-  status: "active" | "expiring" | "recent";
+  contractDate: string;
+  contractStartDate: string;
+  contractEndDate: string;
+  status: string;
+  address: string;
 }
 
 interface Consultation {
@@ -51,6 +57,21 @@ interface Consultation {
   title: string;
   consultationDate: Date;
   requestDate: Date;
+}
+
+interface StatisticsResponse {
+  success: boolean;
+  code: number;
+  message: string;
+  data: number;
+}
+
+interface Inquiry {
+  id: number;
+  customerName: string;
+  phoneNumber: string;
+  submittedDate: string;
+  isRead: boolean;
 }
 
 const DashboardPage = () => {
@@ -62,156 +83,122 @@ const DashboardPage = () => {
     "expiring"
   );
   const navigate = useNavigate();
+  const [recentCustomers, setRecentCustomers] = useState<number>(0);
+  const [recentContracts, setRecentContracts] = useState<Contract[]>([]);
+  const [ongoingContracts, setOngoingContracts] = useState<number>(0);
+  const [completedContracts, setCompletedContracts] = useState<number>(0);
+  const [isLoading, setIsLoading] = useState<boolean>(true);
+  const [schedules, setSchedules] = useState<Schedule[]>([]);
+  const [moreModalOpen, setMoreModalOpen] = useState(false);
+  const [selectedDaySchedules, setSelectedDaySchedules] = useState<Schedule[]>(
+    []
+  );
+  const [selectedDayStr, setSelectedDayStr] = useState("");
+  const [selectedSchedule, setSelectedSchedule] = useState<Schedule | null>(
+    null
+  );
+  const [isDetailModalOpen, setIsDetailModalOpen] = useState(false);
+  const [surveyResponses, setSurveyResponses] = useState<Inquiry[]>([]);
+  const [expiringContracts, setExpiringContracts] = useState<Contract[]>([]);
+  const [contractLoading, setContractLoading] = useState(true);
+  const [counselList, setCounselList] = useState<Consultation[]>([]);
+  const [counselLoading, setCounselLoading] = useState(false);
 
-  // 샘플 일정 데이터
-  const schedules: Schedule[] = [
-    // 월요일 일정
-    {
-      id: 1,
-      title: "고객 미팅",
-      date: dayjs().startOf("week").add(1, "day").toDate(),
-      time: "10:00",
-      type: "meeting",
-      description: "신규 고객 상담",
-    },
-    {
-      id: 2,
-      title: "프로젝트 회의",
-      date: dayjs().startOf("week").add(1, "day").toDate(),
-      time: "14:00",
-      type: "meeting",
-      description: "주간 프로젝트 진행상황 점검",
-    },
-    // 화요일 일정
-    {
-      id: 3,
-      title: "문서 작성",
-      date: dayjs().startOf("week").add(2, "day").toDate(),
-      time: "09:00",
-      type: "task",
-      description: "월간 보고서 작성",
-    },
-    {
-      id: 4,
-      title: "팀 워크샵",
-      date: dayjs().startOf("week").add(2, "day").toDate(),
-      time: "15:00",
-      type: "event",
-      description: "팀 빌딩 활동",
-    },
-    // 수요일 일정
-    {
-      id: 5,
-      title: "코드 리뷰",
-      date: dayjs().startOf("week").add(3, "day").toDate(),
-      time: "11:00",
-      type: "task",
-      description: "신규 기능 코드 리뷰",
-    },
-    // 목요일 일정
-    {
-      id: 6,
-      title: "고객 교육",
-      date: dayjs().startOf("week").add(4, "day").toDate(),
-      time: "13:00",
-      type: "event",
-      description: "신규 기능 사용법 교육",
-    },
-    // 금요일 일정
-    {
-      id: 7,
-      title: "주간 정리",
-      date: dayjs().startOf("week").add(5, "day").toDate(),
-      time: "16:00",
-      type: "task",
-      description: "주간 업무 정리 및 보고",
-    },
-    // 토요일 일정
-    {
-      id: 8,
-      title: "팀 미팅",
-      date: dayjs().startOf("week").add(6, "day").toDate(),
-      time: "10:00",
-      type: "meeting",
-      description: "주간 팀 미팅",
-    },
-  ];
+  const fetchWeeklySchedules = async () => {
+    try {
+      const startDate = dayjs(selectedDate).startOf("week").toISOString();
+      const endDate = dayjs(selectedDate).endOf("week").toISOString();
 
-  // 샘플 계약 데이터
-  const contracts: Contract[] = [
-    {
-      id: 1,
-      customerName: "김부동산",
-      customerTypes: ["임대", "매도"],
-      endDate: dayjs().add(7, "day").toDate(),
-      category: "상가",
-      status: "expiring",
-    },
-    {
-      id: 2,
-      customerName: "이건설",
-      customerTypes: ["임차"],
-      endDate: dayjs().add(30, "day").toDate(),
-      category: "아파트",
-      status: "active",
-    },
-    {
-      id: 3,
-      customerName: "박개발",
-      customerTypes: ["매수"],
-      endDate: dayjs().add(60, "day").toDate(),
-      category: "토지",
-      status: "active",
-    },
-    {
-      id: 4,
-      customerName: "최투자",
-      customerTypes: ["임대", "임차", "매도"],
-      endDate: dayjs().subtract(5, "day").toDate(),
-      category: "오피스텔",
-      status: "recent",
-    },
-    {
-      id: 5,
-      customerName: "정개발",
-      customerTypes: ["매수", "임차"],
-      endDate: dayjs().subtract(2, "day").toDate(),
-      category: "빌딩",
-      status: "recent",
-    },
-  ];
+      const response = await apiClient.get(
+        `/schedules?startDate=${startDate}&endDate=${endDate}`
+      );
+      if (response.data.success) {
+        setSchedules(response.data.data);
+      }
+    } catch (error) {
+      console.error("Failed to fetch schedules:", error);
+    }
+  };
 
-  // 샘플 상담 데이터
-  const consultations: Consultation[] = [
-    {
-      id: 1,
-      customerName: "김부동산",
-      title: "상가 임대 문의",
-      consultationDate: dayjs().add(2, "day").toDate(),
-      requestDate: dayjs().subtract(1, "day").toDate(),
-    },
-    {
-      id: 2,
-      customerName: "이건설",
-      title: "아파트 분양 상담",
-      consultationDate: dayjs().add(5, "day").toDate(),
-      requestDate: dayjs().subtract(3, "day").toDate(),
-    },
-    {
-      id: 3,
-      customerName: "박개발",
-      title: "토지 매매 문의",
-      consultationDate: dayjs().add(1, "day").toDate(),
-      requestDate: dayjs().subtract(2, "day").toDate(),
-    },
-    {
-      id: 4,
-      customerName: "최투자",
-      title: "오피스텔 임대 상담",
-      consultationDate: dayjs().add(3, "day").toDate(),
-      requestDate: dayjs().subtract(4, "day").toDate(),
-    },
-  ];
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        setIsLoading(true);
+        await Promise.all([
+          fetchWeeklySchedules(),
+          (async () => {
+            const [
+              recentCustomersRes,
+              recentContractsRes,
+              ongoingContractsRes,
+              completedContractsRes,
+            ] = await Promise.all([
+              apiClient.get<StatisticsResponse>("/statics/recent-customers"),
+              apiClient.get<StatisticsResponse>("/statics/recent-contracts"),
+              apiClient.get<StatisticsResponse>("/statics/ongoing-contracts"),
+              apiClient.get<StatisticsResponse>("/statics/completed-contracts"),
+            ]);
+
+            if (recentCustomersRes.data.success) {
+              setRecentCustomers(recentCustomersRes.data.data);
+            }
+            if (recentContractsRes.data.success) {
+              setRecentContracts(recentContractsRes.data.data);
+            }
+            if (ongoingContractsRes.data.success) {
+              setOngoingContracts(ongoingContractsRes.data.data);
+            }
+            if (completedContractsRes.data.success) {
+              setCompletedContracts(completedContractsRes.data.data);
+            }
+          })(),
+        ]);
+      } catch (error) {
+        console.error("Failed to fetch data:", error);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    fetchData();
+  }, []);
+
+  // 주간 이동 시 일정 다시 불러오기
+  useEffect(() => {
+    fetchWeeklySchedules();
+  }, [selectedDate]);
+
+  // 신규 설문 리스트 불러오기 함수
+  const fetchSurveyResponses = async () => {
+    try {
+      const response = await apiClient.get("/surveys/responses", {
+        params: {
+          page: 0,
+          size: 5,
+        },
+      });
+      // 배열 데이터 추출
+      const items =
+        (response.data &&
+          Array.isArray(response.data.data) &&
+          response.data.data) ||
+        (response.data &&
+          Array.isArray(response.data.content) &&
+          response.data.content) ||
+        (Array.isArray(response.data) && response.data) ||
+        [];
+      setSurveyResponses(items);
+      return items;
+    } catch (error) {
+      console.error("Failed to fetch survey responses:", error);
+      setSurveyResponses([]); // 에러 시에도 빈 배열로
+      return [];
+    }
+  };
+
+  useEffect(() => {
+    fetchSurveyResponses();
+  }, []);
 
   // 이전 주로 이동
   const handlePrevWeek = () => {
@@ -234,77 +221,6 @@ const DashboardPage = () => {
     return `${start.format("YYYY.MM.DD")} ~ ${end.format("YYYY.MM.DD")}`;
   };
 
-  // 임시 데이터 - 실제로는 API에서 받아와야 함
-  const stats = {
-    recentContracts: 12,
-    ongoingContracts: 8,
-    completedContracts: 24,
-    newCustomers: 5,
-  };
-
-  const statCards = [
-    {
-      title: "최근 계약 건수",
-      value: stats.recentContracts,
-      icon: <AssignmentIcon sx={{ fontSize: 40, color: "#222222" }} />,
-      unit: "건",
-      isContract: true,
-    },
-    {
-      title: "진행중인 계약 건수",
-      value: stats.ongoingContracts,
-      icon: <TrendingUpIcon sx={{ fontSize: 40, color: "#222222" }} />,
-      unit: "건",
-      isContract: true,
-    },
-    {
-      title: "완료 계약 건수",
-      value: stats.completedContracts,
-      icon: <CheckCircleIcon sx={{ fontSize: 40, color: "#222222" }} />,
-      unit: "건",
-      isContract: true,
-    },
-    {
-      title: "최근 유입 고객 수",
-      value: stats.newCustomers,
-      icon: <PersonAddIcon sx={{ fontSize: 40, color: "#222222" }} />,
-      unit: "건",
-      isContract: false,
-    },
-  ];
-
-  // 임시 문의 데이터
-  const inquiries = [
-    {
-      id: 1,
-      customerName: "김철수",
-      phoneNumber: "010-1234-5678",
-      submittedDate: "2024-03-20",
-      isRead: true,
-    },
-    {
-      id: 2,
-      customerName: "이영희",
-      phoneNumber: "010-2345-6789",
-      submittedDate: "2024-03-19",
-      isRead: false,
-    },
-    {
-      id: 3,
-      customerName: "박지민",
-      phoneNumber: "010-3456-7890",
-      submittedDate: "2024-03-19",
-      isRead: false,
-    },
-    {
-      id: 4,
-      customerName: "최유진",
-      phoneNumber: "010-4567-8901",
-      submittedDate: "2024-03-18",
-      isRead: true,
-    },
-  ];
-
   // 현재 주의 날짜들 가져오기
   const getWeekDates = () => {
     const start = dayjs(selectedDate).startOf("week");
@@ -321,34 +237,15 @@ const DashboardPage = () => {
     return days[date.day()];
   };
 
-  // 일정 타입별 색상 반환
-  const getScheduleColor = (type: Schedule["type"]) => {
-    switch (type) {
-      case "meeting":
-        return "#e3f2fd";
-      case "task":
-        return "#f1f8e9";
-      case "event":
-        return "#fff3e0";
-      default:
-        return "#f5f5f5";
-    }
-  };
-
-  // 계약 타입별 색상
-  const getContractTypeColor = (type: string) => {
-    switch (type) {
-      case "임대":
-        return "#e3f2fd";
-      case "임차":
-        return "#f1f8e9";
-      case "매도":
-        return "#fff3e0";
-      case "매수":
-        return "#fce4ec";
-      default:
-        return "#f5f5f5";
-    }
+  // 일정 타입별 색상 반환 (고객 ID 기반)
+  const getScheduleColor = (customerUid: number | null) => {
+    const colors = [
+      "#cce7fc", // 파랑
+      "#e3f1db", // 초록
+      "#ffe4c4", // 주황
+      "#f8d7e3", // 분홍
+    ];
+    return colors[(customerUid || 0) % colors.length];
   };
 
   // 상담 탭 변경 핸들러
@@ -359,17 +256,6 @@ const DashboardPage = () => {
     setConsultationTab(newValue);
   };
 
-  // 정렬된 상담 데이터 반환
-  const getSortedConsultations = () => {
-    return [...consultations].sort((a, b) => {
-      if (consultationTab === "request") {
-        return dayjs(a.requestDate).diff(dayjs(b.requestDate));
-      } else {
-        return dayjs(b.consultationDate).diff(dayjs(a.consultationDate));
-      }
-    });
-  };
-
   // 계약 탭 변경 핸들러
   const handleContractTabChange = (
     event: React.SyntheticEvent,
@@ -378,10 +264,115 @@ const DashboardPage = () => {
     setContractTab(newValue);
   };
 
-  // 계약 필터링 함수
-  const getFilteredContracts = () => {
-    return contracts.filter((contract) => contract.status === contractTab);
+  // 계약 목록 리스트를 가져오는 함수 (탭에 따라 쿼리 파라미터 다르게)
+  useEffect(() => {
+    const fetchAllContracts = async () => {
+      setContractLoading(true);
+      try {
+        const [expiringRes, recentRes] = await Promise.all([
+          apiClient.get("/contracts", {
+            params: {
+              page: 0,
+              size: 5,
+              sortFields: JSON.stringify({ contractEndDate: "DESC" }),
+              period: "6개월 이내",
+            },
+          }),
+          apiClient.get("/contracts", {
+            params: {
+              page: 0,
+              size: 5,
+              sortFields: JSON.stringify({ createdAt: "DESC" }),
+            },
+          }),
+        ]);
+        setExpiringContracts(expiringRes.data?.data?.contracts ?? []);
+        setRecentContracts(recentRes.data?.data?.contracts ?? []);
+      } catch (e) {
+        setExpiringContracts([]);
+        setRecentContracts([]);
+      } finally {
+        setContractLoading(false);
+      }
+    };
+    fetchAllContracts();
+  }, []);
+
+  // 더보기 클릭 핸들러
+  const handleMoreClick = (daySchedules: Schedule[], dayStr: string) => {
+    setSelectedDaySchedules(daySchedules);
+    setSelectedDayStr(dayStr);
+    setMoreModalOpen(true);
   };
+
+  const handleScheduleClick = (schedule: Schedule) => {
+    setSelectedSchedule(schedule);
+    setIsDetailModalOpen(true);
+  };
+
+  const handleCloseDetailModal = () => {
+    setIsDetailModalOpen(false);
+    setSelectedSchedule(null);
+  };
+
+  const handleSaveSchedule = async (updatedSchedule: Schedule) => {
+    try {
+      const response = await apiClient.patch(
+        `/schedules/${updatedSchedule.uid}`,
+        updatedSchedule
+      );
+      if (response.data.success) {
+        setSchedules((prev) =>
+          prev.map((schedule) =>
+            schedule.uid === updatedSchedule.uid ? updatedSchedule : schedule
+          )
+        );
+        setIsDetailModalOpen(false);
+        setSelectedSchedule(null);
+      }
+    } catch (error) {
+      console.error("Failed to update schedule:", error);
+    }
+  };
+
+  // 상담 리스트를 가져오는 함수 추가
+  const fetchCounselList = async (customerUid: number) => {
+    setCounselLoading(true);
+    try {
+      const response = await apiClient.get(
+        `/customers/${customerUid}/counsels?page=0&size=5`,
+        {
+          params: {
+            page: 0,
+            size: 5,
+          },
+        }
+      );
+      // 실제 데이터 구조에 따라 data/content/루트 배열 등에서 추출
+      const items =
+        (response.data &&
+          Array.isArray(response.data.data) &&
+          response.data.data) ||
+        (response.data &&
+          Array.isArray(response.data.content) &&
+          response.data.content) ||
+        (Array.isArray(response.data) && response.data) ||
+        [];
+      setCounselList(items);
+      return items;
+    } catch (error) {
+      console.error("Failed to fetch counsel list:", error);
+      setCounselList([]);
+      return [];
+    } finally {
+      setCounselLoading(false);
+    }
+  };
+
+  // 컴포넌트 마운트 시 상담 리스트 불러오기 (예시: customerUid=1)
+  useEffect(() => {
+    fetchCounselList(1);
+  }, []);
 
   return (
     <Box
@@ -389,8 +380,6 @@ const DashboardPage = () => {
         flexGrow: 1,
         height: "100vh",
         overflow: "auto",
-        width: "calc(100% - 240px)",
-        ml: "240px",
         backgroundColor: "#f5f5f5",
         p: 0,
       }}
@@ -408,89 +397,357 @@ const DashboardPage = () => {
             mt: 2,
           }}
         >
-          {statCards.map((card, index) => (
-            <Box
-              key={index}
+          <Box
+            sx={{
+              flex: {
+                xs: "1 1 100%",
+                sm: "1 1 calc(50% - 12px)",
+                md: "1 1 calc(25% - 12px)",
+              },
+              height: "120px",
+            }}
+          >
+            <Card
               sx={{
-                flex: {
-                  xs: "1 1 100%",
-                  sm: "1 1 calc(50% - 12px)",
-                  md: "1 1 calc(25% - 12px)",
+                height: "100%",
+                display: "flex",
+                flexDirection: "column",
+                boxShadow: "none",
+                borderRadius: "16px",
+                backgroundColor: "#fff",
+                transition: "background-color 0.2s ease",
+                "&:hover": {
+                  backgroundColor: "#f8f9fa",
                 },
-                height: "120px",
               }}
             >
-              <Card
+              <CardContent
                 sx={{
-                  height: "100%",
+                  flex: 1,
                   display: "flex",
                   flexDirection: "column",
-                  boxShadow: "none",
-                  borderRadius: "16px",
-                  backgroundColor: "#fff",
-                  transition: "background-color 0.2s ease",
-                  "&:hover": {
-                    backgroundColor: "#f8f9fa",
-                  },
+                  justifyContent: "space-between",
+                  p: 2,
                 }}
               >
-                <CardContent
-                  sx={{
-                    flex: 1,
-                    display: "flex",
-                    flexDirection: "column",
-                    justifyContent: "space-between",
-                    p: 2,
-                  }}
-                >
-                  <Box sx={{ display: "flex", alignItems: "center", mb: 1 }}>
-                    {card.icon}
-                    <Typography
-                      variant="subtitle1"
-                      component="h2"
-                      sx={{ ml: 2, color: "#222222", fontWeight: "bold" }}
-                    >
-                      {card.title}
-                    </Typography>
-                  </Box>
-                  <Box>
-                    <Box sx={{ display: "flex", alignItems: "baseline" }}>
+                <Box sx={{ display: "flex", alignItems: "center", mb: 1 }}>
+                  <PersonAddIcon sx={{ fontSize: 32, color: "#222222" }} />
+                  <Typography
+                    variant="subtitle1"
+                    component="h2"
+                    sx={{ ml: 2, color: "#222222", fontWeight: "bold" }}
+                  >
+                    최근 유입 고객 수
+                  </Typography>
+                </Box>
+                <Box>
+                  <Box sx={{ display: "flex", alignItems: "baseline" }}>
+                    {isLoading ? (
+                      <Typography
+                        variant="h5"
+                        component="p"
+                        sx={{ fontWeight: "bold", color: "#164F9E" }}
+                      >
+                        -
+                      </Typography>
+                    ) : (
                       <Typography
                         variant="h5"
                         component="p"
                         sx={{
                           fontWeight: "bold",
                           color: "#164F9E",
-                          ...(card.isContract &&
-                            card.value > 0 && {
-                              cursor: "pointer",
-                              textDecoration: "underline",
-                              "&:hover": {
-                                color: "#0D3B7A",
-                              },
-                            }),
+                          ...(recentCustomers > 0 && {
+                            cursor: "pointer",
+                            textDecoration: "underline",
+                            "&:hover": {
+                              color: "#0D3B7A",
+                            },
+                          }),
                         }}
-                        onClick={() => {
-                          if (card.isContract && card.value > 0) {
-                            navigate("/contracts");
-                          }
-                        }}
+                        onClick={() =>
+                          recentCustomers > 0 && navigate("/customers")
+                        }
                       >
-                        {card.value}
+                        {recentCustomers}
                       </Typography>
-                      <Typography
-                        component="span"
-                        variant="body2"
-                        sx={{ ml: 1, color: "#222222" }}
-                      >
-                        {card.unit}
-                      </Typography>
-                    </Box>
+                    )}
+                    <Typography
+                      component="span"
+                      variant="body2"
+                      sx={{ ml: 1, color: "#222222" }}
+                    >
+                      명
+                    </Typography>
                   </Box>
-                </CardContent>
-              </Card>
-            </Box>
-          ))}
+                </Box>
+              </CardContent>
+            </Card>
+          </Box>
+
+          <Box
+            sx={{
+              flex: {
+                xs: "1 1 100%",
+                sm: "1 1 calc(50% - 12px)",
+                md: "1 1 calc(25% - 12px)",
+              },
+              height: "120px",
+            }}
+          >
+            <Card
+              sx={{
+                height: "100%",
+                display: "flex",
+                flexDirection: "column",
+                boxShadow: "none",
+                borderRadius: "16px",
+                backgroundColor: "#fff",
+                transition: "background-color 0.2s ease",
+                "&:hover": {
+                  backgroundColor: "#f8f9fa",
+                },
+              }}
+            >
+              <CardContent
+                sx={{
+                  flex: 1,
+                  display: "flex",
+                  flexDirection: "column",
+                  justifyContent: "space-between",
+                  p: 2,
+                }}
+              >
+                <Box sx={{ display: "flex", alignItems: "center", mb: 1 }}>
+                  <AssignmentIcon sx={{ fontSize: 32, color: "#222222" }} />
+                  <Typography
+                    variant="subtitle1"
+                    component="h2"
+                    sx={{ ml: 2, color: "#222222", fontWeight: "bold" }}
+                  >
+                    최근 계약 건수
+                  </Typography>
+                </Box>
+                <Box>
+                  <Box sx={{ display: "flex", alignItems: "baseline" }}>
+                    {isLoading ? (
+                      <Typography
+                        variant="h5"
+                        component="p"
+                        sx={{ fontWeight: "bold", color: "#164F9E" }}
+                      >
+                        -
+                      </Typography>
+                    ) : (
+                      <Typography
+                        variant="h5"
+                        component="p"
+                        sx={{
+                          fontWeight: "bold",
+                          color: "#164F9E",
+                          ...(recentContracts.length > 0 && {
+                            cursor: "pointer",
+                            textDecoration: "underline",
+                            "&:hover": {
+                              color: "#0D3B7A",
+                            },
+                          }),
+                        }}
+                        onClick={() =>
+                          recentContracts.length > 0 && navigate("/contracts")
+                        }
+                      >
+                        {recentContracts.length}
+                      </Typography>
+                    )}
+                    <Typography
+                      component="span"
+                      variant="body2"
+                      sx={{ ml: 1, color: "#222222" }}
+                    >
+                      건
+                    </Typography>
+                  </Box>
+                </Box>
+              </CardContent>
+            </Card>
+          </Box>
+
+          <Box
+            sx={{
+              flex: {
+                xs: "1 1 100%",
+                sm: "1 1 calc(50% - 12px)",
+                md: "1 1 calc(25% - 12px)",
+              },
+              height: "120px",
+            }}
+          >
+            <Card
+              sx={{
+                height: "100%",
+                display: "flex",
+                flexDirection: "column",
+                boxShadow: "none",
+                borderRadius: "16px",
+                backgroundColor: "#fff",
+                transition: "background-color 0.2s ease",
+                "&:hover": {
+                  backgroundColor: "#f8f9fa",
+                },
+              }}
+            >
+              <CardContent
+                sx={{
+                  flex: 1,
+                  display: "flex",
+                  flexDirection: "column",
+                  justifyContent: "space-between",
+                  p: 2,
+                }}
+              >
+                <Box sx={{ display: "flex", alignItems: "center", mb: 1 }}>
+                  <DonutLargeIcon sx={{ fontSize: 32, color: "#222222" }} />
+                  <Typography
+                    variant="subtitle1"
+                    component="h2"
+                    sx={{ ml: 2, color: "#222222", fontWeight: "bold" }}
+                  >
+                    진행중인 계약 건수
+                  </Typography>
+                </Box>
+                <Box>
+                  <Box sx={{ display: "flex", alignItems: "baseline" }}>
+                    {isLoading ? (
+                      <Typography
+                        variant="h5"
+                        component="p"
+                        sx={{ fontWeight: "bold", color: "#164F9E" }}
+                      >
+                        -
+                      </Typography>
+                    ) : (
+                      <Typography
+                        variant="h5"
+                        component="p"
+                        sx={{
+                          fontWeight: "bold",
+                          color: "#164F9E",
+                          ...(ongoingContracts > 0 && {
+                            cursor: "pointer",
+                            textDecoration: "underline",
+                            "&:hover": {
+                              color: "#0D3B7A",
+                            },
+                          }),
+                        }}
+                        onClick={() =>
+                          ongoingContracts > 0 && navigate("/contracts")
+                        }
+                      >
+                        {ongoingContracts}
+                      </Typography>
+                    )}
+                    <Typography
+                      component="span"
+                      variant="body2"
+                      sx={{ ml: 1, color: "#222222" }}
+                    >
+                      건
+                    </Typography>
+                  </Box>
+                </Box>
+              </CardContent>
+            </Card>
+          </Box>
+
+          <Box
+            sx={{
+              flex: {
+                xs: "1 1 100%",
+                sm: "1 1 calc(50% - 12px)",
+                md: "1 1 calc(25% - 12px)",
+              },
+              height: "120px",
+            }}
+          >
+            <Card
+              sx={{
+                height: "100%",
+                display: "flex",
+                flexDirection: "column",
+                boxShadow: "none",
+                borderRadius: "16px",
+                backgroundColor: "#fff",
+                transition: "background-color 0.2s ease",
+                "&:hover": {
+                  backgroundColor: "#f8f9fa",
+                },
+              }}
+            >
+              <CardContent
+                sx={{
+                  flex: 1,
+                  display: "flex",
+                  flexDirection: "column",
+                  justifyContent: "space-between",
+                  p: 2,
+                }}
+              >
+                <Box sx={{ display: "flex", alignItems: "center", mb: 1 }}>
+                  <CheckCircleIcon sx={{ fontSize: 32, color: "#222222" }} />
+                  <Typography
+                    variant="subtitle1"
+                    component="h2"
+                    sx={{ ml: 2, color: "#222222", fontWeight: "bold" }}
+                  >
+                    완료된 계약 건수
+                  </Typography>
+                </Box>
+                <Box>
+                  <Box sx={{ display: "flex", alignItems: "baseline" }}>
+                    {isLoading ? (
+                      <Typography
+                        variant="h5"
+                        component="p"
+                        sx={{ fontWeight: "bold", color: "#164F9E" }}
+                      >
+                        -
+                      </Typography>
+                    ) : (
+                      <Typography
+                        variant="h5"
+                        component="p"
+                        sx={{
+                          fontWeight: "bold",
+                          color: "#164F9E",
+                          ...(completedContracts > 0 && {
+                            cursor: "pointer",
+                            textDecoration: "underline",
+                            "&:hover": {
+                              color: "#0D3B7A",
+                            },
+                          }),
+                        }}
+                        onClick={() =>
+                          completedContracts > 0 && navigate("/contracts")
+                        }
+                      >
+                        {completedContracts}
+                      </Typography>
+                    )}
+                    <Typography
+                      component="span"
+                      variant="body2"
+                      sx={{ ml: 1, color: "#222222" }}
+                    >
+                      건
+                    </Typography>
+                  </Box>
+                </Box>
+              </CardContent>
+            </Card>
+          </Box>
         </Box>
 
         {/* 캘린더와 문의 리스트 영역 */}
@@ -656,51 +913,97 @@ const DashboardPage = () => {
                           >
                             {date.format("DD")}
                           </Typography>
-                          {schedules
-                            .filter(
+                          {(() => {
+                            const daySchedules = schedules.filter(
                               (schedule) =>
-                                dayjs(schedule.date).format("YYYY-MM-DD") ===
-                                date.format("YYYY-MM-DD")
-                            )
-                            .map((schedule) => (
-                              <Box
-                                key={schedule.id}
-                                sx={{
-                                  p: 1,
-                                  mb: 1,
-                                  borderRadius: 1,
-                                  backgroundColor: getScheduleColor(
-                                    schedule.type
-                                  ),
-                                  cursor: "pointer",
-                                  "&:hover": {
-                                    filter: "brightness(0.95)",
-                                  },
-                                  fontSize: "0.875rem",
-                                  border: "1px solid rgba(0,0,0,0.1)",
-                                }}
-                              >
-                                <Typography
-                                  variant="body2"
-                                  sx={{
-                                    fontWeight: "bold",
-                                    fontSize: "0.75rem",
-                                    color: "#666",
-                                  }}
-                                >
-                                  {schedule.time}
-                                </Typography>
-                                <Typography
-                                  variant="body2"
-                                  sx={{
-                                    fontWeight: "bold",
-                                    color: "#333",
-                                  }}
-                                >
-                                  {schedule.title}
-                                </Typography>
-                              </Box>
-                            ))}
+                                dayjs(schedule.startDate).format(
+                                  "YYYY-MM-DD"
+                                ) === date.format("YYYY-MM-DD")
+                            );
+
+                            if (daySchedules.length === 0) return null;
+
+                            return (
+                              <>
+                                {daySchedules.slice(0, 3).map((schedule) => (
+                                  <Box
+                                    key={schedule.uid}
+                                    onClick={() =>
+                                      handleScheduleClick(schedule)
+                                    }
+                                    sx={{
+                                      p: 1,
+                                      mb: 1,
+                                      borderRadius: 1,
+                                      backgroundColor: getScheduleColor(
+                                        schedule.customerUid
+                                      ),
+                                      cursor: "pointer",
+                                      "&:hover": {
+                                        filter: "brightness(0.95)",
+                                      },
+                                      fontSize: "0.875rem",
+                                      border: "1px solid rgba(0,0,0,0.1)",
+                                    }}
+                                  >
+                                    <Typography
+                                      variant="body2"
+                                      sx={{
+                                        fontWeight: "bold",
+                                        fontSize: "0.75rem",
+                                        color: "#666",
+                                      }}
+                                    >
+                                      {dayjs(schedule.startDate).format(
+                                        "HH:mm"
+                                      )}
+                                    </Typography>
+                                    <Typography
+                                      variant="body2"
+                                      sx={{
+                                        fontWeight: "bold",
+                                        color: "#333",
+                                      }}
+                                    >
+                                      {schedule.title}
+                                      {schedule.customerName &&
+                                        ` - ${schedule.customerName}`}
+                                    </Typography>
+                                  </Box>
+                                ))}
+                                {daySchedules.length > 3 && (
+                                  <Box
+                                    onClick={() =>
+                                      handleMoreClick(
+                                        daySchedules,
+                                        date.format("YYYY-MM-DD")
+                                      )
+                                    }
+                                    sx={{
+                                      p: 1,
+                                      borderRadius: 1,
+                                      backgroundColor: "#f5f5f5",
+                                      cursor: "pointer",
+                                      textAlign: "center",
+                                      "&:hover": {
+                                        backgroundColor: "#e0e0e0",
+                                      },
+                                    }}
+                                  >
+                                    <Typography
+                                      variant="body2"
+                                      sx={{
+                                        color: "#666",
+                                        fontSize: "0.75rem",
+                                      }}
+                                    >
+                                      +{daySchedules.length - 3}개 더보기
+                                    </Typography>
+                                  </Box>
+                                )}
+                              </>
+                            );
+                          })()}
                         </TableCell>
                       ))}
                     </TableRow>
@@ -733,39 +1036,35 @@ const DashboardPage = () => {
                       <TableCell>고객명</TableCell>
                       <TableCell>연락처</TableCell>
                       <TableCell>제출일</TableCell>
-                      <TableCell>상태</TableCell>
                     </TableRow>
                   </TableHead>
                   <TableBody>
-                    {inquiries.map((inquiry) => (
-                      <TableRow
-                        key={inquiry.id}
-                        hover
-                        sx={{
-                          cursor: "pointer",
-                          "&:hover": {
-                            backgroundColor: "rgba(22, 79, 158, 0.04)",
-                          },
-                        }}
-                      >
-                        <TableCell>{inquiry.customerName}</TableCell>
-                        <TableCell>{inquiry.phoneNumber}</TableCell>
-                        <TableCell>{inquiry.submittedDate}</TableCell>
-                        <TableCell>
-                          <Chip
-                            label={inquiry.isRead ? "읽음" : "미읽음"}
-                            color={inquiry.isRead ? "default" : "primary"}
-                            size="small"
-                            sx={{
-                              backgroundColor: inquiry.isRead
-                                ? "#e0e0e0"
-                                : "#164F9E",
-                              color: inquiry.isRead ? "#666" : "white",
-                            }}
-                          />
+                    {Array.isArray(surveyResponses) &&
+                    surveyResponses.length === 0 ? (
+                      <TableRow>
+                        <TableCell colSpan={4} align="center">
+                          신규 설문이 없습니다.
                         </TableCell>
                       </TableRow>
-                    ))}
+                    ) : (
+                      Array.isArray(surveyResponses) &&
+                      surveyResponses.map((inquiry) => (
+                        <TableRow
+                          key={inquiry.id}
+                          hover
+                          sx={{
+                            cursor: "pointer",
+                            "&:hover": {
+                              backgroundColor: "rgba(22, 79, 158, 0.04)",
+                            },
+                          }}
+                        >
+                          <TableCell>{inquiry.customerName}</TableCell>
+                          <TableCell>{inquiry.phoneNumber}</TableCell>
+                          <TableCell>{inquiry.submittedDate}</TableCell>
+                        </TableRow>
+                      ))
+                    )}
                   </TableBody>
                 </Table>
               </TableContainer>
@@ -835,40 +1134,61 @@ const DashboardPage = () => {
                   <TableHead>
                     <TableRow>
                       <TableCell>고객명</TableCell>
-                      <TableCell>고객 타입</TableCell>
+                      <TableCell>거래 타입</TableCell>
                       <TableCell>계약 종료일</TableCell>
-                      <TableCell>카테고리</TableCell>
                     </TableRow>
                   </TableHead>
                   <TableBody>
-                    {getFilteredContracts().map((contract) => (
-                      <TableRow
-                        key={contract.id}
-                        hover
-                        sx={{ cursor: "pointer" }}
-                      >
-                        <TableCell>{contract.customerName}</TableCell>
-                        <TableCell>
-                          <Box sx={{ display: "flex", gap: 1 }}>
-                            {contract.customerTypes.map((type, index) => (
-                              <Chip
-                                key={index}
-                                label={type}
-                                size="small"
-                                sx={{
-                                  backgroundColor: getContractTypeColor(type),
-                                  color: "#333",
-                                }}
-                              />
-                            ))}
-                          </Box>
-                        </TableCell>
-                        <TableCell>
-                          {dayjs(contract.endDate).format("YYYY-MM-DD")}
-                        </TableCell>
-                        <TableCell>{contract.category}</TableCell>
-                      </TableRow>
-                    ))}
+                    {(() => {
+                      const contractList =
+                        contractTab === "expiring"
+                          ? expiringContracts
+                          : recentContracts;
+                      if (contractLoading) {
+                        return (
+                          <TableRow>
+                            <TableCell colSpan={4} align="center">
+                              불러오는 중...
+                            </TableCell>
+                          </TableRow>
+                        );
+                      } else if (
+                        Array.isArray(contractList) &&
+                        contractList.length === 0
+                      ) {
+                        return (
+                          <TableRow>
+                            <TableCell colSpan={4} align="center">
+                              계약이 없습니다.
+                            </TableCell>
+                          </TableRow>
+                        );
+                      } else {
+                        return (
+                          Array.isArray(contractList) &&
+                          contractList.map((contract: Contract) => (
+                            <TableRow key={contract.uid} hover>
+                              <TableCell>
+                                {contract.lessorOrSellerName}
+                                {contract.lesseeOrBuyerName &&
+                                contract.lesseeOrBuyerName !==
+                                  contract.lessorOrSellerName
+                                  ? ` / ${contract.lesseeOrBuyerName}`
+                                  : ""}
+                              </TableCell>
+                              <TableCell>
+                                {contract.category === "SALE"
+                                  ? "매매"
+                                  : contract.category === "LEASE"
+                                  ? "임대"
+                                  : contract.category}
+                              </TableCell>
+                              <TableCell>{contract.contractEndDate}</TableCell>
+                            </TableRow>
+                          ))
+                        );
+                      }
+                    })()}
                   </TableBody>
                 </Table>
               </TableContainer>
@@ -932,21 +1252,37 @@ const DashboardPage = () => {
                     </TableRow>
                   </TableHead>
                   <TableBody>
-                    {getSortedConsultations().map((consultation) => (
-                      <TableRow
-                        key={consultation.id}
-                        hover
-                        sx={{ cursor: "pointer" }}
-                      >
-                        <TableCell>
-                          {dayjs(consultation.consultationDate).format(
-                            "YYYY-MM-DD HH:mm"
-                          )}
+                    {counselLoading ? (
+                      <TableRow>
+                        <TableCell colSpan={3} align="center">
+                          불러오는 중...
                         </TableCell>
-                        <TableCell>{consultation.customerName}</TableCell>
-                        <TableCell>{consultation.title}</TableCell>
                       </TableRow>
-                    ))}
+                    ) : Array.isArray(counselList) &&
+                      counselList.length === 0 ? (
+                      <TableRow>
+                        <TableCell colSpan={3} align="center">
+                          상담이 없습니다.
+                        </TableCell>
+                      </TableRow>
+                    ) : (
+                      Array.isArray(counselList) &&
+                      counselList.map((consultation: Consultation) => (
+                        <TableRow
+                          key={consultation.id}
+                          hover
+                          sx={{ cursor: "pointer" }}
+                        >
+                          <TableCell>
+                            {dayjs(consultation.consultationDate).format(
+                              "YYYY-MM-DD HH:mm"
+                            )}
+                          </TableCell>
+                          <TableCell>{consultation.customerName}</TableCell>
+                          <TableCell>{consultation.title}</TableCell>
+                        </TableRow>
+                      ))
+                    )}
                   </TableBody>
                 </Table>
               </TableContainer>
@@ -954,6 +1290,108 @@ const DashboardPage = () => {
           </Card>
         </Box>
       </Box>
+
+      {/* 더보기 모달 */}
+      <Dialog
+        open={moreModalOpen}
+        onClose={() => setMoreModalOpen(false)}
+        maxWidth="sm"
+        fullWidth
+        PaperProps={{
+          sx: {
+            borderRadius: "12px",
+          },
+        }}
+      >
+        <DialogTitle sx={{ pb: 1 }}>
+          <Typography
+            variant="h6"
+            sx={{ fontWeight: "bold", color: "#164F9E" }}
+          >
+            {selectedDayStr} 일정 목록
+          </Typography>
+        </DialogTitle>
+        <DialogContent sx={{ pt: "16px !important" }}>
+          {selectedDaySchedules.map((schedule) => (
+            <Box
+              key={schedule.uid}
+              sx={{
+                p: 2,
+                mb: 1,
+                borderRadius: 1,
+                backgroundColor: getScheduleColor(schedule.customerUid),
+                border: "1px solid rgba(0,0,0,0.1)",
+              }}
+            >
+              <Box sx={{ display: "flex", alignItems: "center", mb: 1 }}>
+                <Typography
+                  variant="body1"
+                  sx={{
+                    fontWeight: "bold",
+                    color: "#333",
+                  }}
+                >
+                  {schedule.title}
+                </Typography>
+                {schedule.customerName && (
+                  <Typography
+                    variant="body2"
+                    sx={{
+                      ml: 1,
+                      color: "#666",
+                    }}
+                  >
+                    - {schedule.customerName}
+                  </Typography>
+                )}
+              </Box>
+              <Typography
+                variant="body2"
+                sx={{
+                  color: "#666",
+                }}
+              >
+                {dayjs(schedule.startDate).format("HH:mm")} ~{" "}
+                {dayjs(schedule.endDate).format("HH:mm")}
+              </Typography>
+              {schedule.description && (
+                <Typography
+                  variant="body2"
+                  sx={{
+                    mt: 1,
+                    color: "#666",
+                    whiteSpace: "pre-wrap",
+                  }}
+                >
+                  {schedule.description}
+                </Typography>
+              )}
+            </Box>
+          ))}
+        </DialogContent>
+        <DialogActions sx={{ p: 2 }}>
+          <Button
+            onClick={() => setMoreModalOpen(false)}
+            variant="contained"
+            sx={{
+              backgroundColor: "#164F9E",
+              "&:hover": {
+                backgroundColor: "#0D3B7A",
+              },
+            }}
+          >
+            닫기
+          </Button>
+        </DialogActions>
+      </Dialog>
+
+      {/* 일정 상세보기 모달 */}
+      <ScheduleDetailModal
+        open={isDetailModalOpen}
+        onClose={handleCloseDetailModal}
+        schedule={selectedSchedule}
+        onSave={handleSaveSchedule}
+      />
     </Box>
   );
 };

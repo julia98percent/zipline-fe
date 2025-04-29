@@ -18,6 +18,7 @@ import SingleChoiceAdd from "./SingleChoiceAdd";
 import MultipleChoiceAdd from "./MultipleChoiceAdd";
 import apiClient from "@apis/apiClient";
 import useUserStore from "@stores/useUserStore";
+import PageHeader from "@components/PageHeader/PageHeader";
 
 type ChoiceType = { text: string };
 
@@ -232,47 +233,30 @@ const EditSurveyPage = () => {
 
   return (
     <Box>
-      <Box
-        sx={{
-          position: "sticky",
-          top: "64px",
-          zIndex: 10,
-          backgroundColor: "white",
-          padding: "32px",
-          paddingBottom: "24px",
-        }}
-      >
-        <div className="flex items-center justify-between">
-          <Typography
-            variant="h6"
-            sx={{ minWidth: "max-content", display: "inline" }}
-          >
-            설문 수정
-          </Typography>
-          <div>
-            <Button
-              text="질문 추가"
-              onClick={handleAddQuestion}
-              sx={{
-                mr: 2,
-                border: "1px solid #164F9E",
-                color: "#164F9E",
-              }}
-            />
-            <Button
-              text="설문 저장"
-              onClick={requestUpdateSurvey}
-              sx={{
-                backgroundColor: "#164F9E",
-                color: "white",
-              }}
-            />
-          </div>
-        </div>
-      </Box>
+      <PageHeader title="설문 수정" userName={user?.name || ""} />
 
       {/* Content */}
       <Box sx={{ p: 4 }}>
+        <Box sx={{ display: "flex", justifyContent: "flex-end", mb: 4 }}>
+          <Button
+            text="질문 추가"
+            onClick={handleAddQuestion}
+            sx={{
+              mr: 2,
+              border: "1px solid #164F9E",
+              color: "#164F9E",
+            }}
+          />
+          <Button
+            text="설문 저장"
+            onClick={requestUpdateSurvey}
+            sx={{
+              backgroundColor: "#164F9E",
+              color: "white",
+            }}
+          />
+        </Box>
+
         <TextField
           fullWidth
           label="설문 제목"

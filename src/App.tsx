@@ -19,6 +19,8 @@ import CustomerDetailPage from "@pages/CustomerDetailPage";
 import BulkMessagePage from "@pages/BulkMessagePage";
 import DashboardPage from "@pages/DashboardPage";
 import SchedulePage from "@pages/SchedulePage";
+import MessageTemplatePage from "@pages/MessageTemplatePage";
+import MessageHistoryPage from "@pages/MessageHistoryPage";
 
 const App = () => {
   return (
@@ -58,7 +60,9 @@ const App = () => {
             path="properties/public"
             element={<PublicPropertyListPage />}
           />
+          <Route path="messages/templates" element={<MessageTemplatePage />} />
           <Route path="messages/bulk" element={<BulkMessagePage />} />
+          <Route path="messages/history" element={<MessageHistoryPage />} />
           <Route path="/contracts" element={<ContractListPage />} />
           <Route path="my">
             <Route index element={<MyPage />} />
@@ -66,6 +70,7 @@ const App = () => {
           </Route>
 
           <Route path="schedules" element={<SchedulePage />} />
+          <Route path="templates" element={<MessageTemplatePage />} />
         </Route>
 
         <Route element={<GuestRoute />}>

@@ -23,6 +23,7 @@ import MessageTemplatePage from "@pages/MessageTemplatePage";
 import MessageHistoryPage from "@pages/MessageHistoryPage";
 import AgentPropertyDetailPage from "@pages/PrivatePropertyListPage/AgentPropertyDetailPage";
 import CounselListPage from "@pages/CounselListPage";
+import ContractDetailPage from "@pages/ContractDetailPage";
 
 const App = () => {
   return (
@@ -71,6 +72,10 @@ const App = () => {
           <Route path="messages/history" element={<MessageHistoryPage />} />
           <Route path="counsels" element={<CounselListPage />} />
           <Route path="/contracts" element={<ContractListPage />} />
+          <Route
+            path="/contracts/:contractUid"
+            element={<ContractDetailPage />}
+          />
           <Route path="my">
             <Route index element={<MyPage />} />
             <Route path="edit-survey" element={<EditSurveyPage />} />

@@ -11,64 +11,48 @@ import {
   Paper,
   FormControlLabel,
   Switch,
+  Chip,
 } from "@mui/material";
-import Chip from "@components/Chip";
 import { PropertyItem } from "../PrivatePropertyListPage";
+import { useNavigate } from "react-router-dom";
 
 interface Props {
   propertyList: PropertyItem[];
 }
 
-const PROPERTY_TYPES = [
-  { value: "SALE", name: "매매" },
-  { value: "DEPOSIT", name: "전세" },
-  { value: "MONTHLY", name: "월세" },
-];
+const categoryColors: Record<PropertyItem["realCategory"], "primary" | "secondary" | "default" | "success" | "error" | "warning" | "info"> = {
+  ONE_ROOM: "primary",
+  TWO_ROOM: "primary",
+  APARTMENT: "success",
+  VILLA: "info",
+  HOUSE: "warning",
+  OFFICETEL: "secondary",
+  COMMERCIAL: "error",
+};
 
 const PropertyTable = ({ propertyList }: Props) => {
-  const [useMetric, setUseMetric] = useState(true);
-
-  const convertToKoreanPyeong = (squareMeters: number) => {
-    return (squareMeters / 3.3).toFixed(1);
-  };
-
-  const formatArea = (netArea: number, totalArea: number) => {
-    if (useMetric) {
-      return `${netArea}m² / ${totalArea}m²`;
-    } else {
-      return `${convertToKoreanPyeong(netArea)}평 / ${convertToKoreanPyeong(
-        totalArea
-      )}평`;
-    }
-  };
-
-  const getPropertyTypeName = (typeValue: string) => {
-    const type = PROPERTY_TYPES.find((item) => item.value === typeValue);
-    return type ? type.name : typeValue;
-  };
-
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(10);
+  const [useMetric, setUseMetric] = useState(true);
+  const navigate = useNavigate(); 
 
   const handleToggleUnitChange = () => {
     setUseMetric(!useMetric);
-  };
-
-  const handleChangePage = (_: unknown, newPage: number) => {
-    setPage(newPage);
-  };
-
-  const handleChangeRowsPerPage = (
-    event: React.ChangeEvent<HTMLInputElement>
-  ) => {
-    setRowsPerPage(parseInt(event.target.value, 10));
-    setPage(0);
   };
 
   const displayedProperties = propertyList.slice(
     page * rowsPerPage,
     page * rowsPerPage + rowsPerPage
   );
+
+  const convertToKoreanPyeong = (squareMeters: number) => {
+    return (squareMeters / 3.3).toFixed(1);
+  };
+
+  const formatArea = (netArea: number) => {
+    if (!netArea) return "-";
+    return useMetric ? `${netArea}㎡` : `${convertToKoreanPyeong(netArea)}평`;
+  };
 
   return (
     <Box sx={{ width: "100%", mt: 4 }}>
@@ -89,101 +73,35 @@ const PropertyTable = ({ propertyList }: Props) => {
               <TableRow>
                 <TableCell align="center">매물 유형</TableCell>
                 <TableCell align="center">주소</TableCell>
-                <TableCell align="center">매매 가격</TableCell>
-                <TableCell align="center">보증금</TableCell>
-                <TableCell align="center">월세</TableCell>
-                <TableCell align="center">
-                  면적(순/총) {useMetric ? "(m²)" : "(평)"}
-                </TableCell>
-                <TableCell align="center">반려동물</TableCell>
-                <TableCell align="center">엘리베이터</TableCell>
-                <TableCell align="center">층</TableCell>
-                <TableCell align="center">건축 연도</TableCell>
-                <TableCell align="center">세대별 주차 가능 수</TableCell>
+                <TableCell align="center">면적(전용)</TableCell>
                 <TableCell align="center">기타</TableCell>
               </TableRow>
             </TableHead>
             <TableBody>
               {displayedProperties.length > 0 ? (
-                displayedProperties.map((property, index) => (
-                  <TableRow key={index}>
+                displayedProperties.map((property) => (
+                  <TableRow
+                    key={property.uid}
+                    hover
+                    sx={{ cursor: "pointer" }}
+                    onClick={() => navigate(`/properties/${property.uid}`)} 
+                  >
                     <TableCell align="center">
-                      {getPropertyTypeName(property.type)}
+                      <Chip
+                        label={translateRealCategory(property.realCategory)}
+                        color={categoryColors[property.realCategory] || "default"}
+                        variant="outlined"
+                        size="small"
+                      />
                     </TableCell>
-
-                    <TableCell align="center">
-                      {property.address ?? "-"}
-                    </TableCell>
-
-                    <TableCell align="center">
-                      {property.price?.toLocaleString() ?? "-"} 원
-                    </TableCell>
-
-                    <TableCell align="center">
-                      {property.deposit?.toLocaleString() ?? "-"} 원
-                    </TableCell>
-
-                    <TableCell align="center">
-                      {property.monthlyRent?.toLocaleString() ?? "-"} 원
-                    </TableCell>
-
-                    <TableCell align="center">
-                      {property.netArea && property.totalArea
-                        ? formatArea(property.netArea, property.totalArea)
-                        : "정보 없음"}
-                    </TableCell>
-
-                    <TableCell align="center">
-                      {property.petsAllowed !== undefined ? (
-                        property.petsAllowed ? (
-                          <Chip color="success" text="가능" />
-                        ) : (
-                          <Chip color="error" text="불가능" />
-                        )
-                      ) : (
-                        "정보 없음"
-                      )}
-                    </TableCell>
-
-                    <TableCell align="center">
-                      {property.hasElevator !== undefined ? (
-                        property.hasElevator ? (
-                          <Chip color="primary" text="O" />
-                        ) : (
-                          <Chip color="default" text="X" />
-                        )
-                      ) : (
-                        "정보 없음"
-                      )}
-                    </TableCell>
-
-                    <TableCell align="center">
-                      {property.floor ?? "-"}
-                    </TableCell>
-
-                    <TableCell align="center">
-                      {property.constructionYear ?? "-"}
-                    </TableCell>
-
-                    <TableCell align="center">
-                      {property.parkingCapacity ?? "-"}
-                    </TableCell>
-
-                    <TableCell align="center">
-                      {property.details ?? "-"}
-                    </TableCell>
+                    <TableCell align="center">{property.address ?? "-"}</TableCell>
+                    <TableCell align="center">{formatArea(property.netArea)}</TableCell>
+                    <TableCell align="center">{property.details ?? "-"}</TableCell>
                   </TableRow>
                 ))
               ) : (
-                <TableRow sx={{ width: "100%" }}>
-                  <TableCell
-                    colSpan={12}
-                    align="center"
-                    sx={{
-                      width: "100%",
-                      padding: "20px 0",
-                    }}
-                  >
+                <TableRow>
+                  <TableCell colSpan={4} align="center" sx={{ padding: "20px 0" }}>
                     매물 데이터가 없습니다
                   </TableCell>
                 </TableRow>
@@ -191,19 +109,44 @@ const PropertyTable = ({ propertyList }: Props) => {
             </TableBody>
           </Table>
         </TableContainer>
+
         <TablePagination
           component="div"
           count={propertyList.length}
           page={page}
           rowsPerPage={rowsPerPage}
-          onPageChange={handleChangePage}
-          onRowsPerPageChange={handleChangeRowsPerPage}
+          onPageChange={(_, newPage) => setPage(newPage)}
+          onRowsPerPageChange={(event) => {
+            setRowsPerPage(parseInt(event.target.value, 10));
+            setPage(0);
+          }}
           rowsPerPageOptions={[5, 10]}
           labelRowsPerPage="페이지당 행"
         />
       </Paper>
     </Box>
   );
+};
+
+const translateRealCategory = (category: PropertyItem["realCategory"]) => {
+  switch (category) {
+    case "ONE_ROOM":
+      return "원룸";
+    case "TWO_ROOM":
+      return "투룸";
+    case "APARTMENT":
+      return "아파트";
+    case "VILLA":
+      return "빌라";
+    case "HOUSE":
+      return "주택";
+    case "OFFICETEL":
+      return "오피스텔";
+    case "COMMERCIAL":
+      return "상가";
+    default:
+      return "-";
+  }
 };
 
 export default PropertyTable;

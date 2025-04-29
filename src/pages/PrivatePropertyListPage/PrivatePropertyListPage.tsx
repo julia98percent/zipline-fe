@@ -2,7 +2,17 @@ import { useEffect, useState, useCallback } from "react";
 import apiClient from "@apis/apiClient";
 import PropertyAddButtonList from "./PropertyAddButtonList";
 import PropertyTable from "./PropertyTable";
-import { Box, Typography, CircularProgress } from "@mui/material";
+import PropertyFilterModal from "./PropertyFilterModal/PropertyFilterModal";
+import PageHeader from "@components/PageHeader/PageHeader";
+
+
+import {
+  Box,
+  CircularProgress,
+  Button,
+} from "@mui/material";
+import { AgentPropertyFilterRequest } from "../../types/AgentPropertyFilterRequest";
+
 
 export interface PropertyItem {
   uid: number;
@@ -31,28 +41,24 @@ export interface PropertyItem {
   details: string | null;
 }
 
+
 function PrivatePropertyListPage() {
-  const [privatePropertyList, setPrivatePropertyList] = useState<
-    PropertyItem[]
-  >([]);
+  const [privatePropertyList, setPrivatePropertyList] = useState<PropertyItem[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
+
+  const [filterModalOpen, setFilterModalOpen] = useState(false);
+  const [filter, setFilter] = useState<AgentPropertyFilterRequest>({});
 
   const fetchPropertyData = useCallback(() => {
     setLoading(true);
-
     apiClient
       .get("/properties")
       .then((res) => {
         const agentPropertyData = res?.data?.data?.agentProperty;
-        if (agentPropertyData) {
-          setPrivatePropertyList(agentPropertyData);
-        } else {
-          setPrivatePropertyList([]);
-        }
+        setPrivatePropertyList(agentPropertyData || []);
       })
       .catch((error) => {
         console.error("Failed to fetch properties:", error);
-
         setPrivatePropertyList([]);
       })
       .finally(() => {
@@ -60,18 +66,43 @@ function PrivatePropertyListPage() {
       });
   }, []);
 
+  const fetchFilteredProperties = useCallback(() => {
+    setLoading(true);
+    apiClient
+      .get("/properties", {
+        params: {
+          ...filter,
+          page: 0,
+          size: 10,
+        },
+      })
+      .then((res) => {
+        const agentPropertyData = res?.data?.data?.agentProperty;
+        setPrivatePropertyList(agentPropertyData || []);
+      })
+      .catch((error) => {
+        console.error("Failed to fetch filtered properties:", error);
+        setPrivatePropertyList([]);
+      })
+      .finally(() => {
+        setLoading(false);
+        setFilterModalOpen(false);
+      });
+  }, [filter]);
+
   useEffect(() => {
     fetchPropertyData();
   }, [fetchPropertyData]);
+
 
   if (loading)
     return (
       <Box
         sx={{
-          display: "flex",
-          justifyContent: "center",
-          alignItems: "center",
-          height: "100vh",
+          flexGrow: 1,
+          backgroundColor: "#f5f5f5",
+          minHeight: "100vh",
+          padding: 3,
         }}
       >
         <CircularProgress color="primary" />
@@ -79,17 +110,41 @@ function PrivatePropertyListPage() {
     );
 
   return (
-    <Box sx={{ padding: "32px" }}>
-      <div className="flex items-center justify-between">
-        <Typography
-          variant="h6"
-          sx={{ mb: 2, minWidth: "max-content", display: "inline", margin: 0 }}
-        >
-          내 매물 목록
-        </Typography>
-        <PropertyAddButtonList fetchPropertyData={fetchPropertyData} />
-      </div>
-      <PropertyTable propertyList={privatePropertyList} />
+    <Box
+      sx={{
+        flexGrow: 1,
+        backgroundColor: "#f5f5f5",
+        minHeight: "100vh",
+        padding: 3,
+      }}
+    >
+      {/* ✅ 대시보드와 동일한 헤더 */}
+      <PageHeader title="내 매물 목록" userName="사용자 이름" />
+
+      <Box sx={{ padding: 3 }}>
+        {/* 🔍 필터 + 등록 버튼 */}
+        <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "center", mb: 2 }}>
+          <Box display="flex" gap={1}>
+            <Button variant="outlined" onClick={() => setFilterModalOpen(true)}>
+              상세 필터
+            </Button>
+          </Box>
+          <PropertyAddButtonList fetchPropertyData={fetchPropertyData} />
+        </Box>
+
+        {/* 테이블 */}
+        <PropertyTable propertyList={privatePropertyList} />
+
+        {/* 필터 모달 */}
+        <PropertyFilterModal
+          open={filterModalOpen}
+          onClose={() => setFilterModalOpen(false)}
+          filter={filter}
+          setFilter={setFilter}
+          onApply={fetchFilteredProperties}
+          onReset={() => setFilter({})}
+        />
+      </Box>
     </Box>
   );
 }

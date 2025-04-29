@@ -1,5 +1,5 @@
 import axios from "axios";
-import { useEffect, useState } from "react";
+import { ChangeEvent, useEffect, useState } from "react";
 import Button from "@components/Button";
 import TextField from "@components/TextField";
 import {
@@ -10,6 +10,7 @@ import {
   FormControlLabel,
   Radio,
   MenuItem,
+  Checkbox
 } from "@mui/material";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import { DemoContainer } from "@mui/x-date-pickers/internals/demo";
@@ -20,29 +21,31 @@ import useInput from "@hooks/useInput";
 import apiClient from "@apis/apiClient";
 import DaumPost from "./DaumPost";
 
-// Custom hook for numeric input with validation and error
+
 function useNumericInput(
   initialValue: string | number | null = ""
-): [string, (e: React.ChangeEvent<HTMLInputElement>) => void, string | null] {
+): [
+  string,
+  (e: React.ChangeEvent<HTMLInputElement>) => void,
+  string | null,
+  React.Dispatch<React.SetStateAction<string | null>>
+] {
   const [value, setValue] = useState<string>(initialValue?.toString() ?? "");
   const [error, setError] = useState<string | null>(null);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const newValue = e.target.value;
     setValue(newValue);
-    if (newValue && !/^\d+(\.\d+)?$/.test(newValue)) {
+    if (newValue && !/^[0-9]*\.?[0-9]*$/.test(newValue)) {
       setError("숫자만 입력 가능합니다.");
     } else {
       setError(null);
     }
   };
 
-  return [value, handleChange, error];
+  return [value, handleChange, error, setError];
 }
-
-type EstateType = "SALE" | "DEPOSIT" | "MONTHLY";
-
-interface Props {
+interface PropertyAddModalProps {
   open: boolean;
   handleClose: () => void;
   fetchPropertyData: () => void;
@@ -50,90 +53,72 @@ interface Props {
 
 function PropertyAddModal({
   open,
-  handleClose: setModalClose,
+  handleClose,
   fetchPropertyData,
-}: Props) {
+}: PropertyAddModalProps) {
   const [customerUid, setCustomerUid] = useState<number | null>(null);
   const [customerOptions, setCustomerOptions] = useState<
     { uid: number; name: string }[]
   >([]);
   const [address, setAddress] = useState<string | null>(null);
-  const [dong, setDong] = useState<string | null>(null);
-  const [roadName, setRoadName] = useState<string | null>(null);
+  const [legalDistrictCode, setLegalDistrictCode] = useState<string>("");
   const [extraAddress, handleChangeDetailAddress] = useInput<string>("");
+  const [createContract, setCreateContract] = useState<boolean>(false);
 
-  const [deposit, handleChangeDeposit, depositError] = useNumericInput("");
-  const [monthlyRent, handleChangeMonthlyRent, monthlyRentError] =
-    useNumericInput("");
-  const [price, handleChangePrice, priceError] = useNumericInput("");
-  const [netArea, handleChangeNetArea, netAreaError] = useNumericInput("");
-  const [totalArea, handleChangeTotalArea, totalAreaError] =
-    useNumericInput("");
-  const [floor, handleChangeFloor, floorError] = useNumericInput("");
-  const [
-    constructionYear,
-    handleChangeConstructionYear,
-    constructionYearError,
-  ] = useNumericInput("");
+  const [deposit, handleChangeDeposit,, setDepositError] = useNumericInput("");
+  const [monthlyRent, handleChangeMonthlyRent, , setMonthlyRentError] = useNumericInput("");
+  const [price, handleChangePrice, priceError, setPriceError] = useNumericInput("");
+  const [netArea, handleChangeNetArea, netAreaError, setNetAreaError] = useNumericInput("");
+  const [totalArea, handleChangeTotalArea, totalAreaError, setTotalAreaError] = useNumericInput("");
+  const [floor, handleChangeFloor, floorError, setFloorError] = useNumericInput("");
+  const [constructionYear, handleChangeConstructionYear, constructionYearError, setConstructionYearError] = useNumericInput("");
 
-  const [parkingCapacity, setParkingCapacity] = useState<string>("");
-  const [parkingCapacityError, setParkingCapacityError] = useState<
-    string | null
-  >(null);
-  const [details, handleChangeDetails, setDetails] = useInput(null);
-  const [type, setType] = useState<EstateType>("SALE");
+  const [parkingCapacity] = useState<string>("");
+  const [parkingCapacityError] = useState<string | null>(null);
+  const [details, handleChangeDetails] = useInput(null);
+  const [type, setType] = useState("SALE");
   const [longitude, setLongitude] = useState(null);
   const [latitude, setLatitude] = useState(null);
-  const [contractStartDate, setContractStartDate] = useState<Dayjs | null>(
-    null
-  );
+  const [contractStartDate, setContractStartDate] = useState<Dayjs | null>(null);
   const [contractEndDate, setContractEndDate] = useState<Dayjs | null>(null);
   const [moveInDate, setMoveInDate] = useState<Dayjs | null>(null);
   const [realCategory, setRealCategory] = useState("APARTMENT");
   const [petsAllowed, setPetsAllowed] = useState(false);
   const [hasElevator, setHasElevator] = useState<boolean>(false);
+  const [contractDateError, setContractDateError] = useState<string | null>(null);
 
-  const handleChangePriceWithValidation = (
-    e: React.ChangeEvent<HTMLInputElement>
-  ) => {
-    handleChangePrice(e); // 기존 handleChangePrice로 전달
-  };
 
-  const handleChangeParkingCapacity = (
-    e: React.ChangeEvent<HTMLInputElement>
-  ) => {
-    const value = e.target.value;
-    setParkingCapacity(value);
-    if (value && !/^\d+$/.test(value)) {
-      setParkingCapacityError("숫자만 입력 가능합니다.");
-    } else {
-      setParkingCapacityError(null);
-    }
-  };
   const handleClickSubmitButton = () => {
+    if (contractStartDate && contractEndDate && contractStartDate.isAfter(contractEndDate)) {
+      setContractDateError("계약 시작일은 계약 종료일보다 같거나 이전이어야 합니다.");
+      return;
+    } else {
+      setContractDateError(null); // 에러 없으면 초기화
+    }
+    
     const propertyDataToSubmit = {
       customerUid,
       address: address + " " + extraAddress,
-      dong,
-      roadName,
+      legalDistrictCode,
       deposit: Number(deposit),
       monthlyRent: Number(monthlyRent),
       price: Number(price),
       type,
       longitude,
       latitude,
-      contractStartDate,
-      contractEndDate,
-      moveInDate,
+      startDate: contractStartDate?.format("YYYY-MM-DD"),
+      endDate: contractEndDate?.format("YYYY-MM-DD"),
+      moveInDate: moveInDate?.format("YYYY-MM-DD"),
       realCategory,
       petsAllowed,
       floor: Number(floor),
       hasElevator,
-      constructionYear: Number(constructionYear),
+      constructionYear: constructionYear ? Number(constructionYear) : null,
       parkingCapacity: Number(parkingCapacity),
       netArea: Number(netArea),
       totalArea: Number(totalArea),
       details,
+      createContract,
     };
 
     apiClient
@@ -142,63 +127,30 @@ function PropertyAddModal({
         if (res.status === 201) {
           alert("매물 등록 성공");
           fetchPropertyData();
-          handleModalClose();
-          resetPropertyData();
+          handleClose();
         }
       })
       .catch((error) => {
-        console.log(error);
+        const message = error.response?.data?.message;
+        if (!message) return alert("등록 중 오류가 발생했습니다.");
+
+        const errorMap: Record<string, (msg: string) => void> = {
+  보증금: (msg) => setDepositError(msg),
+  월세: (msg) => setMonthlyRentError(msg),
+  "매매 가격": (msg) => setPriceError(msg),
+  "전용 면적": (msg) => setNetAreaError(msg),
+  "공급 면적": (msg) => setTotalAreaError(msg),
+  층수: (msg) => setFloorError(msg),
+  건축년도: (msg) => setConstructionYearError(msg),
+  주소: (msg) => alert(msg),
+  고객: () => alert(message),
+};
+
+        const matched = Object.entries(errorMap).find(([key]) => message.includes(key));
+        if (matched) matched[1](message);
+        else alert(message);
       });
   };
-
-  const isSubmitButtonDisabled =
-    !address ||
-    !type ||
-    !netArea ||
-    !totalArea ||
-    (type == "SALE" && !price) ||
-    (type == "DEPOSIT" && !deposit) ||
-    (type == "MONTHLY" && (!monthlyRent || !deposit)) ||
-    !!priceError ||
-    !!depositError ||
-    !!monthlyRentError ||
-    !!netAreaError ||
-    !!totalAreaError ||
-    !!floorError ||
-    !!constructionYearError ||
-    !!parkingCapacityError;
-
-  const resetNumericInput = (
-    handler: (e: React.ChangeEvent<HTMLInputElement>) => void
-  ) => {
-    handler({ target: { value: "" } } as React.ChangeEvent<HTMLInputElement>);
-  };
-
-  const resetPropertyData = () => {
-    resetNumericInput(handleChangeDeposit);
-    resetNumericInput(handleChangeMonthlyRent);
-    resetNumericInput(handleChangePrice);
-    resetNumericInput(handleChangeFloor);
-    resetNumericInput(handleChangeConstructionYear);
-    resetNumericInput(handleChangeNetArea);
-    resetNumericInput(handleChangeTotalArea);
-
-    setType("SALE");
-    setLongitude(null);
-    setLatitude(null);
-    setMoveInDate(null);
-    setRealCategory("APARTMENT");
-    setPetsAllowed(false);
-    setHasElevator(false);
-    setParkingCapacity("");
-    setDetails(null);
-  };
-
-  const handleModalClose = () => {
-    setModalClose();
-    resetPropertyData();
-  };
-
   useEffect(() => {
     axios
       .get(
@@ -215,6 +167,7 @@ function PropertyAddModal({
         if (result) {
           setLongitude(result.x);
           setLatitude(result.y);
+          setLegalDistrictCode(result.b_code);
         }
       });
   }, [address]);
@@ -225,8 +178,13 @@ function PropertyAddModal({
     });
   }, []);
 
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  function handleChangeParkingCapacity(_event: ChangeEvent<HTMLInputElement>): void {
+    throw new Error("Function not implemented.");
+  }
+
   return (
-    <Modal open={open} onClose={handleModalClose}>
+    <Modal open={open} onClose={handleClose}>
       <Box
         sx={{
           position: "absolute",
@@ -237,70 +195,58 @@ function PropertyAddModal({
           backgroundColor: "white",
           boxShadow: 24,
           borderRadius: 2,
-          p: 0,
-          height: "80vh",
-          display: "flex",
-          flexDirection: "column",
+          p: 4,
+          maxHeight: "80vh",
+          overflowY: "auto",
         }}
       >
-        <Box
-          sx={{
-            overflowY: "scroll",
-            flexGrow: 1,
-            p: 4,
-          }}
+        <Typography variant="h6">매물 등록</Typography>
+        <TextField
+          select
+          label="고객 선택"
+          value={customerUid !== null ? customerUid.toString() : ""}
+          onChange={(e) => setCustomerUid(Number(e.target.value))}
+          fullWidth
+          sx={{ mt: 2 }}
         >
-          <Typography variant="h6">매물 등록</Typography>
+          {customerOptions.map((customer) => (
+            <MenuItem key={customer.uid} value={customer.uid.toString()}>
+              {customer.name}
+            </MenuItem>
+          ))}
+        </TextField>
 
-          <TextField
-            select
-            label="고객 선택"
-            value={customerUid !== null ? customerUid.toString() : ""}
-            onChange={(e) => setCustomerUid(Number(e.target.value))}
-            fullWidth
-            sx={{ mt: 2 }}
-          >
-            {customerOptions.map((customer) => (
-              <MenuItem key={customer.uid} value={customer.uid.toString()}>
-                {customer.name}
-              </MenuItem>
-            ))}
-          </TextField>
-          <Box sx={{ mt: 2 }} />
-          <TextField
-            label="주소"
-            value={address ?? ""}
-            variant="outlined"
-            disabled
-            fullWidth
-          />
-          <DaumPost
-            setAddress={setAddress}
-            setDong={setDong}
-            setRoadName={setRoadName}
-          />
-          <TextField
-            label="상세 주소"
-            value={extraAddress ?? ""}
-            onChange={handleChangeDetailAddress}
-            disabled={!address}
-            variant="outlined"
-            fullWidth
-          />
-          {/* <TextField
-            label="동"
-            value={dong ?? ""}
-            onChange={(e) => setDong(e.target.value)}
-            sx={{ mt: 2 }}
-            fullWidth
-          />
-          <TextField
-            label="도로명"
-            value={roadName ?? ""}
-            onChange={(e) => setRoadName(e.target.value)}
-            sx={{ mt: 2 }}
-            fullWidth
-          /> */}
+        <TextField
+          label="주소"
+          value={address ?? ""}
+          variant="outlined"
+          disabled
+          fullWidth
+          sx={{ mt: 2 }}
+        />
+        <DaumPost
+          setAddress={setAddress}
+        />
+        <TextField
+          label="상세 주소"
+          value={extraAddress ?? ""}
+          onChange={handleChangeDetailAddress}
+          disabled={!address}
+          variant="outlined"
+          fullWidth
+          sx={{ mt: 2 }}
+        />
+
+        <FormControlLabel
+          control={
+            <Checkbox
+              checked={createContract}
+              onChange={(e) => setCreateContract(e.target.checked)}
+            />
+          }
+          label="계약 자동 생성하기"
+          sx={{ mt: 2 }}
+        />
           {/* 거래 유형 */}
           <Typography variant="subtitle1" sx={{ mt: 2 }}>
             거래 유형
@@ -308,7 +254,7 @@ function PropertyAddModal({
           <RadioGroup
             row
             value={type}
-            onChange={(event) => setType(event.target.value as EstateType)}
+            onChange={(event) => setType(event.target.value as "SALE" | "DEPOSIT" | "MONTHLY" )}
           >
             <FormControlLabel value="SALE" control={<Radio />} label="매매" />
             <FormControlLabel
@@ -327,7 +273,7 @@ function PropertyAddModal({
             <TextField
               label="매매 가격"
               value={price ?? ""}
-              onChange={handleChangePriceWithValidation}
+              onChange={handleChangePrice}
               sx={{ mt: 2 }}
               fullWidth
               placeholder="숫자만 입력하세요"
@@ -458,21 +404,33 @@ function PropertyAddModal({
           </RadioGroup>
 
           <LocalizationProvider dateAdapter={AdapterDayjs}>
-            <DemoContainer components={["DatePicker"]}>
-              <DesktopDatePicker
-                onChange={setContractStartDate}
-                value={contractStartDate}
-                format="YYYY. MM. DD"
-                label="계약 시작일"
-              />
-              <DesktopDatePicker
-                onChange={setContractEndDate}
-                value={contractEndDate}
-                format="YYYY. MM. DD"
-                label="계약 종료일"
-              />
-            </DemoContainer>
-          </LocalizationProvider>
+  <DemoContainer components={["DatePicker"]}>
+    <DesktopDatePicker
+      onChange={setContractStartDate}
+      value={contractStartDate}
+      format="YYYY. MM. DD"
+      label="계약 시작일"
+      slotProps={{
+        textField: {
+          error: !!contractDateError,
+          helperText: contractDateError ?? "",
+        }
+      }}
+    />
+    <DesktopDatePicker
+      onChange={setContractEndDate}
+      value={contractEndDate}
+      format="YYYY. MM. DD"
+      label="계약 종료일"
+      slotProps={{
+        textField: {
+          error: !!contractDateError,
+          helperText: contractDateError ?? "",
+        }
+      }}
+    />
+  </DemoContainer>
+</LocalizationProvider>
 
           {/* 입주 가능일 */}
           <LocalizationProvider dateAdapter={AdapterDayjs}>
@@ -517,22 +475,20 @@ function PropertyAddModal({
             fullWidth
           />
 
-          <Button
-            disabled={isSubmitButtonDisabled}
-            text="등록"
-            onClick={handleClickSubmitButton}
-            sx={{
-              mt: 4,
-              color: "white !important",
-              backgroundColor: "#164F9E",
-              "&:disabled": {
-                backgroundColor: "lightgray",
-                color: "white",
-              },
-            }}
-          />
+        <Button        
+          text="등록"
+          onClick={handleClickSubmitButton}
+          sx={{
+            mt: 4,
+            color: "white !important",
+            backgroundColor: "#164F9E",
+            "&:disabled": {
+              backgroundColor: "lightgray",
+              color: "white",
+            },
+          }}
+        />
         </Box>
-      </Box>
     </Modal>
   );
 }

@@ -1329,7 +1329,9 @@ const DashboardPage = () => {
                           key={consultation.id}
                           hover
                           sx={{ cursor: "pointer" }}
-                          onClick={() => handleCounselClick(consultation.id)}
+                          onClick={() =>
+                            handleCounselClick(consultation.counselUid)
+                          }
                         >
                           <TableCell>{consultation.customerName}</TableCell>
                           <TableCell>{consultation.title}</TableCell>

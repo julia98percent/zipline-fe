@@ -1,6 +1,6 @@
 import { useState } from "react";
 import Button from "@components/Button";
-import CustomerAddModal from "./CustomerAddModal";
+import CustomerAddModal from "./CustomerAddModal/CustomerAddModal";
 
 function CustomerAddButtonList({ fetchCustomerList }: any) {
   const [open, setOpen] = useState(false); // 모달 열림 상태 관리
@@ -16,8 +16,11 @@ function CustomerAddButtonList({ fetchCustomerList }: any) {
           onClick={handleOpen}
           sx={{
             color: "white",
-            minHeight: "32px",
-            backgroundColor: "#164F9E",
+            minHeight: "40px",
+            backgroundColor: "#6366F1",
+            "&:hover": {
+              backgroundColor: "#5457E5",
+            },
             "&:disabled": {
               backgroundColor: "lightgray",
               color: "white",
@@ -30,8 +33,11 @@ function CustomerAddButtonList({ fetchCustomerList }: any) {
           disabled
           sx={{
             color: "white",
-            minHeight: "32px",
-            backgroundColor: "#164F9E",
+            minHeight: "40px",
+            backgroundColor: "#6366F1",
+            "&:hover": {
+              backgroundColor: "#5457E5",
+            },
             "&:disabled": {
               backgroundColor: "lightgray",
               color: "white",

@@ -21,6 +21,7 @@ import DashboardPage from "@pages/DashboardPage";
 import SchedulePage from "@pages/SchedulePage";
 import MessageTemplatePage from "@pages/MessageTemplatePage";
 import MessageHistoryPage from "@pages/MessageHistoryPage";
+import AgentPropertyDetailPage from "@pages/PrivatePropertyListPage/AgentPropertyDetailPage";
 
 const App = () => {
   return (
@@ -55,6 +56,10 @@ const App = () => {
           <Route
             path="properties/private"
             element={<PrivatePropertyListPage />}
+          />
+          <Route
+            path="/properties/:propertyUid"
+            element={<AgentPropertyDetailPage />}
           />
           <Route
             path="properties/public"

@@ -4,8 +4,6 @@ import Button from "@components/Button";
 
 interface Props {
   setAddress: Dispatch<SetStateAction<string | null>>;
-  setDong: React.Dispatch<React.SetStateAction<string | null>>;
-  setRoadName: React.Dispatch<React.SetStateAction<string | null>>;
 }
 
 interface DaumPostcodeData {
@@ -14,13 +12,11 @@ interface DaumPostcodeData {
   bname: string;
 }
 
-function DaumPost({ setAddress, setDong, setRoadName }: Props) {
+function DaumPost({ setAddress}: Props) {
   const open = useDaumPostcodePopup();
 
   const handleComplete = (data: DaumPostcodeData) => {
     setAddress(data.address);
-    setDong(data.bname);
-    setRoadName(data.roadAddress);
   };
 
   const handleClick = () => {

@@ -12,8 +12,10 @@ import {
   Select,
   MenuItem,
 } from "@mui/material";
+import { toast } from "react-toastify";
 import PageHeader from "@components/PageHeader/PageHeader";
 import apiClient from "@apis/apiClient";
+import useUserStore from "@stores/useUserStore";
 
 interface Template {
   uid: number;
@@ -36,7 +38,11 @@ interface TemplateResponse {
   data: Template[];
 }
 
+const ALLOWED_VARIABLES = ["이름", "생년월일", "관심지역"] as const;
+type AllowedVariable = (typeof ALLOWED_VARIABLES)[number];
+
 const MessageTemplatePage = () => {
+  const { user } = useUserStore();
   const [templateTitle, setTemplateTitle] = useState("");
   const [templateContent, setTemplateContent] = useState("");
   const [selectedTemplate, setSelectedTemplate] = useState<Template | null>(
@@ -49,6 +55,9 @@ const MessageTemplatePage = () => {
     { id: 3, name: "계약 만료", category: "EXPIRED_NOTI", templates: [] },
   ]);
   const [isLoading, setIsLoading] = useState(false);
+
+  // 변수 목록 정의
+  const VARIABLE_LIST = ALLOWED_VARIABLES.map((key) => ({ label: key, key }));
 
   const handleTemplateSelect = (template: Template) => {
     setSelectedTemplate(template);
@@ -66,7 +75,7 @@ const MessageTemplatePage = () => {
 
   const handleCreateTemplate = async () => {
     if (!templateTitle || !templateContent || !selectedCategory) {
-      console.error("모든 필드를 입력해주세요.");
+      toast.error("모든 필드를 입력해주세요.");
       return;
     }
 
@@ -81,9 +90,14 @@ const MessageTemplatePage = () => {
       if (response.data.success) {
         fetchTemplates();
         handleAddNewTemplate(); // Reset form
+        toast.success("템플릿이 성공적으로 생성되었습니다.");
       }
-    } catch (error) {
-      console.error("Error creating template:", error);
+    } catch (error: unknown) {
+      const err = error as { response?: { data?: { message?: string } } };
+      toast.error(
+        err?.response?.data?.message ||
+          "템플릿 생성 중 오류가 발생했습니다. 다시 시도해주세요."
+      );
     } finally {
       setIsLoading(false);
     }
@@ -96,7 +110,7 @@ const MessageTemplatePage = () => {
       !templateContent ||
       !selectedCategory
     ) {
-      console.error("모든 필드를 입력해주세요.");
+      toast.error("모든 필드를 입력해주세요.");
       return;
     }
 
@@ -113,9 +127,11 @@ const MessageTemplatePage = () => {
 
       if (response.data.success) {
         fetchTemplates();
+        toast.success("템플릿을 수정했습니다.");
       }
     } catch (error) {
       console.error("Error updating template:", error);
+      toast.error("템플릿 수정 중 오류가 발생했습니다. 다시 시도해주세요.");
     } finally {
       setIsLoading(false);
     }
@@ -151,6 +167,84 @@ const MessageTemplatePage = () => {
     fetchTemplates();
   }, []);
 
+  // 깨진 변수 검사: 허용된 변수명으로 시작하지만 }}로 끝나지 않는 경우가 있으면 true
+  const hasBrokenVariable = (() => {
+    const regex = /({{[^}]*}}|{{[^}]*|[^{{}]*}})/g;
+    let match;
+    while ((match = regex.exec(templateContent)) !== null) {
+      const part = match[0];
+      if (part.startsWith("{{") && !part.endsWith("}}")) {
+        const extractedVar = part.slice(2).trim();
+        if (ALLOWED_VARIABLES.some((v) => extractedVar.startsWith(v))) {
+          return true;
+        }
+      }
+    }
+    return false;
+  })();
+
+  // 미리보기에서 변수 하이라이트 및 깨진 변수 빨간색 표시
+  function getHighlightedPreview(content: string) {
+    const regex = /({{[^}]*}}|{{[^}]*|[^{{}]*}})/g;
+    let lastIndex = 0;
+    const result: React.ReactNode[] = [];
+    let match;
+    while ((match = regex.exec(content)) !== null) {
+      if (match.index > lastIndex) {
+        result.push(
+          <span key={lastIndex}>{content.slice(lastIndex, match.index)}</span>
+        );
+      }
+      const part = match[0];
+      // 정상 변수
+      if (part.startsWith("{{") && part.endsWith("}}") && part.length > 4) {
+        const variableName = part.slice(2, -2).trim() as AllowedVariable;
+        if (ALLOWED_VARIABLES.includes(variableName)) {
+          result.push(
+            <span
+              key={match.index}
+              style={{
+                display: "inline-block",
+                background: "#E3F2FD",
+                color: "#164F9E",
+                borderRadius: "8px",
+                padding: "2px 8px",
+                margin: "0 2px",
+                fontWeight: 600,
+                fontSize: "0.95em",
+                verticalAlign: "middle",
+              }}
+            >
+              {variableName}
+            </span>
+          );
+          lastIndex = regex.lastIndex;
+          continue;
+        }
+      }
+      // 깨진 변수: {{허용된변수명 으로 시작하지만 }}로 안 끝남
+      if (part.startsWith("{{") && !part.endsWith("}}")) {
+        const brokenVar = part.slice(2).trim();
+        if (ALLOWED_VARIABLES.some((v) => brokenVar.startsWith(v))) {
+          result.push(
+            <span key={match.index} style={{ color: "red", fontWeight: 600 }}>
+              {part}
+            </span>
+          );
+          lastIndex = regex.lastIndex;
+          continue;
+        }
+      }
+      // 나머지는 일반 텍스트
+      result.push(<span key={match.index}>{part}</span>);
+      lastIndex = regex.lastIndex;
+    }
+    if (lastIndex < content.length) {
+      result.push(<span key={lastIndex}>{content.slice(lastIndex)}</span>);
+    }
+    return result;
+  }
+
   return (
     <Box
       sx={{
@@ -160,7 +254,7 @@ const MessageTemplatePage = () => {
         backgroundColor: "#F8F9FA",
       }}
     >
-      <PageHeader title="문자 템플릿" userName="사용자 이름" />
+      <PageHeader title="문자 템플릿" userName={user?.name || "-"} />
 
       <Box sx={{ p: 3, display: "flex", gap: 2 }}>
         {/* 왼쪽 영역: 템플릿 목록 */}
@@ -270,9 +364,9 @@ const MessageTemplatePage = () => {
               변수 목록
             </Typography>
             <List sx={{ py: 0 }}>
-              {["이름", "생년월일", "관심지역"].map((variable) => (
+              {VARIABLE_LIST.map((variable) => (
                 <ListItem
-                  key={variable}
+                  key={variable.key}
                   sx={{
                     px: 1.5,
                     py: 1,
@@ -289,14 +383,15 @@ const MessageTemplatePage = () => {
                     },
                   }}
                   onClick={() => {
+                    const textarea =
+                      document.querySelector<HTMLTextAreaElement>("textarea");
                     const cursorPosition =
-                      document.querySelector<HTMLTextAreaElement>("textarea")
-                        ?.selectionStart || 0;
-                    const newContent =
+                      textarea?.selectionStart ?? templateContent.length;
+                    setTemplateContent(
                       templateContent.slice(0, cursorPosition) +
-                      `[${variable}]` +
-                      templateContent.slice(cursorPosition);
-                    setTemplateContent(newContent);
+                        `{{${variable.key}}}` +
+                        templateContent.slice(cursorPosition)
+                    );
                   }}
                 >
                   <ListItemText
@@ -316,7 +411,7 @@ const MessageTemplatePage = () => {
                               fontWeight: 500,
                             }}
                           >
-                            {variable}
+                            {variable.label}
                           </Typography>
                           <Typography
                             variant="caption"
@@ -325,7 +420,7 @@ const MessageTemplatePage = () => {
                               ml: 1,
                             }}
                           >
-                            [{variable}]
+                            {`{{${variable.key}}}`}
                           </Typography>
                         </Box>
                         <Box
@@ -372,6 +467,11 @@ const MessageTemplatePage = () => {
                 </ListItem>
               ))}
             </List>
+            <Typography variant="caption" color="textSecondary" sx={{ mt: 1 }}>
+              변수는 반드시 <b>{"{{변수명}}"}</b> 형태로만 입력해 주세요.
+              <br />
+              (예: {"{{이름}}"}, {"{{생년월일}}"}, {"{{관심지역}}"})
+            </Typography>
           </Paper>
         </Box>
 
@@ -458,6 +558,29 @@ const MessageTemplatePage = () => {
               },
             }}
           />
+          {/* 미리보기 및 깨진 변수 경고 */}
+          <Box sx={{ mt: 2 }}>
+            <Typography variant="subtitle2" sx={{ color: "#666", mb: 0.5 }}>
+              미리보기
+            </Typography>
+            <Box
+              sx={{
+                p: 2,
+                background: "#F8F9FA",
+                borderRadius: 2,
+                minHeight: 48,
+                fontSize: 16,
+              }}
+            >
+              {getHighlightedPreview(templateContent)}
+            </Box>
+            {hasBrokenVariable && (
+              <Typography color="error" sx={{ mt: 1 }}>
+                변수 표기(&#123;&#123;...&#125;&#125;)가 올바르지 않습니다. 쌍이
+                맞는지 확인해 주세요.
+              </Typography>
+            )}
+          </Box>
           <Box
             sx={{ display: "flex", justifyContent: "flex-end", gap: 2, mt: 2 }}
           >
@@ -486,7 +609,8 @@ const MessageTemplatePage = () => {
                 isLoading ||
                 !templateTitle ||
                 !templateContent ||
-                !selectedCategory
+                !selectedCategory ||
+                hasBrokenVariable
               }
               sx={{
                 backgroundColor: "#164F9E",
@@ -495,6 +619,7 @@ const MessageTemplatePage = () => {
                 },
                 "&.Mui-disabled": {
                   backgroundColor: "rgba(22, 79, 158, 0.4)",
+                  color: "#fff",
                 },
               }}
             >

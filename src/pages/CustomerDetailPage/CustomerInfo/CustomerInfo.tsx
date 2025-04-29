@@ -56,7 +56,7 @@ function CustomerInfo({ customerId }: any) {
   }, []);
 
   return (
-    <Box sx={{ mt: 3 }}>
+    <Box sx={{ mt: 0 }}>
       {/* Tabs */}
       <Tabs
         value={currentTab}
@@ -83,7 +83,11 @@ function CustomerInfo({ customerId }: any) {
           <CircularProgress color="primary" />
         </Box>
       ) : (
-        <TableContainer component={Paper} elevation={4} sx={{ mt: 2 }}>
+        <TableContainer
+          component={Paper}
+          elevation={0}
+          sx={{ mt: 2, boxShadow: "none" }}
+        >
           {/* Counsel Tab */}
           {currentTab === 0 && <CounselTable counselList={counsel} />}
 

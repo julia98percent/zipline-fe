@@ -1,4 +1,4 @@
-import { ChangeEvent } from "react";
+import { ChangeEvent, useCallback } from "react";
 import { TextField, Tooltip } from "@mui/material";
 import ErrorOutlineIcon from "@mui/icons-material/ErrorOutline";
 
@@ -10,8 +10,41 @@ export interface PhoneNumberInputProps {
   onBlur?: () => void;
 }
 
-const isValidPhoneNumber = (phone: string) =>
-  /^01[0|1|6|7|8|9]-\d{3,4}-\d{4}$/.test(phone);
+
+const isValidPhoneNumber = (phone: string) => {
+  return /^01[0|1|6|7|8|9]-\d{3,4}-\d{4}$/.test(phone) && (phone.length === 12 || phone.length === 13);
+}
+
+const formatPhoneNumber = (input: string): string => {
+  const cleanedInput = input.replace(/[^0-9]/g, "");
+  let formattedNumber = "";
+
+  if (cleanedInput.startsWith("02")) {
+    if (cleanedInput.length <= 2) {
+      formattedNumber = cleanedInput;
+    } else if (cleanedInput.length <= 6) {
+      formattedNumber = cleanedInput.replace(/^(\d{2})(\d{0,4})/, "$1-$2");
+    } else {
+      formattedNumber = cleanedInput.replace(/^(\d{2})(\d{4})(\d{4})/, "$1-$2-$3");
+    }
+    if (formattedNumber.length > 11) {
+      formattedNumber = formattedNumber.slice(0, 11);
+    }
+  } else {
+    if (cleanedInput.length <= 3) {
+      formattedNumber = cleanedInput;
+    } else if (cleanedInput.length <= 7) {
+      formattedNumber = cleanedInput.replace(/^(\d{3})(\d{0,4})/, "$1-$2");
+    } else {
+      formattedNumber = cleanedInput.replace(/^(\d{3})(\d{4})(\d{4})/, "$1-$2-$3");
+    }
+    if (formattedNumber.length > 13) {
+      formattedNumber = formattedNumber.slice(0, 13);
+    }
+  }
+
+  return formattedNumber;
+};
 
 const PhoneNumberInput = ({
   phoneNumber,
@@ -27,12 +60,25 @@ const PhoneNumberInput = ({
       ? "올바른 전화번호 형식을 입력해주세요 (예: 010-1234-5678)"
       : "");
 
+  const handleChange = useCallback(
+    (e: ChangeEvent<HTMLInputElement>) => {
+      const formattedPhoneNumber = formatPhoneNumber(e.target.value);
+      handleChangePhoneNumber({
+        target: {
+          name: e.target.name,
+          value: formattedPhoneNumber,
+        },
+      } as ChangeEvent<HTMLInputElement>);
+    },
+    [handleChangePhoneNumber]
+  );
+
   return (
     <div style={{ position: "relative" }}>
       <TextField
         label="전화번호"
         value={phoneNumber}
-        onChange={handleChangePhoneNumber}
+        onChange={handleChange}
         onBlur={onBlur}
         placeholder="010-1234-5678"
         type="tel"

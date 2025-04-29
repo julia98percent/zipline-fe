@@ -25,8 +25,8 @@ const PublicPropertyTable = ({ propertyList }: Props) => {
     return useMetric
       ? `${exclusiveArea}m² / ${supplyArea}m²`
       : `${(exclusiveArea / 3.3).toFixed(1)}평 / ${(supplyArea / 3.3).toFixed(
-          1
-        )}평`;
+        1
+      )}평`;
   };
 
   const [page, setPage] = useState(0);

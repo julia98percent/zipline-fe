@@ -391,7 +391,7 @@ const PublicPropertyFilterModal = ({
                 <Slider
                   value={[localFilters.minPrice || 0, localFilters.maxPrice || 100000]}
                   onChange={handleSliderChange("Price")}
-                  min={1000000000}
+                  min={1}
                   max={1000000000}
                   step={1000}
                   valueLabelDisplay="auto"
@@ -405,7 +405,7 @@ const PublicPropertyFilterModal = ({
                 <Slider
                   value={[localFilters.minDeposit || 0, localFilters.maxDeposit || 50000]}
                   onChange={handleSliderChange("Deposit")}
-                  min={1000}
+                  min={1}
                   max={10000000}
                   step={10000000}
                   valueLabelDisplay="auto"
@@ -419,7 +419,7 @@ const PublicPropertyFilterModal = ({
                 <Slider
                   value={[localFilters.minMonthlyRent || 0, localFilters.maxMonthlyRent || 1000]}
                   onChange={handleSliderChange("MonthlyRent")}
-                  min={10}
+                  min={1}
                   max={10000000}
                   step={10000000}
                   valueLabelDisplay="auto"

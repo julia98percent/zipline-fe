@@ -299,41 +299,26 @@ function PublicPropertyListPage() {
       queryParams.append("category", searchParams.category);
     }
 
-    // Add price ranges - use hardcoded values if sorting is applied but no range is set
+    // Add price ranges only if they have non-zero values
     if (searchParams.minPrice) {
       queryParams.append("minPrice", searchParams.minPrice.toString());
-    } else if (Object.keys(searchParams.sortFields).length > 0) {
-      queryParams.append("minPrice", "1");
     }
-
     if (searchParams.maxPrice) {
       queryParams.append("maxPrice", searchParams.maxPrice.toString());
-    } else if (Object.keys(searchParams.sortFields).length > 0) {
-      queryParams.append("maxPrice", "999999999999999");
     }
 
     if (searchParams.minDeposit) {
       queryParams.append("minDeposit", searchParams.minDeposit.toString());
-    } else if (Object.keys(searchParams.sortFields).length > 0) {
-      queryParams.append("minDeposit", "1");
     }
-
     if (searchParams.maxDeposit) {
       queryParams.append("maxDeposit", searchParams.maxDeposit.toString());
-    } else if (Object.keys(searchParams.sortFields).length > 0) {
-      queryParams.append("maxDeposit", "999999999999999");
     }
 
     if (searchParams.minMonthlyRent) {
       queryParams.append("minMonthlyRent", searchParams.minMonthlyRent.toString());
-    } else if (Object.keys(searchParams.sortFields).length > 0) {
-      queryParams.append("minMonthlyRent", "1");
     }
-
     if (searchParams.maxMonthlyRent) {
       queryParams.append("maxMonthlyRent", searchParams.maxMonthlyRent.toString());
-    } else if (Object.keys(searchParams.sortFields).length > 0) {
-      queryParams.append("maxMonthlyRent", "999999999999999");
     }
 
     // Add area ranges only if they have non-zero values

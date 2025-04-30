@@ -19,16 +19,36 @@ import NavigateBeforeIcon from "@mui/icons-material/NavigateBefore";
 import NavigateNextIcon from "@mui/icons-material/NavigateNext";
 import PageHeader from "@components/PageHeader/PageHeader";
 import apiClient from "@apis/apiClient";
+import useUserStore from "@stores/useUserStore";
+import dayjs from "dayjs";
 
-interface MessageHistory {
-  createdAt: string;
-  type: "SMS" | "LMS";
-  senderNumber: string;
-  receiverNumber: string;
-  statusCode: string;
-  statusName: string;
-  note: string;
-  content: string;
+interface MessageCount {
+  total: number;
+  sentTotal: number;
+  sentFailed: number;
+  sentSuccess: number;
+  sentPending: number;
+  sentReplacement: number;
+  refund: number;
+  registeredFailed: number;
+  registeredSuccess: number;
+}
+
+interface MessageGroup {
+  groupId: string;
+  from: string | null;
+  type: string | null;
+  subject: string | null;
+  dateCreated: string;
+  dateUpdated: string;
+  dateCompleted: string;
+  statusCode: string | null;
+  status: string;
+  to: string | null;
+  text: string | null;
+  messageId: string | null;
+  count: MessageCount;
+  messageTypeCount: any | null;
 }
 
 interface MessageHistoryResponse {
@@ -36,48 +56,34 @@ interface MessageHistoryResponse {
   code: number;
   message: string;
   data: {
-    content: MessageHistory[];
-    totalElements: number;
-    totalPages: number;
-    size: number;
-    number: number;
+    startKey: string | null;
+    nextKey: string | null;
+    limit: number;
+    groupList: Record<string, MessageGroup>;
   };
 }
 
 const MessageHistoryPage = () => {
-  const [messages, setMessages] = useState<MessageHistory[]>([]);
+  const [messages, setMessages] = useState<MessageGroup[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [page, setPage] = useState(0);
   const [totalPages, setTotalPages] = useState(0);
   const [selectedFilters, setSelectedFilters] = useState<string[]>([]);
+  const { user } = useUserStore();
 
   const fetchMessages = async () => {
     try {
       setIsLoading(true);
       const { data: response } = await apiClient.get<MessageHistoryResponse>(
-        "/messages",
-        {
-          params: {
-            limit: 50,
-            startKey: page * 50,
-            criteria: "type,statusCode",
-            cond: "in,in",
-            value:
-              selectedFilters.length > 0
-                ? selectedFilters.join(",")
-                : undefined,
-            dateType: "dateCreated",
-            startDate: new Date(
-              new Date().setDate(new Date().getDate() - 7)
-            ).toISOString(), // 최근 7일
-            endDate: new Date().toISOString(),
-          },
-        }
+        "/messages"
       );
 
       if (response.success && response.code === 200 && response.data) {
-        setMessages(response.data.content || []);
-        setTotalPages(response.data.totalPages || 0);
+        // Convert groupList object to array
+        const messageArray = Object.values(response.data.groupList);
+        setMessages(messageArray);
+        // Calculate total pages based on limit
+        setTotalPages(Math.ceil(messageArray.length / response.data.limit));
       } else {
         setMessages([]);
         setTotalPages(0);
@@ -108,6 +114,30 @@ const MessageHistoryPage = () => {
     fetchMessages();
   };
 
+  const formatDate = (dateString: string) => {
+    return dayjs(dateString).format("YYYY-MM-DD HH:mm:ss");
+  };
+
+  const getStatusColor = (status: string) => {
+    switch (status) {
+      case "COMPLETE":
+        return {
+          bg: "#E8F5E9",
+          text: "#2E7D32",
+        };
+      case "FAILED":
+        return {
+          bg: "#FFEBEE",
+          text: "#C62828",
+        };
+      default:
+        return {
+          bg: "#FFF3E0",
+          text: "#E65100",
+        };
+    }
+  };
+
   return (
     <Box
       sx={{
@@ -117,7 +147,7 @@ const MessageHistoryPage = () => {
         backgroundColor: "#F8F9FA",
       }}
     >
-      <PageHeader title="문자 발송 내역" userName="사용자 이름" />
+      <PageHeader title="문자 발송 내역" userName={user?.name || ""} />
 
       <Box sx={{ p: 3 }}>
         <Box
@@ -141,7 +171,7 @@ const MessageHistoryPage = () => {
           >
             <RefreshIcon />
           </IconButton>
-          <Button
+          {/* <Button
             variant={
               selectedFilters.includes("success") ? "contained" : "outlined"
             }
@@ -192,7 +222,7 @@ const MessageHistoryPage = () => {
             }}
           >
             발송 실패건
-          </Button>
+          </Button>     */}
         </Box>
 
         {isLoading ? (
@@ -212,34 +242,20 @@ const MessageHistoryPage = () => {
             <Table>
               <TableHead>
                 <TableRow>
-                  <TableCell>생성일</TableCell>
-                  <TableCell>타입</TableCell>
-                  <TableCell>발신번호</TableCell>
-                  <TableCell>수신번호</TableCell>
-                  <TableCell>상태코드</TableCell>
-                  <TableCell>비고</TableCell>
-                  <TableCell>내용</TableCell>
+                  <TableCell>발송 요청일</TableCell>
+                  <TableCell>상태</TableCell>
+                  <TableCell align="center">전체</TableCell>
+                  <TableCell align="center">성공</TableCell>
+                  <TableCell align="center">실패</TableCell>
+                  <TableCell align="center">대기</TableCell>
+                  <TableCell>발송 완료일</TableCell>
                 </TableRow>
               </TableHead>
               <TableBody>
                 {messages && messages.length > 0 ? (
-                  messages.map((message, index) => (
-                    <TableRow key={index}>
-                      <TableCell>{message.createdAt}</TableCell>
-                      <TableCell>
-                        <Typography
-                          variant="body2"
-                          sx={{
-                            color:
-                              message.type === "SMS" ? "#4CAF50" : "#2196F3",
-                            fontWeight: 500,
-                          }}
-                        >
-                          {message.type}
-                        </Typography>
-                      </TableCell>
-                      <TableCell>{message.senderNumber}</TableCell>
-                      <TableCell>{message.receiverNumber}</TableCell>
+                  messages.map((message) => (
+                    <TableRow key={message.groupId}>
+                      <TableCell>{formatDate(message.dateCreated)}</TableCell>
                       <TableCell>
                         <Box
                           sx={{
@@ -248,38 +264,26 @@ const MessageHistoryPage = () => {
                             px: 1,
                             py: 0.5,
                             borderRadius: "4px",
-                            backgroundColor:
-                              message.statusCode === "4000"
-                                ? "#E8F5E9"
-                                : message.statusCode === "1070"
-                                ? "#FFEBEE"
-                                : "#FFF3E0",
-                            color:
-                              message.statusCode === "4000"
-                                ? "#2E7D32"
-                                : message.statusCode === "1070"
-                                ? "#C62828"
-                                : "#E65100",
+                            backgroundColor: getStatusColor(message.status).bg,
+                            color: getStatusColor(message.status).text,
                           }}
                         >
-                          {message.statusName} ({message.statusCode})
+                          {message.status}
                         </Box>
                       </TableCell>
-                      <TableCell>{message.note}</TableCell>
-                      <TableCell>
-                        <Tooltip title={message.content}>
-                          <Typography
-                            sx={{
-                              maxWidth: 200,
-                              overflow: "hidden",
-                              textOverflow: "ellipsis",
-                              whiteSpace: "nowrap",
-                            }}
-                          >
-                            {message.content}
-                          </Typography>
-                        </Tooltip>
+                      <TableCell align="center">
+                        {message.count.total}
                       </TableCell>
+                      <TableCell align="center">
+                        {message.count.sentSuccess}
+                      </TableCell>
+                      <TableCell align="center">
+                        {message.count.sentFailed}
+                      </TableCell>
+                      <TableCell align="center">
+                        {message.count.sentPending}
+                      </TableCell>
+                      <TableCell>{formatDate(message.dateCompleted)}</TableCell>
                     </TableRow>
                   ))
                 ) : (
@@ -311,7 +315,7 @@ const MessageHistoryPage = () => {
           >
             <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
               <Typography variant="body2" color="textSecondary">
-                50
+                {messages.length}
               </Typography>
               <Box
                 component="span"

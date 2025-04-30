@@ -210,7 +210,7 @@ function MyPage() {
               backgroundColor: "#f5f5f5",
             }}
           >
-            <QRCode value={`https://form.zip-line.kr/${user?.url}`} size={80} />
+            <QRCode value={`https://zip-line.kr/${user?.url}`} size={80} />
           </Box>
         )}
 

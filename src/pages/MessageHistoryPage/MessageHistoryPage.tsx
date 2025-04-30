@@ -78,12 +78,18 @@ const MessageHistoryPage = () => {
         "/messages"
       );
 
-      if (response.success && response.code === 200 && response.data) {
+      if (
+        response.success &&
+        response.code === 200 &&
+        response.data?.groupList
+      ) {
         // Convert groupList object to array
-        const messageArray = Object.values(response.data.groupList);
+        const messageArray = Object.values(response.data.groupList || {});
         setMessages(messageArray);
         // Calculate total pages based on limit
-        setTotalPages(Math.ceil(messageArray.length / response.data.limit));
+        setTotalPages(
+          Math.ceil(messageArray.length / (response.data.limit || 20))
+        );
       } else {
         setMessages([]);
         setTotalPages(0);

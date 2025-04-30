@@ -144,16 +144,32 @@ const MessageHistoryPage = () => {
     }
   };
 
+  if (isLoading) {
+    return (
+      <Box
+        sx={{
+          flexGrow: 1,
+          backgroundColor: "#f5f5f5",
+          minHeight: "100vh",
+        }}
+      >
+        <PageHeader title="문자 발송 내역" userName={user?.name || "-"} />
+        <Box sx={{ display: "flex", justifyContent: "center", py: 3 }}>
+          <CircularProgress size={40} sx={{ color: "#164F9E" }} />
+        </Box>
+      </Box>
+    );
+  }
+
   return (
     <Box
       sx={{
-        p: 0,
-        pb: 3,
+        flexGrow: 1,
+        backgroundColor: "#f5f5f5",
         minHeight: "100vh",
-        backgroundColor: "#F8F9FA",
       }}
     >
-      <PageHeader title="문자 발송 내역" userName={user?.name || ""} />
+      <PageHeader title="문자 발송 내역" userName={user?.name || "-"} />
 
       <Box sx={{ p: 3 }}>
         <Box
@@ -231,83 +247,75 @@ const MessageHistoryPage = () => {
           </Button>     */}
         </Box>
 
-        {isLoading ? (
-          <Box sx={{ display: "flex", justifyContent: "center", py: 3 }}>
-            <CircularProgress size={40} sx={{ color: "#164F9E" }} />
-          </Box>
-        ) : (
-          <TableContainer
-            component={Paper}
-            sx={{
-              borderRadius: "12px",
-              boxShadow: "none",
-              border: "1px solid #E0E0E0",
-              minHeight: "400px",
-            }}
-          >
-            <Table>
-              <TableHead>
-                <TableRow>
-                  <TableCell>발송 요청일</TableCell>
-                  <TableCell>상태</TableCell>
-                  <TableCell align="center">전체</TableCell>
-                  <TableCell align="center">성공</TableCell>
-                  <TableCell align="center">실패</TableCell>
-                  <TableCell align="center">대기</TableCell>
-                  <TableCell>발송 완료일</TableCell>
-                </TableRow>
-              </TableHead>
-              <TableBody>
-                {messages && messages.length > 0 ? (
-                  messages.map((message) => (
-                    <TableRow key={message.groupId}>
-                      <TableCell>{formatDate(message.dateCreated)}</TableCell>
-                      <TableCell>
-                        <Box
-                          sx={{
-                            display: "inline-flex",
-                            alignItems: "center",
-                            px: 1,
-                            py: 0.5,
-                            borderRadius: "4px",
-                            backgroundColor: getStatusColor(message.status).bg,
-                            color: getStatusColor(message.status).text,
-                          }}
-                        >
-                          {message.status}
-                        </Box>
-                      </TableCell>
-                      <TableCell align="center">
-                        {message.count.total}
-                      </TableCell>
-                      <TableCell align="center">
-                        {message.count.sentSuccess}
-                      </TableCell>
-                      <TableCell align="center">
-                        {message.count.sentFailed}
-                      </TableCell>
-                      <TableCell align="center">
-                        {message.count.sentPending}
-                      </TableCell>
-                      <TableCell>{formatDate(message.dateCompleted)}</TableCell>
-                    </TableRow>
-                  ))
-                ) : (
-                  <TableRow>
-                    <TableCell colSpan={7} align="center" sx={{ py: 8 }}>
-                      <Typography
-                        variant="body1"
-                        sx={{ color: "#666666", fontWeight: 500 }}
+        <TableContainer
+          component={Paper}
+          sx={{
+            borderRadius: "12px",
+            boxShadow: "none",
+            border: "1px solid #E0E0E0",
+            minHeight: "400px",
+          }}
+        >
+          <Table>
+            <TableHead>
+              <TableRow>
+                <TableCell>발송 요청일</TableCell>
+                <TableCell>상태</TableCell>
+                <TableCell align="center">전체</TableCell>
+                <TableCell align="center">성공</TableCell>
+                <TableCell align="center">실패</TableCell>
+                <TableCell align="center">대기</TableCell>
+                <TableCell>발송 완료일</TableCell>
+              </TableRow>
+            </TableHead>
+            <TableBody>
+              {messages && messages.length > 0 ? (
+                messages.map((message) => (
+                  <TableRow key={message.groupId}>
+                    <TableCell>{formatDate(message.dateCreated)}</TableCell>
+                    <TableCell>
+                      <Box
+                        sx={{
+                          display: "inline-flex",
+                          alignItems: "center",
+                          px: 1,
+                          py: 0.5,
+                          borderRadius: "4px",
+                          backgroundColor: getStatusColor(message.status).bg,
+                          color: getStatusColor(message.status).text,
+                        }}
                       >
-                        발송 내역이 없습니다
-                      </Typography>
+                        {message.status}
+                      </Box>
                     </TableCell>
+                    <TableCell align="center">{message.count.total}</TableCell>
+                    <TableCell align="center">
+                      {message.count.sentSuccess}
+                    </TableCell>
+                    <TableCell align="center">
+                      {message.count.sentFailed}
+                    </TableCell>
+                    <TableCell align="center">
+                      {message.count.sentPending}
+                    </TableCell>
+                    <TableCell>{formatDate(message.dateCompleted)}</TableCell>
                   </TableRow>
-                )}
-              </TableBody>
-            </Table>
-          </TableContainer>
-        )}
+                ))
+              ) : (
+                <TableRow>
+                  <TableCell colSpan={7} align="center" sx={{ py: 8 }}>
+                    <Typography
+                      variant="body1"
+                      sx={{ color: "#666666", fontWeight: 500 }}
+                    >
+                      발송 내역이 없습니다
+                    </Typography>
+                  </TableCell>
+                </TableRow>
+              )}
+            </TableBody>
+          </Table>
+        </TableContainer>
 
         {messages && messages.length > 0 && (
           <Box

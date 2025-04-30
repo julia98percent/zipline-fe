@@ -6,6 +6,7 @@ import ContractTable from "./ContractTable";
 import ContractAddButtonList from "./ContractAddButtonList";
 import ContractFilterModal from "./ContractFilterModal/ContractFilterModal";
 import PageHeader from "@components/PageHeader/PageHeader";
+import useUserStore from "@stores/useUserStore";
 
 export interface ContractItem {
   uid: number;
@@ -38,9 +39,9 @@ function ContractListPage() {
     period: "",
     status: "",
   });
-  
 
   const navigate = useNavigate();
+  const { user } = useUserStore();
 
   const fetchContractData = useCallback(() => {
     setLoading(true);
@@ -77,10 +78,12 @@ function ContractListPage() {
           flexGrow: 1,
           backgroundColor: "#f5f5f5",
           minHeight: "100vh",
-          padding: 3,
         }}
       >
-        <CircularProgress color="primary" />
+        <PageHeader title="내 계약 목록" userName={user?.name || "-"} />
+        <Box sx={{ display: "flex", justifyContent: "center", p: 3 }}>
+          <CircularProgress color="primary" />
+        </Box>
       </Box>
     );
   }
@@ -91,16 +94,19 @@ function ContractListPage() {
         flexGrow: 1,
         backgroundColor: "#f5f5f5",
         minHeight: "100vh",
-        padding: 3,
       }}
     >
-      {/* ✅ 헤더 */}
-      <PageHeader title="내 계약 목록" userName="사용자 이름" />
+      <PageHeader title="내 계약 목록" userName={user?.name || "-"} />
 
-      <Box sx={{ paddingTop: 3 }}>
+      <Box sx={{ p: 3 }}>
         {/* 🔍 필터 + 등록 버튼 */}
         <Box
-          sx={{ display: "flex", justifyContent: "space-between", alignItems: "center", mb: 0 }}
+          sx={{
+            display: "flex",
+            justifyContent: "space-between",
+            alignItems: "center",
+            mb: 2,
+          }}
         >
           <Box display="flex" gap={1}>
             <Button variant="outlined" onClick={() => setFilterModalOpen(true)}>

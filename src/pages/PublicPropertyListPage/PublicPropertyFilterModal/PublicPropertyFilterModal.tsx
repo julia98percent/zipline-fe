@@ -389,10 +389,10 @@ const PublicPropertyFilterModal = ({
               <Box sx={{ mb: 3, display: localFilters.category === "SALE" ? "block" : "none" }}>
                 <Typography gutterBottom>매매가 (만원)</Typography>
                 <Slider
-                  value={[localFilters.minPrice || 10000, localFilters.maxPrice || 100000]}
+                  value={[localFilters.minPrice || 0, localFilters.maxPrice || 100000]}
                   onChange={handleSliderChange("Price")}
-                  min={10000}
-                  max={100000}
+                  min={0}
+                  max={1000000000}
                   step={1000}
                   valueLabelDisplay="auto"
                   valueLabelFormat={formatPrice}
@@ -403,11 +403,11 @@ const PublicPropertyFilterModal = ({
               <Box sx={{ mb: 3, display: (localFilters.category === "MONTHLY" || localFilters.category === "DEPOSIT") ? "block" : "none" }}>
                 <Typography gutterBottom>보증금 (만원)</Typography>
                 <Slider
-                  value={[localFilters.minDeposit || 1000, localFilters.maxDeposit || 50000]}
+                  value={[localFilters.minDeposit || 0, localFilters.maxDeposit || 50000]}
                   onChange={handleSliderChange("Deposit")}
-                  min={1000}
-                  max={50000}
-                  step={1000}
+                  min={0}
+                  max={10000000}
+                  step={10000000}
                   valueLabelDisplay="auto"
                   valueLabelFormat={formatPrice}
                 />
@@ -417,11 +417,11 @@ const PublicPropertyFilterModal = ({
               <Box sx={{ mb: 3, display: localFilters.category === "MONTHLY" ? "block" : "none" }}>
                 <Typography gutterBottom>월세 (만원)</Typography>
                 <Slider
-                  value={[localFilters.minMonthlyRent || 10, localFilters.maxMonthlyRent || 1000]}
+                  value={[localFilters.minMonthlyRent || 0, localFilters.maxMonthlyRent || 1000]}
                   onChange={handleSliderChange("MonthlyRent")}
-                  min={10}
-                  max={1000}
-                  step={10}
+                  min={0}
+                  max={10000000}
+                  step={10000000}
                   valueLabelDisplay="auto"
                   valueLabelFormat={(value) => `${value}만`}
                 />
@@ -434,16 +434,16 @@ const PublicPropertyFilterModal = ({
             <Typography variant="subtitle1" gutterBottom sx={{ mb: 2 }}>
               면적 범위
             </Typography>
-            
+
             {/* Exclusive Area Range */}
             <Box sx={{ mb: 3 }}>
               <Typography gutterBottom>전용면적 (㎡)</Typography>
               <Slider
-                value={[localFilters.minExclusiveArea || 10, localFilters.maxExclusiveArea || 200]}
+                value={[localFilters.minExclusiveArea || 0, localFilters.maxExclusiveArea || 200]}
                 onChange={handleSliderChange("ExclusiveArea")}
                 min={0}
-                max={1000}
-                step={5}
+                max={50000}
+                step={500}
                 valueLabelDisplay="auto"
                 valueLabelFormat={(value) => `${value}㎡`}
               />
@@ -453,11 +453,11 @@ const PublicPropertyFilterModal = ({
             <Box sx={{ mb: 3 }}>
               <Typography gutterBottom>공급면적 (㎡)</Typography>
               <Slider
-                value={[localFilters.minSupplyArea || 10, localFilters.maxSupplyArea || 200]}
+                value={[localFilters.minSupplyArea || 0, localFilters.maxSupplyArea || 200]}
                 onChange={handleSliderChange("SupplyArea")}
                 min={0}
-                max={1000}
-                step={5}
+                max={50000}
+                step={500}
                 valueLabelDisplay="auto"
                 valueLabelFormat={(value) => `${value}㎡`}
               />

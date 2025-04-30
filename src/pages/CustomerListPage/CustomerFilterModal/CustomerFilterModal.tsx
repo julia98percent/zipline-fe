@@ -84,10 +84,10 @@ const CustomerFilterModal = ({ open, onClose, filters, setFilters, onApply }: Cu
       fetchLabels();
       setFiltersTemp(filters);
       handleOpen();
-      
+
       // 기존에 선택된 라벨들 복원
       if (filters.labelUids?.length > 0) {
-        const selectedLabelsData = labels.filter(label => 
+        const selectedLabelsData = labels.filter(label =>
           filters.labelUids.includes(label.uid)
         );
         setSelectedLabels(selectedLabelsData);
@@ -108,13 +108,13 @@ const CustomerFilterModal = ({ open, onClose, filters, setFilters, onApply }: Cu
   const handleLabelSelect = (label: Label) => {
     const isSelected = selectedLabels.some(l => l.uid === label.uid);
     let newSelectedLabels: Label[];
-    
+
     if (isSelected) {
       newSelectedLabels = selectedLabels.filter(l => l.uid !== label.uid);
     } else {
       newSelectedLabels = [...selectedLabels, label];
     }
-    
+
     setSelectedLabels(newSelectedLabels);
     setFiltersTemp(prev => ({
       ...prev,
@@ -123,7 +123,7 @@ const CustomerFilterModal = ({ open, onClose, filters, setFilters, onApply }: Cu
   };
 
   const handleOpen = () => {
-    apiClient.get("/test/region/0")
+    apiClient.get("/region/0")
       .then((res) => {
         if (res.data?.data) {
           setRegion(prev => ({ ...prev, sido: res.data.data }));
@@ -135,7 +135,7 @@ const CustomerFilterModal = ({ open, onClose, filters, setFilters, onApply }: Cu
   // 시/도 선택 시 군구 불러오기
   useEffect(() => {
     if (!region.selectedSido) return;
-    apiClient.get(`/test/region/${region.selectedSido}`)
+    apiClient.get(`/region/${region.selectedSido}`)
       .then((res) => {
         if (res.data?.data) {
           setRegion(prev => ({
@@ -153,7 +153,7 @@ const CustomerFilterModal = ({ open, onClose, filters, setFilters, onApply }: Cu
   // 군구 선택 시 동 불러오기
   useEffect(() => {
     if (!region.selectedSigungu) return;
-    apiClient.get(`/test/region/${region.selectedSigungu}`)
+    apiClient.get(`/region/${region.selectedSigungu}`)
       .then((res) => {
         if (res.data?.data) {
           setRegion(prev => ({
@@ -168,7 +168,7 @@ const CustomerFilterModal = ({ open, onClose, filters, setFilters, onApply }: Cu
 
   const handleChange = (name: string) => (event: any) => {
     const value = event.target.type === "checkbox" ? event.target.checked : event.target.value;
-    
+
     if (name === 'noRole') {
       if (value) {
         setFiltersTemp((prev: FilterState) => ({
@@ -249,7 +249,7 @@ const CustomerFilterModal = ({ open, onClose, filters, setFilters, onApply }: Cu
           return [key, value];
         })
     );
-    
+
     onApply(finalFilterData);
     onClose();
   };
@@ -282,8 +282,8 @@ const CustomerFilterModal = ({ open, onClose, filters, setFilters, onApply }: Cu
           </Typography>
           <FormControlLabel
             control={
-              <Checkbox 
-                checked={filtersTemp.noRole} 
+              <Checkbox
+                checked={filtersTemp.noRole}
                 onChange={handleChange('noRole')}
               />
             }
@@ -293,8 +293,8 @@ const CustomerFilterModal = ({ open, onClose, filters, setFilters, onApply }: Cu
             <FormControlLabel
               key={role}
               control={
-                <Checkbox 
-                  checked={filtersTemp[role]} 
+                <Checkbox
+                  checked={filtersTemp[role]}
                   onChange={handleChange(role)}
                   disabled={filtersTemp.noRole}
                 />

@@ -222,7 +222,7 @@ function MyPage() {
           <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
             <TextField
               fullWidth
-              value={user?.url ? `https://form.zip-line.kr/${user?.url}` : ""}
+              value={user?.url ? `https://zip-line.kr/${user?.url}` : ""}
               size="small"
               InputProps={{ readOnly: true }}
             />
@@ -231,7 +231,7 @@ function MyPage() {
               onClick={() => {
                 if (user?.url) {
                   navigator.clipboard.writeText(
-                    `https://form.zip-line.kr/${user?.url}`
+                    `https://zip-line.kr/${user?.url}`
                   );
                   alert("URL이 복사되었습니다.");
                 } else {

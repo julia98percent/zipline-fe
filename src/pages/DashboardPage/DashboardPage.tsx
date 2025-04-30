@@ -28,7 +28,7 @@ import CheckCircleIcon from "@mui/icons-material/CheckCircle";
 import PersonAddIcon from "@mui/icons-material/PersonAdd";
 import ChevronLeftIcon from "@mui/icons-material/ChevronLeft";
 import ChevronRightIcon from "@mui/icons-material/ChevronRight";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import dayjs from "dayjs";
 import isSameOrAfter from "dayjs/plugin/isSameOrAfter";
 import isSameOrBefore from "dayjs/plugin/isSameOrBefore";
@@ -60,6 +60,16 @@ interface Consultation {
   title: string;
   consultationDate: Date;
   requestDate: Date;
+  dueDate: Date;
+}
+
+interface ConsultationResponse {
+  success: boolean;
+  code: number;
+  message: string;
+  data: {
+    counsels: Consultation[];
+  };
 }
 
 interface StatisticsResponse {
@@ -107,7 +117,12 @@ const DashboardPage = () => {
   const [surveyResponses, setSurveyResponses] = useState<Inquiry[]>([]);
   const [expiringContracts, setExpiringContracts] = useState<Contract[]>([]);
   const [contractLoading, setContractLoading] = useState(true);
-  const [counselList, setCounselList] = useState<Consultation[]>([]);
+  const [counselListByDueDate, setCounselListByDueDate] = useState<
+    Consultation[]
+  >([]);
+  const [counselListByLatest, setCounselListByLatest] = useState<
+    Consultation[]
+  >([]);
   const [counselLoading, setCounselLoading] = useState(false);
   const { user } = useUserStore();
   const [toast, setToast] = useState({
@@ -330,7 +345,7 @@ const DashboardPage = () => {
   const handleSaveSchedule = async (updatedSchedule: Schedule) => {
     try {
       // customerName을 제거하여 API에 전달
-      const { customerName, uid, ...scheduleForApi } = updatedSchedule;
+      const { customerName, ...scheduleForApi } = updatedSchedule;
       void customerName;
       const response = await apiClient.patch(
         `/schedules/${updatedSchedule.uid}`,
@@ -360,44 +375,51 @@ const DashboardPage = () => {
     }
   };
 
-  // 상담 리스트를 가져오는 함수 추가
-  const fetchCounselList = async (customerUid: number) => {
+  // 상담 목록을 가져오는 함수 수정
+  const fetchCounselLists = async () => {
     setCounselLoading(true);
     try {
-      const response = await apiClient.get(
-        `/customers/${customerUid}/counsels?page=0&size=5`,
-        {
-          params: {
-            page: 0,
-            size: 5,
-          },
-        }
-      );
-      // 실제 데이터 구조에 따라 data/content/루트 배열 등에서 추출
-      const items =
-        (response.data &&
-          Array.isArray(response.data.data) &&
-          response.data.data) ||
-        (response.data &&
-          Array.isArray(response.data.content) &&
-          response.data.content) ||
-        (Array.isArray(response.data) && response.data) ||
-        [];
-      setCounselList(items);
-      return items;
+      const [dueDateResponse, latestResponse] = await Promise.all([
+        apiClient.get<ConsultationResponse>(
+          "/dashboard/counsels?sortType=DUE_DATE&page=0&size=5"
+        ),
+        apiClient.get<ConsultationResponse>(
+          "/dashboard/counsels?sortType=LATEST&page=0&size=5"
+        ),
+      ]);
+
+      if (dueDateResponse.data.success) {
+        setCounselListByDueDate(dueDateResponse.data.data?.counsels || []);
+      }
+      if (latestResponse.data.success) {
+        setCounselListByLatest(latestResponse.data.data?.counsels || []);
+      }
     } catch (error) {
-      console.error("Failed to fetch counsel list:", error);
-      setCounselList([]);
-      return [];
+      console.error("Error fetching counsel lists:", error);
+      setCounselListByDueDate([]);
+      setCounselListByLatest([]);
     } finally {
       setCounselLoading(false);
     }
   };
 
-  // 컴포넌트 마운트 시 상담 리스트 불러오기 (예시: customerUid=1)
+  // 컴포넌트 마운트 시 상담 목록 불러오기
   useEffect(() => {
-    fetchCounselList(1);
+    fetchCounselLists();
   }, []);
+
+  // 현재 선택된 탭에 따라 보여줄 상담 목록 계산
+  const currentCounselList = useMemo(() => {
+    return consultationTab === "request"
+      ? counselListByDueDate
+      : counselListByLatest;
+  }, [consultationTab, counselListByDueDate, counselListByLatest]);
+
+  // 상담 상세 페이지로 이동하는 핸들러 추가
+  const handleCounselClick = (counselId: number) => {
+    console.log(counselId);
+    navigate(`/counsels/${counselId}`);
+  };
 
   return (
     <Box
@@ -1281,9 +1303,10 @@ const DashboardPage = () => {
                 <Table stickyHeader>
                   <TableHead>
                     <TableRow>
-                      <TableCell>상담 일시</TableCell>
                       <TableCell>고객명</TableCell>
                       <TableCell>상담 제목</TableCell>
+                      <TableCell>상담 일시</TableCell>
+                      <TableCell>의뢰 마감일</TableCell>
                     </TableRow>
                   </TableHead>
                   <TableBody>
@@ -1293,28 +1316,33 @@ const DashboardPage = () => {
                           불러오는 중...
                         </TableCell>
                       </TableRow>
-                    ) : Array.isArray(counselList) &&
-                      counselList.length === 0 ? (
+                    ) : !currentCounselList ||
+                      currentCounselList.length === 0 ? (
                       <TableRow>
                         <TableCell colSpan={3} align="center">
                           상담이 없습니다.
                         </TableCell>
                       </TableRow>
                     ) : (
-                      Array.isArray(counselList) &&
-                      counselList.map((consultation: Consultation) => (
+                      currentCounselList.map((consultation: Consultation) => (
                         <TableRow
                           key={consultation.id}
                           hover
                           sx={{ cursor: "pointer" }}
+                          onClick={() =>
+                            handleCounselClick(consultation.counselUid)
+                          }
                         >
-                          <TableCell>
-                            {dayjs(consultation.consultationDate).format(
-                              "YYYY-MM-DD HH:mm"
-                            )}
-                          </TableCell>
                           <TableCell>{consultation.customerName}</TableCell>
                           <TableCell>{consultation.title}</TableCell>
+                          <TableCell>
+                            {dayjs(consultation.consultationDate).format(
+                              "YYYY-MM-DD"
+                            )}
+                          </TableCell>
+                          <TableCell>
+                            {dayjs(consultation.dueDate).format("YYYY-MM-DD")}
+                          </TableCell>
                         </TableRow>
                       ))
                     )}

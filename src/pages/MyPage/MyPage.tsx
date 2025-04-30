@@ -1,217 +1,276 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
-import { Box, TextField, Typography, Button as MuiButton } from "@mui/material";
+import {
+  Box,
+  TextField,
+  Typography,
+  Collapse,
+  Button as MuiButton,
+} from "@mui/material";
+import AccountCircleIcon from "@mui/icons-material/AccountCircle";
+import AccessTimeIcon from "@mui/icons-material/AccessTime";
 import Button from "@components/Button";
 import useUserStore from "@stores/useUserStore";
 import apiClient from "@apis/apiClient";
-import useInput from "@hooks/useInput";
 import { formatDate } from "@utils/dateUtil";
+import QRCode from "react-qr-code";
 
 function MyPage() {
-  const [selectedFile, setSelectedFile] = useState<File | null>(null);
-
-  const [cortarNo, handleCortarNo] = useInput("");
-
-  const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    if (event.target.files && event.target.files.length > 0) {
-      setSelectedFile(event.target.files[0]);
-    }
-  };
-
-  const handleUpload = () => {
-    if (selectedFile) {
-      const formData = new FormData();
-      formData.append("file", selectedFile); // 파일 추가
-
-      apiClient
-        .post("/admin/upload-proxy-list", formData, {
-          headers: {
-            "Content-Type": "multipart/form-data", // multipart 요청을 위한 헤더 설정
-          },
-        })
-        .then(() => {
-          console.log(`${selectedFile.name} 업로드 완료!`);
-        })
-        .catch((error) => {
-          console.error("파일 업로드 실패:", error);
-        });
-    } else {
-      alert("파일을 선택해주세요.");
-    }
-  };
-
-  const triggerCrawler = () => {
-    apiClient
-      .get("/admin/crawl/region")
-      .then(() => console.log("region 크롤링 완료"));
-  };
-
-  const startNaverMigration = () => {
-    apiClient
-      .post("/admin/NaverMigration/start")
-      .then(() => console.log("naver 마이그레이션 시작"));
-  };
-
-  const crawlNaverAllWithProxy = () => {
-    apiClient
-      .get("/admin/crawl/naver-raw_p/articles/all")
-      .then(() => console.log("네이버 전지역 크롤링(프록시)"));
-  };
-
-  const crawlNaverWithCortarNo = () => {
-    apiClient
-      .get(`/admin/crawl/naver-raw/articles/${cortarNo}`)
-      .then(() => console.log("네이버 법정동코드 크롤링"));
-  };
-
-  const crawlNaverAll = () => {
-    apiClient
-      .get(`/admin/crawl/naver-raw/articles/all`)
-      .then(() => console.log("네이버 전체 크롤링"));
-  };
-
   const { user } = useUserStore();
+  const [editOpen, setEditOpen] = useState(false);
+  const [email, setEmail] = useState(user?.email || "");
+  const [name, setName] = useState(user?.name || "");
+  const [phoneNo, setPhoneNo] = useState(user?.phoneNo || "");
+  const [url, setUrl] = useState(user?.url || "");
+
+  const [noticeOpen, setNoticeOpen] = useState(false);
+  const [noticeMonth, setNoticeMonth] = useState(user?.noticeMonth || 3);
+  const [noticeTime, setNoticeTime] = useState(user?.noticeTime || "11:00");
+
+  const toggleEdit = () => setEditOpen(!editOpen);
+  const toggleNoticeEdit = () => setNoticeOpen((prev) => !prev);
+
+  const updateUserInfo = ({
+    name: newName = name,
+    email: newEmail = email,
+    phoneNo: newPhoneNo = phoneNo,
+    noticeMonth: newNoticeMonth = noticeMonth,
+    noticeTime: newNoticeTime = noticeTime,
+    url: newUrl = url,
+  }) => {
+    apiClient
+      .patch("/users/info", {
+        name: newName,
+        email: newEmail,
+        phoneNo: newPhoneNo,
+        noticeMonth: newNoticeMonth,
+        noticeTime: newNoticeTime,
+        url: newUrl,
+      })
+      .then(() => {
+        alert("수정되었습니다.");
+      })
+      .catch((err) => {
+        alert("수정 실패: " + err.response?.data?.message);
+      });
+  };
+
+  const handleInfoUpdate = () => {
+    updateUserInfo({});
+  };
+
+  const handleNoticeUpdate = () => {
+    updateUserInfo({});
+  };
+
   return (
     <Box sx={{ padding: "32px" }}>
-      <Typography
-        variant="h6"
-        sx={{ mb: 2, minWidth: "max-content", display: "inline", margin: 0 }}
-      >
+      <Typography variant="h6" sx={{ mb: 2 }}>
         마이페이지
       </Typography>
-      {/* <Box>
-        <Typography>내 정보</Typography>
-        <Button text="비밀번호 변경" />
-      </Box> */}
 
-      <Box sx={{ marginTop: 4 }}>
-        <Typography sx={{ marginBottom: 1 }}>내 설문</Typography>
+      {/* 회원 정보 수정 */}
+      <Box sx={{ mb: 3, border: "1px solid #ddd", borderRadius: 2, p: 2 }}>
         <Box
           sx={{
             display: "flex",
-            flexDirection: "row",
-            justifyContent: "space-between",
             alignItems: "center",
-            gap: 2,
-            border: "1px solid #ddd",
-            borderRadius: 2,
-            p: 3,
-            backgroundColor: "#f9f9f9",
+            justifyContent: "space-between",
+            mb: 1,
           }}
         >
-          <div>
-            <Typography variant="h6" sx={{ fontWeight: "bold" }}>
-              {user?.surveyTitle}
+          <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
+            <AccountCircleIcon sx={{ color: "#666" }} />
+            <Typography variant="subtitle1" fontWeight="bold">
+              회원 정보 수정
             </Typography>
-            <Typography variant="body2" sx={{ color: "gray" }}>
-              생성일:{" "}
-              {user?.surveyCreatedAt ? formatDate(user?.surveyCreatedAt) : "-"}
+          </Box>
+          <Button
+            text={editOpen ? "닫기" : "수정"}
+            size="small"
+            sx={{
+              backgroundColor: "#2E5D9F",
+              color: "white",
+              height: 32,
+              fontSize: 14,
+            }}
+            onClick={toggleEdit}
+          />
+        </Box>
+        <Collapse in={editOpen}>
+          <Box sx={{ display: "flex", flexDirection: "column", gap: 2, mt: 1 }}>
+            <TextField
+              label="이름"
+              value={name}
+              onChange={(e) => setName(e.target.value)}
+              fullWidth
+              size="small"
+            />
+            <TextField
+              label="이메일"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              fullWidth
+              size="small"
+            />
+            <TextField
+              label="전화번호"
+              value={phoneNo}
+              onChange={(e) => setPhoneNo(e.target.value)}
+              fullWidth
+              size="small"
+            />
+            <Button
+              text="수정하기"
+              onClick={handleInfoUpdate}
+              sx={{ alignSelf: "flex-end" }}
+            />
+          </Box>
+        </Collapse>
+      </Box>
+
+      {/* 문자 발송 설정 */}
+      <Box sx={{ mb: 3, border: "1px solid #ddd", borderRadius: 2, p: 2 }}>
+        <Box
+          sx={{
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "space-between",
+            mb: 1,
+          }}
+        >
+          <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
+            <AccessTimeIcon sx={{ color: "#666" }} />
+            <Typography variant="subtitle1" fontWeight="bold">
+              문자 발송 설정
             </Typography>
-          </div>
+          </Box>
+          <Button
+            text={noticeOpen ? "닫기" : "수정"}
+            size="small"
+            sx={{
+              backgroundColor: "#2E5D9F",
+              color: "white",
+              height: 32,
+              fontSize: 14,
+            }}
+            onClick={toggleNoticeEdit}
+          />
+        </Box>
+        <Collapse in={noticeOpen}>
+          <Box sx={{ display: "flex", flexDirection: "column", gap: 2, mt: 1 }}>
+            <TextField
+              label="계약 만료 문자 기준 달"
+              type="number"
+              value={noticeMonth}
+              onChange={(e) => setNoticeMonth(Number(e.target.value))}
+              fullWidth
+              size="small"
+            />
+            <TextField
+              label="문자 발송 시간"
+              type="time"
+              value={noticeTime}
+              onChange={(e) => setNoticeTime(e.target.value)}
+              fullWidth
+              size="small"
+              InputLabelProps={{ shrink: true }}
+              inputProps={{ step: 60 }}
+            />
+            <Button
+              text="설정 저장"
+              onClick={handleNoticeUpdate}
+              sx={{ alignSelf: "flex-end" }}
+            />
+          </Box>
+        </Collapse>
+      </Box>
+
+      <Box
+        sx={{
+          mb: 4,
+          border: "1px solid #ddd",
+          borderRadius: 2,
+          p: 2,
+          display: "flex",
+          alignItems: "center",
+          gap: 3,
+        }}
+      >
+        {/* QR 코드 영역 */}
+        {user?.url && (
           <Box
             sx={{
+              width: 100,
+              height: 100,
               display: "flex",
-              justifyContent: "flex-end",
-              gap: 2,
+              alignItems: "center",
+              justifyContent: "center",
+              borderRadius: 1,
+              backgroundColor: "#f5f5f5",
             }}
           >
-            <Link to="edit-survey">
-              <Button
-                text="수정"
-                color="primary"
-                sx={{
-                  backgroundColor: "#2E5D9F",
-                  color: "white",
-                }}
-              />
-            </Link>
+            <QRCode value={`https://zip-line.kr/${user?.url}`} size={80} />
+          </Box>
+        )}
+
+        {/* URL + 복사 버튼 */}
+        <Box sx={{ flex: 1 }}>
+          <Typography variant="subtitle1" fontWeight="bold" sx={{ mb: 1 }}>
+            설문 URL
+          </Typography>
+          <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
+            <TextField
+              fullWidth
+              value={user?.url ? `https://zip-line.kr/${user?.url}` : ""}
+              size="small"
+              InputProps={{ readOnly: true }}
+            />
+            <MuiButton
+              variant="outlined"
+              onClick={() => {
+                if (user?.url) {
+                  navigator.clipboard.writeText(
+                    `https://zip-line.kr/${user?.url}`
+                  );
+                  alert("URL이 복사되었습니다.");
+                } else {
+                  alert("복사할 URL이 없습니다.");
+                }
+              }}
+              sx={{ minWidth: "40px", height: "40px" }}
+            >
+              📋
+            </MuiButton>
           </Box>
         </Box>
       </Box>
-      {user?.role == "ROLE_ADMIN" && (
-        <Box
-          sx={{
-            display: "grid",
-            gap: 4,
-            margin: 2,
-            gridTemplateColumns: "repeat(2, 1fr)",
-          }}
-        >
-          <Button
-            sx={{ border: "1px solid #2E5D9F" }}
-            text="region 크롤링 트리거 버튼"
-            onClick={triggerCrawler}
-          />
-          <Button
-            sx={{ border: "1px solid #2E5D9F" }}
-            text="네이버 데이터 마이그레이션"
-            onClick={startNaverMigration}
-          />
-          <Button
-            sx={{ border: "1px solid #2E5D9F" }}
-            text="네이버 전지역 크롤링(프록시)"
-            onClick={crawlNaverAllWithProxy}
-          />
-          <Button
-            sx={{ border: "1px solid #2E5D9F" }}
-            text="네이버 전체 크롤링"
-            onClick={crawlNaverAll}
-          />
-          <TextField
-            label="cortarNo"
-            value={cortarNo}
-            onChange={handleCortarNo}
-          />
-          <Button
-            sx={{ border: "1px solid #2E5D9F" }}
-            text="네이버 법정동코드 크롤링"
-            onClick={crawlNaverWithCortarNo}
-          />
-          <Box
-            sx={{
-              display: "flex",
-              flexDirection: "column",
-              alignItems: "center",
-              gap: 2,
-              border: "1px solid black",
-              padding: "14px 0",
-            }}
-          >
-            <Typography variant="h6">파일 업로드</Typography>
-            <input
-              type="file"
-              onChange={handleFileChange}
-              style={{ display: "none" }}
-              id="file-input"
-            />
-            <input
-              type="file"
-              onChange={handleFileChange}
-              style={{ display: "none" }}
-              id="file-input"
-            />
-            <label htmlFor="file-input">
-              <MuiButton
-                variant="outlined"
-                component="span"
-                sx={{ border: "1px solid #2E5D9F", color: "#2E5D9F" }}
-              >
-                파일 선택
-              </MuiButton>
-            </label>
-            {selectedFile && (
-              <Typography variant="body1">
-                선택된 파일: {selectedFile.name}
-              </Typography>
-            )}
-            <Button
-              text=" 업로드"
-              onClick={handleUpload}
-              sx={{ border: "1px solid #2E5D9F" }}
-            />
-          </Box>
+      <Box
+        sx={{
+          display: "flex",
+          justifyContent: "space-between",
+          border: "1px solid #ddd",
+          borderRadius: 2,
+          p: 3,
+          backgroundColor: "#f9f9f9",
+        }}
+      >
+        <Box>
+          <Typography variant="h6" sx={{ fontWeight: "bold" }}>
+            {user?.surveyTitle || "기본 설문지"}
+          </Typography>
+          <Typography variant="body2" sx={{ color: "gray" }}>
+            생성일:{" "}
+            {user?.surveyCreatedAt ? formatDate(user.surveyCreatedAt) : "-"}
+          </Typography>
         </Box>
-      )}
+        <Link to="edit-survey">
+          <Button
+            text="수정"
+            sx={{ backgroundColor: "#2E5D9F", color: "white" }}
+          />
+        </Link>
+      </Box>
     </Box>
   );
 }

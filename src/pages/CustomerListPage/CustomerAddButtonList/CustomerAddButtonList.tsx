@@ -17,9 +17,9 @@ function CustomerAddButtonList({ fetchCustomerList }: any) {
           sx={{
             color: "white",
             minHeight: "40px",
-            backgroundColor: "#6366F1",
+            backgroundColor: "#164F9E",
             "&:hover": {
-              backgroundColor: "#5457E5",
+              backgroundColor: "#0D3B7A",
             },
             "&:disabled": {
               backgroundColor: "lightgray",
@@ -34,9 +34,9 @@ function CustomerAddButtonList({ fetchCustomerList }: any) {
           sx={{
             color: "white",
             minHeight: "40px",
-            backgroundColor: "#6366F1",
+            backgroundColor: "#164F9E",
             "&:hover": {
-              backgroundColor: "#5457E5",
+              backgroundColor: "#0D3B7A",
             },
             "&:disabled": {
               backgroundColor: "lightgray",

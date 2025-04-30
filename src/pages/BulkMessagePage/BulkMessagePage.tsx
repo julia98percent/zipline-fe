@@ -23,24 +23,32 @@ import {
   CircularProgress,
   ListSubheader,
   TablePagination,
+  Snackbar,
+  Alert,
 } from "@mui/material";
 import CloseIcon from "@mui/icons-material/Close";
 import AddIcon from "@mui/icons-material/Add";
 import PageHeader from "@components/PageHeader/PageHeader";
 import apiClient from "@apis/apiClient";
 import { SelectChangeEvent } from "@mui/material";
+import useUserStore from "@stores/useUserStore";
 
 interface Customer {
+  uid: number;
   name: string;
-  phone: string;
-  role: string;
-  labelId: number;
-  labelName: string;
-  region: string;
+  phoneNo: string;
+  trafficSource: string;
+  labels: { uid: number; name: string }[];
+  tenant: boolean;
+  landlord: boolean;
+  buyer: boolean;
+  seller: boolean;
+  birthday: string; // YYYYMMDD 형식
+  legalDistrictCode: string;
 }
 
 interface Template {
-  id: string;
+  uid: number;
   name: string;
   content: string;
   category: string;
@@ -67,65 +75,81 @@ interface LabelResponse {
   };
 }
 
+interface CustomerListResponse {
+  success: boolean;
+  code: number;
+  message: string;
+  data: {
+    customers: Customer[];
+    page: number;
+    size: number;
+    totalElements: number;
+    totalPages: number;
+    hasNext: boolean;
+  };
+}
+
 interface CustomerSelectModalProps {
   open: boolean;
   onClose: () => void;
   onConfirm: (selectedCustomers: Customer[]) => void;
+  selectedCustomers: Customer[];
 }
 
 const CustomerSelectModal = ({
   open,
   onClose,
   onConfirm,
+  selectedCustomers: selectedCustomersProp,
 }: CustomerSelectModalProps) => {
-  const [selectedRegion, setSelectedRegion] = useState<string>("전체");
-  const [selectedRole, setSelectedRole] = useState<string[]>([]);
-  const [selectedLabel, setSelectedLabel] = useState<number | null>(null);
   const [selectedTab, setSelectedTab] = useState(0);
   const [selectedCustomers, setSelectedCustomers] = useState<Customer[]>([]);
   const [labels, setLabels] = useState<Label[]>([]);
-  const [isLoadingLabels, setIsLoadingLabels] = useState(false);
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(10);
+  const [customers, setCustomers] = useState<Customer[]>([]);
+  const [totalCount, setTotalCount] = useState(0);
+  const [loading, setLoading] = useState(false);
+  const [search, setSearch] = useState("");
+  const [regionCode, setRegionCode] = useState("");
+  const [roleFilters, setRoleFilters] = useState({
+    tenant: false,
+    landlord: false,
+    buyer: false,
+    seller: false,
+    noRole: false,
+  });
+  const [labelUids, setLabelUids] = useState<number[]>([]);
 
-  // 샘플 데이터
-  const customers: Customer[] = [
-    {
-      name: "김민수",
-      phone: "010-1234-5678",
-      role: "매도인",
-      labelId: 1,
-      labelName: "VIP",
-      region: "서울",
+  // 역할 한글 라벨 및 색상 매핑
+  const ROLE_LABELS: Record<string, string> = {
+    tenant: "임차인",
+    landlord: "임대인",
+    buyer: "매수자",
+    seller: "매도자",
+    noRole: "역할없음",
+  };
+  const ROLE_COLORS: Record<
+    string,
+    { bg: string; color: string; selectedBg?: string; selectedColor?: string }
+  > = {
+    tenant: { bg: "#FEF5EB", color: "#F2994A" },
+    landlord: { bg: "#FDEEEE", color: "#EB5757" },
+    buyer: { bg: "#E9F7EF", color: "#219653" },
+    seller: { bg: "#EBF2FC", color: "#2F80ED" },
+    noRole: {
+      bg: "#F5F5F5",
+      color: "#666666",
+      selectedBg: "#BDBDBD",
+      selectedColor: "#fff",
     },
-    {
-      name: "이지연",
-      phone: "010-2345-6789",
-      role: "매수인",
-      labelId: 2,
-      labelName: "일반",
-      region: "서울",
-    },
-    {
-      name: "박준호",
-      phone: "010-3456-7890",
-      role: "임대인",
-      labelId: 3,
-      labelName: "신규",
-      region: "부산",
-    },
-    // ... 더 많은 샘플 데이터
-  ];
-
-  const regions = ["전체", "서울", "부산", "대전", "광주", "인천"];
-  const roles = ["매도인", "매수인", "임대인", "임차인"];
+  };
 
   useEffect(() => {
     const fetchLabels = async () => {
       if (!open) return;
 
       try {
-        setIsLoadingLabels(true);
         const { data: response } = await apiClient.get<LabelResponse>(
           "/labels"
         );
@@ -137,19 +161,55 @@ const CustomerSelectModal = ({
         }
       } catch (error) {
         console.error("Error fetching labels:", error);
-      } finally {
-        setIsLoadingLabels(false);
       }
     };
 
     fetchLabels();
   }, [open]);
 
+  useEffect(() => {
+    if (!open) return;
+    const fetchCustomers = async () => {
+      setLoading(true);
+      try {
+        const params = new URLSearchParams();
+        params.append("page", (page + 1).toString());
+        params.append("size", rowsPerPage.toString());
+        if (search) params.append("search", search);
+        if (regionCode) params.append("regionCode", regionCode);
+        Object.entries(roleFilters).forEach(([key, value]) => {
+          if (value) params.append(key, "true");
+        });
+        labelUids.forEach((uid) => params.append("labelUids", String(uid)));
+        const { data: response } = await apiClient.get<CustomerListResponse>(
+          `/customers?${params.toString()}`
+        );
+
+        if (response.success) {
+          setCustomers(response.data.customers);
+          setTotalCount(response.data.totalElements);
+        }
+      } catch {
+        setCustomers([]);
+        setTotalCount(0);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchCustomers();
+  }, [open, page, rowsPerPage, search, regionCode, roleFilters, labelUids]);
+
+  useEffect(() => {
+    if (open) {
+      setSelectedCustomers(selectedCustomersProp);
+    }
+  }, [open, selectedCustomersProp]);
+
   const handleCustomerSelect = (customer: Customer) => {
-    const isSelected = selectedCustomers.some((c) => c.name === customer.name);
+    const isSelected = selectedCustomers.some((c) => c.uid === customer.uid);
     if (isSelected) {
       setSelectedCustomers(
-        selectedCustomers.filter((c) => c.name !== customer.name)
+        selectedCustomers.filter((c) => c.uid !== customer.uid)
       );
     } else {
       setSelectedCustomers([...selectedCustomers, customer]);
@@ -160,21 +220,35 @@ const CustomerSelectModal = ({
     onConfirm(selectedCustomers);
     onClose();
   };
-
+  console.log(customers);
   const filteredCustomers = customers.filter((customer) => {
     const regionMatch =
-      selectedRegion === "전체" || customer.region === selectedRegion;
-    const roleMatch =
-      selectedRole.length === 0 || selectedRole.includes(customer.role);
+      regionCode === "전체" ||
+      !regionCode ||
+      customer.trafficSource === regionCode;
+    // 역할 필터: noRole은 별도 처리
+    const roleKeys = ["tenant", "landlord", "buyer", "seller"] as const;
+    const hasRoleFilter = roleKeys.some((key) => roleFilters[key]);
+    let roleMatch = true;
+    if (roleFilters.noRole) {
+      // 역할이 하나도 없는 고객만
+      roleMatch =
+        !customer.tenant &&
+        !customer.landlord &&
+        !customer.buyer &&
+        !customer.seller;
+    } else if (hasRoleFilter) {
+      roleMatch = roleKeys.some((key) => roleFilters[key] && customer[key]);
+    }
     const labelMatch =
-      selectedLabel === null || customer.labelId === selectedLabel;
+      labelUids.length === 0 ||
+      customer.labels.some((l) => labelUids.includes(l.uid));
     return regionMatch && roleMatch && labelMatch;
   });
 
-  // Get current page items
   const currentPageCustomers =
     selectedTab === 0
-      ? filteredCustomers.slice(page * rowsPerPage, (page + 1) * rowsPerPage)
+      ? filteredCustomers
       : selectedCustomers.slice(page * rowsPerPage, (page + 1) * rowsPerPage);
 
   const handleChangePage = (event: unknown, newPage: number) => {
@@ -206,95 +280,124 @@ const CustomerSelectModal = ({
         </Typography>
       </DialogTitle>
       <DialogContent sx={{ pb: 0 }}>
-        <Box sx={{ mb: 3, display: "flex", gap: 3, alignItems: "flex-start" }}>
-          <Box>
-            <Typography variant="body2" sx={{ mb: 1, color: "#666666" }}>
-              관심지역
-            </Typography>
+        <Box sx={{ mb: 3, display: "flex", flexDirection: "column", gap: 2 }}>
+          <Box
+            sx={{
+              display: "flex",
+              gap: 2,
+              alignItems: "center",
+              flexWrap: "wrap",
+            }}
+          >
+            {/* 검색창 */}
+            <TextField
+              size="small"
+              placeholder="이름, 전화번호 검색"
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
+              sx={{ minWidth: 180 }}
+            />
+            {/* 지역 선택 */}
             <Select
               size="small"
-              value={selectedRegion}
-              onChange={(e) => setSelectedRegion(e.target.value)}
+              value={regionCode}
+              onChange={(e) => setRegionCode(e.target.value)}
+              displayEmpty
               sx={{ minWidth: 120 }}
             >
-              {regions.map((region) => (
-                <MenuItem key={region} value={region}>
-                  {region}
-                </MenuItem>
-              ))}
+              <MenuItem value="">전체</MenuItem>
+              <MenuItem value="SEOUL">서울</MenuItem>
+              <MenuItem value="BUSAN">부산</MenuItem>
+              <MenuItem value="DAEJEON">대전</MenuItem>
+              <MenuItem value="GWANGJU">광주</MenuItem>
+              <MenuItem value="INCHEON">인천</MenuItem>
             </Select>
-          </Box>
-          <Box>
-            <Typography variant="body2" sx={{ mb: 1, color: "#666666" }}>
-              고객 역할
-            </Typography>
-            <Box sx={{ display: "flex", gap: 1 }}>
-              {roles.map((role) => (
-                <Chip
-                  key={role}
-                  label={role}
-                  onClick={() => {
-                    if (selectedRole.includes(role)) {
-                      setSelectedRole(selectedRole.filter((r) => r !== role));
-                    } else {
-                      setSelectedRole([...selectedRole, role]);
+            {/* 역할 필터 */}
+            <Box sx={{ display: "flex", gap: 1, alignItems: "center" }}>
+              <Typography
+                variant="body2"
+                sx={{ color: "#666666", minWidth: 60 }}
+              >
+                고객 역할
+              </Typography>
+              {(Object.keys(roleFilters) as (keyof typeof roleFilters)[]).map(
+                (role) => (
+                  <Chip
+                    key={role}
+                    label={ROLE_LABELS[role]}
+                    onClick={() =>
+                      setRoleFilters((f) => ({ ...f, [role]: !f[role] }))
                     }
-                  }}
+                    sx={{
+                      backgroundColor:
+                        role === "noRole"
+                          ? roleFilters[role]
+                            ? ROLE_COLORS.noRole.selectedBg
+                            : ROLE_COLORS.noRole.bg
+                          : roleFilters[role]
+                          ? ROLE_COLORS[role].bg
+                          : "#F8F9FA",
+                      color:
+                        role === "noRole"
+                          ? roleFilters[role]
+                            ? ROLE_COLORS.noRole.selectedColor
+                            : ROLE_COLORS.noRole.color
+                          : roleFilters[role]
+                          ? ROLE_COLORS[role].color
+                          : "#666666",
+                      fontWeight: 500,
+                      borderRadius: "4px",
+                      height: "28px",
+                      fontSize: "13px",
+                      "&:hover": {
+                        backgroundColor:
+                          role === "noRole"
+                            ? roleFilters[role]
+                              ? ROLE_COLORS.noRole.selectedBg
+                              : "#E0E0E0"
+                            : roleFilters[role]
+                            ? ROLE_COLORS[role].bg
+                            : "#E0E0E0",
+                      },
+                    }}
+                  />
+                )
+              )}
+            </Box>
+            {/* 라벨 필터 */}
+            <Box sx={{ display: "flex", gap: 1, alignItems: "center" }}>
+              <Typography
+                variant="body2"
+                sx={{ color: "#666666", minWidth: 60 }}
+              >
+                고객 라벨
+              </Typography>
+              {labels.map((label) => (
+                <Chip
+                  key={label.uid}
+                  label={label.name}
+                  onClick={() =>
+                    setLabelUids((uids) =>
+                      uids.includes(label.uid)
+                        ? uids.filter((id) => id !== label.uid)
+                        : [...uids, label.uid]
+                    )
+                  }
                   sx={{
-                    backgroundColor: selectedRole.includes(role)
+                    backgroundColor: labelUids.includes(label.uid)
                       ? "#164F9E"
                       : "#F8F9FA",
-                    color: selectedRole.includes(role) ? "#FFFFFF" : "#666666",
+                    color: labelUids.includes(label.uid)
+                      ? "#FFFFFF"
+                      : "#666666",
                     "&:hover": {
-                      backgroundColor: selectedRole.includes(role)
+                      backgroundColor: labelUids.includes(label.uid)
                         ? "#0D3B7A"
                         : "#E0E0E0",
                     },
                   }}
                 />
               ))}
-            </Box>
-          </Box>
-          <Box>
-            <Typography variant="body2" sx={{ mb: 1, color: "#666666" }}>
-              고객 라벨
-            </Typography>
-            <Box sx={{ display: "flex", gap: 1 }}>
-              <Chip
-                key="all"
-                label="전체"
-                onClick={() => setSelectedLabel(null)}
-                sx={{
-                  backgroundColor:
-                    selectedLabel === null ? "#164F9E" : "#F8F9FA",
-                  color: selectedLabel === null ? "#FFFFFF" : "#666666",
-                  "&:hover": {
-                    backgroundColor:
-                      selectedLabel === null ? "#0D3B7A" : "#E0E0E0",
-                  },
-                }}
-              />
-              {isLoadingLabels ? (
-                <CircularProgress size={20} />
-              ) : (
-                labels.map((label) => (
-                  <Chip
-                    key={label.uid}
-                    label={label.name}
-                    onClick={() => setSelectedLabel(label.uid)}
-                    sx={{
-                      backgroundColor:
-                        selectedLabel === label.uid ? "#164F9E" : "#F8F9FA",
-                      color:
-                        selectedLabel === label.uid ? "#FFFFFF" : "#666666",
-                      "&:hover": {
-                        backgroundColor:
-                          selectedLabel === label.uid ? "#0D3B7A" : "#E0E0E0",
-                      },
-                    }}
-                  />
-                ))
-              )}
             </Box>
           </Box>
         </Box>
@@ -304,7 +407,7 @@ const CustomerSelectModal = ({
             value={selectedTab}
             onChange={(_, newValue) => {
               setSelectedTab(newValue);
-              setPage(0); // Reset page when changing tabs
+              setPage(0);
             }}
             sx={{
               "& .MuiTab-root": {
@@ -320,75 +423,109 @@ const CustomerSelectModal = ({
               },
             }}
           >
-            <Tab label={`선택 가능한 고객 (${filteredCustomers.length}명)`} />
+            <Tab label={`선택 가능한 고객 (${totalCount}명)`} />
             <Tab label={`선택된 고객 (${selectedCustomers.length}명)`} />
           </Tabs>
         </Box>
 
-        <List sx={{ height: "400px" }}>
-          {currentPageCustomers.map((customer) => (
-            <ListItem
-              key={customer.name}
-              sx={{
-                borderRadius: 1,
-                mb: 1,
-                backgroundColor: "#F8F9FA",
-                cursor: "pointer",
-                "&:hover": {
-                  backgroundColor: "#E0E0E0",
-                },
-              }}
-              onClick={() => handleCustomerSelect(customer)}
-            >
-              <ListItemText
-                primary={customer.name}
-                secondary={
-                  <Box sx={{ display: "flex", gap: 1, mt: 0.5 }}>
-                    <Chip
-                      label={customer.role}
-                      size="small"
-                      sx={{ backgroundColor: "#E3F2FD", color: "#1976D2" }}
-                    />
-                    <Chip
-                      label={customer.labelName}
-                      size="small"
-                      sx={{ backgroundColor: "#E8F5E9", color: "#2E7D32" }}
-                    />
-                    <Chip
-                      label={customer.region}
-                      size="small"
-                      sx={{ backgroundColor: "#FFF3E0", color: "#E65100" }}
-                    />
-                  </Box>
-                }
-              />
-              <ListItemSecondaryAction>
-                <IconButton
-                  edge="end"
-                  size="small"
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    handleCustomerSelect(customer);
-                  }}
-                >
-                  {selectedCustomers.some((c) => c.name === customer.name) ? (
-                    <CloseIcon />
-                  ) : (
-                    <AddIcon />
-                  )}
-                </IconButton>
-              </ListItemSecondaryAction>
-            </ListItem>
-          ))}
+        <List
+          sx={{
+            height: 320,
+            overflowY: "auto",
+            border: "1px solid #eee",
+            borderRadius: "8px",
+            background: "#fff",
+            mb: 2,
+          }}
+        >
+          {loading ? (
+            <Box sx={{ display: "flex", justifyContent: "center", p: 2 }}>
+              <CircularProgress size={24} />
+            </Box>
+          ) : (
+            currentPageCustomers.map((customer) => (
+              <ListItem
+                key={customer.uid}
+                sx={{
+                  borderRadius: 1,
+                  mb: 1,
+                  backgroundColor: "#F8F9FA",
+                  cursor: "pointer",
+                  "&:hover": {
+                    backgroundColor: "#E0E0E0",
+                  },
+                }}
+                onClick={() => handleCustomerSelect(customer)}
+              >
+                <ListItemText
+                  primary={customer.name}
+                  secondary={
+                    <Box sx={{ display: "flex", gap: 1, mt: 0.5 }}>
+                      {customer.tenant && (
+                        <Chip
+                          label="임차인"
+                          size="small"
+                          sx={{ backgroundColor: "#FEF5EB", color: "#F2994A" }}
+                        />
+                      )}
+                      {customer.landlord && (
+                        <Chip
+                          label="임대인"
+                          size="small"
+                          sx={{ backgroundColor: "#FDEEEE", color: "#EB5757" }}
+                        />
+                      )}
+                      {customer.buyer && (
+                        <Chip
+                          label="매수자"
+                          size="small"
+                          sx={{ backgroundColor: "#E9F7EF", color: "#219653" }}
+                        />
+                      )}
+                      {customer.seller && (
+                        <Chip
+                          label="매도자"
+                          size="small"
+                          sx={{ backgroundColor: "#EBF2FC", color: "#2F80ED" }}
+                        />
+                      )}
+                      {customer.labels &&
+                        customer.labels.length > 0 &&
+                        customer.labels.map((label) => (
+                          <Chip
+                            key={label.uid}
+                            label={label.name}
+                            size="small"
+                            variant="outlined"
+                          />
+                        ))}
+                    </Box>
+                  }
+                />
+                <ListItemSecondaryAction>
+                  <IconButton
+                    edge="end"
+                    size="small"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      handleCustomerSelect(customer);
+                    }}
+                  >
+                    {selectedCustomers.some((c) => c.uid === customer.uid) ? (
+                      <CloseIcon />
+                    ) : (
+                      <AddIcon />
+                    )}
+                  </IconButton>
+                </ListItemSecondaryAction>
+              </ListItem>
+            ))
+          )}
         </List>
 
         <TablePagination
           component="div"
-          count={
-            selectedTab === 0
-              ? filteredCustomers.length
-              : selectedCustomers.length
-          }
+          count={selectedTab === 0 ? totalCount : selectedCustomers.length}
           page={page}
           onPageChange={handleChangePage}
           rowsPerPage={rowsPerPage}
@@ -441,12 +578,48 @@ const CustomerSelectModal = ({
 };
 
 const BulkMessagePage = () => {
+  const { user } = useUserStore();
   const [templates, setTemplates] = useState<Template[]>([]);
-  const [selectedTemplate, setSelectedTemplate] = useState<string>("");
+  const [selectedTemplate, setSelectedTemplate] = useState<number | "">("");
   const [messageContent, setMessageContent] = useState<string>("");
   const [customers, setCustomers] = useState<Customer[]>([]);
   const [isCustomerModalOpen, setIsCustomerModalOpen] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
+  const [toast, setToast] = useState<{
+    open: boolean;
+    message: string;
+    severity: "success" | "error";
+  }>({ open: false, message: "", severity: "success" });
+
+  // 변수를 고객 정보로 대체하는 함수
+  const replaceVariablesWithCustomerInfo = (
+    content: string,
+    customer: Customer
+  ) => {
+    // 생일 포맷팅 (YYYYMMDD -> M월 D일)
+    const formatBirthday = (dateStr: string) => {
+      try {
+        const month = parseInt(dateStr.substring(4, 6), 10);
+        const day = parseInt(dateStr.substring(6, 8), 10);
+        return `${month}월 ${day}일`;
+      } catch (error) {
+        console.error("Invalid date format:", error);
+        return "날짜 정보 없음";
+      }
+    };
+
+    const replacements = {
+      "{{이름}}": `${customer.name}`,
+      "{{생년월일}}": customer.birthday
+        ? formatBirthday(customer.birthday)
+        : "생일 정보 없음",
+      "{{관심지역}}": customer.legalDistrictCode || "관심지역 정보 없음",
+    };
+
+    return content.replace(/{{[^}]+}}/g, (match) => {
+      return replacements[match as keyof typeof replacements] || match;
+    });
+  };
 
   useEffect(() => {
     const fetchTemplates = async () => {
@@ -471,17 +644,17 @@ const BulkMessagePage = () => {
     fetchTemplates();
   }, []);
 
-  const handleTemplateChange = (event: SelectChangeEvent<string>) => {
-    const selectedTemplateId = event.target.value;
-    console.log(selectedTemplateId);
-    setSelectedTemplate(selectedTemplateId);
+  const handleTemplateChange = (event: SelectChangeEvent<number | string>) => {
+    const selectedTemplateUid =
+      event.target.value === "" ? "" : Number(event.target.value);
+    setSelectedTemplate(selectedTemplateUid);
 
-    if (selectedTemplateId === "") {
+    if (!selectedTemplateUid) {
       setMessageContent("");
       return;
     }
 
-    const template = templates.find((t) => t.id === selectedTemplateId);
+    const template = templates.find((t) => t.uid === selectedTemplateUid);
     if (template) {
       setMessageContent(template.content);
     }
@@ -499,10 +672,35 @@ const BulkMessagePage = () => {
     setCustomers(customers.filter((_, i) => i !== index));
   };
 
-  const handleSendMessage = () => {
-    // API 호출 로직 구현 예정
-    console.log("Sending messages to:", customers);
-    console.log("Message content:", messageContent);
+  const handleSendMessage = async () => {
+    if (!customers.length || !selectedTemplate) return;
+    const from = import.meta.env.VITE_MSG_PHONE_NUMBER;
+    const template = templates.find((t) => t.uid === selectedTemplate);
+    if (!template) return;
+
+    const payload = customers.map((customer) => ({
+      from,
+      to: customer.phoneNo.replace(/\D/g, ""),
+      text: replaceVariablesWithCustomerInfo(template.content, customer),
+    }));
+
+    try {
+      await apiClient.post("/messages", payload);
+      setToast({
+        open: true,
+        message: "문자 발송이 완료되었습니다.",
+        severity: "success",
+      });
+      setCustomers([]);
+      setSelectedTemplate("");
+      setMessageContent("");
+    } catch {
+      setToast({
+        open: true,
+        message: "문자 발송에 실패했습니다.",
+        severity: "error",
+      });
+    }
   };
 
   // Group templates by category
@@ -523,7 +721,7 @@ const BulkMessagePage = () => {
         backgroundColor: "#F8F9FA",
       }}
     >
-      <PageHeader title="단체 문자 발송" userName="사용자 이름" />
+      <PageHeader title="단체 문자 발송" userName={user?.name || "-"} />
 
       <Box sx={{ p: 3, display: "flex", gap: 2 }}>
         {/* 왼쪽 영역: 문자 템플릿 선택 및 내용 */}
@@ -542,14 +740,12 @@ const BulkMessagePage = () => {
           <FormControl fullWidth sx={{ mb: 2 }}>
             <Select
               value={selectedTemplate}
-              onChange={(event: SelectChangeEvent<string>) =>
-                handleTemplateChange(event)
-              }
+              onChange={handleTemplateChange}
               displayEmpty
               disabled={isLoading}
               renderValue={(selected) => {
                 if (!selected) return <em>템플릿을 선택해주세요</em>;
-                const template = templates.find((t) => t.id === selected);
+                const template = templates.find((t) => t.uid === selected);
                 return template?.name || "";
               }}
               MenuProps={{
@@ -581,9 +777,8 @@ const BulkMessagePage = () => {
                     <ListSubheader key={category}>{category}</ListSubheader>,
                     ...categoryTemplates.map((template) => (
                       <MenuItem
-                        key={template.id}
-                        value={template.id}
-                        selected={selectedTemplate === template.id}
+                        key={template.uid}
+                        value={template.uid}
                         sx={{
                           pl: 4,
                           "&.Mui-selected": {
@@ -678,7 +873,7 @@ const BulkMessagePage = () => {
                   <Box>
                     <Typography variant="body1">{customer.name}</Typography>
                     <Typography variant="body2" color="textSecondary">
-                      {customer.phone}
+                      {customer.phoneNo}
                     </Typography>
                   </Box>
                   <IconButton
@@ -722,7 +917,36 @@ const BulkMessagePage = () => {
         open={isCustomerModalOpen}
         onClose={() => setIsCustomerModalOpen(false)}
         onConfirm={handleCustomerSelectConfirm}
+        selectedCustomers={customers}
       />
+      <Snackbar
+        open={toast.open}
+        autoHideDuration={2000}
+        onClose={() => setToast({ ...toast, open: false })}
+        anchorOrigin={{ vertical: "bottom", horizontal: "center" }}
+        sx={{ bottom: "24px !important" }}
+      >
+        <Alert
+          onClose={() => setToast({ ...toast, open: false })}
+          severity={toast.severity}
+          sx={{
+            width: "100%",
+            minWidth: "240px",
+            borderRadius: "8px",
+            backgroundColor:
+              toast.severity === "success" ? "#F6F8FF" : "#FFF5F5",
+            color: toast.severity === "success" ? "#164F9E" : "#D32F2F",
+            border: `1px solid ${
+              toast.severity === "success" ? "#164F9E" : "#D32F2F"
+            }`,
+            "& .MuiAlert-icon": {
+              color: toast.severity === "success" ? "#164F9E" : "#D32F2F",
+            },
+          }}
+        >
+          {toast.message}
+        </Alert>
+      </Snackbar>
     </Box>
   );
 };

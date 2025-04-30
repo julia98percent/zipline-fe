@@ -17,13 +17,13 @@ interface AgentPropertyDetail {
   endDate: string;
   moveInDate: string;
   realCategory:
-    | "ONE_ROOM"
-    | "TWO_ROOM"
-    | "APARTMENT"
-    | "VILLA"
-    | "HOUSE"
-    | "OFFICETEL"
-    | "COMMERCIAL"; // 명확하게
+  | "ONE_ROOM"
+  | "TWO_ROOM"
+  | "APARTMENT"
+  | "VILLA"
+  | "HOUSE"
+  | "OFFICETEL"
+  | "COMMERCIAL"; // 명확하게
   petsAllowed: boolean;
   floor: number;
   hasElevator: boolean;

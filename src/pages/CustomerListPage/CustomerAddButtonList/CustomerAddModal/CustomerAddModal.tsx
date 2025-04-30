@@ -169,7 +169,7 @@ function CustomerAddModal({
 
       // 고객 등록 API 호출
       const response = await apiClient.post("/customers", customerData);
-      
+
       if (response.status === 201) {
         fetchCustomerList();  // 목록 새로고침
         onClose();           // 모달 닫기
@@ -182,7 +182,7 @@ function CustomerAddModal({
   useEffect(() => {
     if (open) {
       // 시도 데이터 로드
-      apiClient.get("/test/region/0")
+      apiClient.get("/region/0")
         .then((res) => {
           if (res.data?.data) {
             setRegion(prev => ({ ...prev, sido: res.data.data }));
@@ -205,7 +205,7 @@ function CustomerAddModal({
   // 시도 선택 시 군구 로드
   useEffect(() => {
     if (!region.selectedSido) return;
-    apiClient.get(`/test/region/${region.selectedSido}`)
+    apiClient.get(`/region/${region.selectedSido}`)
       .then((res) => {
         if (res.data?.data) {
           setRegion(prev => ({
@@ -223,7 +223,7 @@ function CustomerAddModal({
   // 군구 선택 시 동 로드
   useEffect(() => {
     if (!region.selectedSigungu) return;
-    apiClient.get(`/test/region/${region.selectedSigungu}`)
+    apiClient.get(`/region/${region.selectedSigungu}`)
       .then((res) => {
         if (res.data?.data) {
           setRegion(prev => ({
@@ -272,13 +272,13 @@ function CustomerAddModal({
   const handleLabelSelect = (label: Label) => {
     const isSelected = selectedLabels.some(l => l.uid === label.uid);
     let newSelectedLabels: Label[];
-    
+
     if (isSelected) {
       newSelectedLabels = selectedLabels.filter(l => l.uid !== label.uid);
     } else {
       newSelectedLabels = [...selectedLabels, label];
     }
-    
+
     setSelectedLabels(newSelectedLabels);
     setFormData(prev => ({
       ...prev,
@@ -619,7 +619,7 @@ function CustomerAddModal({
               onClick={() => setIsAddingLabel(true)}
             />
           </Box>
-          
+
           {/* 라벨 추가 입력 필드 */}
           {isAddingLabel && (
             <Box sx={{ display: 'flex', gap: 1, mb: 2 }}>

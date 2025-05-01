@@ -41,14 +41,14 @@ interface MessageGroup {
   subject: string | null;
   dateCreated: string;
   dateUpdated: string;
-  dateCompleted: string;
+  dateCompleted?: string;
   statusCode: string | null;
   status: string;
   to: string | null;
   text: string | null;
   messageId: string | null;
-  count: MessageCount;
-  messageTypeCount: any | null;
+  count?: MessageCount;
+  messageTypeCount?: Record<string, number> | null;
 }
 
 interface MessageHistoryResponse {
@@ -78,6 +78,9 @@ const MessageHistoryPage = () => {
         "/messages"
       );
 
+      console.log("API Response:", response);
+      console.log("GroupList:", response.data?.groupList);
+
       if (
         response.success &&
         response.code === 200 &&
@@ -85,6 +88,7 @@ const MessageHistoryPage = () => {
       ) {
         // Convert groupList object to array
         const messageArray = Object.values(response.data.groupList || {});
+        console.log("Processed Messages:", messageArray);
         setMessages(messageArray);
         // Calculate total pages based on limit
         setTotalPages(
@@ -288,17 +292,23 @@ const MessageHistoryPage = () => {
                         {message.status}
                       </Box>
                     </TableCell>
-                    <TableCell align="center">{message.count.total}</TableCell>
                     <TableCell align="center">
-                      {message.count.sentSuccess}
+                      {message.count?.total || 0}
                     </TableCell>
                     <TableCell align="center">
-                      {message.count.sentFailed}
+                      {message.count?.sentSuccess || 0}
                     </TableCell>
                     <TableCell align="center">
-                      {message.count.sentPending}
+                      {message.count?.sentFailed || 0}
                     </TableCell>
-                    <TableCell>{formatDate(message.dateCompleted)}</TableCell>
+                    <TableCell align="center">
+                      {message.count?.sentPending || 0}
+                    </TableCell>
+                    <TableCell>
+                      {message.dateCompleted
+                        ? formatDate(message.dateCompleted)
+                        : formatDate(message.dateUpdated)}
+                    </TableCell>
                   </TableRow>
                 ))
               ) : (

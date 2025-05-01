@@ -1,4 +1,5 @@
 import axios, { AxiosInstance } from "axios";
+import { toast } from "react-toastify";
 
 const apiClient: AxiosInstance = axios.create({
   baseURL: import.meta.env.VITE_SERVER_URL,
@@ -41,26 +42,30 @@ apiClient.interceptors.response.use(
       return Promise.reject(error);
     }
 
-    if (error.response.status === 401 && !error.config.__isRetryRequest) {
-      try {
-        error.config.__isRetryRequest = true;
-        const refreshResponse = await reissueTokenClient.get("/users/reissue");
+    const originalRequest = error.config;
 
+    const isLoginRequest = originalRequest?.url?.includes("/users/login");
+    if (error.response.status === 401 && !originalRequest.__isRetryRequest && !isLoginRequest) {
+      try {
+        originalRequest.__isRetryRequest = true;
+
+        const refreshResponse = await reissueTokenClient.get("/users/reissue");
         const newAccessToken = refreshResponse?.data?.data?.accessToken ?? null;
+
         if (!newAccessToken) {
           throw new Error("Access Token 재발급 실패");
         }
-        sessionStorage.setItem("_ZA", newAccessToken);
 
-        error.config.headers = {
-          ...error.config.headers,
+        sessionStorage.setItem("_ZA", newAccessToken);
+        originalRequest.headers = {
+          ...originalRequest.headers,
           Authorization: `Bearer ${newAccessToken}`,
         };
 
-        return axios(error.config);
+        return axios(originalRequest);
       } catch (refreshError) {
         sessionStorage.removeItem("_ZA");
-        alert("인증이 만료되었습니다. 다시 로그인하세요.");
+        toast.error("인증이 만료되었습니다. 다시 로그인하세요."); 
         window.location.replace("/sign-in");
         return Promise.reject(refreshError);
       }

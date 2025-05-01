@@ -40,8 +40,8 @@ const CATEGORY_LABELS: { [key: string]: string } = {
   DEPOSIT: "전세"
 };
 
-const PublicPropertyTable = ({ 
-  propertyList, 
+const PublicPropertyTable = ({
+  propertyList,
   totalElements,
   totalPages,
   page,
@@ -97,20 +97,20 @@ const PublicPropertyTable = ({
 
   const formatBuildingInfo = (property: PublicPropertyItem) => {
     if (!property.buildingName && !property.buildingType) return "-";
-    
+
     const buildingType = property.buildingType ? `[${property.buildingType}]` : '';
     const buildingName = property.buildingName || '';
-    
+
     return `${buildingType} ${buildingName}`.trim();
   };
 
-  const SortableHeader = ({ 
-    field, 
-    label, 
-    unit = '' 
-  }: { 
-    field: string; 
-    label: string; 
+  const SortableHeader = ({
+    field,
+    label,
+    unit = ''
+  }: {
+    field: string;
+    label: string;
     unit?: string;
   }) => (
     <TableSortLabel
@@ -208,17 +208,17 @@ const PublicPropertyTable = ({
                   </TableCell>
                 )}
                 <TableCell align="center">
-                  <SortableHeader 
-                    field="exclusiveArea" 
-                    label="전용면적" 
-                    unit={useMetric ? "(m²)" : "(평)"} 
+                  <SortableHeader
+                    field="exclusiveArea"
+                    label="전용면적"
+                    unit={useMetric ? "(m²)" : "(평)"}
                   />
                 </TableCell>
                 <TableCell align="center">
-                  <SortableHeader 
-                    field="supplyArea" 
-                    label="공급면적" 
-                    unit={useMetric ? "(m²)" : "(평)"} 
+                  <SortableHeader
+                    field="supplyArea"
+                    label="공급면적"
+                    unit={useMetric ? "(m²)" : "(평)"}
                   />
                 </TableCell>
                 <TableCell align="center">플랫폼</TableCell>
@@ -245,7 +245,7 @@ const PublicPropertyTable = ({
                     </TableCell>
                     <TableCell align="center" sx={{ maxWidth: '200px', whiteSpace: 'normal' }}>
                       {property.address ? (
-                        <Tooltip 
+                        <Tooltip
                           title={
                             <Box>
                               {property.address.road_address && (
@@ -258,8 +258,8 @@ const PublicPropertyTable = ({
                           }
                         >
                           <span>
-                            {useRoadAddress 
-                              ? property.address.road_address?.address_name 
+                            {useRoadAddress
+                              ? property.address.road_address?.address_name
                               : property.address.address?.address_name || "-"}
                           </span>
                         </Tooltip>
@@ -305,7 +305,7 @@ const PublicPropertyTable = ({
                       {property.platformUrl ? (
                         <Tooltip title={`${property.platform} 부동산으로 이동`}>
                           <Link
-                            href={property.platformUrl}
+                            //href={property.platformUrl}
                             target="_blank"
                             rel="noopener noreferrer"
                             sx={{
@@ -380,7 +380,7 @@ const PublicPropertyTable = ({
                   }
                 }
               }}
-              sx={{ 
+              sx={{
                 width: '150px',
                 '& .MuiOutlinedInput-root': {
                   height: '32px',

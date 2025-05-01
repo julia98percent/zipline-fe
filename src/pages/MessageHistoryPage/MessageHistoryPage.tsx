@@ -8,15 +8,12 @@ import {
   TableHead,
   TableRow,
   Paper,
-  Button,
   Typography,
   IconButton,
-  Tooltip,
   CircularProgress,
+  TablePagination,
 } from "@mui/material";
 import RefreshIcon from "@mui/icons-material/Refresh";
-import NavigateBeforeIcon from "@mui/icons-material/NavigateBefore";
-import NavigateNextIcon from "@mui/icons-material/NavigateNext";
 import PageHeader from "@components/PageHeader/PageHeader";
 import apiClient from "@apis/apiClient";
 import useUserStore from "@stores/useUserStore";
@@ -67,8 +64,8 @@ const MessageHistoryPage = () => {
   const [messages, setMessages] = useState<MessageGroup[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [page, setPage] = useState(0);
-  const [totalPages, setTotalPages] = useState(0);
-  const [selectedFilters, setSelectedFilters] = useState<string[]>([]);
+  const [rowsPerPage, setRowsPerPage] = useState(10);
+  const [totalElements, setTotalElements] = useState(0);
   const { user } = useUserStore();
 
   const fetchMessages = async () => {
@@ -86,22 +83,17 @@ const MessageHistoryPage = () => {
         response.code === 200 &&
         response.data?.groupList
       ) {
-        // Convert groupList object to array
         const messageArray = Object.values(response.data.groupList || {});
-        console.log("Processed Messages:", messageArray);
         setMessages(messageArray);
-        // Calculate total pages based on limit
-        setTotalPages(
-          Math.ceil(messageArray.length / (response.data.limit || 20))
-        );
+        setTotalElements(messageArray.length);
       } else {
         setMessages([]);
-        setTotalPages(0);
+        setTotalElements(0);
       }
-    } catch (error) {
-      console.error("Error fetching messages:", error);
+    } catch (error: unknown) {
+      console.error("Failed to fetch messages:", error);
       setMessages([]);
-      setTotalPages(0);
+      setTotalElements(0);
     } finally {
       setIsLoading(false);
     }
@@ -109,19 +101,21 @@ const MessageHistoryPage = () => {
 
   useEffect(() => {
     fetchMessages();
-  }, [page, selectedFilters]);
-
-  const handleFilterClick = (filter: string) => {
-    setSelectedFilters((prev) =>
-      prev.includes(filter)
-        ? prev.filter((f) => f !== filter)
-        : [...prev, filter]
-    );
-    setPage(0);
-  };
+  }, [page]);
 
   const handleRefresh = () => {
     fetchMessages();
+  };
+
+  const handleChangePage = (_: unknown, newPage: number) => {
+    setPage(newPage);
+  };
+
+  const handleChangeRowsPerPage = (
+    event: React.ChangeEvent<HTMLInputElement>
+  ) => {
+    setRowsPerPage(parseInt(event.target.value, 10));
+    setPage(0);
   };
 
   const formatDate = (dateString: string) => {
@@ -148,22 +142,10 @@ const MessageHistoryPage = () => {
     }
   };
 
-  if (isLoading) {
-    return (
-      <Box
-        sx={{
-          flexGrow: 1,
-          backgroundColor: "#f5f5f5",
-          minHeight: "100vh",
-        }}
-      >
-        <PageHeader title="문자 발송 내역" userName={user?.name || "-"} />
-        <Box sx={{ display: "flex", justifyContent: "center", py: 3 }}>
-          <CircularProgress size={40} sx={{ color: "#164F9E" }} />
-        </Box>
-      </Box>
-    );
-  }
+  const displayedMessages = messages.slice(
+    page * rowsPerPage,
+    page * rowsPerPage + rowsPerPage
+  );
 
   return (
     <Box
@@ -197,58 +179,6 @@ const MessageHistoryPage = () => {
           >
             <RefreshIcon />
           </IconButton>
-          {/* <Button
-            variant={
-              selectedFilters.includes("success") ? "contained" : "outlined"
-            }
-            onClick={() => handleFilterClick("success")}
-            sx={{
-              borderRadius: "8px",
-              textTransform: "none",
-              boxShadow: "none",
-              borderColor: "#4CAF50",
-              color: selectedFilters.includes("success")
-                ? "#FFFFFF"
-                : "#4CAF50",
-              backgroundColor: selectedFilters.includes("success")
-                ? "#4CAF50"
-                : "transparent",
-              "&:hover": {
-                boxShadow: "none",
-                borderColor: "#2E7D32",
-                backgroundColor: selectedFilters.includes("success")
-                  ? "#2E7D32"
-                  : "rgba(76, 175, 80, 0.04)",
-              },
-            }}
-          >
-            발송 성공건
-          </Button>
-          <Button
-            variant={
-              selectedFilters.includes("fail") ? "contained" : "outlined"
-            }
-            onClick={() => handleFilterClick("fail")}
-            sx={{
-              borderRadius: "8px",
-              textTransform: "none",
-              boxShadow: "none",
-              borderColor: "#F44336",
-              color: selectedFilters.includes("fail") ? "#FFFFFF" : "#F44336",
-              backgroundColor: selectedFilters.includes("fail")
-                ? "#F44336"
-                : "transparent",
-              "&:hover": {
-                boxShadow: "none",
-                borderColor: "#C62828",
-                backgroundColor: selectedFilters.includes("fail")
-                  ? "#C62828"
-                  : "rgba(244, 67, 54, 0.04)",
-              },
-            }}
-          >
-            발송 실패건
-          </Button>     */}
         </Box>
 
         <TableContainer
@@ -265,16 +195,12 @@ const MessageHistoryPage = () => {
               <TableRow>
                 <TableCell>발송 요청일</TableCell>
                 <TableCell>상태</TableCell>
-                <TableCell align="center">전체</TableCell>
-                <TableCell align="center">성공</TableCell>
-                <TableCell align="center">실패</TableCell>
-                <TableCell align="center">대기</TableCell>
                 <TableCell>발송 완료일</TableCell>
               </TableRow>
             </TableHead>
             <TableBody>
               {messages && messages.length > 0 ? (
-                messages.map((message) => (
+                displayedMessages.map((message) => (
                   <TableRow key={message.groupId}>
                     <TableCell>{formatDate(message.dateCreated)}</TableCell>
                     <TableCell>
@@ -292,18 +218,7 @@ const MessageHistoryPage = () => {
                         {message.status}
                       </Box>
                     </TableCell>
-                    <TableCell align="center">
-                      {message.count?.total || 0}
-                    </TableCell>
-                    <TableCell align="center">
-                      {message.count?.sentSuccess || 0}
-                    </TableCell>
-                    <TableCell align="center">
-                      {message.count?.sentFailed || 0}
-                    </TableCell>
-                    <TableCell align="center">
-                      {message.count?.sentPending || 0}
-                    </TableCell>
+
                     <TableCell>
                       {message.dateCompleted
                         ? formatDate(message.dateCompleted)
@@ -327,63 +242,26 @@ const MessageHistoryPage = () => {
           </Table>
         </TableContainer>
 
-        {messages && messages.length > 0 && (
-          <Box
-            sx={{
-              mt: 2,
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "flex-end",
-              gap: 1,
-            }}
-          >
-            <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
-              <Typography variant="body2" color="textSecondary">
-                {messages.length}
-              </Typography>
-              <Box
-                component="span"
-                sx={{
-                  width: "1px",
-                  height: "12px",
-                  backgroundColor: "#E0E0E0",
-                }}
-              />
-              <Typography variant="body2" color="textSecondary">
-                {page + 1} / {totalPages}
-              </Typography>
-            </Box>
-            <Box sx={{ display: "flex", gap: 0.5 }}>
-              <IconButton
-                onClick={() => setPage((prev) => Math.max(0, prev - 1))}
-                disabled={page === 0}
-                size="small"
-                sx={{
-                  padding: "4px",
-                  color: "#666666",
-                  "&:hover": { color: "#333333" },
-                  "&.Mui-disabled": { color: "#E0E0E0" },
-                }}
-              >
-                <NavigateBeforeIcon fontSize="small" />
-              </IconButton>
-              <IconButton
-                onClick={() =>
-                  setPage((prev) => Math.min(totalPages - 1, prev + 1))
-                }
-                disabled={page === totalPages - 1}
-                size="small"
-                sx={{
-                  padding: "4px",
-                  color: "#666666",
-                  "&:hover": { color: "#333333" },
-                  "&.Mui-disabled": { color: "#E0E0E0" },
-                }}
-              >
-                <NavigateNextIcon fontSize="small" />
-              </IconButton>
-            </Box>
+        {isLoading && (
+          <Box sx={{ display: "flex", justifyContent: "center", py: 3 }}>
+            <CircularProgress size={40} sx={{ color: "#164F9E" }} />
           </Box>
+        )}
+
+        {messages && messages.length > 0 && (
+          <TablePagination
+            component="div"
+            count={totalElements}
+            page={page}
+            rowsPerPage={rowsPerPage}
+            onPageChange={handleChangePage}
+            onRowsPerPageChange={handleChangeRowsPerPage}
+            rowsPerPageOptions={[5, 10, 25]}
+            labelRowsPerPage="페이지당 행"
+            labelDisplayedRows={({ from, to, count }) =>
+              `${count}개 중 ${from}-${to}개`
+            }
+          />
         )}
       </Box>
     </Box>

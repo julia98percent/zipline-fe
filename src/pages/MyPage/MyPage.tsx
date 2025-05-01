@@ -146,7 +146,7 @@ function MyPage() {
         </Box>
 
         {/* 문자 발송 설정 */}
-        <Box
+        {/* <Box
           sx={{
             mb: 3,
             border: "1px solid #ddd",
@@ -210,7 +210,7 @@ function MyPage() {
               />
             </Box>
           </Collapse>
-        </Box>
+        </Box> */}
 
         {/* QR 코드 및 URL 섹션 */}
         <Box

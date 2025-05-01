@@ -135,7 +135,7 @@ const NavigationBar = () => {
           </Box>
         </Link>
       </Box>
-      <Box sx={{ mt: "2px", mb: 1 }}>
+      {/* <Box sx={{ mt: "2px", mb: 1 }}>
         <Box>
           <MuiButton
             variant="contained"
@@ -175,8 +175,8 @@ const NavigationBar = () => {
             매물 · 고객 · 계약 · 일정 · 상담
           </Typography>
         </Box>
-      </Box>
-      <List>
+      </Box> */}
+      <List sx={{ pt: "4px" }}>
         <ListItem disablePadding>
           <Link to="/" style={{ width: "100%", textDecoration: "none" }}>
             <ListItemButton

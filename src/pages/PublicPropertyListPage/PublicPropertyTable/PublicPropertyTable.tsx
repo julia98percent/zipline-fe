@@ -221,13 +221,13 @@ const PublicPropertyTable = ({
                     unit={useMetric ? "(m²)" : "(평)"}
                   />
                 </TableCell>
-                <TableCell align="center">플랫폼</TableCell>
-                <TableCell align="center">
-                  <SortableHeader field="createdAt" label="등록일" />
-                </TableCell>
-                <TableCell align="center">
-                  <SortableHeader field="updatedAt" label="수정일" />
-                </TableCell>
+                {/* <TableCell align="center">플랫폼</TableCell> */}
+                {/* <TableCell align="center"> */}
+                {/*   <SortableHeader field="createdAt" label="등록일" /> */}
+                {/* </TableCell> */}
+                {/* <TableCell align="center"> */}
+                {/*   <SortableHeader field="updatedAt" label="수정일" /> */}
+                {/* </TableCell> */}
               </TableRow>
             </TableHead>
             <TableBody>
@@ -301,32 +301,15 @@ const PublicPropertyTable = ({
                     <TableCell align="center" sx={{ maxWidth: '100px', whiteSpace: 'normal' }}>
                       {useMetric ? `${property.supplyArea}m²` : `${(property.supplyArea / 3.3).toFixed(1)}평`}
                     </TableCell>
-                    <TableCell align="center" sx={{ maxWidth: '100px', whiteSpace: 'normal' }}>
-                      {property.platformUrl ? (
-                        <Tooltip title={`${property.platform} 부동산으로 이동`}>
-                          <Link
-                            //href={property.platformUrl}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            sx={{
-                              cursor: 'pointer',
-                              textDecoration: 'none',
-                              '&:hover': {
-                                textDecoration: 'underline',
-                              },
-                            }}
-                          >
-                            {property.platform}
-                          </Link>
-                        </Tooltip>
-                      ) : property.platform}
-                    </TableCell>
-                    <TableCell align="center" sx={{ maxWidth: '100px', whiteSpace: 'normal' }}>
-                      {new Date(property.createdAt).toLocaleDateString()}
-                    </TableCell>
-                    <TableCell align="center" sx={{ maxWidth: '100px', whiteSpace: 'normal' }}>
-                      {new Date(property.updatedAt).toLocaleDateString()}
-                    </TableCell>
+                    {/* <TableCell align="center" sx={{ maxWidth: '100px', whiteSpace: 'normal' }}> */}
+                    {/*   {property.platform} */}
+                    {/* </TableCell> */}
+                    {/* <TableCell align="center" sx={{ maxWidth: '100px', whiteSpace: 'normal' }}> */}
+                    {/*   {new Date(property.createdAt).toLocaleDateString()} */}
+                    {/* </TableCell> */}
+                    {/* <TableCell align="center" sx={{ maxWidth: '100px', whiteSpace: 'normal' }}> */}
+                    {/*   {new Date(property.updatedAt).toLocaleDateString()} */}
+                    {/* </TableCell> */}
                   </TableRow>
                 ))
               ) : (

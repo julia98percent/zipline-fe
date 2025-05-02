@@ -11,7 +11,6 @@ import {
 import { useCallback, useEffect, useState } from "react";
 import PublicPropertyFilterModal from "./PublicPropertyFilterModal/PublicPropertyFilterModal";
 import PublicPropertyTable from "./PublicPropertyTable";
-import CORTAR_NO from "./PublicPropertyTable/cortarNo.json";
 
 export interface KakaoAddress {
   road_address?: {
@@ -87,35 +86,6 @@ export interface SearchParams {
   maxSupplyArea?: number;
 }
 
-const BUILDING_TYPES = [
-  "단독/다가구",
-  "사무실",
-  "건물",
-  "빌라",
-  "상가",
-  "토지",
-  "상가주택",
-  "아파트",
-  "한옥주택",
-  "연립",
-  "오피스텔",
-  "다세대",
-  "원룸",
-  "재개발",
-  "고시원",
-  "공장/창고",
-  "지식산업센터",
-  "아파트분양권",
-  "오피스텔분양권",
-  "재건축",
-  "전원주택",
-];
-
-const CATEGORY_OPTIONS = [
-  { value: "SALE", label: "매매" },
-  { value: "MONTHLY", label: "월세" },
-  { value: "DEPOSIT", label: "전세" },
-];
 
 function PublicPropertyListPage() {
   const [publicPropertyList, setPublicPropertyList] = useState<PublicPropertyItem[]>([]);
@@ -128,7 +98,6 @@ function PublicPropertyListPage() {
   const [selectedSido, setSelectedSido] = useState("");
   const [selectedGu, setSelectedGu] = useState("");
   const [selectedDong, setSelectedDong] = useState("");
-  const [selectedRegionCode, setSelectedRegionCode] = useState("");
 
   // Search params - manage all filter state here
   const [searchParams, setSearchParams] = useState<SearchParams>({
@@ -156,14 +125,12 @@ function PublicPropertyListPage() {
     setSelectedSido(value);
     setSelectedGu("");
     setSelectedDong("");
-    setSelectedRegionCode("");
   };
 
   const handleGuChange = (event: SelectChangeEvent<string>) => {
     const value = event.target.value;
     setSelectedGu(value);
     setSelectedDong("");
-    setSelectedRegionCode("");
   };
 
   const handleDongChange = (event: SelectChangeEvent<string>) => {
@@ -172,15 +139,17 @@ function PublicPropertyListPage() {
 
     // Find the selected dong code
     if (value) {
-      const selectedSidoObj = CORTAR_NO[selectedSido as keyof typeof CORTAR_NO];
-      const selectedGuObj = selectedSidoObj.find((gu: { name: string }) => gu.name === selectedGu);
-      const selectedDongObj = selectedGuObj?.districts.find((dong: { name: string }) => dong.name === value);
-      if (selectedDongObj) {
-        setSelectedRegionCode(selectedDongObj.code);
-        setSearchParams(prev => ({ ...prev, regionCode: selectedDongObj.code }));
-      }
+      // Need to fetch region data or pass it down if needed here
+      // Assuming CORTAR_NO structure was correct, but fetching is better
+      // const selectedSidoObj = CORTAR_NO[selectedSido as keyof typeof CORTAR_NO];
+      // const selectedGuObj = selectedSidoObj?.find((gu: { name: string }) => gu.name === selectedGu);
+      // const selectedDongObj = selectedGuObj?.districts.find((dong: { name: string }) => dong.name === value);
+      // if (selectedDongObj) {
+      //   setSearchParams(prev => ({ ...prev, regionCode: selectedDongObj.code }));
+      // }
     } else {
-      setSelectedRegionCode("");
+      // Clear region code if dong is deselected
+      setSearchParams(prev => ({ ...prev, regionCode: undefined }));
     }
   };
 
@@ -238,6 +207,15 @@ function PublicPropertyListPage() {
     });
   };
 
+  // Handle sort reset
+  const handleSortReset = () => {
+    setSearchParams(prev => ({
+      ...prev,
+      sortFields: { id: 'ASC' }, // Reset sort to default
+      page: 0 // Reset to first page
+    }));
+  };
+
   // Function to get address from coordinates using Kakao API
   const getAddressFromCoordinates = async (latitude: number, longitude: number): Promise<KakaoAddress | null> => {
     try {
@@ -274,66 +252,91 @@ function PublicPropertyListPage() {
   const fetchPropertyData = useCallback(async () => {
     setLoading(true);
 
-    // Construct query parameters
+    // Create a temporary copy of searchParams to potentially modify for the API call
+    const apiParams = { ...searchParams };
+
+    // Adjust min values for ASC sorting to avoid 0/nulls at the top
+    const activeSortField = Object.keys(apiParams.sortFields)[0];
+    const sortDirection = apiParams.sortFields[activeSortField];
+
+    if (sortDirection === 'ASC') {
+      if (activeSortField === 'price' && !apiParams.minPrice) {
+        apiParams.minPrice = 1;
+      }
+      if (activeSortField === 'deposit' && !apiParams.minDeposit) {
+        apiParams.minDeposit = 1;
+      }
+      if (activeSortField === 'monthlyRent' && !apiParams.minMonthlyRent) {
+        apiParams.minMonthlyRent = 1;
+      }
+      if (activeSortField === 'exclusiveArea' && !apiParams.minExclusiveArea) {
+        apiParams.minExclusiveArea = 1; // Assuming area can't be < 1
+      }
+      if (activeSortField === 'supplyArea' && !apiParams.minSupplyArea) {
+        apiParams.minSupplyArea = 1; // Assuming area can't be < 1
+      }
+    }
+
+    // Construct query parameters using the potentially modified apiParams
     const queryParams = new URLSearchParams();
 
     // Add only essential parameters
-    queryParams.append("page", searchParams.page.toString());
-    queryParams.append("size", searchParams.size.toString());
-    queryParams.append("sortFields", JSON.stringify(searchParams.sortFields));
+    queryParams.append("page", apiParams.page.toString());
+    queryParams.append("size", apiParams.size.toString());
+    queryParams.append("sortFields", JSON.stringify(apiParams.sortFields));
 
-    // Only add other parameters if they have actual values
-    if (searchParams.regionCode) {
-      queryParams.append("regionCode", searchParams.regionCode);
-    }
-
-    if (searchParams.buildingName) {
-      queryParams.append("buildingName", searchParams.buildingName);
+    // Only add other parameters if they have actual values in apiParams
+    if (apiParams.regionCode) {
+      queryParams.append("regionCode", apiParams.regionCode);
     }
 
-    if (searchParams.buildingType) {
-      queryParams.append("buildingType", searchParams.buildingType);
+    if (apiParams.buildingName) {
+      queryParams.append("buildingName", apiParams.buildingName);
     }
 
-    if (searchParams.category) {
-      queryParams.append("category", searchParams.category);
+    if (apiParams.buildingType) {
+      queryParams.append("buildingType", apiParams.buildingType);
     }
 
-    // Add price ranges only if they have non-zero values
-    if (searchParams.minPrice) {
-      queryParams.append("minPrice", searchParams.minPrice.toString());
-    }
-    if (searchParams.maxPrice) {
-      queryParams.append("maxPrice", searchParams.maxPrice.toString());
+    if (apiParams.category) {
+      queryParams.append("category", apiParams.category);
     }
 
-    if (searchParams.minDeposit) {
-      queryParams.append("minDeposit", searchParams.minDeposit.toString());
+    // Add price ranges only if they have values in apiParams
+    if (apiParams.minPrice) {
+      queryParams.append("minPrice", apiParams.minPrice.toString());
     }
-    if (searchParams.maxDeposit) {
-      queryParams.append("maxDeposit", searchParams.maxDeposit.toString());
-    }
-
-    if (searchParams.minMonthlyRent) {
-      queryParams.append("minMonthlyRent", searchParams.minMonthlyRent.toString());
-    }
-    if (searchParams.maxMonthlyRent) {
-      queryParams.append("maxMonthlyRent", searchParams.maxMonthlyRent.toString());
+    if (apiParams.maxPrice) {
+      queryParams.append("maxPrice", apiParams.maxPrice.toString());
     }
 
-    // Add area ranges only if they have non-zero values
-    if (searchParams.minExclusiveArea) {
-      queryParams.append("minExclusiveArea", searchParams.minExclusiveArea.toString());
+    if (apiParams.minDeposit) {
+      queryParams.append("minDeposit", apiParams.minDeposit.toString());
     }
-    if (searchParams.maxExclusiveArea) {
-      queryParams.append("maxExclusiveArea", searchParams.maxExclusiveArea.toString());
+    if (apiParams.maxDeposit) {
+      queryParams.append("maxDeposit", apiParams.maxDeposit.toString());
     }
 
-    if (searchParams.minSupplyArea) {
-      queryParams.append("minSupplyArea", searchParams.minSupplyArea.toString());
+    if (apiParams.minMonthlyRent) {
+      queryParams.append("minMonthlyRent", apiParams.minMonthlyRent.toString());
     }
-    if (searchParams.maxSupplyArea) {
-      queryParams.append("maxSupplyArea", searchParams.maxSupplyArea.toString());
+    if (apiParams.maxMonthlyRent) {
+      queryParams.append("maxMonthlyRent", apiParams.maxMonthlyRent.toString());
+    }
+
+    // Add area ranges only if they have values in apiParams
+    if (apiParams.minExclusiveArea) {
+      queryParams.append("minExclusiveArea", apiParams.minExclusiveArea.toString());
+    }
+    if (apiParams.maxExclusiveArea) {
+      queryParams.append("maxExclusiveArea", apiParams.maxExclusiveArea.toString());
+    }
+
+    if (apiParams.minSupplyArea) {
+      queryParams.append("minSupplyArea", apiParams.minSupplyArea.toString());
+    }
+    if (apiParams.maxSupplyArea) {
+      queryParams.append("maxSupplyArea", apiParams.maxSupplyArea.toString());
     }
 
     try {
@@ -341,7 +344,7 @@ function PublicPropertyListPage() {
       const propertyData = res?.data?.content;
       const total = res?.data?.totalElements;
       const pages = res?.data?.totalPages;
-      
+
       if (propertyData) {
         // Set the property data first
         setPublicPropertyList(propertyData);
@@ -398,9 +401,9 @@ function PublicPropertyListPage() {
         <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 1 }}>
           <Typography variant="h5" fontWeight="bold">
             공개 매물 검색 결과 : {totalElements} 건
-        </Typography>
-        
-          <Box sx={{ display: "flex", justifyContent: "center", mt: 1}}>
+          </Typography>
+
+          <Box sx={{ display: "flex", justifyContent: "center", mt: 1 }}>
             <Button
               startIcon={<FilterListIcon />}
               color={showFilterModal ? "primary" : "inherit"}
@@ -415,8 +418,8 @@ function PublicPropertyListPage() {
 
       {/* Results Section */}
       <Paper elevation={3} sx={{ padding: 3 }}>
-        <PublicPropertyTable 
-          propertyList={publicPropertyList} 
+        <PublicPropertyTable
+          propertyList={publicPropertyList}
           totalElements={totalElements}
           totalPages={totalPages}
           page={searchParams.page}
@@ -425,6 +428,8 @@ function PublicPropertyListPage() {
           onRowsPerPageChange={(newSize) => setSearchParams(prev => ({ ...prev, size: newSize, page: 0 }))}
           onSort={handleSort}
           sortFields={searchParams.sortFields}
+          category={searchParams.category}
+          onSortReset={handleSortReset}
         />
       </Paper>
 

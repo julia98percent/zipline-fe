@@ -1,10 +1,10 @@
 import SearchIcon from '@mui/icons-material/Search';
 import {
   Box,
+  Button,
   FormControlLabel,
   IconButton,
   InputAdornment,
-  Link,
   Paper,
   Switch,
   Table,
@@ -17,7 +17,7 @@ import {
   TableSortLabel,
   TextField,
   Tooltip,
-  Typography,
+  Typography
 } from "@mui/material";
 import { useEffect, useState } from "react";
 import { PublicPropertyItem } from "../PublicPropertyListPage";
@@ -28,10 +28,12 @@ interface Props {
   totalPages: number;
   page: number;
   rowsPerPage: number;
+  category?: string;
   onPageChange: (newPage: number) => void;
   onRowsPerPageChange: (newSize: number) => void;
   onSort: (field: string) => void;
   sortFields: { [key: string]: string };
+  onSortReset: () => void;
 }
 
 const CATEGORY_LABELS: { [key: string]: string } = {
@@ -40,26 +42,22 @@ const CATEGORY_LABELS: { [key: string]: string } = {
   DEPOSIT: "전세"
 };
 
-const PublicPropertyTable = ({ 
-  propertyList, 
+const PublicPropertyTable = ({
+  propertyList,
   totalElements,
   totalPages,
   page,
   rowsPerPage,
+  category,
   onPageChange,
   onRowsPerPageChange,
   onSort,
-  sortFields
+  sortFields,
+  onSortReset
 }: Props) => {
   const [useMetric, setUseMetric] = useState(true);
   const [useRoadAddress, setUseRoadAddress] = useState(true);
   const [pageInput, setPageInput] = useState<string>('');
-
-  const formatArea = (supplyArea: number, exclusiveArea: number) => {
-    return useMetric
-      ? `${exclusiveArea}m² / ${supplyArea}m²`
-      : `${(exclusiveArea / 3.3).toFixed(1)}평 / ${(supplyArea / 3.3).toFixed(1)}평`;
-  };
 
   const formatPrice = (value: number) => {
     if (value === 0) return "-";
@@ -90,27 +88,22 @@ const PublicPropertyTable = ({
     return direction === "ASC" ? "↑" : "↓";
   };
 
-  // Check if the list is filtered by category
-  const isFilteredByCategory = (category: string) => {
-    return propertyList.length > 0 && propertyList.every(p => p.category === category);
-  };
-
   const formatBuildingInfo = (property: PublicPropertyItem) => {
     if (!property.buildingName && !property.buildingType) return "-";
-    
+
     const buildingType = property.buildingType ? `[${property.buildingType}]` : '';
     const buildingName = property.buildingName || '';
-    
+
     return `${buildingType} ${buildingName}`.trim();
   };
 
-  const SortableHeader = ({ 
-    field, 
-    label, 
-    unit = '' 
-  }: { 
-    field: string; 
-    label: string; 
+  const SortableHeader = ({
+    field,
+    label,
+    unit = ''
+  }: {
+    field: string;
+    label: string;
     unit?: string;
   }) => (
     <TableSortLabel
@@ -156,9 +149,54 @@ const PublicPropertyTable = ({
     setPageInput((page + 1).toString());
   }, [page]);
 
+  const isPriceSorted = !!sortFields.price;
+  const isDepositSorted = !!sortFields.deposit;
+  const isMonthlyRentSorted = !!sortFields.monthlyRent;
+
+  // Determine column visibility based on sort first, then category
+  let showPriceHeader = false;
+  let showDepositHeader = false;
+  let showMonthlyRentHeader = false;
+
+  if (isPriceSorted) {
+    showPriceHeader = true;
+    showDepositHeader = false; // Hide others when sorting price
+    showMonthlyRentHeader = false;
+  } else if (isDepositSorted) {
+    showPriceHeader = false; // Hide others when sorting deposit
+    showDepositHeader = true;
+    showMonthlyRentHeader = false;
+  } else if (isMonthlyRentSorted) {
+    showPriceHeader = false;
+    showDepositHeader = true; // Show deposit when sorting monthly
+    showMonthlyRentHeader = true;
+  } else {
+    // Default visibility based on category filter (if no price sort active)
+    showPriceHeader = !category || category === "SALE";
+    showDepositHeader = !category || category === "MONTHLY" || category === "DEPOSIT";
+    showMonthlyRentHeader = !category || category === "MONTHLY";
+  }
+
+  // Calculate colspan based on visible headers
+  let colSpanCount = 5; // Base columns (ID, Type, Building, Address, Desc)
+  if (showPriceHeader) colSpanCount++;
+  if (showDepositHeader) colSpanCount++;
+  if (showMonthlyRentHeader) colSpanCount++;
+  colSpanCount += 2; // Area columns
+
   return (
     <Box sx={{ width: "100%", mt: 0 }}>
-      <Box sx={{ display: 'flex', width: '100%', justifyContent: 'end', gap: 1, mb: 2 }}>
+      
+      <Box sx={{ display: 'flex', width: '100%', justifyContent: 'space-between', alignItems: 'center', gap: 2, mb: 2 }}>
+        <Button
+          variant="outlined"
+          size="small"
+          onClick={onSortReset}
+          sx={{ height: '32px' }}
+        >
+          정렬 초기화
+        </Button>
+      <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
         <FormControlLabel
           control={
             <Switch
@@ -180,6 +218,9 @@ const PublicPropertyTable = ({
           label={useRoadAddress ? "도로명 주소" : "지번 주소"}
         />
       </Box>
+
+
+      </Box>
       <Paper sx={{ width: "100%", overflow: "hidden" }}>
         <TableContainer sx={{ maxHeight: 'calc(100vh - 300px)' }}>
           <Table stickyHeader sx={{ minWidth: 650 }}>
@@ -192,42 +233,42 @@ const PublicPropertyTable = ({
                 <TableCell align="center">건물 정보</TableCell>
                 <TableCell align="center">주소</TableCell>
                 <TableCell align="center">설명</TableCell>
-                {!isFilteredByCategory('MONTHLY') && !isFilteredByCategory('DEPOSIT') && (
+                {showPriceHeader && (
                   <TableCell align="center">
                     <SortableHeader field="price" label="매매 가격" />
                   </TableCell>
                 )}
-                {!isFilteredByCategory('SALE') && (
+                {showDepositHeader && (
                   <TableCell align="center">
                     <SortableHeader field="deposit" label="보증금" />
                   </TableCell>
                 )}
-                {!isFilteredByCategory('SALE') && !isFilteredByCategory('DEPOSIT') && (
+                {showMonthlyRentHeader && (
                   <TableCell align="center">
                     <SortableHeader field="monthlyRent" label="월세" />
                   </TableCell>
                 )}
                 <TableCell align="center">
-                  <SortableHeader 
-                    field="exclusiveArea" 
-                    label="전용면적" 
-                    unit={useMetric ? "(m²)" : "(평)"} 
+                  <SortableHeader
+                    field="exclusiveArea"
+                    label="전용면적"
+                    unit={useMetric ? "(m²)" : "(평)"}
                   />
                 </TableCell>
                 <TableCell align="center">
-                  <SortableHeader 
-                    field="supplyArea" 
-                    label="공급면적" 
-                    unit={useMetric ? "(m²)" : "(평)"} 
+                  <SortableHeader
+                    field="supplyArea"
+                    label="공급면적"
+                    unit={useMetric ? "(m²)" : "(평)"}
                   />
                 </TableCell>
-                <TableCell align="center">플랫폼</TableCell>
-                <TableCell align="center">
-                  <SortableHeader field="createdAt" label="등록일" />
-                </TableCell>
-                <TableCell align="center">
-                  <SortableHeader field="updatedAt" label="수정일" />
-                </TableCell>
+                {/* <TableCell align="center">플랫폼</TableCell> */}
+                {/* <TableCell align="center"> */}
+                {/*   <SortableHeader field="createdAt" label="등록일" /> */}
+                {/* </TableCell> */}
+                {/* <TableCell align="center"> */}
+                {/*   <SortableHeader field="updatedAt" label="수정일" /> */}
+                {/* </TableCell> */}
               </TableRow>
             </TableHead>
             <TableBody>
@@ -245,7 +286,7 @@ const PublicPropertyTable = ({
                     </TableCell>
                     <TableCell align="center" sx={{ maxWidth: '200px', whiteSpace: 'normal' }}>
                       {property.address ? (
-                        <Tooltip 
+                        <Tooltip
                           title={
                             <Box>
                               {property.address.road_address && (
@@ -258,8 +299,8 @@ const PublicPropertyTable = ({
                           }
                         >
                           <span>
-                            {useRoadAddress 
-                              ? property.address.road_address?.address_name 
+                            {useRoadAddress
+                              ? property.address.road_address?.address_name
                               : property.address.address?.address_name || "-"}
                           </span>
                         </Tooltip>
@@ -268,31 +309,19 @@ const PublicPropertyTable = ({
                     <TableCell align="center" sx={{ maxWidth: '200px', whiteSpace: 'normal' }}>
                       {property.description ?? "-"}
                     </TableCell>
-                    {!isFilteredByCategory('MONTHLY') && !isFilteredByCategory('DEPOSIT') ? (
+                    {showPriceHeader && (
                       <TableCell align="center" sx={{ maxWidth: '100px', whiteSpace: 'normal' }}>
                         {formatPrice(property.price)}
                       </TableCell>
-                    ) : (
-                      <TableCell align="center" sx={{ maxWidth: '100px', whiteSpace: 'normal' }}>
-                        -
-                      </TableCell>
                     )}
-                    {!isFilteredByCategory('SALE') ? (
+                    {showDepositHeader && (
                       <TableCell align="center" sx={{ maxWidth: '100px', whiteSpace: 'normal' }}>
                         {formatPrice(property.deposit)}
                       </TableCell>
-                    ) : (
-                      <TableCell align="center" sx={{ maxWidth: '100px', whiteSpace: 'normal' }}>
-                        -
-                      </TableCell>
                     )}
-                    {!isFilteredByCategory('SALE') && !isFilteredByCategory('DEPOSIT') ? (
+                    {showMonthlyRentHeader && (
                       <TableCell align="center" sx={{ maxWidth: '100px', whiteSpace: 'normal' }}>
                         {property.monthlyRent === 0 ? "-" : `${property.monthlyRent}만`}
-                      </TableCell>
-                    ) : (
-                      <TableCell align="center" sx={{ maxWidth: '100px', whiteSpace: 'normal' }}>
-                        -
                       </TableCell>
                     )}
                     <TableCell align="center" sx={{ maxWidth: '100px', whiteSpace: 'normal' }}>
@@ -301,38 +330,21 @@ const PublicPropertyTable = ({
                     <TableCell align="center" sx={{ maxWidth: '100px', whiteSpace: 'normal' }}>
                       {useMetric ? `${property.supplyArea}m²` : `${(property.supplyArea / 3.3).toFixed(1)}평`}
                     </TableCell>
-                    <TableCell align="center" sx={{ maxWidth: '100px', whiteSpace: 'normal' }}>
-                      {property.platformUrl ? (
-                        <Tooltip title={`${property.platform} 부동산으로 이동`}>
-                          <Link
-                            href={property.platformUrl}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            sx={{
-                              cursor: 'pointer',
-                              textDecoration: 'none',
-                              '&:hover': {
-                                textDecoration: 'underline',
-                              },
-                            }}
-                          >
-                            {property.platform}
-                          </Link>
-                        </Tooltip>
-                      ) : property.platform}
-                    </TableCell>
-                    <TableCell align="center" sx={{ maxWidth: '100px', whiteSpace: 'normal' }}>
-                      {new Date(property.createdAt).toLocaleDateString()}
-                    </TableCell>
-                    <TableCell align="center" sx={{ maxWidth: '100px', whiteSpace: 'normal' }}>
-                      {new Date(property.updatedAt).toLocaleDateString()}
-                    </TableCell>
+                    {/* <TableCell align="center" sx={{ maxWidth: '100px', whiteSpace: 'normal' }}> */}
+                    {/*   {property.platform} */}
+                    {/* </TableCell> */}
+                    {/* <TableCell align="center" sx={{ maxWidth: '100px', whiteSpace: 'normal' }}> */}
+                    {/*   {new Date(property.createdAt).toLocaleDateString()} */}
+                    {/* </TableCell> */}
+                    {/* <TableCell align="center" sx={{ maxWidth: '100px', whiteSpace: 'normal' }}> */}
+                    {/*   {new Date(property.updatedAt).toLocaleDateString()} */}
+                    {/* </TableCell> */}
                   </TableRow>
                 ))
               ) : (
                 <TableRow>
                   <TableCell
-                    colSpan={12}
+                    colSpan={colSpanCount}
                     align="center"
                     sx={{
                       padding: "20px 0",
@@ -380,7 +392,7 @@ const PublicPropertyTable = ({
                   }
                 }
               }}
-              sx={{ 
+              sx={{
                 width: '150px',
                 '& .MuiOutlinedInput-root': {
                   height: '32px',

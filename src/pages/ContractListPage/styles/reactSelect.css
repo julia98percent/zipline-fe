@@ -1,0 +1,23 @@
+.custom-select__control {
+    width: 160px;
+    border: 1.5px solid #ccc;
+    border-radius: 18px;
+    min-height: 36px;
+    font-size: 13px;
+    padding-left: 8px;
+  }
+  
+  .custom-select__menu {
+    font-size: 13px;
+    width: 160px;
+  }
+  
+  .custom-select__option,
+  .custom-select__single-value,
+  .custom-select__placeholder {
+    font-size: 13px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  

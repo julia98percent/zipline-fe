@@ -11,7 +11,7 @@ import {
   Paper,
 } from "@mui/material";
 import { ContractItem } from "../ContractListPage";
-import Chip from "@components/Chip";
+import { Chip } from "@mui/material";
 
 const CONTRACT_STATUS_TYPES = [
   { value: "LISTED", name: "매물 등록", color: "default" },
@@ -56,60 +56,131 @@ const ContractTable = ({ contractList, onRowClick }: Props) => {
     page * rowsPerPage + rowsPerPage
   );
 
-  const getStatusChip = (status: string) => {
-    const statusInfo = CONTRACT_STATUS_TYPES.find(item => item.value === status);
-    if (!statusInfo) return status;
-    return <Chip color={statusInfo.color} text={statusInfo.name} />;
+  const getColor = (color: string) => {
+    switch (color) {
+      case "primary":
+        return "#1976d2"; // 파랑
+      case "success":
+        return "#2e7d32"; // 초록
+      case "error":
+        return "#d32f2f"; // 빨강
+      case "warning":
+        return "#ed6c02"; // 주황
+      case "info":
+        return "#0288d1"; // 하늘
+      case "secondary":
+        return "#9c27b0"; // 보라
+      default:
+        return "#999"; // 회색
+    }
   };
+
+  const getStatusChip = (status: string) => {
+    const statusInfo = CONTRACT_STATUS_TYPES.find(
+      (item) => item.value === status
+    );
+    if (!statusInfo) return status;
+
+    return (
+      <Chip
+        label={statusInfo.name}
+        variant="outlined"
+        sx={{
+          color: getColor(statusInfo.color),
+          borderColor: getColor(statusInfo.color),
+          fontWeight: 500,
+        }}
+      />
+    );
+  };
+
+  const getCategoryChip = (category: string | null) => {
+    if (!category || category === "null") {
+      return "-";
+    }
+  
+    const label = categoryKoreanMap[category] ?? category;
+  
+    const colorMap: Record<string, string> = {
+      SALE: "#4caf50",     // 매매 - 초록
+      DEPOSIT: "#2196f3",  // 전세 - 파랑
+      MONTHLY: "#ff9800",  // 월세 - 주황
+    };
+  
+    return (
+      <Chip
+        label={label}
+        variant="outlined"
+        sx={{
+          color: colorMap[category],
+          borderColor: colorMap[category],
+          fontWeight: 500,
+          height: 24,
+          fontSize: 13,
+        }}
+      />
+    );
+  };
+  
 
   return (
     <Box sx={{ width: "100%", mt: 4 }}>
       <Paper sx={{ width: "100%", overflow: "hidden" }}>
         <TableContainer>
           <Table sx={{ minWidth: 650 }}>
-          <TableHead>
-  <TableRow>
-    <TableCell align="center">임대/매도인</TableCell>
-    <TableCell align="center">임차/매수인</TableCell>
-    <TableCell align="center">주소</TableCell>
-    <TableCell align="center">계약 카테고리</TableCell>
-    <TableCell align="center">계약일</TableCell>
-    <TableCell align="center">계약 시작일</TableCell>
-    <TableCell align="center">계약 종료일</TableCell>
-    <TableCell align="center">상태</TableCell>
-    
-  </TableRow>
-</TableHead>
-<TableBody>
-  {displayedContracts.length > 0 ? (
-    displayedContracts.map((contract) => (
-      <TableRow
-        key={contract.uid}
-        hover
-        sx={{ cursor: "pointer" }}
-        onClick={() => onRowClick?.(contract)}
-      >
-        <TableCell align="center">{contract.lessorOrSellerName}</TableCell>
-        <TableCell align="center">{contract.lesseeOrBuyerName ?? "-"}</TableCell>
-        <TableCell align="center">{contract.address}</TableCell>
-        <TableCell align="center">
-  {contract.category ? categoryKoreanMap[contract.category] ?? contract.category : "-"}
-</TableCell>
-
-        <TableCell align="center">{contract.contractDate ?? "-"}</TableCell>
-        <TableCell align="center">{contract.contractStartDate ?? "-"}</TableCell>
-        <TableCell align="center">{contract.contractEndDate ?? "-"}</TableCell>
-        <TableCell align="center">{getStatusChip(contract.status)}</TableCell>
-      </TableRow>
-    ))
-  ) : (
-    <TableRow>
-      <TableCell colSpan={8} align="center" sx={{ py: 3 }}>
-        계약 데이터가 없습니다
-      </TableCell>
-    </TableRow>
-  )}
-</TableBody>
+            <TableHead>
+              <TableRow>
+                <TableCell align="center">임대/매도인</TableCell>
+                <TableCell align="center">임차/매수인</TableCell>
+                <TableCell align="center">주소</TableCell>
+                <TableCell align="center">계약 카테고리</TableCell>
+                <TableCell align="center">계약일</TableCell>
+                <TableCell align="center">계약 시작일</TableCell>
+                <TableCell align="center">계약 종료일</TableCell>
+                <TableCell align="center">상태</TableCell>
+              </TableRow>
+            </TableHead>
+            <TableBody>
+              {displayedContracts.length > 0 ? (
+                displayedContracts.map((contract) => (
+                  <TableRow
+                    key={contract.uid}
+                    hover
+                    sx={{ cursor: "pointer" }}
+                    onClick={() => onRowClick?.(contract)}
+                  >
+                    <TableCell align="center">
+                      {contract.lessorOrSellerName}
+                    </TableCell>
+                    <TableCell align="center">
+                      {contract.lesseeOrBuyerName ?? "-"}
+                    </TableCell>
+                    <TableCell align="center">{contract.address}</TableCell>
+                    <TableCell align="center">
+                    {getCategoryChip(contract.category)}
+                    </TableCell>
+                    <TableCell align="center">
+                      {contract.contractDate ?? "-"}
+                    </TableCell>
+                    <TableCell align="center">
+                      {contract.contractStartDate ?? "-"}
+                    </TableCell>
+                    <TableCell align="center">
+                      {contract.contractEndDate ?? "-"}
+                    </TableCell>
+                    <TableCell align="center">
+                      {getStatusChip(contract.status)}
+                    </TableCell>
+                  </TableRow>
+                ))
+              ) : (
+                <TableRow>
+                  <TableCell colSpan={8} align="center" sx={{ py: 3 }}>
+                    계약 데이터가 없습니다
+                  </TableCell>
+                </TableRow>
+              )}
+            </TableBody>
           </Table>
         </TableContainer>
         <TablePagination

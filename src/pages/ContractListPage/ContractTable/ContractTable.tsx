@@ -88,7 +88,9 @@ const ContractTable = ({ contractList, onRowClick }: Props) => {
         sx={{
           color: getColor(statusInfo.color),
           borderColor: getColor(statusInfo.color),
-          fontWeight: 500,
+          fontWeight: 500,          
+          height: 28,
+          fontSize: 13,
         }}
       />
     );
@@ -115,7 +117,7 @@ const ContractTable = ({ contractList, onRowClick }: Props) => {
           color: colorMap[category],
           borderColor: colorMap[category],
           fontWeight: 500,
-          height: 24,
+          height: 26,
           fontSize: 13,
         }}
       />

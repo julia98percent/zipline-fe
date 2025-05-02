@@ -107,11 +107,11 @@ const ContractDetailContent = ({ contract, histories }: Props) => {
                     label={categoryLabel}
                     variant="outlined"
                     sx={{
-                      height: 24,
+                      height: 26,
                       color: categoryColor,
                       borderColor: categoryColor,
                       fontWeight: 500,
-                      px: 1.2,
+                      fontSize: 13,
                     }}
                   />
                 );
@@ -130,7 +130,9 @@ const ContractDetailContent = ({ contract, histories }: Props) => {
                     sx={{
                       color: statusInfo?.color,
                       borderColor: statusInfo?.color,
-                      fontWeight: 400,
+                      fontWeight: 500,
+                      fontSize: 13,
+                      height: 28,
                     }}
                   />
                 );

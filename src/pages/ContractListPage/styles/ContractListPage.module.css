@@ -1,0 +1,110 @@
+.container {
+  background-color: #f5f5f5;
+  min-height: 100vh;  
+}
+
+.header {
+  margin-bottom: 12px;
+}
+
+.contents {
+  padding: 0 16px 0 16px;
+}
+
+.controlsContainer {
+  background-color: white;
+  padding: 16px;
+  border-radius: 6px;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
+}
+.searchBarRow {
+  display: flex;
+  gap: 12px;
+  
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+.sortSelect {
+  width: 120px;
+}
+
+.searchInputWrapper {
+  display: flex;
+  flex: 1;
+  position: relative;
+}
+
+.searchInput {
+  width: 100%;
+  padding: 8px 40px 8px 12px;
+  border: 1px solid #ccc;
+  border-radius: 20px;
+  font-size: 14px;
+}
+
+.searchButton {
+  position: absolute;
+  right: 8px;
+  top: 50%;
+  transform: translateY(-50%);
+  background-color: #1976d2;
+  color: white;
+  border: none;
+  border-radius: 12px;
+  width: 50px;
+  height: 28px;
+  cursor: pointer;
+  font-weight: bold;
+}
+
+.topFilterRow {
+  display:flex;
+  justify-content: space-between;
+  align-items: start;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.filterGroup {
+  display: flex;
+  align-items: center;
+  gap: 8px; 
+}
+
+.filterButtons {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.filterButton {
+  border: none;
+  background-color: #f0f0f0;
+  padding: 8px 16px;
+  border-radius: 20px;
+  font-size: 13px;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+.filterButtonActive {
+  background-color: #1976d2;
+  color: white;
+}
+
+.outlinedButton {
+  border: 1.5px solid #1976d2;
+  color: #1976d2;
+  background-color: transparent;
+  padding: 8px 16px;
+  border-radius: 8px;
+  font-weight: 500;
+  font-size: 14px;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+.outlinedButton:hover {
+  background-color: rgba(25, 118, 210, 0.05);
+}

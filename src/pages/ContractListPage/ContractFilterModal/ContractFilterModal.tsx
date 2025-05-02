@@ -23,20 +23,24 @@ const ContractFilterModal = ({
   open,
   onClose,
   onApply,
-  initialFilter,
+  initialFilter = { period: "", status: "" }, // ✅ 기본값 부여
 }: ContractFilterModalProps) => {
-  const [period, setPeriod] = useState(initialFilter.period || "");
-  const [status, setStatus] = useState(initialFilter.status || "");
+  const [period, setPeriod] = useState(initialFilter.period);
+  const [status, setStatus] = useState(initialFilter.status);
 
   const handleApply = () => {
-    onApply({ period, status });
+    if (onApply) {
+      onApply({ period, status }); // ✅ 옵셔널 체이닝 처리
+    }
     onClose();
   };
 
   const handleReset = () => {
     setPeriod("");
     setStatus("");
-    onApply({ period: "", status: "" });
+    if (onApply) {
+      onApply({ period: "", status: "" }); // ✅ 옵셔널 체이닝 처리
+    }
     onClose();
   };
 

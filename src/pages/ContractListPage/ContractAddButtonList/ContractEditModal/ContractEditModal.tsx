@@ -13,111 +13,197 @@ import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import apiClient from "@apis/apiClient";
 import Button from "@components/Button";
+import { toast } from "react-toastify";
 import dayjs from "dayjs";
+import { InsertDriveFile } from "@mui/icons-material";
+import { ContractDetail, ContractDocument } from "@pages/ContractDetailPage/ContractDetailPage";
 
-const CONTRACT_STATUSES = [
-  "LISTED",
-  "NEGOTIATING",
-  "INTENT_SIGNED",
-  "CANCELLED",
-  "CONTRACTED",
-  "IN_PROGRESS",
-  "PAID_COMPLETE",
-  "REGISTERED",
-  "MOVED_IN",
-  "TERMINATED",
+const CONTRACT_STATUS_OPTIONS = [
+  { value: "LISTED", label: "매물 등록" },
+  { value: "NEGOTIATING", label: "협상 중" },
+  { value: "INTENT_SIGNED", label: "가계약" },
+  { value: "CANCELLED", label: "계약 취소" },
+  { value: "CONTRACTED", label: "계약 체결" },
+  { value: "IN_PROGRESS", label: "계약 진행 중" },
+  { value: "PAID_COMPLETE", label: "잔금 지급 완료" },
+  { value: "REGISTERED", label: "등기 완료" },
+  { value: "MOVED_IN", label: "입주 완료" },
+  { value: "TERMINATED", label: "계약 해지" },
 ] as const;
 
-type ContractStatus = (typeof CONTRACT_STATUSES)[number];
+type ContractStatus = (typeof CONTRACT_STATUS_OPTIONS)[number]["value"];
 
-interface ContractEditModalProps {
+interface Props {
   open: boolean;
   handleClose: () => void;
   fetchContractData: () => void;
   contractUid: number;
-  initialData: any;
+  initialData: ContractDetail;
 }
 
-
 const ContractEditModal = ({
-  open, handleClose, fetchContractData, contractUid, initialData,
-}: ContractEditModalProps) => {
+  open,
+  handleClose,
+  fetchContractData,
+  contractUid,
+}: Props) => {
   const [category, setCategory] = useState("");
   const [contractDate, setContractDate] = useState<Dayjs | null>(null);
-  const [contractStartDate, setContractStartDate] = useState<Dayjs | null>(null);
+  const [contractStartDate, setContractStartDate] = useState<Dayjs | null>(
+    null
+  );
   const [contractEndDate, setContractEndDate] = useState<Dayjs | null>(null);
-  const [expectedContractEndDate, setExpectedContractEndDate] = useState<Dayjs | null>(null);
+  const [expectedContractEndDate, setExpectedContractEndDate] =
+    useState<Dayjs | null>(null);
   const [deposit, setDeposit] = useState("");
   const [monthlyRent, setMonthlyRent] = useState("");
   const [price, setPrice] = useState("");
   const [lessorUid, setLessorUid] = useState<number | null>(null);
   const [lesseeUid, setLesseeUid] = useState<number | null>(null);
   const [propertyUid, setPropertyUid] = useState<number | null>(null);
-  const [status, setStatus] = useState<ContractStatus>("IN_PROGRESS");
-  const [files, setFiles] = useState<File[]>([]);
-  const [customerOptions, setCustomerOptions] = useState<{ uid: number; name: string }[]>([]);
-  const [propertyOptions, setPropertyOptions] = useState<{ uid: number; address: string }[]>([]);
+  const [status, setStatus] = useState<ContractStatus | "">("");
+  const [newFiles, setNewFiles] = useState<File[]>([]);
+  const [existingDocuments, setExistingDocuments] = useState<
+    { documentName: string; documentUrl: string; deleted?: boolean }[]
+  >([]);
 
-
-
+  const [customerOptions, setCustomerOptions] = useState<
+    { uid: number; name: string }[]
+  >([]);
+  const [propertyOptions, setPropertyOptions] = useState<
+    { uid: number; address: string }[]
+  >([]);
   useEffect(() => {
-    const fetchOptions = async () => {
-      try {
-        const [customerRes, propertyRes] = await Promise.all([
-          apiClient.get("/customers"),
-          apiClient.get("/properties"), 
-        ]);
-  
-        const customers = customerRes.data.data.customers;
-        const properties = propertyRes.data.data.agentProperty;
-  
-        setCustomerOptions(customers);
-        setPropertyOptions(properties);
-      } catch (err) {
-        console.error("옵션 로딩 실패", err);
+    if (!contractUid) return;
+
+    apiClient.get(`/contracts/${contractUid}`).then((res) => {
+      const data = res.data.data;
+
+      setCategory(data.category ?? "");
+      setContractDate(data.contractDate ? dayjs(data.contractDate) : null);
+      setContractStartDate(
+        data.contractStartDate ? dayjs(data.contractStartDate) : null
+      );
+      setContractEndDate(
+        data.contractEndDate ? dayjs(data.contractEndDate) : null
+      );
+      setExpectedContractEndDate(
+        data.expectedContractEndDate
+          ? dayjs(data.expectedContractEndDate)
+          : null
+      );
+
+      setDeposit(data.deposit?.toString() ?? "");
+      setMonthlyRent(data.monthlyRent?.toString() ?? "");
+      setPrice(data.price?.toString() ?? "");
+      setStatus(data.status ?? "");
+    
+      const customers = [];
+      if (data.lessorOrSellerName)
+        customers.push({ uid: 1, name: data.lessorOrSellerName });
+      if (data.lesseeOrBuyerName)
+        customers.push({ uid: 2, name: data.lesseeOrBuyerName });
+      setCustomerOptions(customers);
+      setLessorUid(customers[0]?.uid ?? null);
+      setLesseeUid(customers[1]?.uid ?? null);
+      
+      if (data.propertyAddress) {
+        setPropertyOptions([{ uid: 1, address: data.propertyAddress }]);
+        setPropertyUid(1);
       }
-    };
-  
-    fetchOptions();
-  }, []);
-  
-  useEffect(() => {
-    if (
-      initialData &&
-      customerOptions.length > 0 &&
-      propertyOptions.length > 0
-    ) {
-      setCategory(initialData.category ?? "");
-      setContractDate(initialData.contractDate ? dayjs(initialData.contractDate) : null);
-      setContractStartDate(initialData.contractStartDate ? dayjs(initialData.contractStartDate) : null);
-      setContractEndDate(initialData.contractEndDate ? dayjs(initialData.contractEndDate) : null);
-      setExpectedContractEndDate(initialData.expectedContractEndDate ? dayjs(initialData.expectedContractEndDate) : null);
-      setDeposit(initialData.deposit?.toString() ?? "");
-      setMonthlyRent(initialData.monthlyRent?.toString() ?? "");
-      setPrice(initialData.price?.toString() ?? "");
-      setLessorUid(initialData.lessorOrSellerUid ?? null);
-      setLesseeUid(initialData.lesseeOrBuyerUid ?? null);
-      setPropertyUid(initialData.propertyUid ?? null);
-      setStatus(initialData.status ?? "IN_PROGRESS");
-    }
-  }, [initialData, customerOptions, propertyOptions]);
+
+      setExistingDocuments(
+        (data.documents ?? []).map((doc: ContractDocument) => ({
+          documentName: doc.fileName,
+          documentUrl: doc.fileUrl,
+          deleted: false,
+        }))
+      );
+    });
+  }, [contractUid]);
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    if (e.target.files) setFiles(Array.from(e.target.files));
+    if (e.target.files) {
+      setNewFiles((prev) => [...prev, ...Array.from(e.target.files ?? [])]);
+    }
+  };
+
+  const [errors, setErrors] = useState<{
+    category?: string;
+    contractDate?: string;
+    contractStartDate?: string;
+    contractEndDate?: string;
+    expectedContractEndDate?: string;
+    deposit?: string;
+    monthlyRent?: string;
+    price?: string;
+    lessorUid?: string;
+    lesseeUid?: string;
+    propertyUid?: string;
+    status?: string;
+  }>({});
+
+  const isValidInteger = (value: string) => {
+    if (value === "") return true;
+    return /^\d+$/.test(value);
+  };
+  const validateInputs = () => {
+    const newErrors: typeof errors = {};
+
+    if (!category) newErrors.category = "계약 카테고리를 선택해 주세요.";
+    if (
+      contractDate &&
+      contractStartDate &&
+      contractDate.isAfter(contractStartDate)
+    ) {
+      newErrors.contractDate = "계약일은 시작일보다 이전이어야 합니다.";
+    }
+
+    if (
+      contractStartDate &&
+      contractEndDate &&
+      !contractStartDate.isBefore(contractEndDate)
+    ) {
+      newErrors.contractStartDate = "시작일은 종료일보다 이전이어야 합니다.";
+    }
+
+    if (!lessorUid) newErrors.lessorUid = "임대/매도자를 선택해 주세요.";
+    if (lessorUid && lesseeUid && lessorUid === lesseeUid) {
+      newErrors.lesseeUid = "임대자와 임차자는 같을 수 없습니다.";
+    }
+
+    if (!propertyUid) newErrors.propertyUid = "매물을 선택해 주세요.";
+    if (!status) newErrors.status = "계약 상태를 선택해 주세요.";
+    if (deposit && !isValidInteger(deposit)) {
+      newErrors.deposit = "유효한 값을 입력해 주세요.";
+    } else if (deposit && Number(deposit) < 0) {
+      newErrors.deposit = "보증금은 0 이상의 숫자여야 합니다.";
+    }
+    if (monthlyRent && !isValidInteger(monthlyRent)) {
+      newErrors.monthlyRent = "유효한 값을 입력해 주세요.";
+    } else if (monthlyRent && Number(monthlyRent) < 0) {
+      newErrors.monthlyRent = "월세는 0 이상의 숫자여야 합니다.";
+    }
+
+    if (price && !isValidInteger(price)) {
+      newErrors.price = "유효한 값을 입력해 주세요.";
+    } else if (price && Number(price) < 0) {
+      newErrors.price = "매매가는 0 이상의 숫자여야 합니다.";
+    }
+
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
   };
 
   const handleSubmit = () => {
-    if (!category || !status || !lessorUid || !propertyUid) {
-      alert("필수 항목을 모두 입력해 주세요.");
-      return;
-    }
-
+    if (!validateInputs()) return;
     const requestPayload = {
       category,
       contractDate: contractDate?.format("YYYY-MM-DD") ?? null,
       contractStartDate: contractStartDate?.format("YYYY-MM-DD") ?? null,
       contractEndDate: contractEndDate?.format("YYYY-MM-DD") ?? null,
-      expectedContractEndDate: expectedContractEndDate?.format("YYYY-MM-DD") ?? null,
+      expectedContractEndDate:
+        expectedContractEndDate?.format("YYYY-MM-DD") ?? null,
       deposit: deposit ? parseInt(deposit, 10) : 0,
       monthlyRent: monthlyRent ? parseInt(monthlyRent, 10) : 0,
       price: price ? parseInt(price, 10) : 0,
@@ -127,87 +213,144 @@ const ContractEditModal = ({
       status,
     };
 
+    const docsToKeep = existingDocuments
+      .filter((doc) => !doc.deleted)
+      .map((doc) => ({
+        fileName: doc.documentName,
+        fileUrl: doc.documentUrl,
+      }));
     const formData = new FormData();
-    formData.append("contractRequestDTO", new Blob([JSON.stringify(requestPayload)], { type: "application/json" }));
-    files.forEach((file) => formData.append("files", file));
+    formData.append(
+      "existingDocuments",
+      new Blob([JSON.stringify(docsToKeep)], { type: "application/json" })
+    );
 
-    apiClient.patch(`/contracts/${contractUid}`, formData, {
-      headers: { "Content-Type": "multipart/form-data" },
-    })
+    formData.append(
+      "contractRequestDTO",
+      new Blob([JSON.stringify(requestPayload)], { type: "application/json" })
+    );
+    newFiles.forEach((file) => formData.append("files", file));
+
+    apiClient
+      .patch(`/contracts/${contractUid}`, formData, {
+        headers: { "Content-Type": "multipart/form-data" },
+      })
       .then(() => {
-        alert("계약 수정 성공");
-        fetchContractData();
+        toast.success("계약 수정 완료!");
+        fetchContractData();        
         handleClose();
       })
       .catch((err) => {
-        const message = err.response?.data?.message || "계약 수정 중 오류가 발생했습니다.";
-        alert(message);
+        console.error("계약 수정 실패", err);
+        toast.error("계약 수정 실패");
       });
+  };
+
+  const removeExistingDoc = (idx: number) => {
+    const updated = [...existingDocuments];
+    updated[idx].deleted = true;
+    setExistingDocuments(updated);
+  };
+
+  const removeNewFile = (idx: number) => {
+    const updated = [...newFiles];
+    updated.splice(idx, 1);
+    setNewFiles(updated);
   };
 
   return (
     <Modal open={open} onClose={handleClose}>
-      <Box    
+      <Box
         sx={{
           position: "absolute",
           top: "50%",
           left: "50%",
           transform: "translate(-50%, -50%)",
           width: "40vw",
-          maxHeight: "90vh",
-          overflowY: "auto",
           bgcolor: "white",
           p: 4,
           borderRadius: 2,
+          maxHeight: "90vh",
+          overflowY: "auto",
         }}
       >
-        <Typography variant="h6" sx={{ mb: 2 }}>계약 수정</Typography>
-        <TextField select label="계약 카테고리" value={category} onChange={(e) => setCategory(e.target.value)} fullWidth sx={{ mb: 2 }}>
-                  <MenuItem value="SALE">매매</MenuItem>
-                  <MenuItem value="DEPOSIT">전세</MenuItem>
-                  <MenuItem value="MONTHLY">월세</MenuItem>
-                </TextField>
-        
-                <TextField
+        <Typography variant="h6" sx={{ mb: 2 }}>
+          계약 수정
+        </Typography>
+
+        <TextField
+          select
+          label="계약 카테고리"
+          value={category}
+          onChange={(e) => setCategory(e.target.value)}
+          error={!!errors.category}
+          helperText={errors.category}
+          fullWidth
+          sx={{ mb: 2 }}
+        >
+          <MenuItem value="SALE">매매</MenuItem>
+          <MenuItem value="DEPOSIT">전세</MenuItem>
+          <MenuItem value="MONTHLY">월세</MenuItem>
+        </TextField>
+
+        <TextField
           select
           label="계약 상태"
           value={status}
           onChange={(e) => setStatus(e.target.value as ContractStatus)}
+          error={!!errors.status}
+          helperText={errors.status}
           fullWidth
           sx={{ mb: 2 }}
         >
-          {CONTRACT_STATUSES.map((s) => (
-            <MenuItem key={s} value={s}>
-              {s}
+          {CONTRACT_STATUS_OPTIONS.map((s) => (
+            <MenuItem key={s.value} value={s.value}>
+              {s.label}
             </MenuItem>
           ))}
         </TextField>
+
         <TextField
-  select
-  label="임대/매도자 선택"
-  value={lessorUid?.toString() ?? ""}
-  onChange={(e) => setLessorUid(Number(e.target.value))}
-  fullWidth
-  sx={{ mb: 2 }}
->
-  {customerOptions.map((c) => (
-    <MenuItem key={c.uid} value={c.uid.toString()}>
-      {c.name}
-    </MenuItem>
-  ))}
-</TextField>
-        
-                <TextField select label="임차/매수자 선택" value={lesseeUid ?? ""} onChange={(e) => setLesseeUid(Number(e.target.value))} fullWidth sx={{ mb: 2 }}>
-                  {customerOptions.map((c) => (
-                    <MenuItem key={c.uid} value={c.uid}>{c.name}</MenuItem>
-                  ))}
-                </TextField>
-        
-                <TextField
+          select
+          label="임대/매도자 선택"
+          value={lessorUid ?? ""}
+          onChange={(e) => setLessorUid(Number(e.target.value))}
+          error={!!errors.lessorUid}
+          helperText={errors.lessorUid}
+          fullWidth
+          sx={{ mb: 2 }}
+        >
+          {customerOptions.map((c) => (
+            <MenuItem key={c.uid} value={c.uid}>
+              {c.name}
+            </MenuItem>
+          ))}
+        </TextField>
+
+        <TextField
+          select
+          label="임차/매수자 선택"
+          value={lesseeUid ?? ""}
+          onChange={(e) => setLesseeUid(Number(e.target.value))}
+          error={!!errors.lesseeUid}
+          helperText={errors.lesseeUid}
+          fullWidth
+          sx={{ mb: 2 }}
+        >
+          {customerOptions.map((c) => (
+            <MenuItem key={c.uid} value={c.uid}>
+              {c.name}
+            </MenuItem>
+          ))}
+        </TextField>
+
+        <TextField
           select
           label="매물 선택"
           value={propertyUid ?? ""}
           onChange={(e) => setPropertyUid(Number(e.target.value))}
+          error={!!errors.propertyUid}
+          helperText={errors.propertyUid}
           fullWidth
           sx={{ mb: 2 }}
         >
@@ -223,48 +366,178 @@ const ContractEditModal = ({
             </MenuItem>
           )}
         </TextField>
-        
-                <LocalizationProvider dateAdapter={AdapterDayjs}>
-                  <DesktopDatePicker label="계약일" value={contractDate} onChange={setContractDate} format="YYYY. MM. DD" slotProps={{ textField: { fullWidth: true } }} />
-                  <Box sx={{ display: "flex", gap: 2, my: 2 }}>
-                    <DesktopDatePicker label="시작일" value={contractStartDate} onChange={setContractStartDate} format="YYYY. MM. DD" slotProps={{ textField: { fullWidth: true } }} />
-                    <DesktopDatePicker label="종료일" value={contractEndDate} onChange={setContractEndDate} format="YYYY. MM. DD" slotProps={{ textField: { fullWidth: true } }} />
-                  </Box>
-                  <DesktopDatePicker label="예상 종료일" value={expectedContractEndDate} onChange={setExpectedContractEndDate} format="YYYY. MM. DD" slotProps={{ textField: { fullWidth: true } }} />
-                </LocalizationProvider>
-        
-                <TextField label="보증금 (숫자)" value={deposit} onChange={(e) => setDeposit(e.target.value)} type="number" fullWidth sx={{ mt: 2 }} />
-                <TextField label="월세 (숫자)" value={monthlyRent} onChange={(e) => setMonthlyRent(e.target.value)} type="number" fullWidth sx={{ mt: 2 }} />
-                <TextField label="매매가 (숫자)" value={price} onChange={(e) => setPrice(e.target.value)} type="number" fullWidth sx={{ mt: 2 }} />
-        
-                <MuiButton variant="outlined" component="label" sx={{ my: 2 }} fullWidth>
-                  파일 업로드
-                  <input type="file" hidden multiple onChange={handleFileChange} />
-                </MuiButton>
-        
-                {files.length > 0 && (
-                  <Box sx={{ mb: 2 }}>
-                    <Typography variant="body2">업로드된 파일:</Typography>
-                    <ul>
-                      {files.map((file, idx) => (
-                        <li key={idx}>{file.name}</li>
-                      ))}
-                    </ul>
-                  </Box>
-                )}
 
+        <LocalizationProvider dateAdapter={AdapterDayjs}>
+          <DesktopDatePicker
+            label="계약일"
+            value={contractDate}
+            onChange={setContractDate}
+            format="YYYY. MM. DD"
+            slotProps={{
+              textField: {
+                fullWidth: true,
+                error: !!errors.contractDate,
+                helperText: errors.contractDate,
+              },
+            }}
+          />
+          <Box sx={{ display: "flex", gap: 2, my: 2 }}>
+            <DesktopDatePicker
+              label="시작일"
+              value={contractStartDate}
+              onChange={setContractStartDate}
+              format="YYYY. MM. DD"
+              slotProps={{
+                textField: {
+                  fullWidth: true,
+                  error: !!errors.contractStartDate,
+                  helperText: errors.contractStartDate,
+                },
+              }}
+            />
+            <DesktopDatePicker
+              label="종료일"
+              value={contractEndDate}
+              onChange={setContractEndDate}
+              format="YYYY. MM. DD"
+              slotProps={{
+                textField: {
+                  fullWidth: true,
+                  error: !!errors.contractEndDate,
+                  helperText: errors.contractEndDate,
+                },
+              }}
+            />
+          </Box>
+          <DesktopDatePicker
+            label="예상 종료일"
+            value={expectedContractEndDate}
+            onChange={setExpectedContractEndDate}
+            format="YYYY. MM. DD"
+            slotProps={{ textField: { fullWidth: true } }}
+          />
+        </LocalizationProvider>
+
+        <TextField
+          label="보증금 (숫자)"
+          value={deposit}
+          onChange={(e) => setDeposit(e.target.value)}
+          error={!!errors.deposit}
+          helperText={errors.deposit}
+          type="number"
+          fullWidth
+          sx={{ mt: 2 }}
+        />
+        <TextField
+          label="월세 (숫자)"
+          value={monthlyRent}
+          onChange={(e) => setMonthlyRent(e.target.value)}
+          error={!!errors.monthlyRent}
+          helperText={errors.monthlyRent}
+          type="number"
+          fullWidth
+          sx={{ mt: 2 }}
+        />
+        <TextField
+          label="매매가 (숫자)"
+          value={price}
+          onChange={(e) => setPrice(e.target.value)}
+          error={!!errors.price}
+          helperText={errors.price}
+          type="number"
+          fullWidth
+          sx={{ mt: 2 }}
+        />
+
+        <MuiButton
+          variant="outlined"
+          component="label"
+          sx={{ my: 2 }}
+          fullWidth
+        >
+          파일 선택
+          <input type="file" hidden multiple onChange={handleFileChange} />
+        </MuiButton>
+
+        {existingDocuments.filter((doc) => !doc.deleted).length > 0 && (
+          <Box sx={{ mt: 2 }}>
+            <Typography sx={{ mb: 1 }} fontWeight="bold">
+              첨부한 문서
+            </Typography>
+
+            {[
+              ...existingDocuments.filter((doc) => !doc.deleted),
+              ...newFiles,
+            ].map((item, idx) => {
+              const isExisting = "documentUrl" in item;
+              const fileName = isExisting ? item.documentName : item.name;
+              const fileSize = !isExisting
+                ? (item.size / 1024 / 1024).toFixed(2) + " MB"
+                : null;
+
+              return (
+                <Box
+                  key={idx}
+                  sx={{
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "space-between",
+                    px: 2,
+                    py: 1,
+                    border: "1px solid #ddd",
+                    borderRadius: 1,
+                    mb: 1,
+                  }}
+                >
+                  <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
+                    <InsertDriveFile color="action" />
+                    {isExisting ? (
+                      <a
+                        href={item.documentUrl}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        style={{ textDecoration: "none", color: "#333" }}
+                      >
+                        {fileName}
+                      </a>
+                    ) : (
+                      <Typography>{fileName}</Typography>
+                    )}
+                    {fileSize && (
+                      <Typography variant="caption" sx={{ color: "gray" }}>
+                        ({fileSize})
+                      </Typography>
+                    )}
+                  </Box>
+
+                  <MuiButton
+                    onClick={() => {
+                      if (isExisting) {
+                        const index = existingDocuments.findIndex(
+                          (doc) => doc.documentUrl === item.documentUrl
+                        );
+                        removeExistingDoc(index);
+                      } else {
+                        const index = newFiles.findIndex(
+                          (file) =>
+                            file.name === item.name && file.size === item.size
+                        );
+                        removeNewFile(index);
+                      }
+                    }}
+                    sx={{ minWidth: "auto", color: "red" }}
+                  >
+                    ❌
+                  </MuiButton>
+                </Box>
+              );
+            })}
+          </Box>
+        )}
         <Button
           text="수정"
           onClick={handleSubmit}
-          sx={{
-            mt: 2,
-            color: "white !important",
-            backgroundColor: "#164F9E",
-            "&:disabled": {
-              backgroundColor: "lightgray",
-              color: "white",
-            },
-          }}
+          sx={{ mt: 2, color: "white !important", backgroundColor: "#164F9E" }}
         />
       </Box>
     </Modal>

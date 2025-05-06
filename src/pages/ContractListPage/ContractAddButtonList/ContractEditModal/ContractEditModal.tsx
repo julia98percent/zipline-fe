@@ -16,7 +16,10 @@ import Button from "@components/Button";
 import { toast } from "react-toastify";
 import dayjs from "dayjs";
 import { InsertDriveFile } from "@mui/icons-material";
-import { ContractDetail, ContractDocument } from "@pages/ContractDetailPage/ContractDetailPage";
+import {
+  ContractDetail,
+  ContractDocument,
+} from "@pages/ContractDetailPage/ContractDetailPage";
 
 const CONTRACT_STATUS_OPTIONS = [
   { value: "LISTED", label: "매물 등록" },
@@ -39,6 +42,17 @@ interface Props {
   fetchContractData: () => void;
   contractUid: number;
   initialData: ContractDetail;
+}
+
+interface AgentPropertyResponse {
+  uid: number;
+  address: string;
+  // 필요시 다른 필드도 여기에 추가 가능
+}
+
+interface CustomerResponse {
+  uid: number;
+  name: string;
 }
 
 const ContractEditModal = ({
@@ -76,8 +90,43 @@ const ContractEditModal = ({
   useEffect(() => {
     if (!contractUid) return;
 
-    apiClient.get(`/contracts/${contractUid}`).then((res) => {
-      const data = res.data.data;
+    Promise.all([
+      apiClient.get(`/contracts/${contractUid}`),
+      apiClient.get("/properties"),
+      apiClient.get("/customers"),
+    ]).then(([contractRes, propertiesRes, customersRes]) => {
+      const data = contractRes.data.data;
+
+      const allCustomers = customersRes.data.data.customers.map(
+        (c: CustomerResponse) => ({
+          uid: c.uid,
+          name: c.name,
+        })
+      );
+      setCustomerOptions(allCustomers);
+
+      const allProperties = propertiesRes.data.data.agentProperty.map(
+        (p: AgentPropertyResponse) => ({
+          uid: p.uid,
+          address: p.address,
+        })
+      );
+      setPropertyOptions(allProperties);
+
+      const matchedLessor = allCustomers.find(
+        (c: { name: CustomerResponse }) => c.name === data.lessorOrSellerName
+      );
+      const matchedLessee = allCustomers.find(
+        (c: { name: CustomerResponse }) => c.name === data.lesseeOrBuyerName
+      );
+      setLessorUid(matchedLessor?.uid ?? null);
+      setLesseeUid(matchedLessee?.uid ?? null);
+
+      const matchedProperty = allProperties.find(
+        (p: { address: AgentPropertyResponse }) =>
+          p.address === data.propertyAddress
+      );
+      setPropertyUid(matchedProperty?.uid ?? null);
 
       setCategory(data.category ?? "");
       setContractDate(data.contractDate ? dayjs(data.contractDate) : null);
@@ -92,25 +141,10 @@ const ContractEditModal = ({
           ? dayjs(data.expectedContractEndDate)
           : null
       );
-
       setDeposit(data.deposit?.toString() ?? "");
       setMonthlyRent(data.monthlyRent?.toString() ?? "");
       setPrice(data.price?.toString() ?? "");
       setStatus(data.status ?? "");
-    
-      const customers = [];
-      if (data.lessorOrSellerName)
-        customers.push({ uid: 1, name: data.lessorOrSellerName });
-      if (data.lesseeOrBuyerName)
-        customers.push({ uid: 2, name: data.lesseeOrBuyerName });
-      setCustomerOptions(customers);
-      setLessorUid(customers[0]?.uid ?? null);
-      setLesseeUid(customers[1]?.uid ?? null);
-      
-      if (data.propertyAddress) {
-        setPropertyOptions([{ uid: 1, address: data.propertyAddress }]);
-        setPropertyUid(1);
-      }
 
       setExistingDocuments(
         (data.documents ?? []).map((doc: ContractDocument) => ({
@@ -237,7 +271,7 @@ const ContractEditModal = ({
       })
       .then(() => {
         toast.success("계약 수정 완료!");
-        fetchContractData();        
+        fetchContractData();
         handleClose();
       })
       .catch((err) => {
@@ -313,7 +347,7 @@ const ContractEditModal = ({
         <TextField
           select
           label="임대/매도자 선택"
-          value={lessorUid ?? ""}
+          value={lessorUid !== null ? String(lessorUid) : ""}
           onChange={(e) => setLessorUid(Number(e.target.value))}
           error={!!errors.lessorUid}
           helperText={errors.lessorUid}
@@ -330,7 +364,7 @@ const ContractEditModal = ({
         <TextField
           select
           label="임차/매수자 선택"
-          value={lesseeUid ?? ""}
+          value={lesseeUid !== null ? String(lesseeUid) : ""}
           onChange={(e) => setLesseeUid(Number(e.target.value))}
           error={!!errors.lesseeUid}
           helperText={errors.lesseeUid}
@@ -338,7 +372,7 @@ const ContractEditModal = ({
           sx={{ mb: 2 }}
         >
           {customerOptions.map((c) => (
-            <MenuItem key={c.uid} value={c.uid}>
+            <MenuItem key={c.uid} value={String(c.uid)}>
               {c.name}
             </MenuItem>
           ))}
@@ -347,24 +381,18 @@ const ContractEditModal = ({
         <TextField
           select
           label="매물 선택"
-          value={propertyUid ?? ""}
+          value={propertyUid !== null ? String(propertyUid) : ""}
           onChange={(e) => setPropertyUid(Number(e.target.value))}
           error={!!errors.propertyUid}
           helperText={errors.propertyUid}
           fullWidth
           sx={{ mb: 2 }}
         >
-          {propertyOptions.length > 0 ? (
-            propertyOptions.map((p) => (
-              <MenuItem key={p.uid} value={p.uid}>
-                {p.address}
-              </MenuItem>
-            ))
-          ) : (
-            <MenuItem disabled value="">
-              등록된 매물이 없습니다
+          {propertyOptions.map((p) => (
+            <MenuItem key={p.uid} value={String(p.uid)}>
+              {p.address}
             </MenuItem>
-          )}
+          ))}
         </TextField>
 
         <LocalizationProvider dateAdapter={AdapterDayjs}>
@@ -459,7 +487,8 @@ const ContractEditModal = ({
           <input type="file" hidden multiple onChange={handleFileChange} />
         </MuiButton>
 
-        {existingDocuments.filter((doc) => !doc.deleted).length > 0 && (
+        {(existingDocuments.filter((doc) => !doc.deleted).length > 0 ||
+          newFiles.length > 0) && (
           <Box sx={{ mt: 2 }}>
             <Typography sx={{ mb: 1 }} fontWeight="bold">
               첨부한 문서

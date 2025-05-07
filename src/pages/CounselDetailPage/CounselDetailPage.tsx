@@ -31,6 +31,7 @@ import AddIcon from "@mui/icons-material/Add";
 import RemoveCircleOutlineIcon from "@mui/icons-material/RemoveCircleOutline";
 import { toast } from "react-toastify";
 import { AxiosError } from "axios";
+import styles from "./styles/CounselDetailPage.module.css";
 
 const COUNSEL_TYPES = {
   PURCHASE: "매수",
@@ -40,13 +41,51 @@ const COUNSEL_TYPES = {
   OTHER: "기타",
 } as const;
 
-const COUNSEL_TYPE_COLORS = {
-  매수: "#164F9E",
-  매도: "#2E7D32",
-  임대: "#D4A72C",
-  임차: "#7B1FA2",
-  기타: "#666666",
+const PROPERTY_CATEGORIES = {
+  ONE_ROOM: "원룸",
+  TWO_ROOM: "투룸",
+  APARTMENT: "아파트",
+  VILLA: "빌라",
+  HOUSE: "주택",
+  OFFICETEL: "오피스텔",
+  COMMERCIAL: "상가",
 } as const;
+
+type CounselType = keyof typeof COUNSEL_TYPES;
+type PropertyCategory = keyof typeof PROPERTY_CATEGORIES;
+
+interface CustomerInfo {
+  uid: number;
+  name: string;
+  phoneNo: string;
+  preferredRegion?: string;
+  minPrice: number | null;
+  maxPrice: number | null;
+  minDeposit: number | null;
+  maxDeposit: number | null;
+  minRent: number | null;
+  maxRent: number | null;
+  tenant: boolean;
+  landlord: boolean;
+  buyer: boolean;
+  seller: boolean;
+}
+
+interface PropertyInfo {
+  address: string;
+  type: string;
+  price: number | null;
+  deposit: number | null;
+  monthlyRent: number | null;
+  exclusiveArea: number;
+  supplyArea: number;
+  floor: number;
+  constructionYear: string;
+  hasElevator: boolean;
+  parkingCapacity: number;
+  hasPet: boolean;
+  description?: string;
+}
 
 interface CounselDetail {
   counselDetailUid: number;
@@ -57,17 +96,19 @@ interface CounselDetail {
 interface CounselData {
   counselUid: number;
   title: string;
-  type: string;
+  type: CounselType;
   counselDate: string;
   dueDate: string;
   propertyUid: number;
   completed: boolean;
   counselDetails: CounselDetail[];
+  customer: CustomerInfo;
+  property?: PropertyInfo;
 }
 
 interface CounselUpdateRequest {
   title: string;
-  type: string;
+  type: CounselType;
   counselDate: string;
   dueDate: string;
   completed: boolean;
@@ -88,21 +129,25 @@ function CounselDetailPage() {
   const navigate = useNavigate();
   const { user } = useUserStore();
   const [counselData, setCounselData] = useState<CounselData | null>(null);
-  const [isLoading, setIsLoading] = useState(true);
+  const [isLoading, setIsLoading] = useState(false);
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
   const [editedData, setEditedData] = useState<CounselData | null>(null);
 
   useEffect(() => {
     const fetchCounselData = async () => {
+      setIsLoading(true);
       try {
         const response = await apiClient.get(`/counsels/${counselUid}`);
-        if (response.data.success) {
+        if (response.data.success && response.data.data.customer) {
           setCounselData(response.data.data);
           setEditedData(response.data.data);
+        } else {
+          throw new Error("응답 실패");
         }
       } catch (error) {
         console.error("Failed to fetch counsel data:", error);
+        toast.error("상담 정보를 불러오는데 실패했습니다.");
       } finally {
         setIsLoading(false);
       }
@@ -205,22 +250,20 @@ function CounselDetailPage() {
 
   const handleAddQuestion = () => {
     if (!editedData) return;
-
-    const newQuestion = {
-      counselDetailUid: Date.now(), // 임시 ID
+    const newDetail: CounselDetail = {
+      counselDetailUid: Date.now(),
       question: "",
       answer: "",
     };
-
     setEditedData({
       ...editedData,
-      counselDetails: [...editedData.counselDetails, newQuestion],
+      counselDetails: [...editedData.counselDetails, newDetail],
     });
   };
 
   const handleRemoveQuestion = (counselDetailUid: number) => {
     if (!editedData) return;
-
+    if (editedData.counselDetails.length <= 1) return;
     setEditedData({
       ...editedData,
       counselDetails: editedData.counselDetails.filter(
@@ -229,347 +272,339 @@ function CounselDetailPage() {
     });
   };
 
+  if (isLoading) {
+    return (
+      <Box className={styles.container}>
+        <CircularProgress />
+      </Box>
+    );
+  }
+
+  if (!counselData || !editedData) {
+    return (
+      <Box className={styles.container}>
+        <Typography>상담 정보를 찾을 수 없습니다.</Typography>
+      </Box>
+    );
+  }
+
+  const data = isEditing ? editedData : counselData;
+
   return (
-    <Box
-      sx={{
-        p: 0,
-        pb: 3,
-        minHeight: "100vh",
-        backgroundColor: "#F8F9FA",
-      }}
-    >
+    <Box className={styles.container}>
       <PageHeader title="상담 상세" userName={user?.name || "-"} />
 
-      {/* 수정/삭제 버튼 영역 */}
-      <Box
-        sx={{
-          px: 3,
-          py: 2,
-          display: "flex",
-          justifyContent: "flex-end",
-          gap: 1,
-        }}
-      >
-        {isEditing ? (
-          <>
-            <Button
-              variant="outlined"
-              startIcon={<SaveIcon />}
-              onClick={handleSave}
-              sx={{
-                borderColor: "#2E7D32",
-                color: "#2E7D32",
-                "&:hover": {
-                  borderColor: "#1B5E20",
-                  backgroundColor: "rgba(46, 125, 50, 0.04)",
-                },
-              }}
-            >
-              저장
-            </Button>
-            <Button
-              variant="outlined"
-              startIcon={<CloseIcon />}
-              onClick={handleCancelEdit}
-              sx={{
-                borderColor: "#666666",
-                color: "#666666",
-                "&:hover": {
-                  borderColor: "#333333",
-                  backgroundColor: "rgba(102, 102, 102, 0.04)",
-                },
-              }}
-            >
-              취소
-            </Button>
-          </>
-        ) : (
-          <>
-            <Button
-              variant="outlined"
-              startIcon={<EditIcon />}
-              onClick={handleEdit}
-              sx={{
-                borderColor: "#164F9E",
-                color: "#164F9E",
-                "&:hover": {
-                  borderColor: "#0D3B7A",
-                  backgroundColor: "rgba(22, 79, 158, 0.04)",
-                },
-              }}
-            >
-              수정
-            </Button>
-            <Button
-              variant="outlined"
-              startIcon={<DeleteOutlineIcon />}
-              onClick={handleDeleteClick}
-              sx={{
-                borderColor: "#D32F2F",
-                color: "#D32F2F",
-                "&:hover": {
-                  borderColor: "#B22A2A",
-                  backgroundColor: "rgba(211, 47, 47, 0.04)",
-                },
-              }}
-            >
-              삭제
-            </Button>
-          </>
-        )}
-      </Box>
-
-      <Box sx={{ p: 3, pt: 0 }}>
-        {isLoading ? (
-          <Box sx={{ display: "flex", justifyContent: "center", p: 3 }}>
-            <CircularProgress />
-          </Box>
-        ) : editedData ? (
-          <>
-            {/* 연관 정보 */}
-            <Paper
-              sx={{
-                p: 3,
-                mb: 2,
-                borderRadius: "12px",
-                boxShadow: "none",
-                border: "1px solid #E0E0E0",
-              }}
-            >
-              <Typography
-                variant="h6"
-                sx={{ mb: 2, color: "#164F9E", fontWeight: "bold" }}
+      <Box className={styles.contentContainer}>
+        <div className={styles.buttonContainer}>
+          {!isEditing ? (
+            <>
+              <Button
+                variant="contained"
+                startIcon={<EditIcon />}
+                onClick={handleEdit}
+                className={styles.editButton}
               >
-                연관 정보
-              </Typography>
-              <Box sx={{ display: "flex", gap: 4, flexWrap: "wrap" }}>
-                <Box sx={{ minWidth: 200 }}>
-                  <Typography variant="body2" color="textSecondary">
-                    제목
-                  </Typography>
-                  {isEditing ? (
-                    <TextField
-                      value={editedData.title}
-                      onChange={(e) =>
-                        handleInputChange("title", e.target.value)
-                      }
-                      size="small"
-                      sx={{ mt: 1 }}
-                      fullWidth
-                    />
-                  ) : (
-                    <Typography variant="body1">{editedData.title}</Typography>
-                  )}
-                </Box>
-                <Box sx={{ minWidth: 200 }}>
-                  <Typography variant="body2" color="textSecondary">
-                    상담 유형
-                  </Typography>
-                  {isEditing ? (
-                    <FormControl size="small" sx={{ mt: 1, minWidth: 120 }}>
-                      <Select
-                        value={editedData.type}
-                        onChange={(e) =>
-                          handleInputChange("type", e.target.value)
-                        }
-                      >
-                        {Object.entries(COUNSEL_TYPES).map(([key, value]) => (
-                          <MenuItem key={key} value={value}>
-                            {value}
-                          </MenuItem>
-                        ))}
-                      </Select>
-                    </FormControl>
-                  ) : (
-                    <Box sx={{ mt: 1 }}>
-                      <Chip
-                        label={editedData.type}
-                        sx={{
-                          backgroundColor:
-                            COUNSEL_TYPE_COLORS[
-                              editedData.type as keyof typeof COUNSEL_TYPE_COLORS
-                            ] + "1A", // 10% opacity
-                          color:
-                            COUNSEL_TYPE_COLORS[
-                              editedData.type as keyof typeof COUNSEL_TYPE_COLORS
-                            ],
-                          fontWeight: 600,
-                          "& .MuiChip-label": {
-                            px: 1.5,
-                          },
-                        }}
-                      />
-                    </Box>
-                  )}
-                </Box>
-                <Box sx={{ minWidth: 200 }}>
-                  <Typography variant="body2" color="textSecondary">
-                    매물
-                  </Typography>
-                  <Typography variant="body1">
-                    {editedData.propertyUid
-                      ? `매물 ${editedData.propertyUid}`
-                      : "-"}
-                  </Typography>
-                </Box>
-                <Box sx={{ minWidth: 200 }}>
-                  <Typography variant="body2" color="textSecondary">
-                    상담일
-                  </Typography>
-                  {isEditing ? (
-                    <TextField
-                      type="datetime-local"
-                      value={dayjs(editedData.counselDate).format(
-                        "YYYY-MM-DDTHH:mm"
-                      )}
-                      onChange={(e) =>
-                        handleInputChange("counselDate", e.target.value)
-                      }
-                      size="small"
-                      sx={{ mt: 1 }}
-                      fullWidth
-                      InputLabelProps={{
-                        shrink: true,
-                      }}
-                    />
-                  ) : (
-                    <Typography variant="body1">
-                      {dayjs(editedData.counselDate).format("YYYY-MM-DD HH:mm")}
-                    </Typography>
-                  )}
-                </Box>
-                <Box sx={{ minWidth: 200 }}>
-                  <Typography variant="body2" color="textSecondary">
-                    의뢰 마감일
-                  </Typography>
-                  {isEditing ? (
-                    <TextField
-                      type="date"
-                      value={dayjs(editedData.dueDate).format("YYYY-MM-DD")}
-                      onChange={(e) =>
-                        handleInputChange("dueDate", e.target.value)
-                      }
-                      size="small"
-                      sx={{ mt: 1 }}
-                      fullWidth
-                      InputLabelProps={{
-                        shrink: true,
-                      }}
-                    />
-                  ) : (
-                    <Typography variant="body1">
-                      {dayjs(editedData.dueDate).format("YYYY-MM-DD")}
-                    </Typography>
-                  )}
-                </Box>
-                <Box sx={{ minWidth: 200 }}>
-                  <Typography
-                    variant="body2"
-                    color="textSecondary"
-                    sx={{ mb: isEditing ? 1 : 1 }}
+                수정
+              </Button>
+              <Button
+                variant="contained"
+                startIcon={<DeleteOutlineIcon />}
+                onClick={handleDeleteClick}
+                className={styles.deleteButton}
+              >
+                삭제
+              </Button>
+            </>
+          ) : (
+            <>
+              <Button
+                variant="contained"
+                startIcon={<CloseIcon />}
+                onClick={handleCancelEdit}
+                className={styles.cancelButton}
+              >
+                취소
+              </Button>
+              <Button
+                variant="contained"
+                startIcon={<SaveIcon />}
+                onClick={handleSave}
+                className={styles.saveButton}
+              >
+                저장
+              </Button>
+            </>
+          )}
+        </div>
+
+        {/* 기본 상담 정보 */}
+        <div className={styles.card}>
+          <Typography className={styles.cardTitle}>기본 정보</Typography>
+          <div className={styles.infoGrid}>
+            <div className={styles.infoItem}>
+              <span className={styles.infoLabel}>상담 제목</span>
+              {isEditing ? (
+                <TextField
+                  value={data.title}
+                  onChange={(e) => handleInputChange("title", e.target.value)}
+                  fullWidth
+                  size="small"
+                />
+              ) : (
+                <span className={styles.infoValue}>{data.title}</span>
+              )}
+            </div>
+            <div className={styles.infoItem}>
+              <span className={styles.infoLabel}>상담 유형</span>
+              {isEditing ? (
+                <FormControl fullWidth size="small">
+                  <Select
+                    value={data.type}
+                    onChange={(e) => handleInputChange("type", e.target.value)}
                   >
-                    의뢰 완료 여부
-                  </Typography>
-                  {isEditing ? (
-                    <FormControlLabel
-                      control={
-                        <Checkbox
-                          checked={editedData.completed}
-                          onChange={(e) =>
-                            handleInputChange("completed", e.target.checked)
-                          }
-                          sx={{
-                            color: "#164F9E",
-                            "&.Mui-checked": {
-                              color: "#164F9E",
-                            },
-                          }}
-                        />
-                      }
-                      label="완료"
-                      sx={{ mt: 0.5 }}
-                    />
-                  ) : (
-                    <Typography
-                      variant="body1"
-                      sx={{
-                        color: editedData.completed ? "#219653" : "#F2994A",
-                        backgroundColor: editedData.completed
-                          ? "#E9F7EF"
-                          : "#FEF5EB",
-                        py: 0.5,
-                        px: 1,
-                        borderRadius: 1,
-                        display: "inline-block",
-                      }}
-                    >
-                      {editedData.completed ? "완료" : "진행중"}
-                    </Typography>
-                  )}
-                </Box>
-              </Box>
-            </Paper>
-
-            {/* 문항 추가 버튼 */}
-            {isEditing && (
-              <Box sx={{ mb: 2, display: "flex", justifyContent: "flex-end" }}>
-                <Button
-                  variant="outlined"
-                  startIcon={<AddIcon />}
-                  onClick={handleAddQuestion}
-                  sx={{
-                    borderColor: "#164F9E",
-                    color: "#164F9E",
-                    "&:hover": {
-                      borderColor: "#0D3B7A",
-                      backgroundColor: "rgba(22, 79, 158, 0.04)",
-                    },
-                  }}
-                >
-                  문항 추가
-                </Button>
-              </Box>
-            )}
-
-            {/* 문항별 응답 */}
-            {editedData.counselDetails.map((detail, index) => (
-              <Paper
-                key={detail.counselDetailUid}
-                sx={{
-                  p: 3,
-                  mb: 2,
-                  borderRadius: "12px",
-                  boxShadow: "none",
-                  border: "1px solid #E0E0E0",
-                }}
-              >
-                <Box sx={{ display: "flex", alignItems: "center", mb: 2 }}>
-                  <Box
+                    {Object.entries(COUNSEL_TYPES).map(([key, value]) => (
+                      <MenuItem key={key} value={key}>
+                        {value}
+                      </MenuItem>
+                    ))}
+                  </Select>
+                </FormControl>
+              ) : (
+                <Box sx={{ display: 'inline-block' }}>
+                  <Chip
+                    label={COUNSEL_TYPES[data.type]}
+                    size="small"
                     sx={{
-                      width: 40,
-                      height: 40,
-                      borderRadius: "50%",
-                      backgroundColor: "#EBF2FC",
-                      color: "#164F9E",
-                      display: "flex",
-                      alignItems: "center",
-                      justifyContent: "center",
-                      flexShrink: 0,
-                      mr: 2,
+                      backgroundColor: data.type === "PURCHASE" ? "#164F9E" :
+                                     data.type === "SALE" ? "#2E7D32" :
+                                     data.type === "LEASE" ? "#D4A72C" :
+                                     data.type === "RENT" ? "#7B1FA2" : "#666666",
+                      color: "white",
+                      height: "24px",
+                      "& .MuiChip-label": {
+                        px: 1,
+                        fontSize: "12px"
+                      }
                     }}
-                  >
-                    <Typography
-                      variant="h6"
-                      sx={{
-                        fontWeight: "bold",
-                        lineHeight: 1,
-                      }}
-                    >
-                      {index + 1}
-                    </Typography>
-                  </Box>
-                  {isEditing ? (
+                  />
+                </Box>
+              )}
+            </div>
+            <div className={styles.infoItem}>
+              <span className={styles.infoLabel}>상담 일시</span>
+              {isEditing ? (
+                <TextField
+                  type="datetime-local"
+                  value={dayjs(data.counselDate).format("YYYY-MM-DDTHH:mm")}
+                  onChange={(e) => handleInputChange("counselDate", e.target.value)}
+                  fullWidth
+                  size="small"
+                />
+              ) : (
+                <span className={styles.infoValue}>
+                  {dayjs(data.counselDate).format("YYYY-MM-DD HH:mm")}
+                </span>
+              )}
+            </div>
+            <div className={styles.infoItem}>
+              <span className={styles.infoLabel}>희망 의뢰 마감일</span>
+              {isEditing ? (
+                <TextField
+                  type="date"
+                  value={data.dueDate ? dayjs(data.dueDate).format("YYYY-MM-DD") : ""}
+                  onChange={(e) => handleInputChange("dueDate", e.target.value)}
+                  fullWidth
+                  size="small"
+                />
+              ) : (
+                <span className={styles.infoValue}>
+                  {data.dueDate ? dayjs(data.dueDate).format("YYYY-MM-DD") : "-"}
+                </span>
+              )}
+            </div>
+            <div className={styles.infoItem}>
+              <span className={styles.infoLabel}>상태</span>
+              {isEditing ? (
+                <FormControlLabel
+                  control={
+                    <Checkbox
+                      checked={data.completed}
+                      onChange={(e) =>
+                        handleInputChange("completed", e.target.checked)
+                      }
+                    />
+                  }
+                  label="완료"
+                />
+              ) : (
+                <Box sx={{ display: 'inline-block' }}>
+                  <Chip
+                    label={data.completed ? "완료" : "진행중"}
+                    size="small"
+                    sx={{
+                      backgroundColor: data.completed ? "#E9F7EF" : "#FEF5EB",
+                      color: data.completed ? "#219653" : "#F2994A",
+                      height: "24px",
+                      "& .MuiChip-label": {
+                        px: 1,
+                        fontSize: "12px"
+                      }
+                    }}
+                  />
+                </Box>
+              )}
+            </div>
+          </div>
+        </div>
+
+        {/* 고객 정보 */}
+        <div className={styles.card}>
+          <Typography className={styles.cardTitle}>고객 정보</Typography>
+          <div className={styles.infoGrid}>
+            <div className={styles.infoItem}>
+              <span className={styles.infoLabel}>이름</span>
+              <span className={styles.infoValue}>{data.customer.name}</span>
+            </div>
+            <div className={styles.infoItem}>
+              <span className={styles.infoLabel}>연락처</span>
+              <span className={styles.infoValue}>{data.customer.phoneNo}</span>
+            </div>
+            <div className={styles.infoItem}>
+              <span className={styles.infoLabel}>고객 유형</span>
+              <span className={styles.infoValue}>
+                {data.customer.tenant && '임차인'}
+                {data.customer.landlord && '임대인'}
+                {data.customer.buyer && '매수자'}
+                {data.customer.seller && '매도자'}
+                {!data.customer.tenant && !data.customer.landlord && !data.customer.buyer && !data.customer.seller && '-'}
+              </span>
+            </div>
+            <div className={styles.infoItem}>
+              <span className={styles.infoLabel}>희망 지역</span>
+              <span className={styles.infoValue}>
+                {data.customer.preferredRegion || '-'}
+              </span>
+            </div>
+            {data.customer.minPrice !== null && data.customer.maxPrice !== null && (
+              <div className={styles.infoItem}>
+                <span className={styles.infoLabel}>희망 매매가</span>
+                <span className={styles.infoValue}>
+                  {data.customer.minPrice.toLocaleString()} ~ {data.customer.maxPrice.toLocaleString()}원
+                </span>
+              </div>
+            )}
+            {data.customer.minDeposit !== null && data.customer.maxDeposit !== null && (
+              <div className={styles.infoItem}>
+                <span className={styles.infoLabel}>희망 보증금</span>
+                <span className={styles.infoValue}>
+                  {data.customer.minDeposit.toLocaleString()} ~ {data.customer.maxDeposit.toLocaleString()}원
+                </span>
+              </div>
+            )}
+            {data.customer.minRent !== null && data.customer.maxRent !== null && (
+              <div className={styles.infoItem}>
+                <span className={styles.infoLabel}>희망 월세</span>
+                <span className={styles.infoValue}>
+                  {data.customer.minRent.toLocaleString()} ~ {data.customer.maxRent.toLocaleString()}원
+                </span>
+              </div>
+            )}
+          </div>
+        </div>
+
+        {/* 부동산 정보 */}
+        {data.property && (
+          <div className={styles.card}>
+            <Typography className={styles.cardTitle}>부동산 정보</Typography>
+            <div className={styles.infoGrid}>
+              <div className={styles.infoItem}>
+                <span className={styles.infoLabel}>주소</span>
+                <span className={styles.infoValue}>{data.property.address}</span>
+              </div>
+              <div className={styles.infoItem}>
+                <span className={styles.infoLabel}>매물 유형</span>
+                <span className={styles.infoValue}>
+                  {PROPERTY_CATEGORIES[data.property.type as PropertyCategory] || data.property.type}
+                </span>
+              </div>
+              {data.property.price !== null && data.property.price !== 0 && (
+                <div className={styles.infoItem}>
+                  <span className={styles.infoLabel}>매매가</span>
+                  <span className={styles.infoValue}>
+                    {data.property.price.toLocaleString()}원
+                  </span>
+                </div>
+              )}
+              {data.property.deposit !== null && data.property.deposit !== 0 && (
+                <div className={styles.infoItem}>
+                  <span className={styles.infoLabel}>보증금</span>
+                  <span className={styles.infoValue}>
+                    {data.property.deposit.toLocaleString()}원
+                  </span>
+                </div>
+              )}
+              {data.property.monthlyRent !== null && data.property.monthlyRent !== 0 && (
+                <div className={styles.infoItem}>
+                  <span className={styles.infoLabel}>월세</span>
+                  <span className={styles.infoValue}>
+                    {data.property.monthlyRent.toLocaleString()}원
+                  </span>
+                </div>
+              )}
+              <div className={styles.infoItem}>
+                <span className={styles.infoLabel}>전용면적</span>
+                <span className={styles.infoValue}>
+                  {data.property.exclusiveArea}㎡
+                </span>
+              </div>
+              <div className={styles.infoItem}>
+                <span className={styles.infoLabel}>공급면적</span>
+                <span className={styles.infoValue}>
+                  {data.property.supplyArea}㎡
+                </span>
+              </div>
+              <div className={styles.infoItem}>
+                <span className={styles.infoLabel}>층수</span>
+                <span className={styles.infoValue}>{data.property.floor}층</span>
+              </div>
+              <div className={styles.infoItem}>
+                <span className={styles.infoLabel}>준공년도</span>
+                <span className={styles.infoValue}>{data.property.constructionYear}년</span>
+              </div>
+              <div className={styles.infoItem}>
+                <span className={styles.infoLabel}>특징</span>
+                <div className={styles.featureChips}>
+                  {data.property.hasElevator && (
+                    <span className={styles.featureChip}>엘리베이터</span>
+                  )}
+                  {data.property.parkingCapacity > 0 && (
+                    <span className={styles.featureChip}>주차 {data.property.parkingCapacity}대</span>
+                  )}
+                  {data.property.hasPet && (
+                    <span className={styles.featureChip}>반려동물</span>
+                  )}
+                </div>
+              </div>
+              {data.property.description && (
+                <div className={styles.infoItem}>
+                  <span className={styles.infoLabel}>상세 설명</span>
+                  <span className={styles.infoValue}>{data.property.description}</span>
+                </div>
+              )}
+            </div>
+          </div>
+        )}
+
+        {/* 상담 내용 */}
+        <div className={styles.card}>
+          <Typography className={styles.cardTitle}>상담 내용</Typography>
+          <div className={styles.detailList}>
+            {data.counselDetails.map((detail) => (
+              <div key={detail.counselDetailUid} className={styles.detailItem}>
+                {isEditing ? (
+                  <>
                     <TextField
+                      label="질문"
                       value={detail.question}
                       onChange={(e) =>
                         handleDetailChange(
@@ -578,75 +613,12 @@ function CounselDetailPage() {
                           e.target.value
                         )
                       }
-                      placeholder="질문을 입력하세요"
+                      fullWidth
                       size="small"
-                      sx={{
-                        flexGrow: 1,
-                        maxWidth: "calc(100% - 120px)", // 번호(40px) + 우측 여백(20px) + 삭제 버튼 영역(60px)
-                        "& .MuiOutlinedInput-root": {
-                          backgroundColor: "#fff",
-                        },
-                      }}
+                      margin="normal"
                     />
-                  ) : (
-                    <Typography
-                      variant="h6"
-                      sx={{
-                        fontWeight: "bold",
-                        flexGrow: 1,
-                        overflow: "hidden",
-                        textOverflow: "ellipsis",
-                        whiteSpace: "nowrap",
-                        maxWidth: "calc(100% - 120px)",
-                      }}
-                    >
-                      {detail.question || `문항 ${index + 1}`}
-                    </Typography>
-                  )}
-                  {isEditing && (
-                    <IconButton
-                      onClick={() =>
-                        handleRemoveQuestion(detail.counselDetailUid)
-                      }
-                      disabled={editedData.counselDetails.length <= 1}
-                      sx={{
-                        color:
-                          editedData.counselDetails.length <= 1
-                            ? "#A0A0A0"
-                            : "#D32F2F",
-                        "&:hover": {
-                          backgroundColor:
-                            editedData.counselDetails.length <= 1
-                              ? "transparent"
-                              : "rgba(211, 47, 47, 0.04)",
-                        },
-                        "&.Mui-disabled": {
-                          color: "#A0A0A0",
-                        },
-                        ml: 1,
-                        width: 40,
-                      }}
-                    >
-                      <RemoveCircleOutlineIcon />
-                    </IconButton>
-                  )}
-                </Box>
-
-                <Box sx={{ ml: 6 }}>
-                  <Typography
-                    variant="body2"
-                    color="textSecondary"
-                    sx={{
-                      mb: 1,
-                      ml: 1,
-                    }}
-                  >
-                    답변
-                  </Typography>
-                  {isEditing ? (
                     <TextField
-                      multiline
-                      rows={5}
+                      label="답변"
                       value={detail.answer}
                       onChange={(e) =>
                         handleDetailChange(
@@ -655,91 +627,62 @@ function CounselDetailPage() {
                           e.target.value
                         )
                       }
-                      placeholder="답변을 입력하세요"
+                      fullWidth
+                      multiline
+                      rows={3}
                       size="small"
-                      sx={{
-                        width: "calc(100% - 80px)",
-                        ml: 1,
-                        "& .MuiOutlinedInput-root": {
-                          backgroundColor: "#fff",
-                        },
-                      }}
+                      margin="normal"
                     />
-                  ) : (
-                    <Typography
-                      variant="body1"
-                      sx={{
-                        width: "calc(100% - 80px)",
-                        whiteSpace: "pre-wrap",
-                        ml: 1,
-                      }}
+                    <IconButton
+                      onClick={() =>
+                        handleRemoveQuestion(detail.counselDetailUid)
+                      }
+                      size="small"
                     >
+                      <RemoveCircleOutlineIcon />
+                    </IconButton>
+                  </>
+                ) : (
+                  <>
+                    <Typography className={styles.detailQuestion}>
+                      {detail.question}
+                    </Typography>
+                    <Typography className={styles.detailAnswer}>
                       {detail.answer}
                     </Typography>
-                  )}
-                </Box>
-              </Paper>
+                  </>
+                )}
+              </div>
             ))}
-          </>
-        ) : (
-          <Typography variant="body1" sx={{ textAlign: "center" }}>
-            상담 정보를 찾을 수 없습니다.
-          </Typography>
-        )}
-      </Box>
+            {isEditing && (
+              <Button
+                variant="outlined"
+                startIcon={<AddIcon />}
+                onClick={handleAddQuestion}
+                fullWidth
+              >
+                질문 추가
+              </Button>
+            )}
+          </div>
+        </div>
 
-      {/* 삭제 확인 다이얼로그 */}
-      <Dialog
-        open={deleteDialogOpen}
-        onClose={handleDeleteCancel}
-        PaperProps={{
-          sx: {
-            borderRadius: "12px",
-            maxWidth: "400px",
-          },
-        }}
-      >
-        <DialogTitle sx={{ pb: 1 }}>
-          <Typography variant="h6" sx={{ fontWeight: "bold" }}>
-            상담 삭제
-          </Typography>
-        </DialogTitle>
-        <DialogContent sx={{ py: 2 }}>
-          <Typography>
-            정말 이 상담을 삭제하시겠습니까?
-            <br />
-            삭제된 상담은 복구할 수 없습니다.
-          </Typography>
-        </DialogContent>
-        <DialogActions sx={{ p: 2, pt: 0 }}>
-          <Button
-            onClick={handleDeleteCancel}
-            variant="outlined"
-            sx={{
-              borderColor: "#666666",
-              color: "#666666",
-              "&:hover": {
-                borderColor: "#333333",
-                backgroundColor: "rgba(102, 102, 102, 0.04)",
-              },
-            }}
-          >
-            취소
-          </Button>
-          <Button
-            onClick={handleDeleteConfirm}
-            variant="contained"
-            sx={{
-              backgroundColor: "#D32F2F",
-              "&:hover": {
-                backgroundColor: "#B22A2A",
-              },
-            }}
-          >
-            삭제
-          </Button>
-        </DialogActions>
-      </Dialog>
+        {/* 삭제 확인 다이얼로그 */}
+        <Dialog open={deleteDialogOpen} onClose={handleDeleteCancel}>
+          <DialogTitle>상담 삭제</DialogTitle>
+          <DialogContent>
+            <Typography>
+              정말로 상담을 삭제하시겠습니까?
+            </Typography>
+          </DialogContent>
+          <DialogActions>
+            <Button onClick={handleDeleteCancel}>취소</Button>
+            <Button onClick={handleDeleteConfirm} color="error">
+              삭제
+            </Button>
+          </DialogActions>
+        </Dialog>
+      </Box>
     </Box>
   );
 }

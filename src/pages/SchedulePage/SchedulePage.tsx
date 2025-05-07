@@ -7,12 +7,20 @@ import dayGridPlugin from "@fullcalendar/daygrid";
 import interactionPlugin from "@fullcalendar/interaction";
 import { EventClickArg, DatesSetArg } from "@fullcalendar/core";
 import koLocale from "@fullcalendar/core/locales/ko";
-import CreateModal, { FormData } from "@components/CreateModal/CreateModal";
 import apiClient from "@apis/apiClient";
 import PageHeader from "@components/PageHeader/PageHeader";
 import ScheduleDetailModal from "@components/ScheduleDetailModal/ScheduleDetailModal";
 import { Schedule } from "../../interfaces/schedule";
 import useUserStore from "@stores/useUserStore";
+import AddScheduleModal from "./AddScheduleModal";
+
+interface ScheduleFormData {
+  startDateTime: string;
+  endDateTime: string;
+  title: string;
+  description: string;
+  customerUid: number | null;
+}
 
 const SchedulePage = () => {
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
@@ -29,6 +37,7 @@ const SchedulePage = () => {
   });
   const [customers] = useState<Array<{ uid: number; name: string }>>([]);
   const { user } = useUserStore();
+  const [isLoading, setIsLoading] = useState(false);
 
   const fetchSchedules = (startDate: string, endDate: string) => {
     apiClient
@@ -77,17 +86,27 @@ const SchedulePage = () => {
     }, 200);
   };
 
-  const handleSubmitSchedule = (formData: FormData) => {
-    const newScheduleWithId: Schedule = {
-      uid: Math.floor(Math.random() * 1000000),
-      title: formData.schedule.title,
-      description: formData.schedule.description || null,
-      startDate: `${formData.schedule.date}T${formData.schedule.time}:00`,
-      endDate: `${formData.schedule.date}T${formData.schedule.time}:00`,
-      customerUid: null,
-      customerName: null,
-    };
-    setSchedules((prev) => [...prev, newScheduleWithId]);
+  const handleSubmitSchedule = async (formData: ScheduleFormData) => {
+    try {
+      setIsLoading(true);
+      const response = await apiClient.post("/schedules", formData);
+
+      if (response.data.success) {
+        // 현재 표시된 기간의 일정을 다시 불러옴
+        const startOfMonth = dayjs().startOf("month").toISOString();
+        const endOfMonth = dayjs().endOf("month").toISOString();
+        fetchSchedules(startOfMonth, endOfMonth);
+
+        setToast({
+          open: true,
+          message: "일정을 생성했습니다.",
+          severity: "success",
+        });
+        setIsAddModalOpen(false);
+      }
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   // 고객별 색상 매핑
@@ -450,11 +469,10 @@ const SchedulePage = () => {
         />
       </Paper>
 
-      <CreateModal
+      <AddScheduleModal
         open={isAddModalOpen}
         onClose={handleCloseModal}
         onSubmit={handleSubmitSchedule}
-        initialTab={3}
       />
 
       <ScheduleDetailModal

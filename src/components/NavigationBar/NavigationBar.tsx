@@ -9,12 +9,10 @@ import {
   ListItemText,
   Divider,
   ListItemIcon,
-  Button as MuiButton,
 } from "@mui/material";
 import { Link, useLocation } from "react-router-dom";
-import CreateModal from "@components/CreateModal/CreateModal";
+
 import DashboardIcon from "@mui/icons-material/Dashboard";
-import AddIcon from "@mui/icons-material/Add";
 import Logo from "@assets/logo.png";
 import BusinessIcon from "@mui/icons-material/Business";
 import PeopleIcon from "@mui/icons-material/People";
@@ -84,17 +82,8 @@ const MENU_INFO = [
 ];
 
 const NavigationBar = () => {
-  const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
   const location = useLocation();
   const currentPath = location.pathname;
-
-  const handleCreateClick = () => {
-    setIsCreateModalOpen(true);
-  };
-
-  const handleCreateModalClose = () => {
-    setIsCreateModalOpen(false);
-  };
 
   const handleCreateSubmit = (formData: FormData) => {
     // TODO: API 연동
@@ -478,12 +467,6 @@ const NavigationBar = () => {
           </ListItem>
         ))}
       </List>
-
-      <CreateModal
-        open={isCreateModalOpen}
-        onClose={handleCreateModalClose}
-        onSubmit={handleCreateSubmit}
-      />
     </Drawer>
   );
 };

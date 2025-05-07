@@ -30,6 +30,25 @@ const categoryColors: Record<PropertyItem["realCategory"], "primary" | "secondar
   COMMERCIAL: "error",
 };
 
+const typeColors: Record<PropertyItem["type"], "default" | "primary" | "secondary" | "success" | "error" | "warning" | "info"> = {
+  SALE: "primary",
+  DEPOSIT: "success",
+  MONTHLY: "warning",
+};
+
+const translateType = (type: PropertyItem["type"]) => {
+  switch (type) {
+    case "SALE":
+      return "매매";
+    case "DEPOSIT":
+      return "전세";
+    case "MONTHLY":
+      return "월세";
+    default:
+      return "-";
+  }
+};
+
 const PropertyTable = ({ propertyList }: Props) => {
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(10);
@@ -72,6 +91,7 @@ const PropertyTable = ({ propertyList }: Props) => {
             <TableHead>
               <TableRow>
                 <TableCell align="center">매물 유형</TableCell>
+                <TableCell align="center">매물 타입</TableCell>
                 <TableCell align="center">주소</TableCell>
                 <TableCell align="center">면적(전용)</TableCell>
                 <TableCell align="center">기타</TableCell>
@@ -94,6 +114,15 @@ const PropertyTable = ({ propertyList }: Props) => {
                         size="small"
                       />
                     </TableCell>
+                    <TableCell align="center">
+                      <Chip
+                        label={translateType(property.type)}
+                        color={typeColors[property.type] || "default"}
+                        variant="filled"
+                        size="small"
+                        sx={{ fontWeight: 500 }}
+                      />
+                    </TableCell>
                     <TableCell align="center">{property.address ?? "-"}</TableCell>
                     <TableCell align="center">{formatArea(property.netArea)}</TableCell>
                     <TableCell align="center">{property.details ?? "-"}</TableCell>
@@ -101,7 +130,7 @@ const PropertyTable = ({ propertyList }: Props) => {
                 ))
               ) : (
                 <TableRow>
-                  <TableCell colSpan={4} align="center" sx={{ padding: "20px 0" }}>
+                  <TableCell colSpan={5} align="center" sx={{ padding: "20px 0" }}>
                     매물 데이터가 없습니다
                   </TableCell>
                 </TableRow>

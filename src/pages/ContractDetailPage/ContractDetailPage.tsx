@@ -8,6 +8,7 @@ import ContractDetailContent from "./ContractDetailContent";
 import styles from "@pages/ContractListPage/styles/ContractListPage.module.css";
 import { toast } from "react-toastify";
 import DeleteConfirmModal from "@components/DeleteConfirm/DeleteConfirmModal";
+import useUserStore from "@stores/useUserStore";
 
 const ContractDetailPage = () => {
   const { contractUid } = useParams<{ contractUid: string }>();
@@ -16,6 +17,7 @@ const ContractDetailPage = () => {
   const [histories, setHistories] = useState<ContractHistory[]>([]);
   const [loading, setLoading] = useState(true);
   const [editModalOpen, setEditModalOpen] = useState(false);
+  const { user } = useUserStore();
 
   const handleEdit = () => setEditModalOpen(true);
 
@@ -74,7 +76,7 @@ const ContractDetailPage = () => {
   return (
     <div className={styles.container}>
       <div className={styles.header}>
-        <PageHeader title="계약 상세 조회" userName="사용자 이름" />
+        <PageHeader title="계약 상세 조회" userName={user?.name || "-"} />
       </div>
 
       <div className={styles.contents}>

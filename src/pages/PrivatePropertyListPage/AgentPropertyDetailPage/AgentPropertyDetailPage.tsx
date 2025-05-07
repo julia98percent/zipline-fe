@@ -1,46 +1,55 @@
 import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import apiClient from "@apis/apiClient";
-import { Box, Button, Card, CardContent, Typography } from "@mui/material";
+import { CircularProgress, Button, Box } from "@mui/material";
+import PageHeader from "@components/PageHeader/PageHeader";
+import AgentPropertyDetailContent from "./AgentPropertyDetailContent";
+import styles from "@pages/ContractListPage/styles/ContractListPage.module.css";
+import DeleteConfirmModal from "@components/DeleteConfirm/DeleteConfirmModal";
+import useUserStore from "@stores/useUserStore";
 
 interface AgentPropertyDetail {
-  customer: string; // 추가
+  customer: string;
   address: string;
-  legalDistrictCode: string; // 추가
+  legalDistrictCode: string;
   deposit: number;
   monthlyRent: number;
   price: number;
-  type: "SALE" | "DEPOSIT" | "MONTHLY"; // 추가
+  type: "SALE" | "DEPOSIT" | "MONTHLY";
   longitude: number;
   latitude: number;
   startDate: string;
   endDate: string;
   moveInDate: string;
   realCategory:
-  | "ONE_ROOM"
-  | "TWO_ROOM"
-  | "APARTMENT"
-  | "VILLA"
-  | "HOUSE"
-  | "OFFICETEL"
-  | "COMMERCIAL"; // 명확하게
+    | "ONE_ROOM"
+    | "TWO_ROOM"
+    | "APARTMENT"
+    | "VILLA"
+    | "HOUSE"
+    | "OFFICETEL"
+    | "COMMERCIAL";
   petsAllowed: boolean;
   floor: number;
   hasElevator: boolean;
   constructionYear: string;
   parkingCapacity: number;
   netArea: number;
-  totalArea: number; // 추가
+  totalArea: number;
   details: string;
 }
 
-function AgentPropertyDetailPage() {
+const AgentPropertyDetailPage = () => {
   const { propertyUid } = useParams<{ propertyUid: string }>();
   const navigate = useNavigate();
   const [property, setProperty] = useState<AgentPropertyDetail | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [deleteModalOpen, setDeleteModalOpen] = useState(false);
+  const { user } = useUserStore();
 
   useEffect(() => {
     if (propertyUid) {
+      setLoading(true);
       apiClient
         .get(`/properties/${propertyUid}`)
         .then((res) => {
@@ -48,155 +57,66 @@ function AgentPropertyDetailPage() {
         })
         .catch((err) => {
           console.error(err);
-        });
+        })
+        .finally(() => setLoading(false));
     }
   }, [propertyUid]);
 
   const handleDelete = () => {
-    if (confirm("정말 삭제하시겠습니까?")) {
-      apiClient
-        .delete(`/properties/${propertyUid}`)
-        .then(() => {
-          alert("매물 삭제 성공");
-          navigate("/properties/private");
-        })
-        .catch((err) => console.error(err));
-    }
+    setDeleteModalOpen(true);
+  };
+
+  const confirmDelete = () => {
+    apiClient
+      .delete(`/properties/${propertyUid}`)
+      .then(() => {
+        alert("매물 삭제 성공");
+        navigate("/properties/private");
+      })
+      .catch((err) => {
+        alert("매물 삭제 중 오류가 발생했습니다.");
+        console.error(err);
+      })
+      .finally(() => setDeleteModalOpen(false));
   };
 
   const handleEdit = () => {
-    navigate(`/properties/${propertyUid}`);
+    navigate(`/properties/${propertyUid}/edit`);
   };
 
-  if (!property) return <div>Loading...</div>;
+  if (loading) {
+    return (
+      <Box display="flex" justifyContent="center" alignItems="center" height="100vh">
+        <CircularProgress />
+      </Box>
+    );
+  }
 
-  console.log(property);
-  if (!property) return <div>Loading...</div>;
-  console.log("property:", property);
+  if (!property) return <div>매물 정보를 불러올 수 없습니다.</div>;
 
   return (
-    <Box
-      p={4}
-      sx={{
-        minHeight: "100vh",
-        display: "flex",
-        flexDirection: "column",
-        alignItems: "center",
-      }}
-    >
-      <Box width="100%" maxWidth="800px">
-        {/* 주소 + 수정/삭제 버튼 */}
-        <Box
-          display="flex"
-          justifyContent="space-between"
-          alignItems="center"
-          mb={4}
-        >
-          <Typography variant="h5" fontWeight="bold">
-            {property.address}
-          </Typography>
-          <Box>
-            <Button variant="outlined" sx={{ mr: 1 }} onClick={handleEdit}>
-              수정
-            </Button>
-            <Button variant="outlined" color="error" onClick={handleDelete}>
-              삭제
-            </Button>
-          </Box>
+    <div className={styles.container}>
+      <div className={styles.header}>
+        <PageHeader title="매물 상세 조회" userName={user?.name || "-"} />
+      </div>
+      <div className={styles.contents}>
+        <DeleteConfirmModal
+          open={deleteModalOpen}
+          onConfirm={confirmDelete}
+          onCancel={() => setDeleteModalOpen(false)}
+        />
+        <Box display="flex" justifyContent="flex-end" mb={2} gap={1}>
+          <Button variant="outlined" onClick={handleEdit}>
+            수정
+          </Button>
+          <Button variant="outlined" color="error" onClick={handleDelete}>
+            삭제
+          </Button>
         </Box>
-
-        {/* 지도
-        {property.latitude && property.longitude && (
-          <Box mb={4}>
-            <reactKakaoMapsSdk.Map
-              center={{ lat: property.latitude, lng: property.longitude }}
-              style={{ width: "100%", height: "300px", borderRadius: 8 }}
-              level={3}
-            >
-              <reactKakaoMapsSdk.MapMarker
-                position={{ lat: property.latitude, lng: property.longitude }}
-              />
-            </reactKakaoMapsSdk.Map>
-          </Box>
-        )} */}
-
-        {/* 매물 정보 카드 */}
-        <Card sx={{ mb: 4 }}>
-          <CardContent>
-            <Typography variant="h6" mb={2}>
-              🏠 매물 정보
-            </Typography>
-            <Typography>
-              매매가:{" "}
-              {property.price
-                ? `${(property.price / 10000).toLocaleString()}억`
-                : "-"}
-            </Typography>
-            <Typography>
-              보증금:{" "}
-              {property.deposit
-                ? `${(property.deposit / 10000).toLocaleString()}만원`
-                : "-"}
-            </Typography>
-            <Typography>
-              월세:{" "}
-              {property.monthlyRent
-                ? `${(property.monthlyRent / 10000).toLocaleString()}만원`
-                : "-"}
-            </Typography>
-            <Typography>전용 면적: {property.netArea ?? "-"} m²</Typography>
-          </CardContent>
-        </Card>
-
-        {/* 상세 정보 카드 */}
-        <Card sx={{ mb: 4 }}>
-          <CardContent>
-            <Typography variant="h6" mb={2}>
-              📋 상세 정보
-            </Typography>
-            <Typography>건물 유형: {property.realCategory}</Typography>
-            <Typography>층수: {property.floor ?? "-"}</Typography>
-            <Typography>입주 가능일: {property.moveInDate ?? "-"}</Typography>
-            <Typography>
-              반려동물: {property.petsAllowed ? "가능" : "불가"}
-            </Typography>
-            <Typography>
-              엘리베이터: {property.hasElevator ? "있음" : "없음"}
-            </Typography>
-            <Typography>
-              건축년도: {property.constructionYear ?? "-"}
-            </Typography>
-            <Typography>
-              주차 가능 대수: {property.parkingCapacity ?? "-"}
-            </Typography>
-          </CardContent>
-        </Card>
-
-        {/* 계약 정보 카드 */}
-        <Card sx={{ mb: 4 }}>
-          <CardContent>
-            <Typography variant="h6" mb={2}>
-              📑 계약 정보
-            </Typography>
-            <Typography>계약 시작일: {property.startDate ?? "-"}</Typography>
-            <Typography>계약 종료일: {property.endDate ?? "-"}</Typography>
-          </CardContent>
-        </Card>
-
-        {/* 특이사항 */}
-        {property.details && (
-          <Card>
-            <CardContent>
-              <Typography variant="h6" mb={2}>
-                📝 특이사항
-              </Typography>
-              <Typography>{property.details}</Typography>
-            </CardContent>
-          </Card>
-        )}
-      </Box>
-    </Box>
+        <AgentPropertyDetailContent property={property} />
+      </div>
+    </div>
   );
-}
+};
 
 export default AgentPropertyDetailPage;

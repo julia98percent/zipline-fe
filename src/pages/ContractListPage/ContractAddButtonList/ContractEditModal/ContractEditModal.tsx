@@ -47,7 +47,6 @@ interface Props {
 interface AgentPropertyResponse {
   uid: number;
   address: string;
-  // 필요시 다른 필드도 여기에 추가 가능
 }
 
 interface CustomerResponse {
@@ -61,7 +60,7 @@ const ContractEditModal = ({
   fetchContractData,
   contractUid,
 }: Props) => {
-  const [category, setCategory] = useState("");
+  const [category, setCategory] = useState<string | null>(null);
   const [contractDate, setContractDate] = useState<Dayjs | null>(null);
   const [contractStartDate, setContractStartDate] = useState<Dayjs | null>(
     null
@@ -128,7 +127,7 @@ const ContractEditModal = ({
       );
       setPropertyUid(matchedProperty?.uid ?? null);
 
-      setCategory(data.category ?? "");
+      setCategory(data.category === "null" || data.category === undefined ? null : data.category);
       setContractDate(data.contractDate ? dayjs(data.contractDate) : null);
       setContractStartDate(
         data.contractStartDate ? dayjs(data.contractStartDate) : null
@@ -183,8 +182,6 @@ const ContractEditModal = ({
   };
   const validateInputs = () => {
     const newErrors: typeof errors = {};
-
-    if (!category) newErrors.category = "계약 카테고리를 선택해 주세요.";
     if (
       contractDate &&
       contractStartDate &&
@@ -274,9 +271,8 @@ const ContractEditModal = ({
         fetchContractData();
         handleClose();
       })
-      .catch((err) => {
-        console.error("계약 수정 실패", err);
-        toast.error("계약 수정 실패");
+      .catch((err) => {        
+        toast.error("계약 수정 실패", err);
       });
   };
 
@@ -315,8 +311,12 @@ const ContractEditModal = ({
         <TextField
           select
           label="계약 카테고리"
-          value={category}
-          onChange={(e) => setCategory(e.target.value)}
+          value={category ?? ""}
+          onChange={(e) => {
+            const val = e.target.value;
+            setCategory(val === "" ? null : val);
+          }}
+          
           error={!!errors.category}
           helperText={errors.category}
           fullWidth
@@ -365,7 +365,10 @@ const ContractEditModal = ({
           select
           label="임차/매수자 선택"
           value={lesseeUid !== null ? String(lesseeUid) : ""}
-          onChange={(e) => setLesseeUid(Number(e.target.value))}
+          onChange={(e) => {
+            const val = e.target.value;
+            setLesseeUid(val === "" ? null : Number(val));
+          }}
           error={!!errors.lesseeUid}
           helperText={errors.lesseeUid}
           fullWidth

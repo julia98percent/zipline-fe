@@ -1,4 +1,3 @@
-import { useState } from "react";
 import {
   Box,
   Table,
@@ -9,9 +8,9 @@ import {
   TableRow,
   TablePagination,
   Paper,
+  Chip,
 } from "@mui/material";
 import { ContractItem } from "../ContractListPage";
-import { Chip } from "@mui/material";
 
 const CONTRACT_STATUS_TYPES = [
   { value: "LISTED", name: "매물 등록", color: "default" },
@@ -25,6 +24,7 @@ const CONTRACT_STATUS_TYPES = [
   { value: "MOVED_IN", name: "입주 완료", color: "success" },
   { value: "TERMINATED", name: "계약 해지", color: "error" },
 ];
+
 const categoryKoreanMap: Record<string, string> = {
   SALE: "매매",
   DEPOSIT: "전세",
@@ -34,44 +34,38 @@ const categoryKoreanMap: Record<string, string> = {
 interface Props {
   contractList: ContractItem[];
   onRowClick?: (contract: ContractItem) => void;
+  totalElements: number;
+  page: number;
+  rowsPerPage: number;
+  onPageChange: (event: unknown, newPage: number) => void;
+  onRowsPerPageChange: (event: React.ChangeEvent<HTMLInputElement>) => void;
 }
 
-const ContractTable = ({ contractList, onRowClick }: Props) => {
-  const [page, setPage] = useState(0);
-  const [rowsPerPage, setRowsPerPage] = useState(10);
-
-  const handleChangePage = (_: unknown, newPage: number) => {
-    setPage(newPage);
-  };
-
-  const handleChangeRowsPerPage = (
-    event: React.ChangeEvent<HTMLInputElement>
-  ) => {
-    setRowsPerPage(parseInt(event.target.value, 10));
-    setPage(0);
-  };
-
-  const displayedContracts = contractList.slice(
-    page * rowsPerPage,
-    page * rowsPerPage + rowsPerPage
-  );
-
+const ContractTable = ({
+  contractList,
+  onRowClick,
+  totalElements,
+  page,
+  rowsPerPage,
+  onPageChange,
+  onRowsPerPageChange,
+}: Props) => {
   const getColor = (color: string) => {
     switch (color) {
       case "primary":
-        return "#1976d2"; // 파랑
+        return "#1976d2";
       case "success":
-        return "#2e7d32"; // 초록
+        return "#2e7d32";
       case "error":
-        return "#d32f2f"; // 빨강
+        return "#d32f2f";
       case "warning":
-        return "#ed6c02"; // 주황
+        return "#ed6c02";
       case "info":
-        return "#0288d1"; // 하늘
+        return "#0288d1";
       case "secondary":
-        return "#9c27b0"; // 보라
+        return "#9c27b0";
       default:
-        return "#999"; // 회색
+        return "#999";
     }
   };
 
@@ -88,7 +82,7 @@ const ContractTable = ({ contractList, onRowClick }: Props) => {
         sx={{
           color: getColor(statusInfo.color),
           borderColor: getColor(statusInfo.color),
-          fontWeight: 500,          
+          fontWeight: 500,
           height: 28,
           fontSize: 13,
         }}
@@ -97,18 +91,13 @@ const ContractTable = ({ contractList, onRowClick }: Props) => {
   };
 
   const getCategoryChip = (category: string | null) => {
-    if (!category || category === "null") {
-      return "-";
-    }
-  
+    if (!category || category === "null") return "-";
     const label = categoryKoreanMap[category] ?? category;
-  
     const colorMap: Record<string, string> = {
-      SALE: "#4caf50",     // 매매 - 초록
-      DEPOSIT: "#2196f3",  // 전세 - 파랑
-      MONTHLY: "#ff9800",  // 월세 - 주황
+      SALE: "#4caf50",
+      DEPOSIT: "#2196f3",
+      MONTHLY: "#ff9800",
     };
-  
     return (
       <Chip
         label={label}
@@ -123,7 +112,6 @@ const ContractTable = ({ contractList, onRowClick }: Props) => {
       />
     );
   };
-  
 
   return (
     <Box sx={{ width: "100%", mt: 4 }}>
@@ -143,8 +131,8 @@ const ContractTable = ({ contractList, onRowClick }: Props) => {
               </TableRow>
             </TableHead>
             <TableBody>
-              {displayedContracts.length > 0 ? (
-                displayedContracts.map((contract) => (
+              {contractList.length > 0 ? (
+                contractList.map((contract) => (
                   <TableRow
                     key={contract.uid}
                     hover
@@ -152,14 +140,14 @@ const ContractTable = ({ contractList, onRowClick }: Props) => {
                     onClick={() => onRowClick?.(contract)}
                   >
                     <TableCell align="center">
-                      {contract.lessorOrSellerName}
+                      {contract.lessorOrSellerName ?? "-"}
                     </TableCell>
                     <TableCell align="center">
                       {contract.lesseeOrBuyerName ?? "-"}
                     </TableCell>
                     <TableCell align="center">{contract.address}</TableCell>
                     <TableCell align="center">
-                    {getCategoryChip(contract.category)}
+                      {getCategoryChip(contract.category)}
                     </TableCell>
                     <TableCell align="center">
                       {contract.contractDate ?? "-"}
@@ -187,12 +175,12 @@ const ContractTable = ({ contractList, onRowClick }: Props) => {
         </TableContainer>
         <TablePagination
           component="div"
-          count={contractList.length}
+          count={totalElements}
           page={page}
           rowsPerPage={rowsPerPage}
-          onPageChange={handleChangePage}
-          onRowsPerPageChange={handleChangeRowsPerPage}
-          rowsPerPageOptions={[5, 10]}
+          onPageChange={onPageChange}
+          onRowsPerPageChange={onRowsPerPageChange}
+          rowsPerPageOptions={[10]}
           labelRowsPerPage="페이지당 행"
         />
       </Paper>

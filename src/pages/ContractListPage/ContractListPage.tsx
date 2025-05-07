@@ -54,9 +54,9 @@ function ContractListPage() {
   };
 
   const categoryKeywordMap: Record<string, string> = {
-    "매매": "SALE",
-    "전세": "DEPOSIT",
-    "월세": "MONTHLY",
+    매매: "SALE",
+    전세: "DEPOSIT",
+    월세: "MONTHLY",
   };
 
   const sortOptions = [
@@ -72,8 +72,12 @@ function ContractListPage() {
   const [, setLoading] = useState<boolean>(true);
   const [searchKeyword, setSearchKeyword] = useState<string>("");
   const [selectedSort, setSelectedSort] = useState<string>("LATEST");
-  const mappedCategory = categoryKeywordMap[searchKeyword] || "";
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
+  const [page, setPage] = useState(0);
+  const [rowsPerPage, setRowsPerPage] = useState(10);
+  const [totalElements, setTotalElements] = useState(0);
+
+  const mappedCategory = categoryKeywordMap[searchKeyword] || "";
 
   const { user } = useUserStore();
   const navigate = useNavigate();
@@ -89,13 +93,15 @@ function ContractListPage() {
           period: selectedPeriod || "",
           status: selectedStatus,
           sort: selectedSort,
-          page: 0,
-          size: 10,
+          page: page+1,
+          size: rowsPerPage,
         },
       })
       .then((res) => {
         const contractData = res?.data?.data?.contracts;
+        const pageInfo = res?.data?.data;
         setContractList(contractData || []);
+        setTotalElements(pageInfo?.totalElements || 0);
       })
       .catch((error) => {
         console.error("Failed to fetch contracts:", error);
@@ -105,11 +111,11 @@ function ContractListPage() {
         setLoading(false);
         setFilterModalOpen(false);
       });
-  }, [searchKeyword, selectedPeriod, selectedStatus, selectedSort]);
+  }, [searchKeyword, selectedPeriod, selectedStatus, selectedSort, page, rowsPerPage]);
 
   useEffect(() => {
     fetchContractData();
-  }, [selectedPeriod, selectedStatus, selectedSort]);
+  }, [fetchContractData]);
 
   const handlePeriodClick = (label: string) => {
     const backendValue = periodMapping[label];
@@ -130,31 +136,9 @@ function ContractListPage() {
               value={sortOptions.find((opt) => opt.value === selectedSort)}
               onChange={(selected) => setSelectedSort(selected?.value || "")}
               placeholder="정렬 기준"
-              classNamePrefix="custom-select" 
+              classNamePrefix="custom-select"
               menuShouldScrollIntoView={false}
-              styles={{
-                control: (base, state) => ({
-                  ...base,
-                  width: 140,
-                  borderRadius: 14,
-                  border: state.isFocused
-                    ? "1.5px solid #1976d2"
-                    : "1.5px solid #ccc",
-                  fontSize: 13,
-                  minHeight: 36,
-                  paddingLeft: 8,
-                  boxShadow: "none",
-                  "&:hover": {
-                    borderColor: "#1976d2",
-                  },
-                }),
-                menu: (base) => ({
-                  ...base,
-                  borderRadius: 8,
-                  zIndex: 9999,
-                  maxHeight: "none",
-                }),
-              }}
+              styles={{ control: (base, state) => ({ ...base, width: 140, borderRadius: 14, border: state.isFocused ? "1.5px solid #1976d2" : "1.5px solid #ccc", fontSize: 13, minHeight: 36, paddingLeft: 8, boxShadow: "none", "&:hover": { borderColor: "#1976d2" } }), menu: (base) => ({ ...base, borderRadius: 8, zIndex: 9999, maxHeight: "none" }) }}
             />
 
             <div className={styles.searchInputWrapper}>
@@ -169,54 +153,24 @@ function ContractListPage() {
               />
             </div>
           </div>
+
           <div className={styles.topFilterRow}>
             <div className={styles.filterGroup}>
               <Select
                 options={statusOptions}
-                value={statusOptions.find(
-                  (opt) => opt.value === selectedStatus
-                )}
-                onChange={(selected) => {
-                  const newStatus = selected?.value ?? "";
-                  setSelectedStatus(newStatus);
-                }}
+                value={statusOptions.find((opt) => opt.value === selectedStatus)}
+                onChange={(selected) => setSelectedStatus(selected?.value ?? "")}
                 placeholder="상태 선택"
-                menuPlacement="auto"
                 classNamePrefix="custom-select"
                 menuShouldScrollIntoView={false}
-                styles={{
-                  control: (base, state) => ({
-                    ...base,
-                    borderRadius: 14,
-                    border: state.isFocused
-                      ? "1.5px solid #1976d2"
-                      : "1.5px solid #ccc",
-                    fontSize: 13,
-                    minHeight: 36,
-                    paddingLeft: 8,
-                    boxShadow: "none",
-                    "&:hover": {
-                      borderColor: "#1976d2",
-                    },
-                  }),
-                  menu: (base) => ({
-                    ...base,
-                    borderRadius: 8,
-                    zIndex: 9999,
-                    maxHeight: "none",
-                  }),
-                }}
+                styles={{ control: (base, state) => ({ ...base, borderRadius: 14, border: state.isFocused ? "1.5px solid #1976d2" : "1.5px solid #ccc", fontSize: 13, minHeight: 36, paddingLeft: 8, boxShadow: "none", "&:hover": { borderColor: "#1976d2" } }), menu: (base) => ({ ...base, borderRadius: 8, zIndex: 9999, maxHeight: "none" }) }}
               />
 
               <div className={styles.filterButtons}>
                 {Object.keys(periodMapping).map((label) => (
                   <button
                     key={label}
-                    className={
-                      periodMapping[label] === selectedPeriod
-                        ? `${styles.filterButton} ${styles.filterButtonActive}`
-                        : styles.filterButton
-                    }
+                    className={periodMapping[label] === selectedPeriod ? `${styles.filterButton} ${styles.filterButtonActive}` : styles.filterButton}
                     onClick={() => handlePeriodClick(label)}
                   >
                     {label}
@@ -226,33 +180,39 @@ function ContractListPage() {
             </div>
 
             <button className={styles.outlinedButton} onClick={() => setIsAddModalOpen(true)}>
-  + 계약 등록
-</button>
+              + 계약 등록
+            </button>
           </div>
         </div>
 
         <ContractTable
           contractList={contractList}
+          totalElements={totalElements}
+          page={page}
+          rowsPerPage={rowsPerPage}
+          onPageChange={(_, newPage) => setPage(newPage)}
+          onRowsPerPageChange={(e) => {
+            setRowsPerPage(parseInt(e.target.value, 10));
+            setPage(0);
+          }}
           onRowClick={(contract) => navigate(`/contracts/${contract.uid}`)}
         />
 
         <ContractFilterModal
           open={filterModalOpen}
           onClose={() => setFilterModalOpen(false)}
-          initialFilter={{
-            period: selectedPeriod || "",
-            status: selectedStatus,
-          }}
+          initialFilter={{ period: selectedPeriod || "", status: selectedStatus }}
           onApply={({ period, status }) => {
             setSelectedPeriod(period || null);
             setSelectedStatus(status);
           }}
         />
+
         <ContractAddModal
-  open={isAddModalOpen}
-  handleClose={() => setIsAddModalOpen(false)}
-  fetchContractData={fetchContractData}
-/>
+          open={isAddModalOpen}
+          handleClose={() => setIsAddModalOpen(false)}
+          fetchContractData={fetchContractData}
+        />
       </div>
     </div>
   );

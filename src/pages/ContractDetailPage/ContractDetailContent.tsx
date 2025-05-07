@@ -138,12 +138,12 @@ const ContractDetailContent = ({ contract, histories }: Props) => {
                 );
               })()}
             />
-            <InfoRow label="계약 시작일" value={contract.contractStartDate} />
-            <InfoRow label="계약 종료일" value={contract.contractEndDate} />
+            <InfoRow label="계약 시작일" value={contract.contractStartDate ?? "-"} />
+            <InfoRow label="계약 종료일" value={contract.contractEndDate ?? "-"} />
             {contract.status === "CANCELLED" && (
               <InfoRow
                 label="계약 예상 종료일"
-                value={contract.expectedContractEndDate}
+                value={contract.expectedContractEndDate ?? "-"}
               />
             )}
             <InfoRow label="매물 주소" value={contract.propertyAddress} />
@@ -179,12 +179,12 @@ const ContractDetailContent = ({ contract, histories }: Props) => {
             <Typography variant="h6" fontWeight="bold" gutterBottom>
               계약 당사자 정보
             </Typography>
-            <InfoRow label="임대/매도인" value={contract.lessorOrSellerName} />
+            <InfoRow label="임대/매도인" value={contract.lessorOrSellerName ?? "-"} />
             <InfoRow
               label="임차/매수인"
               value={contract.lesseeOrBuyerName ?? "-"}
             />
-            <InfoRow label="계약 체결일" value={contract.contractDate} />
+            <InfoRow label="계약일" value={contract.contractDate ?? "-"} />
           </CardContent>
         </Card>
       </Box>

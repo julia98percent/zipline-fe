@@ -30,6 +30,7 @@ interface CustomerData {
   phoneNo: string;
   telProvider: string;
   preferredRegion: string;
+  legalDistrictCode: number | null;
   minRent: number | null;
   maxRent: number | null;
   trafficSource: string;
@@ -100,7 +101,23 @@ function CustomerDetailPage() {
   };
 
   const handleEditClick = () => {
-    setEditedCustomer(customer);
+    if (customer) {
+      const editedData = {
+        ...customer,
+        legalDistrictCode: customer.legalDistrictCode,
+        preferredRegion: customer.preferredRegion,
+        minRent: customer.minRent || null,
+        maxRent: customer.maxRent || null,
+        minPrice: customer.minPrice || null,
+        maxPrice: customer.maxPrice || null,
+        minDeposit: customer.minDeposit || null,
+        maxDeposit: customer.maxDeposit || null,
+        birthDay: customer.birthDay || null,
+        labels: [...(customer.labels || [])],
+      };
+
+      setEditedCustomer(editedData);
+    }
     setIsEditing(true);
   };
 
@@ -114,35 +131,58 @@ function CustomerDetailPage() {
     value: string | number | boolean | null | { uid: number; name: string }[]
   ) => {
     if (!editedCustomer) return;
-    setEditedCustomer({
+
+    // null 값 처리를 명시적으로
+    const processedValue = value === "" ? null : value;
+    const updated = {
       ...editedCustomer,
-      [field]: value,
-    });
+      [field]: processedValue,
+    };
+
+    setEditedCustomer(updated);
+  };
+
+  // RegionSelect 변경 핸들러를 별도 함수로 분리
+  const handleRegionChange = (value: { code: number | null; name: string }) => {
+    if (!editedCustomer) return;
+
+    const updated = {
+      ...editedCustomer,
+      legalDistrictCode: value.code,
+      preferredRegion: value.name,
+    };
+
+    setEditedCustomer(updated);
   };
 
   const handleSaveEdit = async () => {
     if (!editedCustomer) return;
 
+    const requestData = {
+      name: editedCustomer.name,
+      phoneNo: editedCustomer.phoneNo,
+      telProvider: editedCustomer.telProvider,
+      legalDistrictCode: editedCustomer.legalDistrictCode,
+      minRent: editedCustomer.minRent,
+      maxRent: editedCustomer.maxRent,
+      trafficSource: editedCustomer.trafficSource || null,
+      landlord: editedCustomer.landlord,
+      tenant: editedCustomer.tenant,
+      buyer: editedCustomer.buyer,
+      seller: editedCustomer.seller,
+      maxPrice: editedCustomer.maxPrice,
+      minPrice: editedCustomer.minPrice,
+      minDeposit: editedCustomer.minDeposit,
+      maxDeposit: editedCustomer.maxDeposit,
+      birthday: editedCustomer.birthDay,
+      labelUids: editedCustomer.labels.map((label) => label.uid),
+    };
+
     try {
-      const response = await apiClient.put(`/customers/${customerId}`, {
-        name: editedCustomer.name,
-        phoneNo: editedCustomer.phoneNo,
-        telProvider: editedCustomer.telProvider,
-        legalDistrictCode: editedCustomer.preferredRegion,
-        minRent: editedCustomer.minRent,
-        maxRent: editedCustomer.maxRent,
-        trafficSource: editedCustomer.trafficSource,
-        landlord: editedCustomer.landlord,
-        tenant: editedCustomer.tenant,
-        buyer: editedCustomer.buyer,
-        seller: editedCustomer.seller,
-        maxPrice: editedCustomer.maxPrice,
-        minPrice: editedCustomer.minPrice,
-        minDeposit: editedCustomer.minDeposit,
-        maxDeposit: editedCustomer.maxDeposit,
-        birthday: editedCustomer.birthDay,
-        labelUids: editedCustomer.labels.map((label) => label.uid),
-      });
+      const response = await apiClient.put(
+        `/customers/${customerId}`,
+        requestData
+      );
 
       if (response.status === 200) {
         toast.success("고객 정보를 수정했습니다.");
@@ -336,10 +376,11 @@ function CustomerDetailPage() {
                 </Typography>
                 {isEditing ? (
                   <RegionSelect
-                    value={editedCustomer?.preferredRegion || ""}
-                    onChange={(value) =>
-                      handleInputChange("preferredRegion", value)
-                    }
+                    value={{
+                      code: editedCustomer?.legalDistrictCode ?? null,
+                      name: editedCustomer?.preferredRegion ?? "",
+                    }}
+                    onChange={handleRegionChange}
                     disabled={false}
                   />
                 ) : (

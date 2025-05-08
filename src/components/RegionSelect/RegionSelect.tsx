@@ -29,8 +29,12 @@ interface RegionState {
 }
 
 interface RegionSelectProps {
-  value: string;
-  onChange: (value: string) => void;
+  value: {
+    code: number | null;
+    name: string;
+    legalDistrictCode?: string; // 8자리 법정동 코드
+  };
+  onChange: (value: { code: number | null; name: string }) => void;
   disabled?: boolean;
 }
 
@@ -48,135 +52,271 @@ function RegionSelect({
     selectedDong: null,
   });
 
-  useEffect(() => {
-    // 시/도 데이터 로드
-    apiClient.get("/regions/sido").then((response) => {
-      if (response.data?.data) {
-        setRegion((prev) => ({
-          ...prev,
-          sido: response.data.data,
-        }));
+  // 법정동 코드로부터 각 레벨의 코드 추출
+  const extractRegionCodes = (legalDistrictCode: string) => {
+    if (!legalDistrictCode || legalDistrictCode.length !== 8) return null;
 
-        // 초기값이 있는 경우 처리
-        if (value) {
-          const parts = value.split(" ");
-          const sido = response.data.data.find(
-            (item: Region) => item.cortarName === parts[0]
-          );
-          if (sido) {
-            setRegion((prev) => ({
-              ...prev,
-              selectedSido: sido.cortarNo,
-            }));
+    return {
+      sidoCode: Number(legalDistrictCode.slice(0, 2).padEnd(8, "0")),
+      sigunguCode: Number(legalDistrictCode.slice(0, 5).padEnd(8, "0")),
+      dongCode: Number(legalDistrictCode),
+    };
+  };
+
+  // 시도 데이터 초기 로드 및 초기 지역 설정
+  useEffect(() => {
+    if (!value.legalDistrictCode && !value.name && !value.code) return;
+
+    apiClient
+      .get("/region/0")
+      .then((res) => {
+        if (res.data?.data) {
+          const sidoList = res.data.data;
+          setRegion((prev) => ({ ...prev, sido: sidoList }));
+
+          // 법정동 코드가 있는 경우 처리
+          if (value.legalDistrictCode) {
+            const codes = extractRegionCodes(value.legalDistrictCode);
+
+            if (codes) {
+              const matchedSido = sidoList.find(
+                (sido: Region) => sido.cortarNo === codes.sidoCode
+              );
+
+              if (matchedSido) {
+                setRegion((prev) => ({
+                  ...prev,
+                  selectedSido: matchedSido.cortarNo,
+                }));
+
+                // 시도 선택 및 시군구 데이터 로드
+                apiClient
+                  .get(`/region/${matchedSido.cortarNo}`)
+                  .then((res) => {
+                    if (res.data?.data) {
+                      const sigunguList = res.data.data;
+                      const matchedSigungu = sigunguList.find(
+                        (sigungu: Region) =>
+                          sigungu.cortarNo === codes.sigunguCode
+                      );
+
+                      if (matchedSigungu) {
+                        setRegion((prev) => ({
+                          ...prev,
+                          sigungu: sigunguList,
+                          selectedSigungu: matchedSigungu.cortarNo,
+                        }));
+
+                        // 시군구 선택 및 동 데이터 로드
+                        apiClient
+                          .get(`/region/${matchedSigungu.cortarNo}`)
+                          .then((res) => {
+                            if (res.data?.data) {
+                              const dongList = res.data.data;
+                              const matchedDong = dongList.find(
+                                (dong: Region) =>
+                                  dong.cortarNo === codes.dongCode
+                              );
+
+                              if (matchedDong) {
+                                setRegion((prev) => ({
+                                  ...prev,
+                                  dong: dongList,
+                                  selectedDong: matchedDong.cortarNo,
+                                }));
+
+                                const regionPath = `${matchedSido.cortarName} ${matchedSigungu.cortarName} ${matchedDong.cortarName}`;
+                                onChange({
+                                  code: matchedDong.cortarNo,
+                                  name: regionPath,
+                                });
+                              }
+                            }
+                          })
+                          .catch(console.error);
+                      }
+                    }
+                  })
+                  .catch(console.error);
+              }
+            }
+          } else if (value.name) {
+            const [sidoName, sigunguName, dongName] = value.name.split(" ");
+
+            const matchedSido = sidoList.find(
+              (sido: Region) => sido.cortarName === sidoName
+            );
+
+            if (matchedSido) {
+              // 시도 선택 및 시군구 데이터 로드
+              apiClient
+                .get(`/region/${matchedSido.cortarNo}`)
+                .then((res) => {
+                  if (res.data?.data) {
+                    const sigunguList = res.data.data;
+                    const matchedSigungu = sigunguList.find(
+                      (sigungu: Region) => sigungu.cortarName === sigunguName
+                    );
+
+                    setRegion((prev) => ({
+                      ...prev,
+                      selectedSido: matchedSido.cortarNo,
+                      sigungu: sigunguList,
+                    }));
+
+                    if (matchedSigungu) {
+                      // 시군구 선택 및 동 데이터 로드
+                      apiClient
+                        .get(`/region/${matchedSigungu.cortarNo}`)
+                        .then((res) => {
+                          if (res.data?.data) {
+                            const dongList = res.data.data;
+
+                            const matchedDong = dongList.find(
+                              (dong: Region) => dong.cortarName === dongName
+                            );
+
+                            // 동 데이터와 선택 상태를 한 번에 업데이트
+                            setRegion((prev) => {
+                              const newState = {
+                                ...prev,
+                                selectedSigungu: matchedSigungu.cortarNo,
+                                dong: dongList,
+                                selectedDong: matchedDong?.cortarNo || null,
+                              };
+
+                              return newState;
+                            });
+
+                            // 최종 선택된 지역 정보 전달
+                            if (matchedDong) {
+                              onChange({
+                                code: matchedDong.cortarNo,
+                                name: value.name,
+                              });
+                            }
+                          }
+                        })
+                        .catch(console.error);
+                    }
+                  }
+                })
+                .catch(console.error);
+            }
           }
         }
-      }
-    });
-  }, [value]);
+      })
+      .catch(console.error);
+  }, [value.legalDistrictCode, value.name, value.code]);
 
+  // 시도 선택 시 군구 로드
   useEffect(() => {
-    // 시/군/구 데이터 로드
-    if (region.selectedSido) {
-      apiClient
-        .get(`/regions/sigungu/${region.selectedSido}`)
-        .then((response) => {
-          if (response.data?.data) {
-            setRegion((prev) => ({
-              ...prev,
-              sigungu: response.data.data,
-              selectedSigungu: null,
-              selectedDong: null,
-              dong: [],
-            }));
+    if (!region.selectedSido) return;
 
-            // 초기값이 있는 경우 처리
-            if (value) {
-              const parts = value.split(" ");
-              if (parts.length > 1) {
-                const sigungu = response.data.data.find(
-                  (item: Region) => item.cortarName === parts[1]
-                );
-                if (sigungu) {
-                  setRegion((prev) => ({
-                    ...prev,
-                    selectedSigungu: sigungu.cortarNo,
-                  }));
-                }
-              }
-            }
-          }
-        });
-    }
-  }, [region.selectedSido, value]);
+    apiClient
+      .get(`/region/${region.selectedSido}`)
+      .then((res) => {
+        if (res.data?.data) {
+          setRegion((prev) => ({
+            ...prev,
+            sigungu: res.data.data,
+            // 시도가 변경되면 하위 선택값들만 초기화
+            selectedSigungu: null,
+            selectedDong: null,
+            dong: [],
+          }));
+        }
+      })
+      .catch(console.error);
+  }, [region.selectedSido]);
 
+  // 군구 선택 시 동 로드
   useEffect(() => {
-    // 동 데이터 로드
-    if (region.selectedSigungu) {
-      apiClient
-        .get(`/regions/dong/${region.selectedSigungu}`)
-        .then((response) => {
-          if (response.data?.data) {
-            setRegion((prev) => ({
-              ...prev,
-              dong: response.data.data,
-              selectedDong: null,
-            }));
+    if (!region.selectedSigungu) return;
 
-            // 초기값이 있는 경우 처리
-            if (value) {
-              const parts = value.split(" ");
-              if (parts.length > 2) {
-                const dong = response.data.data.find(
-                  (item: Region) => item.cortarName === parts[2]
-                );
-                if (dong) {
-                  setRegion((prev) => ({
-                    ...prev,
-                    selectedDong: dong.cortarNo,
-                  }));
-                }
-              }
-            }
-          }
-        });
-    }
-  }, [region.selectedSigungu, value]);
+    apiClient
+      .get(`/region/${region.selectedSigungu}`)
+      .then((res) => {
+        if (res.data?.data) {
+          setRegion((prev) => ({
+            ...prev,
+            dong: res.data.data,
+            // 시군구가 변경되면 동 선택값만 초기화
+            selectedDong: null,
+          }));
+        }
+      })
+      .catch(console.error);
+  }, [region.selectedSigungu]);
 
   const handleRegionChange =
     (type: "sido" | "sigungu" | "dong") => (event: SelectChangeEvent) => {
-      const value = Number(event.target.value);
-      const key = `selected${
-        type.charAt(0).toUpperCase() + type.slice(1)
-      }` as keyof RegionState;
+      const selectedValue = Number(event.target.value) || null;
 
-      setRegion((prev) => ({
-        ...prev,
-        [key]: value,
-      }));
+      // 상위 지역이 선택되지 않은 경우 하위 지역 선택 불가
+      if (type === "sigungu" && !region.selectedSido) return;
+      if (type === "dong" && !region.selectedSigungu) return;
 
-      // 선택된 지역의 이름을 찾아서 onChange로 전달
-      const selectedRegion = region[type].find(
-        (item) => item.cortarNo === value
-      );
-      if (selectedRegion) {
-        let regionPath = "";
+      setRegion((prev) => {
+        const key = `selected${
+          type.charAt(0).toUpperCase() + type.slice(1)
+        }` as keyof RegionState;
+
+        return {
+          ...prev,
+          [key]: selectedValue,
+        };
+      });
+
+      // 선택된 지역의 이름과 코드를 찾아서 onChange로 전달
+      if (!selectedValue) {
+        // 선택 해제된 경우
         if (type === "sido") {
-          regionPath = selectedRegion.cortarName;
-        } else if (type === "sigungu") {
+          onChange({ code: null, name: "" });
+        } else if (type === "sigungu" && region.selectedSido) {
           const sido = region.sido.find(
             (item) => item.cortarNo === region.selectedSido
           );
-          regionPath = `${sido?.cortarName} ${selectedRegion.cortarName}`;
-        } else if (type === "dong") {
+          onChange({ code: region.selectedSido, name: sido?.cortarName || "" });
+        } else if (type === "dong" && region.selectedSigungu) {
           const sido = region.sido.find(
             (item) => item.cortarNo === region.selectedSido
           );
           const sigungu = region.sigungu.find(
             (item) => item.cortarNo === region.selectedSigungu
           );
-          regionPath = `${sido?.cortarName} ${sigungu?.cortarName} ${selectedRegion.cortarName}`;
+          onChange({
+            code: region.selectedSigungu,
+            name: `${sido?.cortarName} ${sigungu?.cortarName}`,
+          });
         }
-        onChange(regionPath);
+      } else {
+        // 새로운 지역이 선택된 경우
+        const selectedRegion = region[type].find(
+          (item) => item.cortarNo === selectedValue
+        );
+        if (selectedRegion) {
+          let regionPath = "";
+          const regionCode = selectedValue;
+
+          if (type === "sido") {
+            regionPath = selectedRegion.cortarName;
+          } else if (type === "sigungu") {
+            const sido = region.sido.find(
+              (item) => item.cortarNo === region.selectedSido
+            );
+            regionPath = `${sido?.cortarName} ${selectedRegion.cortarName}`;
+          } else if (type === "dong") {
+            const sido = region.sido.find(
+              (item) => item.cortarNo === region.selectedSido
+            );
+            const sigungu = region.sigungu.find(
+              (item) => item.cortarNo === region.selectedSigungu
+            );
+            regionPath = `${sido?.cortarName} ${sigungu?.cortarName} ${selectedRegion.cortarName}`;
+          }
+          onChange({ code: regionCode, name: regionPath });
+        }
       }
     };
 

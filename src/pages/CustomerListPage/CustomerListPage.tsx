@@ -8,6 +8,7 @@ import FilterListIcon from "@mui/icons-material/FilterList";
 import useDebounce from "@hooks/useDebounce";
 import PageHeader from "@components/PageHeader/PageHeader";
 import useUserStore from "@stores/useUserStore";
+import { toast } from "react-toastify";
 
 interface Customer {
   uid: number;
@@ -131,18 +132,14 @@ const CustomerListPage = () => {
   };
 
   useEffect(() => {
-    fetchCustomerList(false);
-  }, [debouncedSearchTerm]);
-
-  useEffect(() => {
-    if (debouncedSearchTerm) return;
-    fetchCustomerList(false); // rowsPerPage 변경 시에는 로딩 표시 안 함
-  }, [rowsPerPage]);
-
-  useEffect(() => {
-    if (debouncedSearchTerm) return;
-    fetchCustomerList(true); // 페이지나 필터 변경 시에는 로딩 표시
-  }, [page, filters]);
+    if (debouncedSearchTerm) {
+      fetchCustomerList(false); // 검색어 변경 시 로딩 표시 안 함
+    } else if (page || filters) {
+      fetchCustomerList(true); // 페이지나 필터 변경 시 로딩 표시
+    } else {
+      fetchCustomerList(false); // rowsPerPage 변경 시 로딩 표시 안 함
+    }
+  }, [debouncedSearchTerm, rowsPerPage, page, filters]);
 
   const handleFilterApply = (newFilters: Filters) => {
     setFilters(newFilters);
@@ -167,7 +164,9 @@ const CustomerListPage = () => {
       const dataToSend = {
         name: customer.name,
         phoneNo: customer.phoneNo,
-        labelUids: customer.labels.map((label) => label.uid),
+        labelUids: Array.isArray(customer.labels)
+          ? customer.labels.map((label) => label.uid)
+          : [],
         telProvider: existingCustomer.telProvider,
         legalDistrictCode: existingCustomer.legalDistrictCode,
         minRent: existingCustomer.minRent,

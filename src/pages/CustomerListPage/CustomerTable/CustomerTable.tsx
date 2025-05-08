@@ -156,6 +156,20 @@ const CustomerTable = ({
     setEditingCustomers(newEditingCustomers);
   };
 
+  const handleEditChange = (
+    uid: number,
+    field: keyof Customer,
+    value: EditableFields
+  ) => {
+    setEditingCustomers({
+      ...editingCustomers,
+      [uid]: {
+        ...editingCustomers[uid],
+        [field]: value,
+      },
+    });
+  };
+
   const handleEditSave = async (uid: number) => {
     const editedCustomer = editingCustomers[uid];
     if (editedCustomer && onCustomerUpdate) {
@@ -172,7 +186,7 @@ const CustomerTable = ({
         return;
       }
 
-      await onCustomerUpdate({
+      const updatedCustomer = {
         uid: editedCustomer.uid,
         name: editedCustomer.name,
         phoneNo: editedCustomer.phoneNo,
@@ -180,25 +194,15 @@ const CustomerTable = ({
         landlord: editedCustomer.landlord,
         buyer: editedCustomer.buyer,
         seller: editedCustomer.seller,
-        labels: editedCustomer.labels || [], // 라벨이 없는 경우 빈 배열 전달
+        labels: Array.isArray(editedCustomer.labels)
+          ? editedCustomer.labels
+          : [],
         trafficSource: editedCustomer.trafficSource,
-      });
+      };
+
+      await onCustomerUpdate(updatedCustomer);
       handleEditCancel(uid);
     }
-  };
-
-  const handleEditChange = (
-    uid: number,
-    field: keyof Customer,
-    value: EditableFields
-  ) => {
-    setEditingCustomers({
-      ...editingCustomers,
-      [uid]: {
-        ...editingCustomers[uid],
-        [field]: value,
-      },
-    });
   };
 
   const renderEditableRow = (customer: Customer) => {

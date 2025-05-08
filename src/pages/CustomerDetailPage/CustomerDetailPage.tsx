@@ -64,6 +64,22 @@ function CustomerDetailPage() {
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const { user } = useUserStore();
 
+  const MAX_PRICE_LENGTH = 15; // 천조 단위까지 허용 (999조)
+
+  const formatSafePrice = (price: number | null | undefined): string => {
+    if (price === undefined || price === null) return "-";
+    const priceStr = price.toString();
+    if (priceStr.length > MAX_PRICE_LENGTH) {
+      return "금액이 너무 큽니다";
+    }
+    return formatPriceWithKorean(price) || "-";
+  };
+
+  const getFormattedPrice = (price: number | null | undefined): string => {
+    if (price === undefined || price === null) return "-";
+    return formatPriceWithKorean(price) || "-";
+  };
+
   const fetchCustomerData = () => {
     setLoading(true);
     apiClient
@@ -255,12 +271,19 @@ function CustomerDetailPage() {
         {/* Action Buttons */}
         <Box sx={{ display: "flex", justifyContent: "flex-end", mb: 2 }}>
           {isEditing ? (
-            <>
+            <div style={{ marginTop: "16px", display: "flex" }}>
               <Button
                 variant="outlined"
                 color="inherit"
                 onClick={handleCancelEdit}
-                sx={{ mr: 1 }}
+                sx={{
+                  mr: 1,
+                  backgroundColor: "white",
+                  minWidth: "81px",
+                  "&:hover": {
+                    backgroundColor: "#F5F5F5",
+                  },
+                }}
               >
                 취소
               </Button>
@@ -268,10 +291,20 @@ function CustomerDetailPage() {
                 variant="contained"
                 color="primary"
                 onClick={handleSaveEdit}
+                sx={{
+                  boxShadow: "none",
+                  backgroundColor: "#164F9E",
+                  minWidth: "81px",
+                  "&:hover": {
+                    backgroundColor: "#164F9E",
+                    opacity: 0.9,
+                    boxShadow: "none",
+                  },
+                }}
               >
                 저장
               </Button>
-            </>
+            </div>
           ) : (
             <div
               style={{
@@ -527,9 +560,13 @@ function CustomerDetailPage() {
                       !customer.landlord &&
                       !customer.buyer &&
                       !customer.seller && (
-                        <Typography variant="body1" color="textSecondary">
-                          -
-                        </Typography>
+                        <Chip
+                          label="없음"
+                          sx={{
+                            backgroundColor: "#F5F5F5",
+                            color: "#757575",
+                          }}
+                        />
                       )}
                   </>
                 )}
@@ -609,19 +646,41 @@ function CustomerDetailPage() {
                 최소 매매가
               </Typography>
               {isEditing ? (
-                <TextField
-                  fullWidth
-                  size="small"
-                  value={editedCustomer?.minPrice || ""}
-                  onChange={(e) => {
-                    const value = e.target.value.replace(/[^0-9]/g, "");
-                    handleInputChange("minPrice", value ? Number(value) : null);
-                  }}
-                  placeholder="숫자만 입력"
-                />
+                <>
+                  <TextField
+                    fullWidth
+                    size="small"
+                    value={editedCustomer?.minPrice || ""}
+                    onChange={(e) => {
+                      const value = e.target.value.replace(/[^0-9]/g, "");
+                      if (!value) {
+                        handleInputChange("minPrice", null);
+                      } else if (value.length <= MAX_PRICE_LENGTH) {
+                        handleInputChange("minPrice", Number(value));
+                      }
+                    }}
+                    placeholder="숫자만 입력"
+                    inputProps={{ maxLength: MAX_PRICE_LENGTH }}
+                  />
+                  <Typography
+                    variant="caption"
+                    sx={{
+                      color:
+                        editedCustomer?.minPrice &&
+                        editedCustomer.minPrice.toString().length >
+                          MAX_PRICE_LENGTH
+                          ? "error.main"
+                          : "text.secondary",
+                      mt: 0.5,
+                      display: "block",
+                    }}
+                  >
+                    {formatSafePrice(editedCustomer?.minPrice)}
+                  </Typography>
+                </>
               ) : (
                 <Typography variant="body1">
-                  {formatPriceWithKorean(customer.minPrice)}
+                  {getFormattedPrice(customer.minPrice)}
                 </Typography>
               )}
             </Box>
@@ -630,19 +689,33 @@ function CustomerDetailPage() {
                 최대 매매가
               </Typography>
               {isEditing ? (
-                <TextField
-                  fullWidth
-                  size="small"
-                  value={editedCustomer?.maxPrice || ""}
-                  onChange={(e) => {
-                    const value = e.target.value.replace(/[^0-9]/g, "");
-                    handleInputChange("maxPrice", value ? Number(value) : null);
-                  }}
-                  placeholder="숫자만 입력"
-                />
+                <>
+                  <TextField
+                    fullWidth
+                    size="small"
+                    value={editedCustomer?.maxPrice || ""}
+                    onChange={(e) => {
+                      const value = e.target.value.replace(/[^0-9]/g, "");
+                      if (value.length <= MAX_PRICE_LENGTH) {
+                        handleInputChange(
+                          "maxPrice",
+                          value ? Number(value) : null
+                        );
+                      }
+                    }}
+                    placeholder="숫자만 입력"
+                    inputProps={{ maxLength: MAX_PRICE_LENGTH }}
+                  />
+                  <Typography
+                    variant="caption"
+                    sx={{ color: "text.secondary", mt: 0.5, display: "block" }}
+                  >
+                    {formatSafePrice(editedCustomer?.maxPrice)}
+                  </Typography>
+                </>
               ) : (
                 <Typography variant="body1">
-                  {formatPriceWithKorean(customer.maxPrice)}
+                  {formatSafePrice(customer.maxPrice)}
                 </Typography>
               )}
             </Box>
@@ -651,22 +724,30 @@ function CustomerDetailPage() {
                 최소 보증금
               </Typography>
               {isEditing ? (
-                <TextField
-                  fullWidth
-                  size="small"
-                  value={editedCustomer?.minDeposit || ""}
-                  onChange={(e) => {
-                    const value = e.target.value.replace(/[^0-9]/g, "");
-                    handleInputChange(
-                      "minDeposit",
-                      value ? Number(value) : null
-                    );
-                  }}
-                  placeholder="숫자만 입력"
-                />
+                <>
+                  <TextField
+                    fullWidth
+                    size="small"
+                    value={editedCustomer?.minDeposit || ""}
+                    onChange={(e) => {
+                      const value = e.target.value.replace(/[^0-9]/g, "");
+                      handleInputChange(
+                        "minDeposit",
+                        value ? Number(value) : null
+                      );
+                    }}
+                    placeholder="숫자만 입력"
+                  />
+                  <Typography
+                    variant="caption"
+                    sx={{ color: "text.secondary", mt: 0.5, display: "block" }}
+                  >
+                    {formatSafePrice(editedCustomer?.minDeposit)}
+                  </Typography>
+                </>
               ) : (
                 <Typography variant="body1">
-                  {formatPriceWithKorean(customer.minDeposit)}
+                  {formatSafePrice(customer.minDeposit)}
                 </Typography>
               )}
             </Box>
@@ -675,22 +756,30 @@ function CustomerDetailPage() {
                 최대 보증금
               </Typography>
               {isEditing ? (
-                <TextField
-                  fullWidth
-                  size="small"
-                  value={editedCustomer?.maxDeposit || ""}
-                  onChange={(e) => {
-                    const value = e.target.value.replace(/[^0-9]/g, "");
-                    handleInputChange(
-                      "maxDeposit",
-                      value ? Number(value) : null
-                    );
-                  }}
-                  placeholder="숫자만 입력"
-                />
+                <>
+                  <TextField
+                    fullWidth
+                    size="small"
+                    value={editedCustomer?.maxDeposit || ""}
+                    onChange={(e) => {
+                      const value = e.target.value.replace(/[^0-9]/g, "");
+                      handleInputChange(
+                        "maxDeposit",
+                        value ? Number(value) : null
+                      );
+                    }}
+                    placeholder="숫자만 입력"
+                  />
+                  <Typography
+                    variant="caption"
+                    sx={{ color: "text.secondary", mt: 0.5, display: "block" }}
+                  >
+                    {formatSafePrice(editedCustomer?.maxDeposit)}
+                  </Typography>
+                </>
               ) : (
                 <Typography variant="body1">
-                  {formatPriceWithKorean(customer.maxDeposit)}
+                  {formatSafePrice(customer.maxDeposit)}
                 </Typography>
               )}
             </Box>
@@ -699,19 +788,30 @@ function CustomerDetailPage() {
                 최소 임대료
               </Typography>
               {isEditing ? (
-                <TextField
-                  fullWidth
-                  size="small"
-                  value={editedCustomer?.minRent || ""}
-                  onChange={(e) => {
-                    const value = e.target.value.replace(/[^0-9]/g, "");
-                    handleInputChange("minRent", value ? Number(value) : null);
-                  }}
-                  placeholder="숫자만 입력"
-                />
+                <>
+                  <TextField
+                    fullWidth
+                    size="small"
+                    value={editedCustomer?.minRent || ""}
+                    onChange={(e) => {
+                      const value = e.target.value.replace(/[^0-9]/g, "");
+                      handleInputChange(
+                        "minRent",
+                        value ? Number(value) : null
+                      );
+                    }}
+                    placeholder="숫자만 입력"
+                  />
+                  <Typography
+                    variant="caption"
+                    sx={{ color: "text.secondary", mt: 0.5, display: "block" }}
+                  >
+                    {formatSafePrice(editedCustomer?.minRent)}
+                  </Typography>
+                </>
               ) : (
                 <Typography variant="body1">
-                  {formatPriceWithKorean(customer.minRent)}
+                  {formatSafePrice(customer.minRent)}
                 </Typography>
               )}
             </Box>
@@ -720,19 +820,30 @@ function CustomerDetailPage() {
                 최대 임대료
               </Typography>
               {isEditing ? (
-                <TextField
-                  fullWidth
-                  size="small"
-                  value={editedCustomer?.maxRent || ""}
-                  onChange={(e) => {
-                    const value = e.target.value.replace(/[^0-9]/g, "");
-                    handleInputChange("maxRent", value ? Number(value) : null);
-                  }}
-                  placeholder="숫자만 입력"
-                />
+                <>
+                  <TextField
+                    fullWidth
+                    size="small"
+                    value={editedCustomer?.maxRent || ""}
+                    onChange={(e) => {
+                      const value = e.target.value.replace(/[^0-9]/g, "");
+                      handleInputChange(
+                        "maxRent",
+                        value ? Number(value) : null
+                      );
+                    }}
+                    placeholder="숫자만 입력"
+                  />
+                  <Typography
+                    variant="caption"
+                    sx={{ color: "text.secondary", mt: 0.5, display: "block" }}
+                  >
+                    {formatSafePrice(editedCustomer?.maxRent)}
+                  </Typography>
+                </>
               ) : (
                 <Typography variant="body1">
-                  {formatPriceWithKorean(customer.maxRent)}
+                  {formatSafePrice(customer.maxRent)}
                 </Typography>
               )}
             </Box>

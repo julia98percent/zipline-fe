@@ -184,8 +184,6 @@ const CustomerListPage = () => {
         birthday: existingCustomer.birthday,
       };
 
-      console.log("Updating customer with data:", dataToSend);
-
       const response = await apiClient.put(
         `/customers/${customer.uid}`,
         dataToSend

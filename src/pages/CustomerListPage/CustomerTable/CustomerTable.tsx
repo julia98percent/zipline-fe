@@ -172,8 +172,6 @@ const CustomerTable = ({
         return;
       }
 
-      console.log("Saving customer with labels:", editedCustomer.labels); // 디버깅용 로그
-
       await onCustomerUpdate({
         uid: editedCustomer.uid,
         name: editedCustomer.name,

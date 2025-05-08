@@ -6,29 +6,50 @@ import {
   TableContainer,
   TableHead,
   TableRow,
-  TablePagination,
   Paper,
   Chip,
   IconButton,
-  Typography
+  Select,
+  MenuItem,
+  FormControl,
+  InputLabel,
+  Pagination,
+  Typography,
+  TextField,
+  Autocomplete,
 } from "@mui/material";
 import { useNavigate } from "react-router-dom";
-import DeleteIcon from '@mui/icons-material/Delete';
+import DeleteIcon from "@mui/icons-material/DeleteOutline";
+import EditIcon from "@mui/icons-material/Edit";
+import DoneIcon from "@mui/icons-material/Done";
+import CloseIcon from "@mui/icons-material/Close";
+import { useState, useEffect } from "react";
+import apiClient from "@apis/apiClient";
+import DeleteConfirmModal from "./DeleteConfirmModal";
+import { toast } from "react-toastify";
+
+interface Label {
+  uid: number;
+  name: string;
+}
 
 interface Customer {
   uid: number;
   name: string;
   phoneNo: string;
   trafficSource: string;
-  labels: {
-    uid: number;
-    name: string;
-  }[];
+  labels: Label[];
   tenant: boolean;
   landlord: boolean;
   buyer: boolean;
   seller: boolean;
 }
+
+interface EditingCustomer extends Customer {
+  isEditing?: boolean;
+}
+
+type EditableFields = string | boolean | Label[];
 
 interface Props {
   customerList: Customer[];
@@ -37,6 +58,8 @@ interface Props {
   setRowsPerPage: (newRowsPerPage: number) => void;
   page: number;
   rowsPerPage: number;
+  onCustomerUpdate?: (customer: Customer) => void;
+  onRefresh: () => void;
 }
 
 const CustomerTable = ({
@@ -46,125 +69,482 @@ const CustomerTable = ({
   setRowsPerPage,
   page,
   rowsPerPage,
+  onCustomerUpdate,
+  onRefresh,
 }: Props) => {
   const navigate = useNavigate();
+  const [editingCustomers, setEditingCustomers] = useState<{
+    [key: number]: EditingCustomer;
+  }>({});
+  const [availableLabels, setAvailableLabels] = useState<Label[]>([]);
+  const [deleteModalOpen, setDeleteModalOpen] = useState(false);
+  const [customerToDelete, setCustomerToDelete] = useState<Customer | null>(
+    null
+  );
 
-  const handleRowClick = (uid: number) => {
-    navigate(`/customers/${uid}`); // 고객 상세 페이지로 이동
-  };
-
-  const handleChangePage = (event: unknown, newPage: number) => {
-    setPage(newPage);
-  };
-
-  const handleChangeRowsPerPage = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setRowsPerPage(parseInt(event.target.value, 10));
-    setPage(0);
-  };
-
-  const getStatusChip = (status: string) => {
-    const statusStyles: { [key: string]: { color: string, backgroundColor: string } } = {
-      매도자: { color: '#2F80ED', backgroundColor: '#EBF2FC' },
-      매수자: { color: '#219653', backgroundColor: '#E9F7EF' },
-      임차인: { color: '#F2994A', backgroundColor: '#FEF5EB' },
-      임대인: { color: '#EB5757', backgroundColor: '#FDEEEE' },
+  // 라벨 목록 가져오기
+  useEffect(() => {
+    const fetchLabels = async () => {
+      try {
+        const response = await apiClient.get("/labels");
+        if (response.data?.data?.labels) {
+          setAvailableLabels(response.data.data.labels);
+        }
+      } catch (error) {
+        console.error("Failed to fetch labels:", error);
+      }
     };
+    fetchLabels();
+  }, []);
+
+  const handleRowClick = (customer: Customer) => {
+    if (editingCustomers[customer.uid]) return;
+    navigate(`/customers/${customer.uid}`);
+  };
+
+  const handleDelete = (customer: Customer) => {
+    setCustomerToDelete(customer);
+    setDeleteModalOpen(true);
+  };
+
+  const handleDeleteConfirm = async () => {
+    if (!customerToDelete) return;
+
+    try {
+      const response = await apiClient.delete(
+        `/customers/${customerToDelete.uid}`
+      );
+      if (response.status === 200) {
+        // 현재 페이지의 데이터가 1개이고 첫 페이지가 아닌 경우, 이전 페이지로 이동
+        if (customerList.length === 1 && page > 0) {
+          setPage(page - 1);
+        } else {
+          // 현재 페이지 새로고침
+          const newPage = customerList.length === 1 ? 0 : page;
+          setPage(newPage);
+        }
+        onRefresh();
+        toast.success("고객을 삭제했습니다.");
+      }
+    } catch (error) {
+      console.error("Failed to delete customer:", error);
+      toast.error("고객 삭제에 실패했습니다.");
+    } finally {
+      setDeleteModalOpen(false);
+      setCustomerToDelete(null);
+    }
+  };
+
+  const handleDeleteCancel = () => {
+    setDeleteModalOpen(false);
+    setCustomerToDelete(null);
+  };
+
+  const handleEditStart = (customer: Customer) => {
+    setEditingCustomers({
+      ...editingCustomers,
+      [customer.uid]: {
+        ...customer,
+        isEditing: true,
+      },
+    });
+  };
+
+  const handleEditCancel = (uid: number) => {
+    const newEditingCustomers = { ...editingCustomers };
+    delete newEditingCustomers[uid];
+    setEditingCustomers(newEditingCustomers);
+  };
+
+  const handleEditChange = (
+    uid: number,
+    field: keyof Customer,
+    value: EditableFields
+  ) => {
+    setEditingCustomers({
+      ...editingCustomers,
+      [uid]: {
+        ...editingCustomers[uid],
+        [field]: value,
+      },
+    });
+  };
+
+  const handleEditSave = async (uid: number) => {
+    const editedCustomer = editingCustomers[uid];
+    if (editedCustomer && onCustomerUpdate) {
+      // 전화번호 형식 검증
+      const phoneRegex = /^\d{3}-\d{3,4}-\d{4}$/;
+      if (!phoneRegex.test(editedCustomer.phoneNo)) {
+        alert("전화번호 형식이 올바르지 않습니다. (예: 010-1234-5678)");
+        return;
+      }
+
+      // 이름 검증
+      if (!editedCustomer.name.trim()) {
+        alert("이름을 입력해주세요.");
+        return;
+      }
+
+      const updatedCustomer = {
+        uid: editedCustomer.uid,
+        name: editedCustomer.name,
+        phoneNo: editedCustomer.phoneNo,
+        tenant: editedCustomer.tenant,
+        landlord: editedCustomer.landlord,
+        buyer: editedCustomer.buyer,
+        seller: editedCustomer.seller,
+        labels: Array.isArray(editedCustomer.labels)
+          ? editedCustomer.labels
+          : [],
+        trafficSource: editedCustomer.trafficSource,
+      };
+
+      await onCustomerUpdate(updatedCustomer);
+      handleEditCancel(uid);
+    }
+  };
+
+  const renderEditableRow = (customer: Customer) => {
+    const editingCustomer = editingCustomers[customer.uid];
 
     return (
-      <Chip
-        label={status}
-        size="small"
+      <TableRow
+        key={customer.uid}
+        onClick={() =>
+          !editingCustomers[customer.uid] && handleRowClick(customer)
+        }
         sx={{
-          ...statusStyles[status],
-          borderRadius: '4px',
-          height: '24px',
-          fontSize: '12px',
-          fontWeight: 500,
+          cursor: "pointer",
+          "&:hover": { backgroundColor: "#f0f0f0" },
         }}
-      />
+      >
+        <TableCell align="left" sx={{ width: "130px" }}>
+          {editingCustomer?.isEditing ? (
+            <TextField
+              size="small"
+              value={editingCustomer.name}
+              onChange={(e) =>
+                handleEditChange(customer.uid, "name", e.target.value)
+              }
+              fullWidth
+            />
+          ) : (
+            customer.name
+          )}
+        </TableCell>
+        <TableCell align="left" sx={{ width: "160px" }}>
+          {editingCustomer?.isEditing ? (
+            <TextField
+              size="small"
+              value={editingCustomer.phoneNo}
+              onChange={(e) =>
+                handleEditChange(customer.uid, "phoneNo", e.target.value)
+              }
+              fullWidth
+            />
+          ) : (
+            customer.phoneNo
+          )}
+        </TableCell>
+        <TableCell sx={{ width: "200px" }}>
+          {editingCustomer?.isEditing ? (
+            <Box sx={{ display: "flex", flexWrap: "wrap", gap: 1 }}>
+              <Chip
+                label="임차인"
+                size="small"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  handleEditChange(
+                    customer.uid,
+                    "tenant",
+                    !editingCustomer.tenant
+                  );
+                }}
+                sx={{
+                  backgroundColor: editingCustomer.tenant
+                    ? "#FCE8D4"
+                    : "#F5F5F5",
+                  color: editingCustomer.tenant ? "#E67E00" : "#757575",
+                  cursor: "pointer",
+                  "&:hover": {
+                    backgroundColor: editingCustomer.tenant
+                      ? "#FCE8D4"
+                      : "#E0E0E0",
+                  },
+                }}
+              />
+              <Chip
+                label="임대인"
+                size="small"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  handleEditChange(
+                    customer.uid,
+                    "landlord",
+                    !editingCustomer.landlord
+                  );
+                }}
+                sx={{
+                  backgroundColor: editingCustomer.landlord
+                    ? "#FCDADA"
+                    : "#F5F5F5",
+                  color: editingCustomer.landlord ? "#D63939" : "#757575",
+                  cursor: "pointer",
+                  "&:hover": {
+                    backgroundColor: editingCustomer.landlord
+                      ? "#FCDADA"
+                      : "#E0E0E0",
+                  },
+                }}
+              />
+              <Chip
+                label="매수자"
+                size="small"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  handleEditChange(
+                    customer.uid,
+                    "buyer",
+                    !editingCustomer.buyer
+                  );
+                }}
+                sx={{
+                  backgroundColor: editingCustomer.buyer
+                    ? "#D4EDDC"
+                    : "#F5F5F5",
+                  color: editingCustomer.buyer ? "#0E8A3E" : "#757575",
+                  cursor: "pointer",
+                  "&:hover": {
+                    backgroundColor: editingCustomer.buyer
+                      ? "#D4EDDC"
+                      : "#E0E0E0",
+                  },
+                }}
+              />
+              <Chip
+                label="매도자"
+                size="small"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  handleEditChange(
+                    customer.uid,
+                    "seller",
+                    !editingCustomer.seller
+                  );
+                }}
+                sx={{
+                  backgroundColor: editingCustomer.seller
+                    ? "#D6E6F9"
+                    : "#F5F5F5",
+                  color: editingCustomer.seller ? "#1B64C2" : "#757575",
+                  cursor: "pointer",
+                  "&:hover": {
+                    backgroundColor: editingCustomer.seller
+                      ? "#D6E6F9"
+                      : "#E0E0E0",
+                  },
+                }}
+              />
+            </Box>
+          ) : (
+            <Box sx={{ display: "flex", gap: 1 }}>
+              {customer.tenant && (
+                <Chip
+                  label="임차인"
+                  size="small"
+                  sx={{
+                    backgroundColor: "#FEF5EB",
+                    color: "#F2994A",
+                  }}
+                />
+              )}
+              {customer.landlord && (
+                <Chip
+                  label="임대인"
+                  size="small"
+                  sx={{
+                    backgroundColor: "#FDEEEE",
+                    color: "#EB5757",
+                  }}
+                />
+              )}
+              {customer.buyer && (
+                <Chip
+                  label="매수자"
+                  size="small"
+                  sx={{
+                    backgroundColor: "#E9F7EF",
+                    color: "#219653",
+                  }}
+                />
+              )}
+              {customer.seller && (
+                <Chip
+                  label="매도자"
+                  size="small"
+                  sx={{
+                    backgroundColor: "#EBF2FC",
+                    color: "#2F80ED",
+                  }}
+                />
+              )}
+              {!customer.tenant &&
+                !customer.landlord &&
+                !customer.buyer &&
+                !customer.seller && (
+                  <Chip
+                    label="없음"
+                    size="small"
+                    sx={{
+                      backgroundColor: "#F5F5F5",
+                      color: "#757575",
+                    }}
+                  />
+                )}
+            </Box>
+          )}
+        </TableCell>
+        <TableCell sx={{ width: "300px" }}>
+          {editingCustomer?.isEditing ? (
+            <Autocomplete
+              multiple
+              size="small"
+              options={availableLabels}
+              getOptionLabel={(option) => option.name}
+              value={editingCustomer.labels || []}
+              onChange={(_, newValue) => {
+                handleEditChange(customer.uid, "labels", newValue);
+              }}
+              renderInput={(params) => (
+                <TextField {...params} placeholder="라벨 선택" />
+              )}
+              renderTags={(value, getTagProps) =>
+                value.map((option, index) => (
+                  <Chip
+                    {...getTagProps({ index })}
+                    key={option.uid}
+                    label={option.name}
+                    size="small"
+                    variant="outlined"
+                  />
+                ))
+              }
+              isOptionEqualToValue={(option, value) => option.uid === value.uid}
+            />
+          ) : (
+            <Box sx={{ display: "flex", flexWrap: "wrap", gap: 1 }}>
+              {customer.labels && customer.labels.length > 0 ? (
+                customer.labels.map((label) => (
+                  <Chip
+                    key={label.uid}
+                    label={label.name}
+                    size="small"
+                    variant="outlined"
+                  />
+                ))
+              ) : (
+                <Chip
+                  label="없음"
+                  size="small"
+                  sx={{
+                    backgroundColor: "#F5F5F5",
+                    color: "#757575",
+                  }}
+                />
+              )}
+            </Box>
+          )}
+        </TableCell>
+        <TableCell align="center" sx={{ width: "100px" }}>
+          <Box sx={{ display: "flex", gap: 1, justifyContent: "center" }}>
+            {editingCustomer?.isEditing ? (
+              <>
+                <IconButton
+                  onClick={() => handleEditSave(customer.uid)}
+                  size="small"
+                  sx={{ zIndex: 10 }}
+                >
+                  <DoneIcon sx={{ color: "#219653" }} />
+                </IconButton>
+                <IconButton
+                  onClick={() => handleEditCancel(customer.uid)}
+                  size="small"
+                  sx={{ zIndex: 10 }}
+                >
+                  <CloseIcon sx={{ color: "#EB5757" }} />
+                </IconButton>
+              </>
+            ) : (
+              <>
+                <IconButton
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    handleEditStart(customer);
+                  }}
+                  size="small"
+                  sx={{ zIndex: 100 }}
+                >
+                  <EditIcon sx={{ color: "#164F9E" }} />
+                </IconButton>
+                <IconButton
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    handleDelete(customer);
+                  }}
+                  size="small"
+                  sx={{ zIndex: 100 }}
+                >
+                  <DeleteIcon sx={{ color: "#E53535" }} />
+                </IconButton>
+              </>
+            )}
+          </Box>
+        </TableCell>
+      </TableRow>
     );
-  };
-
-  const getTypeChip = (type: string) => {
-    const typeStyles: { [key: string]: { color: string, backgroundColor: string } } = {
-      VIP: { color: '#9B51E0', backgroundColor: '#F7F0FE' },
-      '계약 완료': { color: '#333333', backgroundColor: '#F2F2F2' },
-      요주의: { color: '#F2994A', backgroundColor: '#FEF5EB' },
-    };
-
-    return type ? (
-      <Chip
-        label={type}
-        size="small"
-        sx={{
-          ...typeStyles[type],
-          borderRadius: '4px',
-          height: '24px',
-          fontSize: '12px',
-          fontWeight: 500,
-        }}
-      />
-    ) : null;
   };
 
   return (
     <Box sx={{ width: "100%", mt: 4 }}>
-      <Paper sx={{ width: "100%", overflow: "hidden" }}>
+      <Paper sx={{ width: "100%", overflow: "hidden" }} elevation={0}>
         <TableContainer>
           <Table sx={{ minWidth: 650 }} aria-label="customer table">
             <TableHead>
               <TableRow>
-                <TableCell align="left" sx={{ fontWeight: 600 }}>이름</TableCell>
-                <TableCell align="left" sx={{ fontWeight: 600 }}>전화번호</TableCell>
-                <TableCell align="left" sx={{ fontWeight: 600 }}>역할</TableCell>
-                <TableCell align="left" sx={{ fontWeight: 600 }}>라벨</TableCell>
-                <TableCell align="center" sx={{ fontWeight: 600 }}>관리</TableCell>
+                <TableCell
+                  align="left"
+                  sx={{ fontWeight: 600, width: "130px" }}
+                >
+                  이름
+                </TableCell>
+                <TableCell
+                  align="left"
+                  sx={{ fontWeight: 600, width: "160px" }}
+                >
+                  전화번호
+                </TableCell>
+                <TableCell
+                  align="left"
+                  sx={{ fontWeight: 600, width: "200px" }}
+                >
+                  역할
+                </TableCell>
+                <TableCell
+                  align="left"
+                  sx={{ fontWeight: 600, width: "300px" }}
+                >
+                  라벨
+                </TableCell>
+                <TableCell
+                  align="center"
+                  sx={{ fontWeight: 600, width: "100px" }}
+                />
               </TableRow>
             </TableHead>
             <TableBody>
               {customerList.length > 0 ? (
-                customerList.map((customer) => (
-                  <TableRow
-                    key={customer.uid}
-                    onClick={() => handleRowClick(customer.uid)}
-                    sx={{
-                      cursor: "pointer",
-                      "&:hover": { backgroundColor: "#f0f0f0" },
-                    }}
-                  >
-                    <TableCell align="left">{customer.name}</TableCell>
-                    <TableCell align="left">{customer.phoneNo}</TableCell>
-                    <TableCell>
-                      <Box sx={{ display: "flex", gap: 1 }}>
-                        {customer.tenant && <Chip label="임차인" size="small" sx={{ backgroundColor: "#FEF5EB", color: "#F2994A" }} />}
-                        {customer.landlord && <Chip label="임대인" size="small" sx={{ backgroundColor: "#FDEEEE", color: "#EB5757" }} />}
-                        {customer.buyer && <Chip label="매수자" size="small" sx={{ backgroundColor: "#E9F7EF", color: "#219653" }} />}
-                        {customer.seller && <Chip label="매도자" size="small" sx={{ backgroundColor: "#EBF2FC", color: "#2F80ED" }} />}
-                      </Box>
-                    </TableCell>
-                    <TableCell>
-                      <Box sx={{ display: "flex", flexWrap: "wrap", gap: 1 }}>
-                        {customer.labels && customer.labels.length > 0 ? (
-                          customer.labels.map((label) => (
-                            <Chip 
-                              key={label.uid} 
-                              label={label.name}
-                              size="small"
-                              variant="outlined"
-                            />
-                          ))
-                        ) : (
-                          <Typography variant="body2" color="textSecondary">없음</Typography>
-                        )}
-                      </Box>
-                    </TableCell>
-                    <TableCell align="center">
-                      <IconButton size="small">
-                        <DeleteIcon sx={{ color: '#E53535' }} />
-                      </IconButton>
-                    </TableCell>
-                  </TableRow>
-                ))
+                customerList.map((customer) => renderEditableRow(customer))
               ) : (
                 <TableRow>
                   <TableCell colSpan={8} align="center">
@@ -175,19 +555,49 @@ const CustomerTable = ({
             </TableBody>
           </Table>
         </TableContainer>
-        <TablePagination
-          component="div"
-          count={totalCount}
-          page={page}
-          rowsPerPage={rowsPerPage}
-          onPageChange={handleChangePage}
-          onRowsPerPageChange={handleChangeRowsPerPage}
-          labelDisplayedRows={({ from, to, count }) => 
-            `페이지 ${page + 1} / ${Math.ceil(count / rowsPerPage)}`
-          }
-          labelRowsPerPage=""
-        />
+        <Box
+          sx={{
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "space-between",
+            p: 2,
+            borderTop: "1px solid #E0E0E0",
+          }}
+        >
+          <Typography variant="body2" color="text.secondary">
+            총 {totalCount}명
+          </Typography>
+          <Box sx={{ display: "flex", alignItems: "center", gap: 2 }}>
+            <FormControl size="small" sx={{ minWidth: 120 }}>
+              <InputLabel>페이지당 행</InputLabel>
+              <Select
+                value={rowsPerPage}
+                label="페이지당 행"
+                onChange={(e) => setRowsPerPage(Number(e.target.value))}
+              >
+                <MenuItem value={10}>10</MenuItem>
+                <MenuItem value={25}>25</MenuItem>
+                <MenuItem value={50}>50</MenuItem>
+                <MenuItem value={100}>100</MenuItem>
+              </Select>
+            </FormControl>
+            <Pagination
+              count={Math.ceil(totalCount / rowsPerPage)}
+              page={page + 1}
+              onChange={(_, newPage) => setPage(newPage - 1)}
+              color="primary"
+              showFirstButton
+              showLastButton
+            />
+          </Box>
+        </Box>
       </Paper>
+      <DeleteConfirmModal
+        open={deleteModalOpen}
+        onClose={handleDeleteCancel}
+        onConfirm={handleDeleteConfirm}
+        customerName={customerToDelete?.name || ""}
+      />
     </Box>
   );
 };

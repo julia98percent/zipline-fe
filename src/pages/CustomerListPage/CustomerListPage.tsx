@@ -56,8 +56,10 @@ const CustomerListPage = () => {
 
   const { user } = useUserStore();
 
-  const fetchCustomerList = () => {
-    setLoading(true);
+  const fetchCustomerList = (showLoading = true) => {
+    if (showLoading) {
+      setLoading(true);
+    }
 
     const queryParams = new URLSearchParams({
       page: (page + 1).toString(),
@@ -110,8 +112,12 @@ const CustomerListPage = () => {
   };
 
   useEffect(() => {
-    fetchCustomerList();
-  }, [page, rowsPerPage, debouncedSearchTerm, filters]);
+    fetchCustomerList(false);
+  }, [debouncedSearchTerm]);
+
+  useEffect(() => {
+    fetchCustomerList(true);
+  }, [page, rowsPerPage, filters]);
 
   const handleFilterApply = (newFilters: Filters) => {
     setFilters(newFilters);

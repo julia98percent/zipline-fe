@@ -76,14 +76,12 @@ function RegionSelect({
 
           // 법정동 코드가 있는 경우 처리
           if (value.legalDistrictCode) {
-            console.log("Initial legalDistrictCode:", value.legalDistrictCode);
             const codes = extractRegionCodes(value.legalDistrictCode);
 
             if (codes) {
               const matchedSido = sidoList.find(
                 (sido: Region) => sido.cortarNo === codes.sidoCode
               );
-              console.log("Matched sido:", matchedSido);
 
               if (matchedSido) {
                 setRegion((prev) => ({
@@ -101,7 +99,6 @@ function RegionSelect({
                         (sigungu: Region) =>
                           sigungu.cortarNo === codes.sigunguCode
                       );
-                      console.log("Matched sigungu:", matchedSigungu);
 
                       if (matchedSigungu) {
                         setRegion((prev) => ({
@@ -120,7 +117,6 @@ function RegionSelect({
                                 (dong: Region) =>
                                   dong.cortarNo === codes.dongCode
                               );
-                              console.log("Matched dong:", matchedDong);
 
                               if (matchedDong) {
                                 setRegion((prev) => ({
@@ -145,15 +141,11 @@ function RegionSelect({
               }
             }
           } else if (value.name) {
-            // 기존 지역명 기반 초기화 로직 유지
-            console.log("Initial region name:", value.name);
             const [sidoName, sigunguName, dongName] = value.name.split(" ");
-            console.log("Parsed names:", { sidoName, sigunguName, dongName });
 
             const matchedSido = sidoList.find(
               (sido: Region) => sido.cortarName === sidoName
             );
-            console.log("Matched sido:", matchedSido);
 
             if (matchedSido) {
               // 시도 선택 및 시군구 데이터 로드
@@ -165,7 +157,6 @@ function RegionSelect({
                     const matchedSigungu = sigunguList.find(
                       (sigungu: Region) => sigungu.cortarName === sigunguName
                     );
-                    console.log("Matched sigungu:", matchedSigungu);
 
                     setRegion((prev) => ({
                       ...prev,
@@ -180,13 +171,10 @@ function RegionSelect({
                         .then((res) => {
                           if (res.data?.data) {
                             const dongList = res.data.data;
-                            console.log("Dong list:", dongList);
-                            console.log("Looking for dong name:", dongName);
 
                             const matchedDong = dongList.find(
                               (dong: Region) => dong.cortarName === dongName
                             );
-                            console.log("Matched dong:", matchedDong);
 
                             // 동 데이터와 선택 상태를 한 번에 업데이트
                             setRegion((prev) => {
@@ -196,7 +184,7 @@ function RegionSelect({
                                 dong: dongList,
                                 selectedDong: matchedDong?.cortarNo || null,
                               };
-                              console.log("New region state:", newState);
+
                               return newState;
                             });
 
@@ -246,7 +234,6 @@ function RegionSelect({
   useEffect(() => {
     if (!region.selectedSigungu) return;
 
-    console.log("Loading dong for sigungu:", region.selectedSigungu);
     apiClient
       .get(`/region/${region.selectedSigungu}`)
       .then((res) => {
@@ -265,7 +252,6 @@ function RegionSelect({
   const handleRegionChange =
     (type: "sido" | "sigungu" | "dong") => (event: SelectChangeEvent) => {
       const selectedValue = Number(event.target.value) || null;
-      console.log(`${type} changed to:`, selectedValue);
 
       // 상위 지역이 선택되지 않은 경우 하위 지역 선택 불가
       if (type === "sigungu" && !region.selectedSido) return;
@@ -275,10 +261,7 @@ function RegionSelect({
         const key = `selected${
           type.charAt(0).toUpperCase() + type.slice(1)
         }` as keyof RegionState;
-        console.log("Updating region state:", {
-          ...prev,
-          [key]: selectedValue,
-        });
+
         return {
           ...prev,
           [key]: selectedValue,

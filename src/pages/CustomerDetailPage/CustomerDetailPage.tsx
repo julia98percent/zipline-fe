@@ -101,7 +101,6 @@ function CustomerDetailPage() {
   };
 
   const handleEditClick = () => {
-    console.log(customer);
     if (customer) {
       const editedData = {
         ...customer,
@@ -116,7 +115,7 @@ function CustomerDetailPage() {
         birthDay: customer.birthDay || null,
         labels: [...(customer.labels || [])],
       };
-      console.log("Setting edited customer data:", editedData);
+
       setEditedCustomer(editedData);
     }
     setIsEditing(true);
@@ -135,19 +134,16 @@ function CustomerDetailPage() {
 
     // null 값 처리를 명시적으로
     const processedValue = value === "" ? null : value;
-    console.log("handleInputChange:", { field, value, processedValue });
-
     const updated = {
       ...editedCustomer,
       [field]: processedValue,
     };
-    console.log("Updated editedCustomer:", updated);
+
     setEditedCustomer(updated);
   };
 
   // RegionSelect 변경 핸들러를 별도 함수로 분리
   const handleRegionChange = (value: { code: number | null; name: string }) => {
-    console.log("RegionSelect onChange:", value);
     if (!editedCustomer) return;
 
     const updated = {
@@ -155,7 +151,7 @@ function CustomerDetailPage() {
       legalDistrictCode: value.code,
       preferredRegion: value.name,
     };
-    console.log("Updated customer with region:", updated);
+
     setEditedCustomer(updated);
   };
 
@@ -181,8 +177,6 @@ function CustomerDetailPage() {
       birthday: editedCustomer.birthDay,
       labelUids: editedCustomer.labels.map((label) => label.uid),
     };
-
-    console.log("Sending API request with data:", requestData);
 
     try {
       const response = await apiClient.put(
@@ -381,24 +375,14 @@ function CustomerDetailPage() {
                   희망 지역
                 </Typography>
                 {isEditing ? (
-                  <>
-                    <RegionSelect
-                      value={{
-                        code: editedCustomer?.legalDistrictCode ?? null,
-                        name: editedCustomer?.preferredRegion ?? "",
-                      }}
-                      onChange={handleRegionChange}
-                      disabled={false}
-                    />
-                    <Typography
-                      variant="caption"
-                      color="textSecondary"
-                      display="block"
-                      sx={{ mt: 1 }}
-                    >
-                      {`Current legalDistrictCode: ${editedCustomer?.legalDistrictCode}, Region: ${editedCustomer?.preferredRegion}`}
-                    </Typography>
-                  </>
+                  <RegionSelect
+                    value={{
+                      code: editedCustomer?.legalDistrictCode ?? null,
+                      name: editedCustomer?.preferredRegion ?? "",
+                    }}
+                    onChange={handleRegionChange}
+                    disabled={false}
+                  />
                 ) : (
                   <Typography variant="body1">
                     {customer.preferredRegion || "-"}

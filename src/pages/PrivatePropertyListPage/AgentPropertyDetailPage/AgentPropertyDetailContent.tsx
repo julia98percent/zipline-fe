@@ -97,7 +97,7 @@ const KakaoMap = ({ lat, lng }: { lat: number; lng: number }) => {
 
     if (!(window as any).kakao || !(window as any).kakao.maps) {
       const script = document.createElement("script");
-      script.src = `https://dapi.kakao.com/v2/maps/sdk.js?appkey=${import.meta.env.VITE_KAKAO_MAP_SECRET}&autoload=false`;
+      script.src = `http://dapi.kakao.com/v2/maps/sdk.js?appkey=${import.meta.env.VITE_KAKAO_MAP_SECRET}&autoload=false`;
       script.async = true;
       script.onload = () => {
         (window as any).kakao.maps.load(createMap);

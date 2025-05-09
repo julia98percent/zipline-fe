@@ -1,6 +1,5 @@
 import { useEffect, useState, useCallback } from "react";
 import apiClient from "@apis/apiClient";
-// import PropertyAddButtonList from "./PropertyAddButtonList"; // 사용하지 않으므로 주석 처리 또는 삭제
 import PropertyTable from "./PropertyTable";
 import PropertyFilterModal from "./PropertyFilterModal/PropertyFilterModal";
 import PageHeader from "@components/PageHeader/PageHeader";
@@ -11,7 +10,6 @@ import {
   PageContainer,
   ContentContainer,
   FilterButtonWrapper,
-  ActionButtonWrapper,
   FilterButton,
   LoadingContainer,
   TopFilterBar,
@@ -19,15 +17,22 @@ import {
   CategoryButtonGroup,
   TypeButtonGroup,
   StyledSelect,
+  FilterContainer,
+  LeftButtonGroup,
+  RightButtonGroup,
+  menuItemStyles,
+  selectMenuProps,
 } from "./styles/PrivatePropertyListPage.styles";
 import { MenuItem, SelectChangeEvent } from "@mui/material";
 import PropertyAddButtonList from "./PropertyAddButtonList";
 import { Box } from "@mui/material";
+import { useNavigate } from "react-router-dom";
 
 export interface PropertyItem {
   uid: number;
   customerName: string;
   address: string;
+  detailAddress: string | null;
   deposit: number | null;
   monthlyRent: number | null;
   price: number;
@@ -51,7 +56,6 @@ export interface PropertyItem {
   details: string | null;
 }
 
-// 카테고리/유형 옵션
 const CATEGORY_OPTIONS = [
   { value: "ONE_ROOM", label: "원룸" },
   { value: "TWO_ROOM", label: "투룸" },
@@ -68,51 +72,75 @@ const TYPE_OPTIONS = [
 ];
 
 function PrivatePropertyListPage() {
-  const [privatePropertyList, setPrivatePropertyList] = useState<PropertyItem[]>([]);
+  const [privatePropertyList, setPrivatePropertyList] = useState<
+    PropertyItem[]
+  >([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [filterModalOpen, setFilterModalOpen] = useState(false);
   const [filter, setFilter] = useState<AgentPropertyFilterRequest>({});
   const { user } = useUserStore();
+  const navigate = useNavigate();
+  const [page, setPage] = useState(0);
+  const [rowsPerPage, setRowsPerPage] = useState(10);
+  const [totalElements, setTotalElements] = useState(0);
 
-  // 주소 선택 state (예시)
-  const [selectedSido, setSelectedSido] = useState("");
-  const [selectedGu, setSelectedGu] = useState("");
-  const [selectedDong, setSelectedDong] = useState("");
+  const [region, setRegion] = useState({
+    sido: [],
+    sigungu: [],
+    dong: [],
+    selectedSido: "",
+    selectedSigungu: "",
+    selectedDong: "",
+  });
+  const updateLegalDistrictCode = (newState: typeof region) => {
+    const code = newState.selectedDong || newState.selectedSigungu || newState.selectedSido;
+  
+    let prefix = "";
+  
+    if (newState.selectedDong) {
+      prefix = String(code).slice(0, 8); // 동: 앞 8자리 (정확한 법정동코드)
+    } else if (newState.selectedSigungu) {
+      prefix = String(code).slice(0, 5); // 구/군: 앞 5자리
+    } else if (newState.selectedSido) {
+      prefix = String(code).slice(0, 2); // 시/도: 앞 2자리
+    }
+  
+    setFilter((prev) => ({
+      ...prev,
+      legalDistrictCode: prefix || undefined,
+    }));
+  };
 
   // 카테고리/유형 필터 핸들러
   const handleCategoryChange = (e: SelectChangeEvent<unknown>) => {
-    const value = (e.target.value as string) === "" ? undefined : e.target.value as PropertyItem["realCategory"];
+    const value =
+      (e.target.value as string) === ""
+        ? undefined
+        : (e.target.value as PropertyItem["realCategory"]);
     setFilter((prev) => ({ ...prev, category: value }));
   };
   const handleTypeChange = (e: SelectChangeEvent<unknown>) => {
-    const value = (e.target.value as string) === "" ? undefined : e.target.value as PropertyItem["type"];
+    const value =
+      (e.target.value as string) === ""
+        ? undefined
+        : (e.target.value as PropertyItem["type"]);
     setFilter((prev) => ({ ...prev, type: value }));
-  };
-
-  // 주소 선택 핸들러 (실제 데이터 연동은 추후)
-  const handleSidoChange = (e: SelectChangeEvent<unknown>) => {
-    setSelectedSido(e.target.value as string);
-    setSelectedGu("");
-    setSelectedDong("");
-    setFilter((prev) => ({ ...prev, legalDistrictCode: undefined }));
-  };
-  const handleGuChange = (e: SelectChangeEvent<unknown>) => {
-    setSelectedGu(e.target.value as string);
-    setSelectedDong("");
-    setFilter((prev) => ({ ...prev, legalDistrictCode: undefined }));
-  };
-  const handleDongChange = (e: SelectChangeEvent<unknown>) => {
-    setSelectedDong(e.target.value as string);
-    setFilter((prev) => ({ ...prev, legalDistrictCode: (e.target.value as string) === "삼성동" ? "1168010800" : undefined }));
   };
 
   const fetchPropertyData = useCallback(() => {
     setLoading(true);
     apiClient
-      .get("/properties")
+      .get("/properties", {
+        params: {
+          ...filter,
+          page: page + 1, // 백엔드는 1부터 시작
+          size: rowsPerPage,
+        },
+      })
       .then((res) => {
-        const agentPropertyData = res?.data?.data?.agentProperty;
-        setPrivatePropertyList(agentPropertyData || []);
+        const data = res.data?.data;
+        setPrivatePropertyList(data.agentProperty || []);
+        setTotalElements(data.totalElements || 0);
       })
       .catch((error) => {
         console.error("Failed to fetch properties:", error);
@@ -121,7 +149,7 @@ function PrivatePropertyListPage() {
       .finally(() => {
         setLoading(false);
       });
-  }, []);
+  }, [page, rowsPerPage]);
 
   const fetchFilteredProperties = useCallback(() => {
     setLoading(true);
@@ -158,6 +186,69 @@ function PrivatePropertyListPage() {
     fetchPropertyData();
   }, [fetchPropertyData]);
 
+  useEffect(() => {
+    apiClient.get("/region/0").then((res) => {
+      setRegion((prev) => ({ ...prev, sido: res.data.data }));
+    });
+  }, []);
+
+  useEffect(() => {
+    if (!region.selectedSido) return;
+    apiClient.get(`/region/${region.selectedSido}`).then((res) => {
+      setRegion((prev) => ({
+        ...prev,
+        sigungu: res.data.data,
+        selectedSigungu: "",
+        dong: [],
+        selectedDong: "",
+      }));
+    });
+  }, [region.selectedSido]);
+
+  useEffect(() => {
+    if (!region.selectedSigungu) return;
+    apiClient.get(`/region/${region.selectedSigungu}`).then((res) => {
+      setRegion((prev) => ({
+        ...prev,
+        dong: res.data.data,
+        selectedDong: "",
+      }));
+    });
+  }, [region.selectedSigungu]);
+
+  const handleSidoChange = (e: SelectChangeEvent) => {
+    const newSido = e.target.value;
+    const newState = {
+      ...region,
+      selectedSido: newSido,
+      selectedSigungu: "",
+      selectedDong: "",
+    };
+    setRegion(newState);
+    updateLegalDistrictCode(newState);
+  };
+
+  const handleGuChange = (e: SelectChangeEvent) => {
+    const newSigungu = e.target.value;
+    const newState = {
+      ...region,
+      selectedSigungu: newSigungu,
+      selectedDong: "",
+    };
+    setRegion(newState);
+    updateLegalDistrictCode(newState);
+  };
+
+  const handleDongChange = (e: SelectChangeEvent) => {
+    const newDong = e.target.value;
+    const newState = {
+      ...region,
+      selectedDong: newDong,
+    };
+    setRegion(newState);
+    updateLegalDistrictCode(newState);
+  };
+
   if (loading) {
     return (
       <PageContainer>
@@ -176,93 +267,139 @@ function PrivatePropertyListPage() {
       <ContentContainer>
         {/* 상단 필터 바 */}
         <TopFilterBar>
-          {/* 주소 체크 (시/군/구/동) - 두 줄로 자연스럽게 */}
-          <Box sx={{ display: 'flex', gap: 12, flexWrap: 'wrap', marginBottom: 1 }}>
-            <AddressSelectBox sx={{ background: '#fff', boxShadow: 'none', padding: 0 }}>
+          {/* 주소 체크 (시/군/구/동) */}
+          <Box sx={{ display: "flex", gap: 12, flexWrap: "wrap" }}>
+            <AddressSelectBox
+              sx={{ background: "#fff", boxShadow: "none", padding: 0 }}
+            >
               <StyledSelect
                 size="small"
-                value={selectedSido}
+                value={region.selectedSido}
                 displayEmpty
                 onChange={handleSidoChange}
-                sx={{ width: 120, marginRight: 1 }}
-                inputProps={{ 'aria-label': '시/도' }}
+                sx={{ width: 120, height: 35 }}
               >
                 <MenuItem value="">시/도</MenuItem>
-                <MenuItem value="서울시">서울시</MenuItem>
-                {/* 실제 시/도 데이터로 대체 */}
+                {region.sido.map((sido: any) => (
+                  <MenuItem key={sido.cortarNo} value={sido.cortarNo}>
+                    {sido.cortarName}
+                  </MenuItem>
+                ))}
               </StyledSelect>
+
               <StyledSelect
                 size="small"
-                value={selectedGu}
+                value={region.selectedSigungu}
                 displayEmpty
                 onChange={handleGuChange}
-                sx={{ width: 120, marginRight: 1 }}
-                inputProps={{ 'aria-label': '구/군' }}
+                sx={{ width: 120, height: 35 }}
+                disabled={!region.selectedSido}
               >
-                <MenuItem value="">구/군</MenuItem>
-                <MenuItem value="강남구">강남구</MenuItem>
-                {/* 실제 구/군 데이터로 대체 */}
+                <MenuItem value="">시/군/구</MenuItem>
+                {region.sigungu.map((gu: any) => (
+                  <MenuItem key={gu.cortarNo} value={gu.cortarNo}>
+                    {gu.cortarName}
+                  </MenuItem>
+                ))}
               </StyledSelect>
+
               <StyledSelect
                 size="small"
-                value={selectedDong}
+                value={region.selectedDong}
                 displayEmpty
                 onChange={handleDongChange}
-                sx={{ width: 120,  marginRight: 1 }}
-                inputProps={{ 'aria-label': '동' }}
+                sx={{ width: 120, height: 35 }}
+                disabled={!region.selectedSigungu}
               >
                 <MenuItem value="">동</MenuItem>
-                <MenuItem value="삼성동">삼성동</MenuItem>
-                {/* 실제 동 데이터로 대체 */}
+                {region.dong.map((dong: any) => (
+                  <MenuItem key={dong.cortarNo} value={dong.cortarNo}>
+                    {dong.cortarName}
+                  </MenuItem>
+                ))}
               </StyledSelect>
             </AddressSelectBox>
           </Box>
 
-          {/* 카테고리/판매유형/상세필터/등록 버튼 한 줄 */}
-          <Box sx={{ display: 'flex', gap: 12, flexWrap: 'wrap', alignItems: 'center' }}>
-            <CategoryButtonGroup>
-              <StyledSelect
-                size="small"
-                value={filter.category || ""}
-                displayEmpty
-                onChange={handleCategoryChange}
-                sx={{ width: 120 }}
-                inputProps={{ 'aria-label': '카테고리' }}
-              >
-                <MenuItem value="">카테고리</MenuItem>
-                {CATEGORY_OPTIONS.map((opt) => (
-                  <MenuItem key={opt.value} value={opt.value || ""}>{opt.label}</MenuItem>
-                ))}
-              </StyledSelect>
-            </CategoryButtonGroup>
-            <TypeButtonGroup>
-              <StyledSelect
-                size="small"
-                value={filter.type || ""}
-                displayEmpty
-                onChange={handleTypeChange}
-                sx={{ width: 120 }}
-                inputProps={{ 'aria-label': '판매유형' }}
-              >
-                <MenuItem value="">판매유형</MenuItem>
-                {TYPE_OPTIONS.map((opt) => (
-                  <MenuItem key={opt.value} value={opt.value || ""}>{opt.label}</MenuItem>
-                ))}
-              </StyledSelect>
-            </TypeButtonGroup>
-            <FilterButtonWrapper>
-              <FilterButton variant="outlined" onClick={() => setFilterModalOpen(true)}>
-                상세 필터
-              </FilterButton>
-            </FilterButtonWrapper>
-            <ActionButtonWrapper>
+          {/* 카테고리/판매유형/상세필터/등록 버튼 */}
+          <FilterContainer>
+            <LeftButtonGroup>
+              <CategoryButtonGroup>
+                <StyledSelect
+                  size="small"
+                  value={filter.category || ""}
+                  displayEmpty
+                  onChange={handleCategoryChange}
+                  sx={{ width: 120, height: 35 }}
+                  inputProps={{ "aria-label": "카테고리" }}
+                  MenuProps={selectMenuProps}
+                >
+                  <MenuItem value="" sx={menuItemStyles}>
+                    카테고리
+                  </MenuItem>
+                  {CATEGORY_OPTIONS.map((opt) => (
+                    <MenuItem
+                      key={opt.value}
+                      value={opt.value || ""}
+                      sx={menuItemStyles}
+                    >
+                      {opt.label}
+                    </MenuItem>
+                  ))}
+                </StyledSelect>
+              </CategoryButtonGroup>
+              <TypeButtonGroup>
+                <StyledSelect
+                  size="small"
+                  value={filter.type || ""}
+                  displayEmpty
+                  onChange={handleTypeChange}
+                  sx={{ width: 120, height: 35 }}
+                  inputProps={{ "aria-label": "판매유형" }}
+                  MenuProps={selectMenuProps}
+                >
+                  <MenuItem value="" sx={menuItemStyles}>
+                    판매유형
+                  </MenuItem>
+                  {TYPE_OPTIONS.map((opt) => (
+                    <MenuItem
+                      key={opt.value}
+                      value={opt.value || ""}
+                      sx={menuItemStyles}
+                    >
+                      {opt.label}
+                    </MenuItem>
+                  ))}
+                </StyledSelect>
+              </TypeButtonGroup>
+              <FilterButtonWrapper>
+                <FilterButton
+                  variant="outlined"
+                  onClick={() => setFilterModalOpen(true)}
+                >
+                  상세 필터
+                </FilterButton>
+              </FilterButtonWrapper>
+            </LeftButtonGroup>
+            <RightButtonGroup>
               <PropertyAddButtonList fetchPropertyData={fetchPropertyData} />
-            </ActionButtonWrapper>
-          </Box>
+            </RightButtonGroup>
+          </FilterContainer>
         </TopFilterBar>
 
         {/* 테이블 */}
-        <PropertyTable propertyList={privatePropertyList} />
+        <PropertyTable
+          propertyList={privatePropertyList}
+          totalElements={totalElements}
+          page={page}
+          rowsPerPage={rowsPerPage}
+          onPageChange={(_, newPage) => setPage(newPage)}
+          onRowsPerPageChange={(e) => {
+            setRowsPerPage(parseInt(e.target.value, 10));
+            setPage(0);
+          }}
+          onRowClick={(property) => navigate(`/properties/${property.uid}`)}
+        />
 
         {/* 상세 필터 모달 (카테고리/유형/주소 필드는 제외) */}
         <PropertyFilterModal

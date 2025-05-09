@@ -20,104 +20,118 @@ import { DesktopDatePicker } from "@mui/x-date-pickers";
 import useInput from "@hooks/useInput";
 import apiClient from "@apis/apiClient";
 import DaumPost from "./DaumPost";
+import { toast } from "react-toastify";
+import dayjs from "dayjs";
 
-function useNumericInput(
-  initialValue: string | number | null = ""
-): [
-  string,
-  (e: React.ChangeEvent<HTMLInputElement>) => void,
-  string | null,
-  React.Dispatch<React.SetStateAction<string | null>>
-] {
-  const [value, setValue] = useState<string>(initialValue?.toString() ?? "");
-  const [error, setError] = useState<string | null>(null);
-
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const newValue = e.target.value;
-    setValue(newValue);
-    if (newValue && !/^[0-9]*\.?[0-9]*$/.test(newValue)) {
-      setError("숫자만 입력 가능합니다.");
-    } else {
-      setError(null);
-    }
-  };
-
-  return [value, handleChange, error, setError];
+export interface AgentPropertyDetail {
+  customer: string;
+  address: string;
+  legalDistrictCode: string;
+  deposit: number;
+  monthlyRent: number;
+  price: number;
+  type: "SALE" | "DEPOSIT" | "MONTHLY";
+  longitude: number;
+  latitude: number;
+  startDate: string;
+  endDate: string;
+  moveInDate: string;
+  realCategory:
+    | "ONE_ROOM"
+    | "TWO_ROOM"
+    | "APARTMENT"
+    | "VILLA"
+    | "HOUSE"
+    | "OFFICETEL"
+    | "COMMERCIAL";
+  petsAllowed: boolean;
+  floor: number;
+  hasElevator: boolean;
+  constructionYear: string;
+  parkingCapacity: number;
+  netArea: number;
+  totalArea: number;
+  details: string;
 }
-interface PropertyAddModalProps {
+
+interface PropertyEditModalProps {
   open: boolean;
   handleClose: () => void;
+  initialData?: Partial<AgentPropertyDetail>;
+  propertyUid: number;
   fetchPropertyData: () => void;
 }
 
-function PropertyAddModal({
-  open,
-  handleClose,
-  fetchPropertyData,
-}: PropertyAddModalProps) {
+function PropertyEditModal({ open, handleClose, fetchPropertyData, propertyUid, initialData }: PropertyEditModalProps) {
   const [customerUid, setCustomerUid] = useState<number | null>(null);
-  const [customerOptions, setCustomerOptions] = useState<
-    { uid: number; name: string }[]
-  >([]);
-  const [address, setAddress] = useState<string | null>(null);
-  const [legalDistrictCode, setLegalDistrictCode] = useState<string>("");
-  const [extraAddress, handleChangeDetailAddress] = useInput<string>("");
-  const [createContract, setCreateContract] = useState<boolean>(false);
-
-  const [deposit, handleChangeDeposit, , setDepositError] = useNumericInput("");
-  const [monthlyRent, handleChangeMonthlyRent, , setMonthlyRentError] =
-    useNumericInput("");
-  const [price, handleChangePrice, priceError, setPriceError] =
-    useNumericInput("");
-  const [netArea, handleChangeNetArea, netAreaError, setNetAreaError] =
-    useNumericInput("");
-  const [totalArea, handleChangeTotalArea, totalAreaError, setTotalAreaError] =
-    useNumericInput("");
-  const [floor, handleChangeFloor, floorError, setFloorError] =
-    useNumericInput("");
-  const [
-    constructionYear,
-    handleChangeConstructionYear,
-    constructionYearError,
-    setConstructionYearError,
-  ] = useNumericInput("");
-
-  const [parkingCapacity, handleChangeParkingCapacity, parkingCapacityError] =
-    useNumericInput("");
-  const [details, handleChangeDetails] = useInput(null);
+  const [custoemrUid, setcustoemrUid] = useState<{ uid: number; name: string }[]>([]);
+  const [address, setAddress] = useState("");
+  const [detailAddress, setdetailAddress] = useState("");
+  const [legalDistrictCode, setLegalDistrictCode] = useState("");
+  const [deposit, setDeposit] = useState("");
+  const [monthlyRent, setMonthlyRent] = useState("");
+  const [price, setPrice] = useState("");
+  const [netArea, setNetArea] = useState("");
+  const [totalArea, setTotalArea] = useState("");
+  const [floor, setFloor] = useState("");
+  const [constructionYear, setConstructionYear] = useState("");
+  const [parkingCapacity, setParkingCapacity] = useState("");
+  const [details, setDetails] = useState("");
   const [type, setType] = useState("SALE");
-  const [longitude, setLongitude] = useState(null);
-  const [latitude, setLatitude] = useState(null);
-  const [contractStartDate, setContractStartDate] = useState<Dayjs | null>(
-    null
-  );
+  const [longitude, setLongitude] = useState<number | null>(null);
+  const [latitude, setLatitude] = useState<number | null>(null);
+  const [contractStartDate, setContractStartDate] = useState<Dayjs | null>(null);
   const [contractEndDate, setContractEndDate] = useState<Dayjs | null>(null);
   const [moveInDate, setMoveInDate] = useState<Dayjs | null>(null);
   const [realCategory, setRealCategory] = useState("APARTMENT");
   const [petsAllowed, setPetsAllowed] = useState(false);
-  const [hasElevator, setHasElevator] = useState<boolean>(false);
-  const [contractDateError, setContractDateError] = useState<string | null>(
-    null
-  );
+  const [hasElevator, setHasElevator] = useState(false);
 
-  const handleClickSubmitButton = () => {
-    if (
-      contractStartDate &&
-      contractEndDate &&
-      contractStartDate.isAfter(contractEndDate)
-    ) {
-      setContractDateError(
-        "계약 시작일은 계약 종료일보다 같거나 이전이어야 합니다."
-      );
-      return;
-    } else {
-      setContractDateError(null); // 에러 없으면 초기화
+  useEffect(() => {
+    if (open && initialData) {
+      if (initialData.customerUid !== undefined && initialData.customerUid !== null) setCustomerUid(initialData.customerUid as number);
+      if (initialData.address) setAddress(initialData.address);
+      if (initialData.detailAddress) setdetailAddress(initialData.detailAddress);
+      if (initialData.legalDistrictCode) setLegalDistrictCode(initialData.legalDistrictCode);
+      if (initialData.deposit !== undefined && initialData.deposit !== null) setDeposit(String(initialData.deposit));
+      if (initialData.monthlyRent !== undefined && initialData.monthlyRent !== null) setMonthlyRent(String(initialData.monthlyRent));
+      if (initialData.price !== undefined && initialData.price !== null) setPrice(String(initialData.price));
+      if (initialData.netArea !== undefined && initialData.netArea !== null) setNetArea(String(initialData.netArea));
+      if (initialData.totalArea !== undefined && initialData.totalArea !== null) setTotalArea(String(initialData.totalArea));
+      if (initialData.floor !== undefined && initialData.floor !== null) setFloor(String(initialData.floor));
+      if (initialData.constructionYear) setConstructionYear(String(initialData.constructionYear));
+      if (initialData.parkingCapacity !== undefined && initialData.parkingCapacity !== null) setParkingCapacity(String(initialData.parkingCapacity));
+      if (initialData.details) setDetails(initialData.details);
+      if (initialData.type) setType(initialData.type);
+      if (initialData.longitude !== undefined && initialData.longitude !== null) setLongitude(initialData.longitude);
+      if (initialData.latitude !== undefined && initialData.latitude !== null) setLatitude(initialData.latitude);
+      if (initialData.startDate) setContractStartDate(dayjs(initialData.startDate));
+      if (initialData.endDate) setContractEndDate(dayjs(initialData.endDate));
+      if (initialData.moveInDate) setMoveInDate(dayjs(initialData.moveInDate));
+      if (initialData.realCategory) setRealCategory(initialData.realCategory);
+      if (initialData.petsAllowed !== undefined && initialData.petsAllowed !== null) setPetsAllowed(initialData.petsAllowed);
+      if (initialData.hasElevator !== undefined && initialData.hasElevator !== null) setHasElevator(initialData.hasElevator);
     }
+  }, [open, initialData]);
 
-    const propertyDataToSubmit = {
+  useEffect(() => {
+    apiClient.get("/customers").then((res) => {
+      const customers = res.data.data.customers;
+      setcustoemrUid(customers);
+  
+      // 고객 이름 → UID 매핑
+      if (initialData?.customer) {
+        const matched = customers.find(
+          (c: { name: string }) => c.name === initialData.customer
+        );
+        setCustomerUid(matched?.uid ?? null);
+      }
+    });
+  }, [initialData]);
+  const handleSubmit = () => {
+    const payload = {
       customerUid,
-      address: address,
-      detailAddress: extraAddress,
+      address,
       legalDistrictCode,
       deposit: Number(deposit),
       monthlyRent: Number(monthlyRent),
@@ -137,86 +151,23 @@ function PropertyAddModal({
       netArea: Number(netArea),
       totalArea: Number(totalArea),
       details,
-      createContract,
     };
 
-    apiClient
-      .post("/properties", propertyDataToSubmit)
-      .then((res) => {
-        if (res.status === 201) {
-          alert("매물 등록 성공");
-          fetchPropertyData();
-          handleClose();
-        }
+    apiClient.patch(`/properties/${propertyUid}`, payload)
+      .then(() => {
+        toast.success("매물 수정 완료");
+        fetchPropertyData();
+        handleClose();
       })
-      .catch((error) => {
-        const message = error.response?.data?.message;
-        if (!message) return alert("등록 중 오류가 발생했습니다.");
-
-        const errorMap: Record<string, (msg: string) => void> = {
-          보증금: (msg) => setDepositError(msg),
-          월세: (msg) => setMonthlyRentError(msg),
-          "매매 가격": (msg) => setPriceError(msg),
-          "전용 면적": (msg) => setNetAreaError(msg),
-          "공급 면적": (msg) => setTotalAreaError(msg),
-          층수: (msg) => setFloorError(msg),
-          건축년도: (msg) => setConstructionYearError(msg),
-          주소: (msg) => alert(msg),
-          고객: () => alert(message),
-        };
-
-        const matched = Object.entries(errorMap).find(([key]) =>
-          message.includes(key)
-        );
-        if (matched) matched[1](message);
-        else alert(message);
+      .catch(() => {
+        toast.error("매물 수정 실패");
       });
   };
-  useEffect(() => {
-    axios
-      .get(
-        `https://dapi.kakao.com/v2/local/search/address.json?query=${address}`,
-        {
-          headers: {
-            Authorization: `KakaoAK ${import.meta.env.VITE_KAKAO_MAP_KEY}`,
-          },
-        }
-      )
-      .then((res) => {
-        const result = res?.data?.documents[0]?.address;
-
-        if (result) {
-          setLongitude(result.x);
-          setLatitude(result.y);
-          setLegalDistrictCode(result.b_code);
-        }
-      });
-  }, [address]);
-
-  useEffect(() => {
-    apiClient.get("/customers").then((res) => {
-      setCustomerOptions(res.data.data.customers);
-    });
-  }, []);
 
   return (
     <Modal open={open} onClose={handleClose}>
-      <Box
-        sx={{
-          position: "absolute",
-          top: "50%",
-          left: "50%",
-          transform: "translate(-50%, -50%)",
-          width: "50vw",
-          backgroundColor: "white",
-          boxShadow: 24,
-          borderRadius: 2,
-          p: 4,
-          maxHeight: "80vh",
-          overflowY: "auto",
-        }}
-      >
-        <Typography variant="h6">매물 등록</Typography>
+      <Box sx={{ position: "absolute", top: "50%", left: "50%", transform: "translate(-50%, -50%)", width: "50vw", bgcolor: "white", p: 4, borderRadius: 2, maxHeight: "80vh", overflowY: "auto" }}>
+        <Typography variant="h6">매물 수정</Typography>
         <TextField
           select
           label="고객 선택"
@@ -225,7 +176,7 @@ function PropertyAddModal({
           fullWidth
           sx={{ mt: 2 }}
         >
-          {customerOptions.map((customer) => (
+          {custoemrUid.map((customer) => (
             <MenuItem key={customer.uid} value={customer.uid.toString()}>
               {customer.name}
             </MenuItem>
@@ -243,24 +194,14 @@ function PropertyAddModal({
         <DaumPost setAddress={setAddress} />
         <TextField
           label="상세 주소"
-          value={extraAddress ?? ""}
-          onChange={handleChangeDetailAddress}
+          value={detailAddress ?? ""}
+          onChange={(e) => setdetailAddress(e.target.value)}
           disabled={!address}
           variant="outlined"
           fullWidth
           sx={{ mt: 2 }}
         />
 
-        <FormControlLabel
-          control={
-            <Checkbox
-              checked={createContract}
-              onChange={(e) => setCreateContract(e.target.checked)}
-            />
-          }
-          label="계약 자동 생성하기"
-          sx={{ mt: 2 }}
-        />
         {/* 거래 유형 */}
         <Typography variant="subtitle1" sx={{ mt: 2 }}>
           거래 유형
@@ -281,19 +222,17 @@ function PropertyAddModal({
           <TextField
             label="매매 가격"
             value={price ?? ""}
-            onChange={handleChangePrice}
+            onChange={(e) => setPrice(e.target.value)}
             sx={{ mt: 2 }}
             fullWidth
             placeholder="숫자만 입력하세요"
-            error={!!priceError}
-            helperText={priceError ?? undefined}
           />
         )}
         {type === "DEPOSIT" && (
           <TextField
             label="보증금"
             value={deposit ?? ""}
-            onChange={handleChangeDeposit}
+            onChange={(e) => setDeposit(e.target.value)}
             sx={{ mt: 2 }}
             fullWidth
           />
@@ -303,14 +242,14 @@ function PropertyAddModal({
             <TextField
               label="보증금"
               value={deposit ?? ""}
-              onChange={handleChangeDeposit}
+              onChange={(e) => setDeposit(e.target.value)}
               sx={{ mt: 2 }}
               fullWidth
             />
             <TextField
               label="월세"
               value={monthlyRent ?? ""}
-              onChange={handleChangeMonthlyRent}
+              onChange={(e) => setMonthlyRent(e.target.value)}
               sx={{ mt: 2 }}
               fullWidth
             />
@@ -326,53 +265,35 @@ function PropertyAddModal({
         >
           <FormControlLabel value="ONE_ROOM" control={<Radio />} label="원룸" />
           <FormControlLabel value="TWO_ROOM" control={<Radio />} label="투룸" />
-          <FormControlLabel
-            value="APARTMENT"
-            control={<Radio />}
-            label="아파트"
-          />
+          <FormControlLabel value="APARTMENT" control={<Radio />} label="아파트" />
           <FormControlLabel value="VILLA" control={<Radio />} label="빌라" />
           <FormControlLabel value="HOUSE" control={<Radio />} label="주택" />
-          <FormControlLabel
-            value="OFFICETEL"
-            control={<Radio />}
-            label="오피스텔"
-          />
-          <FormControlLabel
-            value="COMMERCIAL"
-            control={<Radio />}
-            label="상가"
-          />
+          <FormControlLabel value="OFFICETEL" control={<Radio />} label="오피스텔" />
+          <FormControlLabel value="COMMERCIAL" control={<Radio />} label="상가" />
         </RadioGroup>
         <TextField
           label="공급 면적"
           value={totalArea}
-          onChange={handleChangeTotalArea}
+          onChange={(e) => setTotalArea(e.target.value)}
           sx={{ mt: 2 }}
           fullWidth
           placeholder="숫자만 입력하세요"
-          error={!!totalAreaError}
-          helperText={totalAreaError ?? undefined}
         />
         <TextField
           label="전용 면적"
           value={netArea ?? ""}
-          onChange={handleChangeNetArea}
+          onChange={(e) => setNetArea(e.target.value)}
           sx={{ mt: 2 }}
           fullWidth
           placeholder="숫자만 입력하세요"
-          error={!!netAreaError}
-          helperText={netAreaError ?? undefined}
         />
         <TextField
           label="층수"
           value={floor ?? ""}
-          onChange={handleChangeFloor}
+          onChange={(e) => setFloor(e.target.value)}
           sx={{ mt: 2 }}
           fullWidth
           placeholder="숫자만 입력하세요"
-          error={!!floorError}
-          helperText={floorError ?? undefined}
         />
         {/* 반려동물 여부 */}
         <Typography variant="subtitle1" sx={{ mt: 2 }}>
@@ -411,8 +332,6 @@ function PropertyAddModal({
                   label="계약 시작일"
                   slotProps={{
                     textField: {
-                      error: !!contractDateError,
-                      helperText: contractDateError ?? "",
                       fullWidth: true,
                     },
                   }}
@@ -430,8 +349,6 @@ function PropertyAddModal({
                   label="계약 종료일"
                   slotProps={{
                     textField: {
-                      error: !!contractDateError,
-                      helperText: contractDateError ?? "",
                       fullWidth: true,
                     },
                   }}
@@ -451,7 +368,7 @@ function PropertyAddModal({
               label="입주 가능일"
               slotProps={{
                 textField: {
-                  fullWidth: true, // 추가
+                  fullWidth: true,
                 },
               }}
             />
@@ -462,36 +379,32 @@ function PropertyAddModal({
         <TextField
           label="건축년도"
           value={constructionYear ?? ""}
-          onChange={handleChangeConstructionYear}
+          onChange={(e) => setConstructionYear(e.target.value)}
           sx={{ mt: 2 }}
           fullWidth
           placeholder="숫자만 입력하세요 ex)2010"
-          error={!!constructionYearError}
-          helperText={constructionYearError ?? undefined}
         />
         <TextField
           label="주차 가능 대수"
           value={parkingCapacity}
-          onChange={handleChangeParkingCapacity}
+          onChange={(e) => setParkingCapacity(e.target.value)}
           sx={{ mt: 2 }}
           fullWidth
           placeholder="숫자만 입력하세요"
-          error={!!parkingCapacityError}
-          helperText={parkingCapacityError ?? undefined}
         />
 
         {/* 특이사항 */}
         <TextField
           label="특이사항"
           value={details ?? ""}
-          onChange={handleChangeDetails}
+          onChange={(e) => setDetails(e.target.value)}
           sx={{ mt: 2 }}
           fullWidth
         />
 
         <Button
-          text="등록"
-          onClick={handleClickSubmitButton}
+          text="수정"
+          onClick={handleSubmit}
           sx={{
             mt: 4,
             color: "white !important",
@@ -506,4 +419,5 @@ function PropertyAddModal({
     </Modal>
   );
 }
-export default PropertyAddModal;
+
+export default PropertyEditModal;

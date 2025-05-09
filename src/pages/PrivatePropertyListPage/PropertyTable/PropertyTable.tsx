@@ -18,9 +18,18 @@ import { useNavigate } from "react-router-dom";
 
 interface Props {
   propertyList: PropertyItem[];
+  onRowClick?: (property: PropertyItem) => void;
+  totalElements: number;
+  page: number;
+  rowsPerPage: number;
+  onPageChange: (event: unknown, newPage: number) => void;
+  onRowsPerPageChange: (event: React.ChangeEvent<HTMLInputElement>) => void;
 }
 
-const categoryColors: Record<PropertyItem["realCategory"], "primary" | "secondary" | "default" | "success" | "error" | "warning" | "info"> = {
+const categoryColors: Record<
+  PropertyItem["realCategory"],
+  "primary" | "secondary" | "default" | "success" | "error" | "warning" | "info"
+> = {
   ONE_ROOM: "primary",
   TWO_ROOM: "primary",
   APARTMENT: "success",
@@ -30,7 +39,10 @@ const categoryColors: Record<PropertyItem["realCategory"], "primary" | "secondar
   COMMERCIAL: "error",
 };
 
-const typeColors: Record<PropertyItem["type"], "default" | "primary" | "secondary" | "success" | "error" | "warning" | "info"> = {
+const typeColors: Record<
+  PropertyItem["type"],
+  "default" | "primary" | "secondary" | "success" | "error" | "warning" | "info"
+> = {
   SALE: "primary",
   DEPOSIT: "success",
   MONTHLY: "warning",
@@ -49,20 +61,21 @@ const translateType = (type: PropertyItem["type"]) => {
   }
 };
 
-const PropertyTable = ({ propertyList }: Props) => {
-  const [page, setPage] = useState(0);
-  const [rowsPerPage, setRowsPerPage] = useState(10);
+const PropertyTable = ({
+  propertyList,
+  onRowClick,
+  totalElements,
+  page,
+  rowsPerPage,
+  onPageChange,
+  onRowsPerPageChange,
+}: Props) => {
   const [useMetric, setUseMetric] = useState(true);
-  const navigate = useNavigate(); 
+  const navigate = useNavigate();
 
   const handleToggleUnitChange = () => {
     setUseMetric(!useMetric);
   };
-
-  const displayedProperties = propertyList.slice(
-    page * rowsPerPage,
-    page * rowsPerPage + rowsPerPage
-  );
 
   const convertToKoreanPyeong = (squareMeters: number) => {
     return (squareMeters / 3.3).toFixed(1);
@@ -98,18 +111,20 @@ const PropertyTable = ({ propertyList }: Props) => {
               </TableRow>
             </TableHead>
             <TableBody>
-              {displayedProperties.length > 0 ? (
-                displayedProperties.map((property) => (
+              {propertyList.length > 0 ? (
+                propertyList.map((property) => (
                   <TableRow
                     key={property.uid}
                     hover
                     sx={{ cursor: "pointer" }}
-                    onClick={() => navigate(`/properties/${property.uid}`)} 
+                    onClick={() => onRowClick?.(property)}
                   >
                     <TableCell align="center">
                       <Chip
                         label={translateRealCategory(property.realCategory)}
-                        color={categoryColors[property.realCategory] || "default"}
+                        color={
+                          categoryColors[property.realCategory] || "default"
+                        }
                         variant="outlined"
                         size="small"
                       />
@@ -123,14 +138,28 @@ const PropertyTable = ({ propertyList }: Props) => {
                         sx={{ fontWeight: 500 }}
                       />
                     </TableCell>
-                    <TableCell align="center">{property.address ?? "-"}</TableCell>
-                    <TableCell align="center">{formatArea(property.netArea)}</TableCell>
-                    <TableCell align="center">{property.details ?? "-"}</TableCell>
+                    <TableCell align="center">
+                      {`${property.address ?? ""}${
+                        property.detailAddress
+                          ? ` ${property.detailAddress}`
+                          : ""
+                      }`.trim() || "-"}
+                    </TableCell>
+                    <TableCell align="center">
+                      {formatArea(property.netArea)}
+                    </TableCell>
+                    <TableCell align="center">
+                      {property.details ?? "-"}
+                    </TableCell>
                   </TableRow>
                 ))
               ) : (
                 <TableRow>
-                  <TableCell colSpan={5} align="center" sx={{ padding: "20px 0" }}>
+                  <TableCell
+                    colSpan={5}
+                    align="center"
+                    sx={{ padding: "20px 0" }}
+                  >
                     매물 데이터가 없습니다
                   </TableCell>
                 </TableRow>
@@ -141,15 +170,12 @@ const PropertyTable = ({ propertyList }: Props) => {
 
         <TablePagination
           component="div"
-          count={propertyList.length}
+          count={totalElements}
           page={page}
           rowsPerPage={rowsPerPage}
-          onPageChange={(_, newPage) => setPage(newPage)}
-          onRowsPerPageChange={(event) => {
-            setRowsPerPage(parseInt(event.target.value, 10));
-            setPage(0);
-          }}
-          rowsPerPageOptions={[5, 10]}
+          onPageChange={onPageChange}
+          onRowsPerPageChange={onRowsPerPageChange}
+          rowsPerPageOptions={[10]}
           labelRowsPerPage="페이지당 행"
         />
       </Paper>

@@ -8,11 +8,11 @@ import {
   CircularProgress,
 } from "@mui/material";
 import apiClient from "@apis/apiClient";
-import PropertyTable from "@pages/PrivatePropertyListPage/PropertyTable";
-import ContractTable from "@pages/ContractListPage/ContractTable";
-import CounselTable from "../CounselTable";
+import PropertyTable from "../Tables/PropertyTable";
+import ContractTable from "../Tables/ContractTable";
+import ConsultationTable from "../Tables/ConsultationTable";
 
-function CustomerInfo({ customerId }: any) {
+function CustomerInfo({ customerId }: { customerId: string }) {
   const [currentTab, setCurrentTab] = useState(0);
   const [counsel, setCounsel] = useState([]);
   const [property, setProperty] = useState([]);
@@ -26,17 +26,17 @@ function CustomerInfo({ customerId }: any) {
         const response = await apiClient.get(
           `/customers/${customerId}/counsels`
         );
-        setCounsel(response.data.data || []);
+        setCounsel(response?.data?.data || []);
       } else if (tab === 1) {
         const response = await apiClient.get(
           `/customers/${customerId}/properties`
         );
-        setProperty(response.data.data.agentProperty || []);
+        setProperty(response?.data?.data?.agentProperty || []);
       } else if (tab === 2) {
         const response = await apiClient.get(
           `/customers/${customerId}/contracts`
         );
-        setContract(response.data.data || []);
+        setContract(response?.data?.data || []);
       }
     } catch (error) {
       console.error(error);
@@ -89,7 +89,7 @@ function CustomerInfo({ customerId }: any) {
           sx={{ mt: 2, boxShadow: "none" }}
         >
           {/* Counsel Tab */}
-          {currentTab === 0 && <CounselTable counselList={counsel} />}
+          {currentTab === 0 && <ConsultationTable counselList={counsel} />}
 
           {/* Property Tab */}
           {currentTab === 1 && <PropertyTable propertyList={property} />}

@@ -3,21 +3,41 @@ import apiClient from "@apis/apiClient";
 import CustomerAddButtonList from "./CustomerAddButtonList";
 import CustomerTable from "./CustomerTable/CustomerTable";
 import CustomerFilterModal from "./CustomerFilterModal/CustomerFilterModal";
-import {
-  Box,
-  CircularProgress,
-  TextField,
-  IconButton,
-  Pagination,
-} from "@mui/material";
+import { Box, CircularProgress, TextField, IconButton } from "@mui/material";
 import FilterListIcon from "@mui/icons-material/FilterList";
 import useDebounce from "@hooks/useDebounce";
 import PageHeader from "@components/PageHeader/PageHeader";
 import useUserStore from "@stores/useUserStore";
+import { toast } from "react-toastify";
+
+interface Customer {
+  uid: number;
+  name: string;
+  phoneNo: string;
+  labelUids: number[];
+  telProvider: string;
+  legalDistrictCode: string;
+  minRent: number | null;
+  maxRent: number | null;
+  trafficSource: string;
+  landlord: boolean;
+  tenant: boolean;
+  buyer: boolean;
+  seller: boolean;
+  maxPrice: number | null;
+  minPrice: number | null;
+  minDeposit: number | null;
+  maxDeposit: number | null;
+  birthday: string | null;
+  labels: {
+    uid: number;
+    name: string;
+  }[];
+}
 
 const CustomerListPage = () => {
   const [loading, setLoading] = useState(true);
-  const [customerList, setCustomerList] = useState([]);
+  const [customerList, setCustomerList] = useState<Customer[]>([]);
   const [totalCount, setTotalCount] = useState(0);
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(10);
@@ -56,8 +76,10 @@ const CustomerListPage = () => {
 
   const { user } = useUserStore();
 
-  const fetchCustomerList = () => {
-    setLoading(true);
+  const fetchCustomerList = (showLoading = true) => {
+    if (showLoading) {
+      setLoading(true);
+    }
 
     const queryParams = new URLSearchParams({
       page: (page + 1).toString(),
@@ -110,12 +132,68 @@ const CustomerListPage = () => {
   };
 
   useEffect(() => {
-    fetchCustomerList();
-  }, [page, rowsPerPage, debouncedSearchTerm, filters]);
+    if (debouncedSearchTerm) {
+      fetchCustomerList(false); // 검색어 변경 시 로딩 표시 안 함
+    } else if (page || filters) {
+      fetchCustomerList(true); // 페이지나 필터 변경 시 로딩 표시
+    } else {
+      fetchCustomerList(false); // rowsPerPage 변경 시 로딩 표시 안 함
+    }
+  }, [debouncedSearchTerm, rowsPerPage, page, filters]);
 
   const handleFilterApply = (newFilters: Filters) => {
     setFilters(newFilters);
     setPage(0);
+  };
+
+  const handleCustomerUpdate = async (customer: {
+    uid: number;
+    name: string;
+    phoneNo: string;
+    tenant: boolean;
+    landlord: boolean;
+    buyer: boolean;
+    seller: boolean;
+    labels: { uid: number; name: string }[];
+  }) => {
+    try {
+      const existingCustomer = customerList.find((c) => c.uid === customer.uid);
+      if (!existingCustomer) return;
+
+      // 서버에서 허용하는 필드만 포함하여 전송
+      const dataToSend = {
+        name: customer.name,
+        phoneNo: customer.phoneNo,
+        labelUids: Array.isArray(customer.labels)
+          ? customer.labels.map((label) => label.uid)
+          : [],
+        telProvider: existingCustomer.telProvider,
+        legalDistrictCode: existingCustomer.legalDistrictCode,
+        minRent: existingCustomer.minRent,
+        maxRent: existingCustomer.maxRent,
+        trafficSource: existingCustomer.trafficSource,
+        landlord: customer.landlord,
+        tenant: customer.tenant,
+        buyer: customer.buyer,
+        seller: customer.seller,
+        maxPrice: existingCustomer.maxPrice,
+        minPrice: existingCustomer.minPrice,
+        minDeposit: existingCustomer.minDeposit,
+        maxDeposit: existingCustomer.maxDeposit,
+        birthday: existingCustomer.birthday,
+      };
+
+      const response = await apiClient.put(
+        `/customers/${customer.uid}`,
+        dataToSend
+      );
+
+      if (response.status === 200) {
+        fetchCustomerList(false);
+      }
+    } catch (error) {
+      console.error("Failed to update customer:", error);
+    }
   };
 
   if (loading) {
@@ -150,51 +228,60 @@ const CustomerListPage = () => {
     >
       <PageHeader title="고객 목록" userName={user?.name || ""} />
 
-      <Box sx={{ p: { xs: 2, md: 3 }, pt: 0, maxWidth: 1400, mx: "auto" }}>
-        <Box
-          sx={{
+      <Box
+        sx={{
+          p: { xs: 2, md: 3 },
+          pt: 0,
+          maxWidth: 1400,
+          mx: "auto",
+        }}
+      >
+        <div
+          style={{
+            backgroundColor: "#ffffff",
+            borderRadius: "8px",
+            padding: "18px",
             display: "flex",
-            justifyContent: "flex-start",
+            justifyContent: "space-between",
             alignItems: "center",
-            mb: 2,
           }}
         >
-          <CustomerAddButtonList fetchCustomerList={fetchCustomerList} />
-        </Box>
-        <Box
-          sx={{
-            display: "flex",
-            justifyContent: "flex-end",
-            alignItems: "center",
-            mb: 3,
-            gap: 1,
-          }}
-        >
-          <TextField
-            placeholder="전화번호 또는 고객이름 검색"
-            value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
-            size="small"
+          <Box
             sx={{
-              width: 250,
-              "& .MuiOutlinedInput-root": {
-                borderRadius: "4px",
-                backgroundColor: "#F5F5F5",
-              },
-            }}
-          />
-          <IconButton
-            onClick={() => setFilterModalOpen(true)}
-            sx={{
-              backgroundColor: "#F5F5F5",
-              borderRadius: "4px",
-              "&:hover": { backgroundColor: "#E0E0E0" },
+              display: "flex",
+              justifyContent: "flex-end",
+              alignItems: "center",
+              gap: 1,
             }}
           >
-            <FilterListIcon />
-          </IconButton>
-        </Box>
-
+            <TextField
+              placeholder="전화번호 또는 고객이름 검색"
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              size="small"
+              sx={{
+                width: 250,
+              }}
+            />
+            <IconButton
+              onClick={() => setFilterModalOpen(true)}
+              sx={{
+                borderRadius: "4px",
+              }}
+            >
+              <FilterListIcon />
+            </IconButton>
+          </Box>
+          <Box
+            sx={{
+              display: "flex",
+              justifyContent: "flex-start",
+              alignItems: "center",
+            }}
+          >
+            <CustomerAddButtonList fetchCustomerList={fetchCustomerList} />
+          </Box>
+        </div>
         <CustomerTable
           customerList={customerList}
           totalCount={totalCount}
@@ -202,14 +289,9 @@ const CustomerListPage = () => {
           setRowsPerPage={setRowsPerPage}
           page={page}
           rowsPerPage={rowsPerPage}
+          onCustomerUpdate={handleCustomerUpdate}
+          onRefresh={() => fetchCustomerList(false)}
         />
-        <Box sx={{ display: "flex", justifyContent: "flex-end", mt: 2 }}>
-          <Pagination
-            count={Math.ceil(totalCount / rowsPerPage)}
-            page={page + 1}
-            onChange={(_, v) => setPage(v - 1)}
-          />
-        </Box>
 
         <CustomerFilterModal
           open={filterModalOpen}

@@ -37,8 +37,7 @@ export const MapContainer = styled(Box)(({ theme }) => ({
   width: '100%',
   height: '400px',
   backgroundColor: '#fff',
-  borderRadius: theme.shape.borderRadius,
-  //marginBottom: theme.spacing(3),
+  borderRadius: theme.shape.borderRadius,  
   boxShadow: '0 2px 8px rgba(0, 0, 0, 0.1)',
 }));
 

@@ -234,7 +234,7 @@ function CustomerDetailPage() {
     }
   };
 
-  if (loading || !customer) {
+  if (loading || !customer || !customerId) {
     return (
       <Box
         sx={{

@@ -7,10 +7,6 @@ import {
   Box,
   TextField,
   Button,
-  FormControl,
-  InputLabel,
-  Select,
-  MenuItem,
   Switch,
   FormControlLabel,
   Alert,
@@ -67,13 +63,6 @@ const PropertyFilterModal = ({
     setFilter({ ...filter, [field]: value });
   };
 
-  const handleSelectChange = (
-    e: React.ChangeEvent<{ value: unknown }>,
-    field: keyof FilterRequest
-  ) => {
-    setFilter({ ...filter, [field]: e.target.value as unknown });
-  };
-
   const handleSwitchChange = (
     e: React.ChangeEvent<HTMLInputElement>,
     field: keyof FilterRequest
@@ -121,36 +110,6 @@ const PropertyFilterModal = ({
     <Dialog open={open} onClose={onClose} maxWidth="sm" fullWidth>
       <DialogTitle>필터</DialogTitle>
       <DialogContent dividers sx={{ display: "flex", flexDirection: "column", gap: 2, mt: 1 }}>
-        {/* 매물 유형 */}
-        <FormControl fullWidth>
-          <InputLabel>매물유형</InputLabel>
-          <Select
-            value={filter.category || ""}
-            onChange={(e) => handleSelectChange(e, "category")}
-          >
-            <MenuItem value="APARTMENT">아파트</MenuItem>
-            <MenuItem value="ONE_ROOM">원룸</MenuItem>
-            <MenuItem value="TWO_ROOM">투룸</MenuItem>
-            <MenuItem value="HOUSE">주택</MenuItem>
-            <MenuItem value="OFFICETEL">오피스텔</MenuItem>
-            <MenuItem value="COMMERCIAL">상가</MenuItem>
-            <MenuItem value="VILLA">빌라</MenuItem>
-          </Select>
-        </FormControl>
-
-        {/* 판매 유형 */}
-        <FormControl fullWidth>
-          <InputLabel>판매유형</InputLabel>
-          <Select
-            value={filter.type || ""}
-            onChange={(e) => handleSelectChange(e, "type")}
-          >
-            <MenuItem value="SALE">매매</MenuItem>
-            <MenuItem value="DEPOSIT">전세</MenuItem>
-            <MenuItem value="MONTHLY">월세</MenuItem>
-          </Select>
-        </FormControl>
-
         {/* 엘리베이터, 반려동물 */}
         <Box display="flex" gap={2}>
           <FormControlLabel

@@ -1,8 +1,8 @@
 export interface AgentPropertyFilterRequest {
     legalDistrictCode?: string;
   
-    type?: string; // SALE | DEPOSIT | MONTHLY
-    category?: string; // ONE_ROOM | APARTMENT 등
+    type?: "SALE" | "DEPOSIT" | "MONTHLY";
+    category?: "ONE_ROOM" | "TWO_ROOM" | "APARTMENT" | "VILLA" | "HOUSE" | "OFFICETEL" | "COMMERCIAL";
   
     minDeposit?: number;
     maxDeposit?: number;

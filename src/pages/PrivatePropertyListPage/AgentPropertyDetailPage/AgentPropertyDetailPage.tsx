@@ -6,7 +6,6 @@ import {
   DetailPageContainer,
   DetailHeader,
   HeaderTitle,
-  HeaderButtons,
   MapContainer,
   InfoGrid,
   InfoCard,
@@ -65,7 +64,7 @@ interface ContractHistoryItem {
   contractCategory: string | null;
   endDate: string;
   contractStatus: string;
-  customers: ContractHistoryCustomer[];
+  customers: ContractCustomer[];
 }
 
 interface ContractInfo {
@@ -200,7 +199,7 @@ const KakaoMap = ({ lat, lng }: { lat: number; lng: number }) => {
       if (!mapRef.current) return;
       const kakao = (window as any).kakao;
       if (!kakao || !kakao.maps) {
-        console.error("카카오맵 객체가 없습니다.");
+        toast.error("카카오맵 객체가 없습니다.");
         return;
       }
       const map = new kakao.maps.Map(mapRef.current, {
@@ -223,7 +222,7 @@ const KakaoMap = ({ lat, lng }: { lat: number; lng: number }) => {
         (window as any).kakao.maps.load(createMap);
       };
       script.onerror = () => {
-        console.error("카카오맵 스크립트 로드 실패");
+        toast.error("카카오맵 스크립트 로드 실패");
       };
       document.head.appendChild(script);
     } else {
@@ -291,9 +290,9 @@ const AgentPropertyDetailPage = () => {
 
   useEffect(() => {
     if (!propertyUid) return;
-    apiClient
+      apiClient
       .get(`/properties/${propertyUid}/counsels`)
-      .then((res) => {
+        .then((res) => {
         setCounselHistories(res.data.data.counsels || []);
       })
       .catch(() => {
@@ -365,7 +364,7 @@ const AgentPropertyDetailPage = () => {
 
   return (
     <PageContainer>
-      <PageHeader title="매물 상세 조회" userName={user?.name || "-"} />
+        <PageHeader title="매물 상세 조회" userName={user?.name || "-"} />
       <DetailPageContainer>
         {editModalOpen && property && (
           <PropertyEditModal
@@ -395,14 +394,14 @@ const AgentPropertyDetailPage = () => {
               property.detailAddress ?? ""
             }`.trim() || "-"}
           </HeaderTitle>
-          <Box display="flex" justifyContent="flex-end" mb={2} gap={1}>
-            <Button variant="outlined" onClick={handleEdit}>
-              수정
-            </Button>
-            <Button variant="outlined" color="error" onClick={handleDelete}>
-              삭제
-            </Button>
-          </Box>
+        <Box display="flex" justifyContent="flex-end" mb={2} gap={1}>
+          <Button variant="outlined" onClick={handleEdit}>
+            수정
+          </Button>
+          <Button variant="outlined" color="error" onClick={handleDelete}>
+            삭제
+          </Button>
+        </Box>
         </DetailHeader>
         <InfoCard sx={{ mb: 3 }}>
           <MapContainer>
@@ -526,7 +525,7 @@ const AgentPropertyDetailPage = () => {
                 <InfoItem>
                   <InfoLabel>건축년도</InfoLabel>
                   <InfoValue>
-                    {formatValue(property.constructionYear, "년")}
+                    {formatValue(Number(property.constructionYear), "년")}
                   </InfoValue>
                 </InfoItem>
               </Box>

@@ -20,6 +20,7 @@ import { DesktopDatePicker } from "@mui/x-date-pickers";
 import useInput from "@hooks/useInput";
 import apiClient from "@apis/apiClient";
 import DaumPost from "./DaumPost";
+import { toast } from "react-toastify";
 
 function useNumericInput(
   initialValue: string | number | null = ""
@@ -33,17 +34,43 @@ function useNumericInput(
   const [error, setError] = useState<string | null>(null);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const newValue = e.target.value;
-    setValue(newValue);
-    if (newValue && !/^[0-9]*\.?[0-9]*$/.test(newValue)) {
+    const rawValue = e.target.value.replace(/,/g, ""); // 콤마 제거
+    if (rawValue && !/^\d*\.?\d*$/.test(rawValue)) {
       setError("숫자만 입력 가능합니다.");
     } else {
+      const formatted = rawValue.replace(/\B(?=(\d{3})+(?!\d))/g, ","); // 콤마 추가
+      setValue(formatted);
       setError(null);
     }
   };
 
   return [value, handleChange, error, setError];
 }
+
+function useRawNumericInput(
+  initialValue: string | number | null = ""
+): [
+  string,
+  (e: React.ChangeEvent<HTMLInputElement>) => void,
+  string | null,
+  React.Dispatch<React.SetStateAction<string | null>>
+] {
+  const [value, setValue] = useState<string>(initialValue?.toString() ?? "");
+  const [error, setError] = useState<string | null>(null);
+
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const rawValue = e.target.value;
+    if (rawValue && !/^\d*\.?\d*$/.test(rawValue)) {
+      setError("숫자만 입력 가능합니다.");
+    } else {
+      setValue(rawValue);
+      setError(null);
+    }
+  };
+
+  return [value, handleChange, error, setError];
+}
+
 interface PropertyAddModalProps {
   open: boolean;
   handleClose: () => void;
@@ -70,63 +97,46 @@ function PropertyAddModal({
   const [price, handleChangePrice, priceError, setPriceError] =
     useNumericInput("");
   const [netArea, handleChangeNetArea, netAreaError, setNetAreaError] =
-    useNumericInput("");
+  useRawNumericInput("");
   const [totalArea, handleChangeTotalArea, totalAreaError, setTotalAreaError] =
-    useNumericInput("");
+  useRawNumericInput("");
   const [floor, handleChangeFloor, floorError, setFloorError] =
-    useNumericInput("");
+    useRawNumericInput("");
   const [
     constructionYear,
     handleChangeConstructionYear,
     constructionYearError,
     setConstructionYearError,
-  ] = useNumericInput("");
+  ] = useRawNumericInput("");
 
   const [parkingCapacity, handleChangeParkingCapacity, parkingCapacityError] =
-    useNumericInput("");
+    useRawNumericInput("");
   const [details, handleChangeDetails] = useInput(null);
   const [type, setType] = useState("SALE");
   const [longitude, setLongitude] = useState(null);
   const [latitude, setLatitude] = useState(null);
-  const [contractStartDate, setContractStartDate] = useState<Dayjs | null>(
-    null
-  );
-  const [contractEndDate, setContractEndDate] = useState<Dayjs | null>(null);
   const [moveInDate, setMoveInDate] = useState<Dayjs | null>(null);
   const [realCategory, setRealCategory] = useState("APARTMENT");
   const [petsAllowed, setPetsAllowed] = useState(false);
   const [hasElevator, setHasElevator] = useState<boolean>(false);
-  const [contractDateError, setContractDateError] = useState<string | null>(
-    null
-  );
 
   const handleClickSubmitButton = () => {
-    if (
-      contractStartDate &&
-      contractEndDate &&
-      contractStartDate.isAfter(contractEndDate)
-    ) {
-      setContractDateError(
-        "계약 시작일은 계약 종료일보다 같거나 이전이어야 합니다."
-      );
-      return;
-    } else {
-      setContractDateError(null); // 에러 없으면 초기화
-    }
-
+    
+    const parseNumber = (str: string) => {
+      if (!str || str.replace(/,/g, "") === "") return null;
+      return Number(str.replace(/,/g, ""));
+    };
     const propertyDataToSubmit = {
       customerUid,
       address: address,
       detailAddress: extraAddress,
       legalDistrictCode,
-      deposit: Number(deposit),
-      monthlyRent: Number(monthlyRent),
-      price: Number(price),
+      deposit: parseNumber(deposit),
+      monthlyRent: parseNumber(monthlyRent),
+      price: parseNumber(price),
       type,
       longitude,
       latitude,
-      startDate: contractStartDate?.format("YYYY-MM-DD"),
-      endDate: contractEndDate?.format("YYYY-MM-DD"),
       moveInDate: moveInDate?.format("YYYY-MM-DD"),
       realCategory,
       petsAllowed,
@@ -144,14 +154,14 @@ function PropertyAddModal({
       .post("/properties", propertyDataToSubmit)
       .then((res) => {
         if (res.status === 201) {
-          alert("매물 등록 성공");
+          toast("매물 등록 성공");
           fetchPropertyData();
           handleClose();
         }
       })
       .catch((error) => {
         const message = error.response?.data?.message;
-        if (!message) return alert("등록 중 오류가 발생했습니다.");
+        if (!message) return toast.error("등록 중 오류가 발생했습니다.");
 
         const errorMap: Record<string, (msg: string) => void> = {
           보증금: (msg) => setDepositError(msg),
@@ -161,15 +171,15 @@ function PropertyAddModal({
           "공급 면적": (msg) => setTotalAreaError(msg),
           층수: (msg) => setFloorError(msg),
           건축년도: (msg) => setConstructionYearError(msg),
-          주소: (msg) => alert(msg),
-          고객: () => alert(message),
+          주소: (msg) => toast.error(msg),
+          고객: () => toast.error(message),
         };
 
         const matched = Object.entries(errorMap).find(([key]) =>
           message.includes(key)
         );
         if (matched) matched[1](message);
-        else alert(message);
+        else toast.error(message);
       });
   };
   useEffect(() => {
@@ -399,49 +409,7 @@ function PropertyAddModal({
           <FormControlLabel value="true" control={<Radio />} label="있음" />
           <FormControlLabel value="false" control={<Radio />} label="없음" />
         </RadioGroup>
-
-        <Box sx={{ display: "flex", gap: 2, mt: 2 }}>
-          <Box sx={{ flex: 1 }}>
-            <LocalizationProvider dateAdapter={AdapterDayjs}>
-              <DemoContainer components={["DatePicker"]}>
-                <DesktopDatePicker
-                  onChange={setContractStartDate}
-                  value={contractStartDate}
-                  format="YYYY. MM. DD"
-                  label="계약 시작일"
-                  slotProps={{
-                    textField: {
-                      error: !!contractDateError,
-                      helperText: contractDateError ?? "",
-                      fullWidth: true,
-                    },
-                  }}
-                />
-              </DemoContainer>
-            </LocalizationProvider>
-          </Box>
-          <Box sx={{ flex: 1 }}>
-            <LocalizationProvider dateAdapter={AdapterDayjs}>
-              <DemoContainer components={["DatePicker"]}>
-                <DesktopDatePicker
-                  onChange={setContractEndDate}
-                  value={contractEndDate}
-                  format="YYYY. MM. DD"
-                  label="계약 종료일"
-                  slotProps={{
-                    textField: {
-                      error: !!contractDateError,
-                      helperText: contractDateError ?? "",
-                      fullWidth: true,
-                    },
-                  }}
-                />
-              </DemoContainer>
-            </LocalizationProvider>
-          </Box>
-        </Box>
-
-        {/* 입주 가능일 */}
+        
         <LocalizationProvider dateAdapter={AdapterDayjs}>
           <DemoContainer components={["DatePicker"]}>
             <DesktopDatePicker

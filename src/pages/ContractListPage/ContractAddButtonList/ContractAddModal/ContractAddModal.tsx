@@ -196,7 +196,23 @@ const ContractAddModal = ({ open, handleClose, fetchContractData }: Props) => {
       })
       .catch((err) => {
         console.error("계약 등록 실패", err);
-        toast.error("계약 등록에 실패했습니다.");
+        const message = err?.response?.data?.message;
+
+        if (!message) {
+          toast.error("계약 등록에 실패했습니다.");
+          return;
+        }
+
+        if (message.includes("이미 등록된 계약입니다")) {
+          toast.error("이미 등록된 계약입니다.");
+          return;
+        }
+
+        if (message.includes("해당 매물은 이미 계약 중입니다")) {
+          toast.error("해당 매물은 이미 진행 중인 계약이 있습니다.");
+          return;
+        }
+        toast.error(message);
       });
   };
 

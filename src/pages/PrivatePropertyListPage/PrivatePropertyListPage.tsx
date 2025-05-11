@@ -147,7 +147,7 @@ function PrivatePropertyListPage() {
       .get("/properties", {
         params: {
           ...filter,
-          page: page + 1, // 백엔드는 1부터 시작
+          page: page + 1, 
           size: rowsPerPage,
         },
       })
@@ -166,11 +166,12 @@ function PrivatePropertyListPage() {
   }, [page, rowsPerPage]);
 
   const fetchFilteredProperties = useCallback(() => {
-    setLoading(true);
+    setLoading(true);    
+    const currentFilter = useFilterStore.getState().filter;
     apiClient
       .get("/properties", {
         params: {
-          ...filter,
+          ...currentFilter,
           page: 0,
           size: 10,
         },
@@ -178,22 +179,21 @@ function PrivatePropertyListPage() {
       .then((res) => {
         const agentPropertyData = res?.data?.data?.agentProperty;
         setPrivatePropertyList(agentPropertyData || []);
+        setTotalElements(res?.data?.data?.totalElements || 0);
       })
       .catch((error) => {
         console.error("Failed to fetch filtered properties:", error);
         setPrivatePropertyList([]);
+        setTotalElements(0);
       })
       .finally(() => {
         setLoading(false);
         setFilterModalOpen(false);
       });
-  }, [filter]);
+  }, []); 
 
-  // 바깥 필터가 바뀔 때마다 자동으로 리스트 조회
-  useEffect(() => {
-    // 카테고리, 유형, legalDistrictCode 중 하나라도 바뀌면
-    fetchFilteredProperties();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+  useEffect(() => {    
+    fetchFilteredProperties();    
   }, [filter.category, filter.type, filter.legalDistrictCode]);
 
   useEffect(() => {

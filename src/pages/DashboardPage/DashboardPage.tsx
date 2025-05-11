@@ -20,6 +20,8 @@ import {
   Button,
   Snackbar,
   Alert,
+  Chip,
+  Tooltip,
 } from "@mui/material";
 import "./DashboardPage.css";
 import AssignmentIcon from "@mui/icons-material/Assignment";
@@ -28,6 +30,7 @@ import CheckCircleIcon from "@mui/icons-material/CheckCircle";
 import PersonAddIcon from "@mui/icons-material/PersonAdd";
 import ChevronLeftIcon from "@mui/icons-material/ChevronLeft";
 import ChevronRightIcon from "@mui/icons-material/ChevronRight";
+import HelpOutlineIcon from "@mui/icons-material/HelpOutline";
 import { useState, useEffect, useMemo } from "react";
 import dayjs from "dayjs";
 import isSameOrAfter from "dayjs/plugin/isSameOrAfter";
@@ -36,8 +39,10 @@ import { useNavigate } from "react-router-dom";
 import PageHeader from "@components/PageHeader/PageHeader";
 import apiClient from "@apis/apiClient";
 import ScheduleDetailModal from "@components/ScheduleDetailModal/ScheduleDetailModal";
+import SurveyDetailModal from "@pages/DashboardPage/SurveyDetailModal";
 import { Schedule } from "../../interfaces/schedule";
 import useUserStore from "@stores/useUserStore";
+import { formatDate } from "@utils/dateUtil";
 
 dayjs.extend(isSameOrAfter);
 dayjs.extend(isSameOrBefore);
@@ -54,21 +59,23 @@ interface Contract {
   address: string;
 }
 
-interface Consultation {
-  id: number;
+interface counsel {
+  completed: boolean;
+  counselDate: Date;
+  counselUid: number;
   customerName: string;
+  dueDate: string;
+  propertyUid: number;
   title: string;
-  consultationDate: Date;
-  requestDate: Date;
-  dueDate: Date;
+  type: string;
 }
 
-interface ConsultationResponse {
+interface counselResponse {
   success: boolean;
   code: number;
   message: string;
   data: {
-    counsels: Consultation[];
+    counsels: counsel[];
   };
 }
 
@@ -79,19 +86,35 @@ interface StatisticsResponse {
   data: number;
 }
 
-interface Inquiry {
+interface SurveyResponse {
   id: number;
-  customerName: string;
+  name: string;
   phoneNumber: string;
-  submittedDate: string;
-  isRead: boolean;
+  submittedAt: string;
+  surveyResponseUid: number;
 }
+
+interface SurveyDetail {
+  surveyResponseUid: number;
+  title: string;
+  submittedAt: string;
+  customerUid: number | null;
+  answers: {
+    questionUid: number;
+    questionTitle: string;
+    description: string;
+    questionType: string;
+    answer: string;
+    choices: string[];
+    required: boolean;
+  }[];
+}
+
+const SURVEY_PAGE_SIZE = 10;
 
 const DashboardPage = () => {
   const [selectedDate, setSelectedDate] = useState(new Date());
-  const [consultationTab, setConsultationTab] = useState<"request" | "latest">(
-    "request"
-  );
+  const [counselTab, setcounselTab] = useState<"request" | "latest">("request");
   const [contractTab, setContractTab] = useState<"expiring" | "recent">(
     "expiring"
   );
@@ -114,15 +137,13 @@ const DashboardPage = () => {
     null
   );
   const [isDetailModalOpen, setIsDetailModalOpen] = useState(false);
-  const [surveyResponses, setSurveyResponses] = useState<Inquiry[]>([]);
+  const [surveyResponses, setSurveyResponses] = useState<SurveyResponse[]>([]);
   const [expiringContracts, setExpiringContracts] = useState<Contract[]>([]);
   const [contractLoading, setContractLoading] = useState(true);
-  const [counselListByDueDate, setCounselListByDueDate] = useState<
-    Consultation[]
-  >([]);
-  const [counselListByLatest, setCounselListByLatest] = useState<
-    Consultation[]
-  >([]);
+  const [counselListByDueDate, setCounselListByDueDate] = useState<counsel[]>(
+    []
+  );
+  const [counselListByLatest, setCounselListByLatest] = useState<counsel[]>([]);
   const [counselLoading, setCounselLoading] = useState(false);
   const { user } = useUserStore();
   const [toast, setToast] = useState({
@@ -130,6 +151,11 @@ const DashboardPage = () => {
     message: "",
     severity: "success" as "success" | "error",
   });
+  const [selectedSurvey, setSelectedSurvey] = useState<SurveyDetail | null>(
+    null
+  );
+  const [isSurveyDetailModalOpen, setIsSurveyDetailModalOpen] = useState(false);
+  const [surveyDetailLoading, setSurveyDetailLoading] = useState(false);
 
   const fetchWeeklySchedules = async () => {
     try {
@@ -196,30 +222,19 @@ const DashboardPage = () => {
   }, [selectedDate]);
 
   // 신규 설문 리스트 불러오기 함수
-  const fetchSurveyResponses = async () => {
+  const fetchSurveyResponses = async (): Promise<void> => {
     try {
       const response = await apiClient.get("/surveys/responses", {
         params: {
           page: 0,
-          size: 5,
+          size: SURVEY_PAGE_SIZE,
         },
       });
-      // 배열 데이터 추출
-      const items =
-        (response.data &&
-          Array.isArray(response.data.data) &&
-          response.data.data) ||
-        (response.data &&
-          Array.isArray(response.data.content) &&
-          response.data.content) ||
-        (Array.isArray(response.data) && response.data) ||
-        [];
-      setSurveyResponses(items);
-      return items;
+
+      const { surveyResponses } = response.data.data;
+      setSurveyResponses(surveyResponses ?? []);
     } catch (error) {
-      console.error("Failed to fetch survey responses:", error);
-      setSurveyResponses([]); // 에러 시에도 빈 배열로
-      return [];
+      setSurveyResponses([]);
     }
   };
 
@@ -276,11 +291,11 @@ const DashboardPage = () => {
   };
 
   // 상담 탭 변경 핸들러
-  const handleConsultationTabChange = (
+  const handlecounselTabChange = (
     event: React.SyntheticEvent,
     newValue: "request" | "latest"
   ) => {
-    setConsultationTab(newValue);
+    setcounselTab(newValue);
   };
 
   // 계약 탭 변경 핸들러
@@ -375,15 +390,14 @@ const DashboardPage = () => {
     }
   };
 
-  // 상담 목록을 가져오는 함수 수정
   const fetchCounselLists = async () => {
     setCounselLoading(true);
     try {
       const [dueDateResponse, latestResponse] = await Promise.all([
-        apiClient.get<ConsultationResponse>(
+        apiClient.get<counselResponse>(
           "/dashboard/counsels?sortType=DUE_DATE&page=0&size=5"
         ),
-        apiClient.get<ConsultationResponse>(
+        apiClient.get<counselResponse>(
           "/dashboard/counsels?sortType=LATEST&page=0&size=5"
         ),
       ]);
@@ -410,15 +424,42 @@ const DashboardPage = () => {
 
   // 현재 선택된 탭에 따라 보여줄 상담 목록 계산
   const currentCounselList = useMemo(() => {
-    return consultationTab === "request"
+    return counselTab === "request"
       ? counselListByDueDate
       : counselListByLatest;
-  }, [consultationTab, counselListByDueDate, counselListByLatest]);
+  }, [counselTab, counselListByDueDate, counselListByLatest]);
 
   // 상담 상세 페이지로 이동하는 핸들러 추가
   const handleCounselClick = (counselId: number) => {
     console.log(counselId);
     navigate(`/counsels/${counselId}`);
+  };
+
+  const handleSurveyClick = async (surveyResponseUid: number) => {
+    setSurveyDetailLoading(true);
+    setIsSurveyDetailModalOpen(true);
+    try {
+      const response = await apiClient.get(
+        `/surveys/responses/${surveyResponseUid}`
+      );
+      if (response.data.success) {
+        setSelectedSurvey(response.data.data);
+      }
+    } catch (error) {
+      console.error("Failed to fetch survey detail:", error);
+      setToast({
+        open: true,
+        message: "설문 상세 내용을 불러오는데 실패했습니다.",
+        severity: "error",
+      });
+    } finally {
+      setSurveyDetailLoading(false);
+    }
+  };
+
+  const handleCloseSurveyDetailModal = () => {
+    setIsSurveyDetailModalOpen(false);
+    setSelectedSurvey(null);
   };
 
   return (
@@ -459,8 +500,8 @@ const DashboardPage = () => {
                 height: "100%",
                 display: "flex",
                 flexDirection: "column",
-                boxShadow: "none",
-                borderRadius: "16px",
+                boxShadow: "0 2px 6px rgba(0, 0, 0, 0.05)",
+                borderRadius: "6px",
                 backgroundColor: "#fff",
                 transition: "background-color 0.2s ease",
                 "&:hover": {
@@ -547,8 +588,8 @@ const DashboardPage = () => {
                 height: "100%",
                 display: "flex",
                 flexDirection: "column",
-                boxShadow: "none",
-                borderRadius: "16px",
+                boxShadow: "0 2px 6px rgba(0, 0, 0, 0.05)",
+                borderRadius: "6px",
                 backgroundColor: "#fff",
                 transition: "background-color 0.2s ease",
                 "&:hover": {
@@ -635,8 +676,8 @@ const DashboardPage = () => {
                 height: "100%",
                 display: "flex",
                 flexDirection: "column",
-                boxShadow: "none",
-                borderRadius: "16px",
+                boxShadow: "0 2px 6px rgba(0, 0, 0, 0.05)",
+                borderRadius: "6px",
                 backgroundColor: "#fff",
                 transition: "background-color 0.2s ease",
                 "&:hover": {
@@ -723,8 +764,8 @@ const DashboardPage = () => {
                 height: "100%",
                 display: "flex",
                 flexDirection: "column",
-                boxShadow: "none",
-                borderRadius: "16px",
+                boxShadow: "0 2px 6px rgba(0, 0, 0, 0.05)",
+                borderRadius: "6px",
                 backgroundColor: "#fff",
                 transition: "background-color 0.2s ease",
                 "&:hover": {
@@ -810,8 +851,8 @@ const DashboardPage = () => {
           <Card
             sx={{
               width: { xs: "100%", lg: "60%" },
-              boxShadow: "none",
-              borderRadius: "16px",
+              boxShadow: "0 2px 6px rgba(0, 0, 0, 0.05)",
+              borderRadius: "6px",
               backgroundColor: "#fff",
             }}
           >
@@ -1064,8 +1105,8 @@ const DashboardPage = () => {
           <Card
             sx={{
               width: { xs: "100%", lg: "40%" },
-              boxShadow: "none",
-              borderRadius: "16px",
+              boxShadow: "0 2px 6px rgba(0, 0, 0, 0.05)",
+              borderRadius: "6px",
               backgroundColor: "#fff",
             }}
           >
@@ -1076,7 +1117,7 @@ const DashboardPage = () => {
               >
                 신규 설문
               </Typography>
-              <TableContainer sx={{ maxHeight: 400 }}>
+              <TableContainer sx={{ maxHeight: 480, overflow: "auto" }}>
                 <Table stickyHeader>
                   <TableHead>
                     <TableRow>
@@ -1089,16 +1130,19 @@ const DashboardPage = () => {
                     {Array.isArray(surveyResponses) &&
                     surveyResponses.length === 0 ? (
                       <TableRow>
-                        <TableCell colSpan={4} align="center">
+                        <TableCell colSpan={3} align="center">
                           신규 설문이 없습니다.
                         </TableCell>
                       </TableRow>
                     ) : (
                       Array.isArray(surveyResponses) &&
-                      surveyResponses.map((inquiry) => (
+                      surveyResponses.map((res) => (
                         <TableRow
-                          key={inquiry.id}
+                          key={res.id}
                           hover
+                          onClick={() =>
+                            handleSurveyClick(res.surveyResponseUid)
+                          }
                           sx={{
                             cursor: "pointer",
                             "&:hover": {
@@ -1106,9 +1150,9 @@ const DashboardPage = () => {
                             },
                           }}
                         >
-                          <TableCell>{inquiry.customerName}</TableCell>
-                          <TableCell>{inquiry.phoneNumber}</TableCell>
-                          <TableCell>{inquiry.submittedDate}</TableCell>
+                          <TableCell>{res.name}</TableCell>
+                          <TableCell>{res.phoneNumber}</TableCell>
+                          <TableCell>{formatDate(res.submittedAt)}</TableCell>
                         </TableRow>
                       ))
                     )}
@@ -1135,9 +1179,8 @@ const DashboardPage = () => {
               display: "flex",
               flexDirection: "column",
               maxHeight: { xs: "500px", lg: "600px" },
-              boxShadow: "none",
-              border: "1px solid #e0e0e0",
-              borderRadius: "16px",
+              boxShadow: "0 2px 6px rgba(0, 0, 0, 0.05)",
+              borderRadius: "6px",
               backgroundColor: "#fff",
             }}
           >
@@ -1151,32 +1194,59 @@ const DashboardPage = () => {
                 >
                   계약
                 </Typography>
-                <Tabs
-                  value={contractTab}
-                  onChange={handleContractTabChange}
-                  sx={{
-                    minHeight: 36,
-                    "& .MuiTab-root": {
-                      minHeight: 36,
-                      textTransform: "none",
-                      fontSize: "0.875rem",
-                      fontWeight: "medium",
-                      color: "#666",
-                      "&.Mui-selected": {
-                        color: "#164F9E",
-                      },
-                    },
-                    "& .MuiTabs-indicator": {
-                      backgroundColor: "#164F9E",
-                    },
-                  }}
+                <Box
+                  sx={{ display: "flex", alignItems: "center", gap: 1, mb: 2 }}
                 >
-                  <Tab value="expiring" label="만료 예정 계약" />
-                  <Tab value="recent" label="최근 계약" />
-                </Tabs>
+                  <Tabs
+                    value={contractTab}
+                    onChange={handleContractTabChange}
+                    sx={{
+                      minHeight: 36,
+                      "& .MuiTab-root": {
+                        minHeight: 36,
+                        textTransform: "none",
+                        fontSize: "0.875rem",
+                        fontWeight: "medium",
+                        color: "#666",
+                        "&.Mui-selected": {
+                          color: "#164F9E",
+                        },
+                      },
+                      "& .MuiTabs-indicator": {
+                        backgroundColor: "#164F9E",
+                      },
+                    }}
+                  >
+                    <Tab
+                      value="expiring"
+                      label={
+                        <Box
+                          sx={{
+                            display: "flex",
+                            alignItems: "center",
+                            gap: 0.5,
+                          }}
+                        >
+                          만료 예정 계약
+                          <Tooltip
+                            title="6개월 이내 만료 예정인 계약이 표시됩니다."
+                            arrow
+                          >
+                            <HelpOutlineIcon
+                              sx={{ fontSize: 16, color: "#164F9E" }}
+                            />
+                          </Tooltip>
+                        </Box>
+                      }
+                    />
+                    <Tab value="recent" label="최근 계약" />
+                  </Tabs>
+                </Box>
               </Box>
 
-              <TableContainer sx={{ flex: 1, overflow: "auto" }}>
+              <TableContainer
+                sx={{ flex: 1, overflow: "auto", paddingX: "16px" }}
+              >
                 <Table stickyHeader>
                   <TableHead>
                     <TableRow>
@@ -1234,11 +1304,55 @@ const DashboardPage = () => {
                                   : ""}
                               </TableCell>
                               <TableCell>
-                                {contract.category === "SALE"
-                                  ? "매매"
-                                  : contract.category === "LEASE"
-                                  ? "임대"
-                                  : contract.category}
+                                {contract.category === "SALE" ? (
+                                  <Chip
+                                    label="매매"
+                                    variant="outlined"
+                                    sx={{
+                                      color: "#388e3c",
+                                      borderColor: "#388e3c",
+                                      fontWeight: 500,
+                                      height: 26,
+                                      fontSize: 13,
+                                    }}
+                                  />
+                                ) : contract.category === "DEPOSIT" ? (
+                                  <Chip
+                                    label="전세"
+                                    variant="outlined"
+                                    sx={{
+                                      color: "#1976d2",
+                                      borderColor: "#1976d2",
+                                      fontWeight: 500,
+                                      height: 26,
+                                      fontSize: 13,
+                                    }}
+                                  />
+                                ) : contract.category === "MONTHLY" ? (
+                                  <Chip
+                                    label="월세"
+                                    variant="outlined"
+                                    sx={{
+                                      color: "#f57c00",
+                                      borderColor: "#f57c00",
+                                      fontWeight: 500,
+                                      height: 26,
+                                      fontSize: 13,
+                                    }}
+                                  />
+                                ) : (
+                                  <Chip
+                                    label="기타"
+                                    variant="outlined"
+                                    sx={{
+                                      color: "#757575",
+                                      borderColor: "#757575",
+                                      fontWeight: 500,
+                                      height: 26,
+                                      fontSize: 13,
+                                    }}
+                                  />
+                                )}
                               </TableCell>
                               <TableCell>{contract.contractEndDate}</TableCell>
                             </TableRow>
@@ -1259,8 +1373,8 @@ const DashboardPage = () => {
               display: "flex",
               flexDirection: "column",
               maxHeight: { xs: "500px", lg: "600px" },
-              boxShadow: "none",
-              borderRadius: "16px",
+              boxShadow: "0 2px 6px rgba(0, 0, 0, 0.05)",
+              borderRadius: "6px",
               backgroundColor: "#fff",
             }}
           >
@@ -1275,8 +1389,8 @@ const DashboardPage = () => {
                   상담
                 </Typography>
                 <Tabs
-                  value={consultationTab}
-                  onChange={handleConsultationTabChange}
+                  value={counselTab}
+                  onChange={handlecounselTabChange}
                   sx={{
                     minHeight: 36,
                     "& .MuiTab-root": {
@@ -1299,7 +1413,9 @@ const DashboardPage = () => {
                 </Tabs>
               </Box>
 
-              <TableContainer sx={{ flex: 1, overflow: "auto" }}>
+              <TableContainer
+                sx={{ flex: 1, overflow: "auto", paddingX: "16px" }}
+              >
                 <Table stickyHeader>
                   <TableHead>
                     <TableRow>
@@ -1319,29 +1435,25 @@ const DashboardPage = () => {
                     ) : !currentCounselList ||
                       currentCounselList.length === 0 ? (
                       <TableRow>
-                        <TableCell colSpan={3} align="center">
+                        <TableCell colSpan={4} align="center">
                           상담이 없습니다.
                         </TableCell>
                       </TableRow>
                     ) : (
-                      currentCounselList.map((consultation: Consultation) => (
+                      currentCounselList.map((counsel: counsel) => (
                         <TableRow
-                          key={consultation.id}
+                          key={counsel.counselUid}
                           hover
                           sx={{ cursor: "pointer" }}
-                          onClick={() =>
-                            handleCounselClick(consultation.counselUid)
-                          }
+                          onClick={() => handleCounselClick(counsel.counselUid)}
                         >
-                          <TableCell>{consultation.customerName}</TableCell>
-                          <TableCell>{consultation.title}</TableCell>
+                          <TableCell>{counsel.customerName}</TableCell>
+                          <TableCell>{counsel.title}</TableCell>
                           <TableCell>
-                            {dayjs(consultation.consultationDate).format(
-                              "YYYY-MM-DD"
-                            )}
+                            {dayjs(counsel.counselDate).format("YYYY-MM-DD")}
                           </TableCell>
                           <TableCell>
-                            {dayjs(consultation.dueDate).format("YYYY-MM-DD")}
+                            {dayjs(counsel.dueDate).format("YYYY-MM-DD")}
                           </TableCell>
                         </TableRow>
                       ))
@@ -1454,6 +1566,13 @@ const DashboardPage = () => {
         onClose={handleCloseDetailModal}
         schedule={selectedSchedule}
         onSave={handleSaveSchedule}
+      />
+      {/* 설문 상세 모달 */}
+      <SurveyDetailModal
+        open={isSurveyDetailModalOpen}
+        onClose={handleCloseSurveyDetailModal}
+        surveyDetail={selectedSurvey}
+        isLoading={surveyDetailLoading}
       />
       {/* Toast 메시지 */}
       <Snackbar

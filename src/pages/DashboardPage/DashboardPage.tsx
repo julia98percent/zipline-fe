@@ -93,7 +93,7 @@ interface SurveyResponse {
   surveyResponseUid: number;
 }
 
-const SURVEY_PAGE_SIZE = 5;
+const SURVEY_PAGE_SIZE = 10;
 
 const DashboardPage = () => {
   const [selectedDate, setSelectedDate] = useState(new Date());
@@ -368,7 +368,6 @@ const DashboardPage = () => {
     }
   };
 
-  // 상담 목록을 가져오는 함수 수정
   const fetchCounselLists = async () => {
     setCounselLoading(true);
     try {
@@ -1069,7 +1068,7 @@ const DashboardPage = () => {
               >
                 신규 설문
               </Typography>
-              <TableContainer sx={{ maxHeight: 400 }}>
+              <TableContainer sx={{ maxHeight: 480, overflow: "auto" }}>
                 <Table stickyHeader>
                   <TableHead>
                     <TableRow>
@@ -1082,7 +1081,7 @@ const DashboardPage = () => {
                     {Array.isArray(surveyResponses) &&
                     surveyResponses.length === 0 ? (
                       <TableRow>
-                        <TableCell colSpan={4} align="center">
+                        <TableCell colSpan={3} align="center">
                           신규 설문이 없습니다.
                         </TableCell>
                       </TableRow>
@@ -1193,7 +1192,9 @@ const DashboardPage = () => {
                 </Box>
               </Box>
 
-              <TableContainer sx={{ flex: 1, overflow: "auto" }}>
+              <TableContainer
+                sx={{ flex: 1, overflow: "auto", paddingX: "16px" }}
+              >
                 <Table stickyHeader>
                   <TableHead>
                     <TableRow>
@@ -1360,7 +1361,9 @@ const DashboardPage = () => {
                 </Tabs>
               </Box>
 
-              <TableContainer sx={{ flex: 1, overflow: "auto" }}>
+              <TableContainer
+                sx={{ flex: 1, overflow: "auto", paddingX: "16px" }}
+              >
                 <Table stickyHeader>
                   <TableHead>
                     <TableRow>

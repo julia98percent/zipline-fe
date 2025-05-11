@@ -39,6 +39,7 @@ import { useNavigate } from "react-router-dom";
 import PageHeader from "@components/PageHeader/PageHeader";
 import apiClient from "@apis/apiClient";
 import ScheduleDetailModal from "@components/ScheduleDetailModal/ScheduleDetailModal";
+import SurveyDetailModal from "@pages/DashboardPage/SurveyDetailModal";
 import { Schedule } from "../../interfaces/schedule";
 import useUserStore from "@stores/useUserStore";
 import { formatDate } from "@utils/dateUtil";
@@ -93,6 +94,22 @@ interface SurveyResponse {
   surveyResponseUid: number;
 }
 
+interface SurveyDetail {
+  surveyResponseUid: number;
+  title: string;
+  submittedAt: string;
+  customerUid: number | null;
+  answers: {
+    questionUid: number;
+    questionTitle: string;
+    description: string;
+    questionType: string;
+    answer: string;
+    choices: string[];
+    required: boolean;
+  }[];
+}
+
 const SURVEY_PAGE_SIZE = 10;
 
 const DashboardPage = () => {
@@ -134,6 +151,11 @@ const DashboardPage = () => {
     message: "",
     severity: "success" as "success" | "error",
   });
+  const [selectedSurvey, setSelectedSurvey] = useState<SurveyDetail | null>(
+    null
+  );
+  const [isSurveyDetailModalOpen, setIsSurveyDetailModalOpen] = useState(false);
+  const [surveyDetailLoading, setSurveyDetailLoading] = useState(false);
 
   const fetchWeeklySchedules = async () => {
     try {
@@ -411,6 +433,33 @@ const DashboardPage = () => {
   const handleCounselClick = (counselId: number) => {
     console.log(counselId);
     navigate(`/counsels/${counselId}`);
+  };
+
+  const handleSurveyClick = async (surveyResponseUid: number) => {
+    setSurveyDetailLoading(true);
+    setIsSurveyDetailModalOpen(true);
+    try {
+      const response = await apiClient.get(
+        `/surveys/responses/${surveyResponseUid}`
+      );
+      if (response.data.success) {
+        setSelectedSurvey(response.data.data);
+      }
+    } catch (error) {
+      console.error("Failed to fetch survey detail:", error);
+      setToast({
+        open: true,
+        message: "설문 상세 내용을 불러오는데 실패했습니다.",
+        severity: "error",
+      });
+    } finally {
+      setSurveyDetailLoading(false);
+    }
+  };
+
+  const handleCloseSurveyDetailModal = () => {
+    setIsSurveyDetailModalOpen(false);
+    setSelectedSurvey(null);
   };
 
   return (
@@ -1091,6 +1140,9 @@ const DashboardPage = () => {
                         <TableRow
                           key={res.id}
                           hover
+                          onClick={() =>
+                            handleSurveyClick(res.surveyResponseUid)
+                          }
                           sx={{
                             cursor: "pointer",
                             "&:hover": {
@@ -1514,6 +1566,13 @@ const DashboardPage = () => {
         onClose={handleCloseDetailModal}
         schedule={selectedSchedule}
         onSave={handleSaveSchedule}
+      />
+      {/* 설문 상세 모달 */}
+      <SurveyDetailModal
+        open={isSurveyDetailModalOpen}
+        onClose={handleCloseSurveyDetailModal}
+        surveyDetail={selectedSurvey}
+        isLoading={surveyDetailLoading}
       />
       {/* Toast 메시지 */}
       <Snackbar

@@ -30,6 +30,8 @@ interface FilterRequest {
   petsAllowed: boolean;
   minNetArea: number;
   maxNetArea: number;
+  minTotalArea: number;
+  maxTotalArea: number;
   minDeposit: number;
   maxDeposit: number;
   minMonthlyRent: number;
@@ -44,6 +46,12 @@ interface FilterRequest {
   maxConstructionYear: number;
 }
 
+const formatNumber = (value: string | number) =>
+  value?.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+
+const parseNumber = (value: string) =>
+  value.replace(/,/g, "").replace(/[^\d]/g, "");
+
 const PropertyFilterModal = ({
   open,
   onClose,
@@ -53,14 +61,69 @@ const PropertyFilterModal = ({
   onReset,
 }: Props) => {
   const [error, setError] = useState<string | null>(null);
+  // 가격 입력용 상태
+  const [priceInputs, setPriceInputs] = useState({
+    minPrice: filter.minPrice !== undefined ? formatNumber(filter.minPrice) : "",
+    maxPrice: filter.maxPrice !== undefined ? formatNumber(filter.maxPrice) : "",
+    minDeposit: filter.minDeposit !== undefined ? formatNumber(filter.minDeposit) : "",
+    maxDeposit: filter.maxDeposit !== undefined ? formatNumber(filter.maxDeposit) : "",
+    minMonthlyRent: filter.minMonthlyRent !== undefined ? formatNumber(filter.minMonthlyRent) : "",
+    maxMonthlyRent: filter.maxMonthlyRent !== undefined ? formatNumber(filter.maxMonthlyRent) : "",
+  });
+
+  useEffect(() => {
+    setPriceInputs({
+      minPrice: filter.minPrice !== undefined ? formatNumber(filter.minPrice) : "",
+      maxPrice: filter.maxPrice !== undefined ? formatNumber(filter.maxPrice) : "",
+      minDeposit: filter.minDeposit !== undefined ? formatNumber(filter.minDeposit) : "",
+      maxDeposit: filter.maxDeposit !== undefined ? formatNumber(filter.maxDeposit) : "",
+      minMonthlyRent: filter.minMonthlyRent !== undefined ? formatNumber(filter.minMonthlyRent) : "",
+      maxMonthlyRent: filter.maxMonthlyRent !== undefined ? formatNumber(filter.maxMonthlyRent) : "",
+    });
+  }, [filter]);
 
   const handleInputChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
     field: keyof FilterRequest
   ) => {
-    const value = Number(e.target.value);
-    if (value < 0) return; // 음수 입력 거부
-    setFilter({ ...filter, [field]: value });
+    const raw = e.target.value;
+    const isPriceField = [
+      "minPrice",
+      "maxPrice",
+      "minDeposit",
+      "maxDeposit",
+      "minMonthlyRent",
+      "maxMonthlyRent",
+    ].includes(field);
+
+    // 면적, 주차 필드는 소숫점 허용
+    const isDoubleField = [
+      "minNetArea",
+      "maxNetArea",
+      "minTotalArea",
+      "maxTotalArea",
+      "minParkingCapacity",
+      "maxParkingCapacity",
+    ].includes(field);
+
+    if (isPriceField) {
+      const numericValue = parseNumber(raw);
+      setPriceInputs((prev) => ({ ...prev, [field]: formatNumber(numericValue) }));
+      if (numericValue === "") {
+        setFilter({ ...filter, [field]: undefined });
+      } else {
+        setFilter({ ...filter, [field]: Number(numericValue) });
+      }
+    } else if (isDoubleField) {
+      // 소숫점 허용
+      const value = raw === "" ? undefined : Number(raw);
+      if (value !== undefined && isNaN(value)) return;
+      setFilter({ ...filter, [field]: value });
+    } else {
+      const value = Number(raw);
+      if (value < 0) return; // 음수 입력 방지
+      setFilter({ ...filter, [field]: value });
+    }
   };
 
   const handleSwitchChange = (
@@ -109,7 +172,10 @@ const PropertyFilterModal = ({
   return (
     <Dialog open={open} onClose={onClose} maxWidth="sm" fullWidth>
       <DialogTitle>필터</DialogTitle>
-      <DialogContent dividers sx={{ display: "flex", flexDirection: "column", gap: 2, mt: 1 }}>
+      <DialogContent
+        dividers
+        sx={{ display: "flex", flexDirection: "column", gap: 2, mt: 1 }}
+      >
         {/* 엘리베이터, 반려동물 */}
         <Box display="flex" gap={2}>
           <FormControlLabel
@@ -135,17 +201,39 @@ const PropertyFilterModal = ({
         {/* 면적 */}
         <Box display="flex" gap={2}>
           <TextField
-            label="최소 면적"
+            label="최소 전용 면적"
             type="number"
+            inputProps={{ step: 'any' }}
             value={filter.minNetArea ?? ""}
             onChange={(e) => handleInputChange(e, "minNetArea")}
             fullWidth
           />
           <TextField
-            label="최대 면적"
+            label="최대 전용 면적"
             type="number"
+            inputProps={{ step: 'any' }}
             value={filter.maxNetArea ?? ""}
             onChange={(e) => handleInputChange(e, "maxNetArea")}
+            fullWidth
+          />
+        </Box>
+
+        {/* 공급면적 */}
+        <Box display="flex" gap={2}>
+          <TextField
+            label="최소 공급 면적"
+            type="number"
+            inputProps={{ step: 'any' }}
+            value={filter.minTotalArea ?? ""}
+            onChange={(e) => handleInputChange(e, "minTotalArea")}
+            fullWidth
+          />
+          <TextField
+            label="최대 공급 면적"
+            type="number"
+            inputProps={{ step: 'any' }}
+            value={filter.maxTotalArea ?? ""}
+            onChange={(e) => handleInputChange(e, "maxTotalArea")}
             fullWidth
           />
         </Box>
@@ -155,14 +243,16 @@ const PropertyFilterModal = ({
           <TextField
             label="최소 매매가"
             type="number"
-            value={filter.minPrice ?? ""}
+            inputProps={{ step: 'any' }}
+            value={priceInputs.minPrice}
             onChange={(e) => handleInputChange(e, "minPrice")}
             fullWidth
           />
           <TextField
             label="최대 매매가"
             type="number"
-            value={filter.maxPrice ?? ""}
+            inputProps={{ step: 'any' }}
+            value={priceInputs.maxPrice}
             onChange={(e) => handleInputChange(e, "maxPrice")}
             fullWidth
           />
@@ -173,14 +263,16 @@ const PropertyFilterModal = ({
           <TextField
             label="최소 보증금"
             type="number"
-            value={filter.minDeposit ?? ""}
+            inputProps={{ step: 'any' }}
+            value={priceInputs.minDeposit}
             onChange={(e) => handleInputChange(e, "minDeposit")}
             fullWidth
           />
           <TextField
             label="최대 보증금"
             type="number"
-            value={filter.maxDeposit ?? ""}
+            inputProps={{ step: 'any' }}
+            value={priceInputs.maxDeposit}
             onChange={(e) => handleInputChange(e, "maxDeposit")}
             fullWidth
           />
@@ -190,14 +282,16 @@ const PropertyFilterModal = ({
           <TextField
             label="최소 월세"
             type="number"
-            value={filter.minMonthlyRent ?? ""}
+            inputProps={{ step: 'any' }}
+            value={priceInputs.minMonthlyRent}
             onChange={(e) => handleInputChange(e, "minMonthlyRent")}
             fullWidth
           />
           <TextField
             label="최대 월세"
             type="number"
-            value={filter.maxMonthlyRent ?? ""}
+            inputProps={{ step: 'any' }}
+            value={priceInputs.maxMonthlyRent}
             onChange={(e) => handleInputChange(e, "maxMonthlyRent")}
             fullWidth
           />
@@ -225,6 +319,7 @@ const PropertyFilterModal = ({
           <TextField
             label="최소 주차가능수"
             type="number"
+            inputProps={{ step: 'any' }}
             value={filter.minParkingCapacity ?? ""}
             onChange={(e) => handleInputChange(e, "minParkingCapacity")}
             fullWidth
@@ -232,6 +327,7 @@ const PropertyFilterModal = ({
           <TextField
             label="최대 주차가능수"
             type="number"
+            inputProps={{ step: 'any' }}
             value={filter.maxParkingCapacity ?? ""}
             onChange={(e) => handleInputChange(e, "maxParkingCapacity")}
             fullWidth

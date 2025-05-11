@@ -1352,17 +1352,7 @@ const DashboardPage = () => {
                                     }}
                                   />
                                 ) : (
-                                  <Chip
-                                    label="기타"
-                                    variant="outlined"
-                                    sx={{
-                                      color: "#757575",
-                                      borderColor: "#757575",
-                                      fontWeight: 500,
-                                      height: 26,
-                                      fontSize: 13,
-                                    }}
-                                  />
+                                  "-"
                                 )}
                               </TableCell>
                               <TableCell>{contract.contractEndDate}</TableCell>

@@ -121,6 +121,16 @@ function PropertyAddModal({
   const [hasElevator, setHasElevator] = useState<boolean>(false);
 
   const handleClickSubmitButton = () => {
+    if (!customerUid) return toast.error("고객을 선택해주세요.");
+    if (!address) return toast.error("주소를 입력해주세요.");
+    if (!realCategory) return toast.error("매물 유형을 선택해주세요.");
+    if (!type) return toast.error("거래 유형을 선택해주세요.");
+    if (hasElevator === null || hasElevator === undefined)
+      return toast.error("엘리베이터 유무를 선택해주세요.");
+    if (!netArea || Number(netArea) <= 0)
+      return toast.error("전용면적을 입력해주세요.");
+    if (!totalArea || Number(totalArea) <= 0)
+      return toast.error("공급면적을 입력해주세요.");
     
     const parseNumber = (str: string) => {
       if (!str || str.replace(/,/g, "") === "") return null;
@@ -173,6 +183,7 @@ function PropertyAddModal({
           건축년도: (msg) => setConstructionYearError(msg),
           주소: (msg) => toast.error(msg),
           고객: () => toast.error(message),
+          "이미 등록되어있는 매물입니다.": () => toast.error("이미 등록되어있는 매물입니다."),
         };
 
         const matched = Object.entries(errorMap).find(([key]) =>

@@ -362,6 +362,19 @@ const AgentPropertyDetailPage = () => {
     return `${value}${suffix}`;
   };
 
+  const getCustomerNames = (customers: ContractCustomer[], role: ContractCustomer["customerRole"]) => {
+    const names = customers.filter((c) => c.customerRole === role).map((c) => c.customerName);
+    if (names.length === 0) return "-";
+    return names.join(", ");
+  };
+
+  const getCustomerSummary = (customers: ContractCustomer[], role: ContractCustomer["customerRole"]) => {
+    const names = customers.filter((c) => c.customerRole === role).map((c) => c.customerName);
+    if (names.length === 0) return "-";
+    if (names.length === 1) return names[0];
+    return `${names[0]} 외 ${names.length - 1}명`;
+  };
+
   return (
     <PageContainer>
         <PageHeader title="매물 상세 조회" userName={user?.name || "-"} />
@@ -641,9 +654,7 @@ const AgentPropertyDetailPage = () => {
                 <InfoItem>
                   <InfoLabel>임대인/매도인</InfoLabel>
                   <InfoValue>
-                    {contractInfo?.customers?.find(
-                      (c) => c.customerRole === "LESSOR_OR_SELLER"
-                    )?.customerName || "-"}
+                    {contractInfo ? getCustomerNames(contractInfo.customers, "LESSOR_OR_SELLER") : "-"}
                   </InfoValue>
                 </InfoItem>
               </Box>
@@ -653,9 +664,7 @@ const AgentPropertyDetailPage = () => {
                 <InfoItem>
                   <InfoLabel>임차인/매수인</InfoLabel>
                   <InfoValue>
-                    {contractInfo?.customers?.find(
-                      (c) => c.customerRole === "LESSEE_OR_BUYER"
-                    )?.customerName || "-"}
+                    {contractInfo ? getCustomerNames(contractInfo.customers, "LESSEE_OR_BUYER") : "-"}
                   </InfoValue>
                 </InfoItem>
               </Box>
@@ -708,13 +717,6 @@ const AgentPropertyDetailPage = () => {
                   <Typography color="text.secondary" align="center">히스토리 없음</Typography>
                 ) : (
                   contractHistories.map((history, idx) => {
-                    const lessor = history.customers.find(
-                      (c) => c.customerRole === "LESSOR_OR_SELLER"
-                    );
-                    const lessee = history.customers.find(
-                      (c) => c.customerRole === "LESSEE_OR_BUYER"
-                    );
-
                     return (
                       <Box
                         key={idx}
@@ -726,8 +728,8 @@ const AgentPropertyDetailPage = () => {
                           py: 1,
                         }}
                       >
-                        <Box flex={1} textAlign="center">{lessor?.customerName || "-"}</Box>
-                        <Box flex={1} textAlign="center">{lessee?.customerName || "-"}</Box>
+                        <Box flex={1} textAlign="center">{getCustomerSummary(history.customers, "LESSOR_OR_SELLER")}</Box>
+                        <Box flex={1} textAlign="center">{getCustomerSummary(history.customers, "LESSEE_OR_BUYER")}</Box>
                         <Box flex={1} textAlign="center">
                           {getCategoryChip(history.contractCategory)}
                         </Box>

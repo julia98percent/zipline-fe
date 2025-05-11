@@ -452,8 +452,8 @@ const DashboardPage = () => {
                 height: "100%",
                 display: "flex",
                 flexDirection: "column",
-                boxShadow: "none",
-                borderRadius: "16px",
+                boxShadow: "0 2px 6px rgba(0, 0, 0, 0.05)",
+                borderRadius: "6px",
                 backgroundColor: "#fff",
                 transition: "background-color 0.2s ease",
                 "&:hover": {
@@ -540,8 +540,8 @@ const DashboardPage = () => {
                 height: "100%",
                 display: "flex",
                 flexDirection: "column",
-                boxShadow: "none",
-                borderRadius: "16px",
+                boxShadow: "0 2px 6px rgba(0, 0, 0, 0.05)",
+                borderRadius: "6px",
                 backgroundColor: "#fff",
                 transition: "background-color 0.2s ease",
                 "&:hover": {
@@ -628,8 +628,8 @@ const DashboardPage = () => {
                 height: "100%",
                 display: "flex",
                 flexDirection: "column",
-                boxShadow: "none",
-                borderRadius: "16px",
+                boxShadow: "0 2px 6px rgba(0, 0, 0, 0.05)",
+                borderRadius: "6px",
                 backgroundColor: "#fff",
                 transition: "background-color 0.2s ease",
                 "&:hover": {
@@ -716,8 +716,8 @@ const DashboardPage = () => {
                 height: "100%",
                 display: "flex",
                 flexDirection: "column",
-                boxShadow: "none",
-                borderRadius: "16px",
+                boxShadow: "0 2px 6px rgba(0, 0, 0, 0.05)",
+                borderRadius: "6px",
                 backgroundColor: "#fff",
                 transition: "background-color 0.2s ease",
                 "&:hover": {
@@ -803,8 +803,8 @@ const DashboardPage = () => {
           <Card
             sx={{
               width: { xs: "100%", lg: "60%" },
-              boxShadow: "none",
-              borderRadius: "16px",
+              boxShadow: "0 2px 6px rgba(0, 0, 0, 0.05)",
+              borderRadius: "6px",
               backgroundColor: "#fff",
             }}
           >
@@ -1057,8 +1057,8 @@ const DashboardPage = () => {
           <Card
             sx={{
               width: { xs: "100%", lg: "40%" },
-              boxShadow: "none",
-              borderRadius: "16px",
+              boxShadow: "0 2px 6px rgba(0, 0, 0, 0.05)",
+              borderRadius: "6px",
               backgroundColor: "#fff",
             }}
           >
@@ -1128,8 +1128,8 @@ const DashboardPage = () => {
               display: "flex",
               flexDirection: "column",
               maxHeight: { xs: "500px", lg: "600px" },
-              boxShadow: "none",
-              borderRadius: "16px",
+              boxShadow: "0 2px 6px rgba(0, 0, 0, 0.05)",
+              borderRadius: "6px",
               backgroundColor: "#fff",
             }}
           >
@@ -1320,8 +1320,8 @@ const DashboardPage = () => {
               display: "flex",
               flexDirection: "column",
               maxHeight: { xs: "500px", lg: "600px" },
-              boxShadow: "none",
-              borderRadius: "16px",
+              boxShadow: "0 2px 6px rgba(0, 0, 0, 0.05)",
+              borderRadius: "6px",
               backgroundColor: "#fff",
             }}
           >

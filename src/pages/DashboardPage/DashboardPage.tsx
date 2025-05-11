@@ -1380,7 +1380,7 @@ const DashboardPage = () => {
                     ) : !currentCounselList ||
                       currentCounselList.length === 0 ? (
                       <TableRow>
-                        <TableCell colSpan={3} align="center">
+                        <TableCell colSpan={4} align="center">
                           상담이 없습니다.
                         </TableCell>
                       </TableRow>

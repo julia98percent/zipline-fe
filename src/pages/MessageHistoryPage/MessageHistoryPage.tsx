@@ -9,7 +9,7 @@ import {
   TableRow,
   Paper,
   Typography,
-  IconButton,
+  Button,
   CircularProgress,
   TablePagination,
 } from "@mui/material";
@@ -64,7 +64,7 @@ const MessageHistoryPage = () => {
   const [messages, setMessages] = useState<MessageGroup[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [page, setPage] = useState(0);
-  const [rowsPerPage, setRowsPerPage] = useState(10);
+  const [rowsPerPage, setRowsPerPage] = useState(50);
   const [totalElements, setTotalElements] = useState(0);
   const { user } = useUserStore();
 
@@ -157,112 +157,115 @@ const MessageHistoryPage = () => {
     >
       <PageHeader title="문자 발송 내역" userName={user?.name || "-"} />
 
-      <Box sx={{ p: 3 }}>
+      <Box sx={{ p: "20px" }}>
         <Box
           sx={{
-            mb: 2,
+            mb: "28px",
             display: "flex",
             gap: 1,
             alignItems: "center",
+            justifyContent: "flex-end",
           }}
         >
-          <IconButton
+          <Button
+            variant="outlined"
+            startIcon={<RefreshIcon />}
             onClick={handleRefresh}
             sx={{
-              color: "#666666",
-              backgroundColor: "transparent",
+              height: "36px",
+              fontSize: "13px",
+              padding: "0 16px",
+              borderColor: "#164F9E",
+              background: "white",
+              color: "#164F9E",
               "&:hover": {
-                color: "#333333",
-                backgroundColor: "rgba(0, 0, 0, 0.04)",
+                borderColor: "#0D3B7A",
+                color: "#0D3B7A",
+                backgroundColor: "rgba(22, 79, 158, 0.04)",
               },
             }}
           >
-            <RefreshIcon />
-          </IconButton>
+            새로고침
+          </Button>
         </Box>
 
-        <TableContainer
-          component={Paper}
+        <Paper
           sx={{
+            width: "100%",
             borderRadius: "12px",
             boxShadow: "none",
             border: "1px solid #E0E0E0",
-            minHeight: "400px",
           }}
         >
-          <Table>
-            <TableHead>
-              <TableRow>
-                <TableCell>발송 요청일</TableCell>
-                <TableCell>상태</TableCell>
-                <TableCell>발송 완료일</TableCell>
-              </TableRow>
-            </TableHead>
-            <TableBody>
-              {messages && messages.length > 0 ? (
-                displayedMessages.map((message) => (
-                  <TableRow key={message.groupId}>
-                    <TableCell>{formatDate(message.dateCreated)}</TableCell>
-                    <TableCell>
-                      <Box
-                        sx={{
-                          display: "inline-flex",
-                          alignItems: "center",
-                          px: 1,
-                          py: 0.5,
-                          borderRadius: "4px",
-                          backgroundColor: getStatusColor(message.status).bg,
-                          color: getStatusColor(message.status).text,
-                        }}
-                      >
-                        {message.status}
-                      </Box>
-                    </TableCell>
-
-                    <TableCell>
-                      {message.dateCompleted
-                        ? formatDate(message.dateCompleted)
-                        : formatDate(message.dateUpdated)}
+          <TableContainer>
+            <Table>
+              <TableHead>
+                <TableRow>
+                  <TableCell>발송 요청일</TableCell>
+                  <TableCell>상태</TableCell>
+                  <TableCell>발송 완료일</TableCell>
+                </TableRow>
+              </TableHead>
+              <TableBody>
+                {isLoading ? (
+                  <TableRow>
+                    <TableCell colSpan={3} align="center" sx={{ py: 3 }}>
+                      <CircularProgress size={24} />
                     </TableCell>
                   </TableRow>
-                ))
-              ) : (
-                <TableRow>
-                  <TableCell colSpan={7} align="center" sx={{ py: 8 }}>
-                    <Typography
-                      variant="body1"
-                      sx={{ color: "#666666", fontWeight: 500 }}
-                    >
-                      발송 내역이 없습니다
-                    </Typography>
-                  </TableCell>
-                </TableRow>
-              )}
-            </TableBody>
-          </Table>
-        </TableContainer>
+                ) : messages.length === 0 ? (
+                  <TableRow>
+                    <TableCell colSpan={3} align="center">
+                      발송 내역이 없습니다.
+                    </TableCell>
+                  </TableRow>
+                ) : (
+                  displayedMessages.map((message) => (
+                    <TableRow key={message.groupId}>
+                      <TableCell>{formatDate(message.dateCreated)}</TableCell>
+                      <TableCell>
+                        <Typography
+                          variant="body2"
+                          sx={{
+                            color: getStatusColor(message.status).text,
+                            backgroundColor: getStatusColor(message.status).bg,
+                            py: 0.5,
+                            px: 1,
+                            borderRadius: 1,
+                            display: "inline-block",
+                          }}
+                        >
+                          {message.status}
+                        </Typography>
+                      </TableCell>
+                      <TableCell>
+                        {message.dateCompleted
+                          ? formatDate(message.dateCompleted)
+                          : formatDate(message.dateUpdated)}
+                      </TableCell>
+                    </TableRow>
+                  ))
+                )}
+              </TableBody>
+            </Table>
+          </TableContainer>
 
-        {isLoading && (
-          <Box sx={{ display: "flex", justifyContent: "center", py: 3 }}>
-            <CircularProgress size={40} sx={{ color: "#164F9E" }} />
-          </Box>
-        )}
-
-        {messages && messages.length > 0 && (
-          <TablePagination
-            component="div"
-            count={totalElements}
-            page={page}
-            rowsPerPage={rowsPerPage}
-            onPageChange={handleChangePage}
-            onRowsPerPageChange={handleChangeRowsPerPage}
-            rowsPerPageOptions={[5, 10, 25]}
-            labelRowsPerPage="페이지당 행"
-            labelDisplayedRows={({ from, to, count }) =>
-              `${count}개 중 ${from}-${to}개`
-            }
-          />
-        )}
+          {messages && messages.length > 0 && (
+            <TablePagination
+              component="div"
+              count={totalElements}
+              page={page}
+              rowsPerPage={rowsPerPage}
+              onPageChange={handleChangePage}
+              onRowsPerPageChange={handleChangeRowsPerPage}
+              rowsPerPageOptions={[10, 25, 50]}
+              labelRowsPerPage="페이지당 행 수"
+              labelDisplayedRows={({ from, to, count }) =>
+                `${count}개 중 ${from}-${to}개`
+              }
+            />
+          )}
+        </Paper>
       </Box>
     </Box>
   );

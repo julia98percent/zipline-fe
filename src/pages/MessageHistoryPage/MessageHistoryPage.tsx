@@ -172,6 +172,7 @@ const MessageHistoryPage = () => {
             startIcon={<RefreshIcon />}
             onClick={handleRefresh}
             sx={{
+              borderRadius: "4px",
               height: "36px",
               fontSize: "13px",
               padding: "0 16px",
@@ -192,9 +193,8 @@ const MessageHistoryPage = () => {
         <Paper
           sx={{
             width: "100%",
-            borderRadius: "12px",
+            borderRadius: "8px",
             boxShadow: "none",
-            border: "1px solid #E0E0E0",
           }}
         >
           <TableContainer>
@@ -263,6 +263,24 @@ const MessageHistoryPage = () => {
               labelDisplayedRows={({ from, to, count }) =>
                 `${count}개 중 ${from}-${to}개`
               }
+              SelectProps={{
+                sx: {
+                  borderRadius: "20px",
+                  "& .MuiSelect-select": {
+                    borderRadius: "20px",
+                  },
+                },
+                MenuProps: {
+                  PaperProps: {
+                    sx: {
+                      borderRadius: "20px",
+                      "& .MuiMenuItem-root": {
+                        padding: "8px 16px",
+                      },
+                    },
+                  },
+                },
+              }}
             />
           )}
         </Paper>

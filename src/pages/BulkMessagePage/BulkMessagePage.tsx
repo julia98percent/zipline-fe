@@ -270,7 +270,7 @@ const CustomerSelectModal = ({
       fullWidth
       PaperProps={{
         sx: {
-          borderRadius: "12px",
+          borderRadius: "8px",
         },
       }}
     >
@@ -280,11 +280,13 @@ const CustomerSelectModal = ({
         </Typography>
       </DialogTitle>
       <DialogContent sx={{ pb: 0 }}>
-        <Box sx={{ mb: 3, display: "flex", flexDirection: "column", gap: 2 }}>
+        <Box
+          sx={{ mb: 3, display: "flex", flexDirection: "column", gap: "28px" }}
+        >
           <Box
             sx={{
               display: "flex",
-              gap: 2,
+              gap: "28px",
               alignItems: "center",
               flexWrap: "wrap",
             }}
@@ -718,20 +720,19 @@ const BulkMessagePage = () => {
         p: 0,
         pb: 3,
         minHeight: "100vh",
-        backgroundColor: "#F8F9FA",
+        backgroundColor: "#f5f5f5",
       }}
     >
       <PageHeader title="단체 문자 발송" userName={user?.name || "-"} />
 
-      <Box sx={{ p: 3, display: "flex", gap: 2 }}>
+      <Box sx={{ p: 3, display: "flex", gap: "28px" }}>
         {/* 왼쪽 영역: 문자 템플릿 선택 및 내용 */}
         <Paper
           sx={{
             flex: 1,
             p: 3,
-            borderRadius: "12px",
-            boxShadow: "none",
-            border: "1px solid #E0E0E0",
+            borderRadius: "8px",
+            boxShadow: "0 2px 6px rgba(0, 0, 0, 0.05)",
           }}
         >
           <Typography variant="h6" sx={{ mb: 2, color: "#333333" }}>
@@ -748,13 +749,27 @@ const BulkMessagePage = () => {
                 const template = templates.find((t) => t.uid === selected);
                 return template?.name || "";
               }}
+              sx={{
+                "& .MuiOutlinedInput-notchedOutline": {
+                  borderRadius: "20px",
+                },
+              }}
+              SelectProps={{
+                sx: {
+                  "& .MuiOutlinedInput-notchedOutline": {
+                    borderRadius: "20px",
+                  },
+                },
+              }}
               MenuProps={{
                 PaperProps: {
+                  borderRadius: "20px",
                   sx: {
                     maxHeight: 300,
                     "& .MuiMenuItem-root": {
                       padding: "8px 16px",
                     },
+
                     "& .MuiListSubheader-root": {
                       backgroundColor: "#f5f5f5",
                       lineHeight: "32px",
@@ -805,6 +820,9 @@ const BulkMessagePage = () => {
             value={messageContent}
             onChange={(e) => setMessageContent(e.target.value)}
             sx={{
+              "& .MuiOutlinedInput-notchedOutline": {
+                borderRadius: "20px",
+              },
               "& .MuiOutlinedInput-root": {
                 backgroundColor: "#FFFFFF",
                 "& fieldset": {
@@ -827,9 +845,8 @@ const BulkMessagePage = () => {
             sx={{
               p: 3,
               mb: 2,
-              borderRadius: "12px",
-              boxShadow: "none",
-              border: "1px solid #E0E0E0",
+              borderRadius: "8px",
+              boxShadow: "0 2px 6px rgba(0, 0, 0, 0.05)",
             }}
           >
             <Box
@@ -848,12 +865,14 @@ const BulkMessagePage = () => {
                 onClick={handleAddCustomer}
                 sx={{
                   backgroundColor: "#164F9E",
+                  boxShadow: "none",
                   "&:hover": {
                     backgroundColor: "#0D3B7A",
+                    boxShadow: "none",
                   },
                 }}
               >
-                고객 추가
+                고객 선택하기
               </Button>
             </Box>
             <Box sx={{ maxHeight: "300px", overflowY: "auto" }}>
@@ -865,7 +884,7 @@ const BulkMessagePage = () => {
                     alignItems: "center",
                     justifyContent: "space-between",
                     p: 1,
-                    mb: 1,
+                    mb: "28px",
                     backgroundColor: "#F8F9FA",
                     borderRadius: "4px",
                   }}
@@ -894,6 +913,7 @@ const BulkMessagePage = () => {
             disabled={customers.length === 0 || !selectedTemplate}
             sx={{
               height: "48px",
+
               backgroundColor: "#164F9E",
               "&:hover": {
                 backgroundColor: "#0D3B7A",

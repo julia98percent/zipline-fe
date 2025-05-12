@@ -49,8 +49,8 @@ dayjs.extend(isSameOrBefore);
 
 interface Contract {
   uid: number;
-  lessorOrSellerName: string;
-  lesseeOrBuyerName: string;
+  lessorOrSellerNames: string[];
+  lesseeOrBuyerNames: string[];
   category: string;
   contractDate: string;
   contractStartDate: string;
@@ -1250,7 +1250,8 @@ const DashboardPage = () => {
                 <Table stickyHeader>
                   <TableHead>
                     <TableRow>
-                      <TableCell>고객명</TableCell>
+                      <TableCell>임대/매도자</TableCell>
+                      <TableCell>임차/매수자</TableCell>
                       <TableCell>거래 타입</TableCell>
                       <TableCell>계약 종료일</TableCell>
                     </TableRow>
@@ -1264,7 +1265,7 @@ const DashboardPage = () => {
                       if (contractLoading) {
                         return (
                           <TableRow>
-                            <TableCell colSpan={4} align="center">
+                            <TableCell colSpan={5} align="center">
                               불러오는 중...
                             </TableCell>
                           </TableRow>
@@ -1276,7 +1277,7 @@ const DashboardPage = () => {
                       ) {
                         return (
                           <TableRow>
-                            <TableCell colSpan={4} align="center">
+                            <TableCell colSpan={5} align="center">
                               {contractTab === "expiring"
                                 ? "6개월 이내 만료 예정인 계약이 없습니다."
                                 : "계약이 없습니다."}
@@ -1296,12 +1297,22 @@ const DashboardPage = () => {
                               }
                             >
                               <TableCell>
-                                {contract.lessorOrSellerName}
-                                {contract.lesseeOrBuyerName &&
-                                contract.lesseeOrBuyerName !==
-                                  contract.lessorOrSellerName
-                                  ? ` / ${contract.lesseeOrBuyerName}`
-                                  : ""}
+                                {Array.isArray(contract.lessorOrSellerNames)
+                                  ? contract.lessorOrSellerNames.length === 0
+                                    ? "-"
+                                    : contract.lessorOrSellerNames.length === 1
+                                    ? contract.lessorOrSellerNames[0]
+                                    : `${contract.lessorOrSellerNames[0]} 외 ${contract.lessorOrSellerNames.length - 1}명`
+                                  : "-"}
+                              </TableCell>
+                              <TableCell>
+                                {Array.isArray(contract.lesseeOrBuyerNames)
+                                  ? contract.lesseeOrBuyerNames.length === 0
+                                    ? "-"
+                                    : contract.lesseeOrBuyerNames.length === 1
+                                    ? contract.lesseeOrBuyerNames[0]
+                                    : `${contract.lesseeOrBuyerNames[0]} 외 ${contract.lesseeOrBuyerNames.length - 1}명`
+                                  : "-"}
                               </TableCell>
                               <TableCell>
                                 {contract.category === "SALE" ? (
@@ -1341,17 +1352,7 @@ const DashboardPage = () => {
                                     }}
                                   />
                                 ) : (
-                                  <Chip
-                                    label="기타"
-                                    variant="outlined"
-                                    sx={{
-                                      color: "#757575",
-                                      borderColor: "#757575",
-                                      fontWeight: 500,
-                                      height: 26,
-                                      fontSize: 13,
-                                    }}
-                                  />
+                                  "-"
                                 )}
                               </TableCell>
                               <TableCell>{contract.contractEndDate}</TableCell>

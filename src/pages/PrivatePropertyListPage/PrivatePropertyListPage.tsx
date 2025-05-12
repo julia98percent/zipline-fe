@@ -172,8 +172,8 @@ function PrivatePropertyListPage() {
       .get("/properties", {
         params: {
           ...currentFilter,
-          page: 0,
-          size: 10,
+          page: page + 1,
+          size: rowsPerPage,
         },
       })
       .then((res) => {
@@ -190,9 +190,10 @@ function PrivatePropertyListPage() {
         setLoading(false);
         setFilterModalOpen(false);
       });
-  }, []); 
+  }, [page, rowsPerPage]); 
 
   useEffect(() => {    
+    setPage(0); // 필터가 변경될 때 페이지를 초기화
     fetchFilteredProperties();    
   }, [filter.category, filter.type, filter.legalDistrictCode]);
 

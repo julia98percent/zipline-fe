@@ -280,7 +280,8 @@ const ContractEditModal = ({
         handleClose();
       })
       .catch((err) => {        
-        toast.error("계약 수정 실패", err);
+        const errorMessage = err.response?.data?.message || "계약 수정 실패";
+        toast.error(errorMessage);
       });
   };
 

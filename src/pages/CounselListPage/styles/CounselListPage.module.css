@@ -4,7 +4,7 @@
 }
 
 .contents {
-  padding: 0 16px 0 16px;
+  padding: 16px 16px 16px 16px;
 }
 
 .controlsContainer {
@@ -85,6 +85,16 @@
   display: flex;
   gap: 8px;
   margin-bottom: 20px;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.filterGroup {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  flex-wrap: wrap;
 }
 
 .filterButton {
@@ -116,4 +126,10 @@
 
 .outlinedButton:hover {
   background-color: rgba(25, 118, 210, 0.05);
+}
+
+.filterDivider {
+  color: #E0E0E0;
+  margin: 0 4px;
+  font-weight: 300;
 } 

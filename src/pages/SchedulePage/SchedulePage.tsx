@@ -210,7 +210,7 @@ const SchedulePage = () => {
             },
           }}
         >
-          일정 추가
+          일정 등록
         </Button>
       </Box>
 

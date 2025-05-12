@@ -50,12 +50,12 @@ export const ActionButtonWrapper = styled(Box)({
 });
 
 export const FilterButton = styled(Button)({
-  border: "1.5px solid #1976d2",
+  border: "1px solid #1976d2",
   color: "#1976d2",
   backgroundColor: "transparent",
   padding: "4px 31px",
   borderRadius: "20px",
-  fontWeight: 500,
+  fontWeight: 400,
   fontSize: "14px",
   minWidth: "100px",
   boxShadow: "none",
@@ -63,7 +63,7 @@ export const FilterButton = styled(Button)({
   '&:hover': {
     backgroundColor: "rgba(25, 118, 210, 0.05)",
     boxShadow: "none",
-    border: "1.5px solid #1976d2",
+    border: "1px solid #1976d2",
   },
 });
 

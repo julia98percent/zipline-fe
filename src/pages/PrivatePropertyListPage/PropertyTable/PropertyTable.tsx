@@ -96,7 +96,14 @@ const PropertyTable = ({
         }
         label={useMetric ? "제곱미터(m²)" : "평(py)"}
       />
-      <Paper sx={{ width: "100%", overflow: "hidden" }}>
+      <Paper
+        sx={{
+          width: "100%",
+          overflow: "hidden",
+          border: "none",
+          boxShadow: "0 2px 6px rgba(0, 0, 0, 0.05)",
+        }}
+      >
         <TableContainer>
           <Table sx={{ minWidth: 650 }}>
             <TableHead>

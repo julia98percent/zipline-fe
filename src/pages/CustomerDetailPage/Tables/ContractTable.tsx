@@ -7,15 +7,10 @@ import {
   TableHead,
   TableRow,
   Paper,
-  Box,
-  Typography,
-  FormControl,
-  InputLabel,
-  Select,
-  MenuItem,
-  Pagination,
   Chip,
+  TablePagination,
 } from "@mui/material";
+import { useNavigate } from "react-router-dom";
 
 interface ContractTableProps {
   contractList: Contract[];
@@ -55,6 +50,7 @@ const PROPERTY_TYPES = [
 function ContractTable({ contractList = [] }: ContractTableProps) {
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(10);
+  const navigate = useNavigate();
 
   // 클라이언트 사이드 페이지네이션
   const paginatedContracts = contractList.slice(
@@ -141,7 +137,16 @@ function ContractTable({ contractList = [] }: ContractTableProps) {
           <TableBody>
             {paginatedContracts.length > 0 ? (
               paginatedContracts.map((contract) => (
-                <TableRow key={contract.uid}>
+                <TableRow
+                  key={contract.uid}
+                  onClick={() => navigate(`/contracts/${contract.uid}`)}
+                  sx={{
+                    cursor: "pointer",
+                    "&:hover": {
+                      backgroundColor: "rgba(0, 0, 0, 0.04)",
+                    },
+                  }}
+                >
                   <TableCell>
                     {getCategoryChip(contract.category) ?? "-"}
                   </TableCell>
@@ -155,54 +160,31 @@ function ContractTable({ contractList = [] }: ContractTableProps) {
             ) : (
               <TableRow>
                 <TableCell colSpan={8} align="center" sx={{ py: 8 }}>
-                  <Typography variant="body1" color="text.secondary">
+                  <div style={{ color: '#757575', fontSize: '1rem' }}>
                     등록된 계약이 없습니다
-                  </Typography>
+                  </div>
                 </TableCell>
               </TableRow>
             )}
           </TableBody>
         </Table>
       </TableContainer>
-      <Box
-        sx={{
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "space-between",
-          p: 2,
-          borderTop: "1px solid #E0E0E0",
+      <TablePagination
+        component="div"
+        count={contractList.length}
+        page={page}
+        rowsPerPage={rowsPerPage}
+        onPageChange={(_, newPage) => setPage(newPage)}
+        onRowsPerPageChange={(e) => {
+          setRowsPerPage(Number(e.target.value));
+          setPage(0);
         }}
-      >
-        <Typography variant="body2" color="text.secondary">
-          총 {contractList.length}건
-        </Typography>
-        <Box sx={{ display: "flex", alignItems: "center", gap: 2 }}>
-          <FormControl size="small" sx={{ minWidth: 120 }}>
-            <InputLabel>페이지당 행</InputLabel>
-            <Select
-              value={rowsPerPage}
-              label="페이지당 행"
-              onChange={(e) => {
-                setRowsPerPage(Number(e.target.value));
-                setPage(0); // 페이지당 행 수 변경시 첫 페이지로 이동
-              }}
-            >
-              <MenuItem value={10}>10</MenuItem>
-              <MenuItem value={25}>25</MenuItem>
-              <MenuItem value={50}>50</MenuItem>
-              <MenuItem value={100}>100</MenuItem>
-            </Select>
-          </FormControl>
-          <Pagination
-            count={Math.ceil(contractList.length / rowsPerPage)}
-            page={page + 1}
-            onChange={(_, newPage) => setPage(newPage - 1)}
-            color="primary"
-            showFirstButton
-            showLastButton
-          />
-        </Box>
-      </Box>
+        rowsPerPageOptions={[10, 25, 50, 100]}
+        labelRowsPerPage="페이지당 행 수"
+        labelDisplayedRows={({ from, to, count }) =>
+          `${count}건 중 ${from}-${to}건`
+        }
+      />
     </Paper>
   );
 }

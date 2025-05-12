@@ -7,13 +7,8 @@ import {
   TableHead,
   TableRow,
   Paper,
-  Box,
-  Typography,
-  FormControl,
-  InputLabel,
-  Select,
-  MenuItem,
-  Pagination,
+  TablePagination,
+  Chip,
 } from "@mui/material";
 import { useNavigate } from "react-router-dom";
 
@@ -81,61 +76,50 @@ function ConsultationTable({ counselList = [] }: ConsultationTableProps) {
                     {new Date(consultation.dueDate).toLocaleDateString()}
                   </TableCell>
                   <TableCell>
-                    {consultation.completed ? "완료" : "진행중"}
+                    <Chip
+                      label={consultation.completed ? "완료" : "진행중"}
+                      size="small"
+                      sx={{
+                        backgroundColor: consultation.completed ? "#E9F7EF" : "#FEF5EB",
+                        color: consultation.completed ? "#219653" : "#F2994A",
+                        height: "24px",
+                        "& .MuiChip-label": {
+                          px: 1,
+                          fontSize: "12px"
+                        }
+                      }}
+                    />
                   </TableCell>
                 </TableRow>
               ))
             ) : (
               <TableRow>
                 <TableCell colSpan={5} align="center" sx={{ py: 8 }}>
-                  <Typography variant="body1" color="text.secondary">
+                  <div style={{ color: '#757575', fontSize: '1rem' }}>
                     등록된 상담 내역이 없습니다
-                  </Typography>
+                  </div>
                 </TableCell>
               </TableRow>
             )}
           </TableBody>
         </Table>
       </TableContainer>
-      <Box
-        sx={{
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "space-between",
-          p: 2,
-          borderTop: "1px solid #E0E0E0",
+      <TablePagination
+        component="div"
+        count={counselList.length}
+        page={page}
+        rowsPerPage={rowsPerPage}
+        onPageChange={(_, newPage) => setPage(newPage)}
+        onRowsPerPageChange={(e) => {
+          setRowsPerPage(Number(e.target.value));
+          setPage(0);
         }}
-      >
-        <Typography variant="body2" color="text.secondary">
-          총 {counselList.length}건
-        </Typography>
-        <Box sx={{ display: "flex", alignItems: "center", gap: 2 }}>
-          <FormControl size="small" sx={{ minWidth: 120 }}>
-            <InputLabel>페이지당 행</InputLabel>
-            <Select
-              value={rowsPerPage}
-              label="페이지당 행"
-              onChange={(e) => {
-                setRowsPerPage(Number(e.target.value));
-                setPage(0); // 페이지당 행 수 변경시 첫 페이지로 이동
-              }}
-            >
-              <MenuItem value={10}>10</MenuItem>
-              <MenuItem value={25}>25</MenuItem>
-              <MenuItem value={50}>50</MenuItem>
-              <MenuItem value={100}>100</MenuItem>
-            </Select>
-          </FormControl>
-          <Pagination
-            count={Math.ceil(counselList.length / rowsPerPage)}
-            page={page + 1}
-            onChange={(_, newPage) => setPage(newPage - 1)}
-            color="primary"
-            showFirstButton
-            showLastButton
-          />
-        </Box>
-      </Box>
+        rowsPerPageOptions={[10, 25, 50, 100]}
+        labelRowsPerPage="페이지당 행 수"
+        labelDisplayedRows={({ from, to, count }) =>
+          `${count}건 중 ${from}-${to}건`
+        }
+      />
     </Paper>
   );
 }

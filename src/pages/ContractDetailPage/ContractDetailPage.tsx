@@ -9,6 +9,8 @@ import styles from "@pages/ContractListPage/styles/ContractListPage.module.css";
 import { toast } from "react-toastify";
 import DeleteConfirmModal from "@components/DeleteConfirm/DeleteConfirmModal";
 import useUserStore from "@stores/useUserStore";
+import EditIcon from "@mui/icons-material/Edit";
+import DeleteIcon from "@mui/icons-material/DeleteOutline";
 
 const ContractDetailPage = () => {
   const { contractUid } = useParams<{ contractUid: string }>();
@@ -104,12 +106,24 @@ const ContractDetailPage = () => {
           onCancel={() => setDeleteModalOpen(false)}
         />
 
-        <div className={styles.contents}>
-          <Box display="flex" justifyContent="flex-end" mb={2} gap={1}>
-            <Button variant="outlined" onClick={handleEdit}>
+        <div className={styles.contents2}>
+          <Box display="flex" justifyContent="flex-end" mt={0} gap={1} mb={2}>
+            <Button
+              variant="outlined"
+              color="primary"
+              startIcon={<EditIcon />}
+              onClick={handleEdit}
+              sx={{ backgroundColor: "white" }}
+            >
               수정
             </Button>
-            <Button variant="outlined" color="error" onClick={handleDelete}>
+            <Button
+              variant="outlined"
+              color="error"
+              startIcon={<DeleteIcon />}
+              onClick={handleDelete}
+              sx={{ backgroundColor: "white" }}
+            >
               삭제
             </Button>
           </Box>

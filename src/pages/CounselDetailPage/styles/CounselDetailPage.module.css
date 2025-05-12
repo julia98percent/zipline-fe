@@ -5,9 +5,9 @@
 }
 
 .contentContainer {
-  max-width: 1200px;
+  max-width: flex;
   margin: 0 auto;
-  padding: 24px;
+  padding: 20px;
 }
 
 .header {

@@ -194,7 +194,7 @@ const MessageHistoryPage = () => {
           sx={{
             width: "100%",
             borderRadius: "8px",
-            boxShadow: "0 2px 6px rgba(0, 0, 0, 0.05)",
+            boxShadow: "none",
           }}
         >
           <TableContainer>
@@ -263,6 +263,24 @@ const MessageHistoryPage = () => {
               labelDisplayedRows={({ from, to, count }) =>
                 `${count}개 중 ${from}-${to}개`
               }
+              SelectProps={{
+                sx: {
+                  borderRadius: "20px",
+                  "& .MuiSelect-select": {
+                    borderRadius: "20px",
+                  },
+                },
+                MenuProps: {
+                  PaperProps: {
+                    sx: {
+                      borderRadius: "20px",
+                      "& .MuiMenuItem-root": {
+                        padding: "8px 16px",
+                      },
+                    },
+                  },
+                },
+              }}
             />
           )}
         </Paper>

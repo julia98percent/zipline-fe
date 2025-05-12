@@ -92,9 +92,17 @@ const PropertyTable = ({
             checked={useMetric}
             onChange={handleToggleUnitChange}
             color="primary"
+            size="small"
           />
         }
         label={useMetric ? "제곱미터(m²)" : "평(py)"}
+        sx={{
+          mb: "5px",
+          ml: "0px",
+          '& .MuiFormControlLabel-label': {
+            fontSize: '14px',
+          }
+        }}
       />
       <Paper
         sx={{

@@ -175,67 +175,67 @@ function CounselListPage() {
           </div>
 
           <div className={styles.filterButtons}>
-            {COUNSEL_TYPES.map((type) => (
+            <div className={styles.filterGroup}>
+              {COUNSEL_TYPES.map((type) => (
+                <button
+                  key={type.value}
+                  className={`${styles.filterButton} ${
+                    selectedType === type.value ? styles.filterButtonActive : ""
+                  }`}
+                  onClick={() => {
+                    setSelectedType(
+                      selectedType === type.value ? null : type.value
+                    );
+                    setPage(0);
+                  }}
+                >
+                  {type.label}
+                </button>
+              ))}
+              <span className={styles.filterDivider}>|</span>
               <button
-                key={type.value}
                 className={`${styles.filterButton} ${
-                  selectedType === type.value ? styles.filterButtonActive : ""
+                  selectedCompleted === false ? styles.filterButtonActive : ""
                 }`}
                 onClick={() => {
-                  setSelectedType(
-                    selectedType === type.value ? null : type.value
+                  setSelectedCompleted(
+                    selectedCompleted === false ? null : false
                   );
                   setPage(0);
                 }}
               >
-                {type.label}
+                의뢰 진행중
               </button>
-            ))}
-          </div>
-
-          <div className={styles.filterButtons}>
-            <button
-              className={`${styles.filterButton} ${
-                selectedCompleted === false ? styles.filterButtonActive : ""
-              }`}
-              onClick={() => {
-                setSelectedCompleted(
-                  selectedCompleted === false ? null : false
-                );
-                setPage(0);
+              <button
+                className={`${styles.filterButton} ${
+                  selectedCompleted === true ? styles.filterButtonActive : ""
+                }`}
+                onClick={() => {
+                  setSelectedCompleted(
+                    selectedCompleted === true ? null : true
+                  );
+                  setPage(0);
+                }}
+              >
+                의뢰 마감
+              </button>
+            </div>
+            <Button
+              variant="contained"
+              startIcon={<AddIcon />}
+              onClick={() => setIsModalOpen(true)}
+              sx={{
+                backgroundColor: "#164F9E",
+                "&:hover": { backgroundColor: "#0D3B7A" },
+                height: "36px",
+                fontSize: "13px",
+                padding: "0 16px",
               }}
             >
-              의뢰 진행중
-            </button>
-            <button
-              className={`${styles.filterButton} ${
-                selectedCompleted === true ? styles.filterButtonActive : ""
-              }`}
-              onClick={() => {
-                setSelectedCompleted(
-                  selectedCompleted === true ? null : true
-                );
-                setPage(0);
-              }}
-            >
-              의뢰 마감
-            </button>
+              상담 등록
+            </Button>
           </div>
         </div>
-
-        <Box sx={{ display: "flex", justifyContent: "flex-end", mb: 2 }}>
-          <Button
-            variant="contained"
-            startIcon={<AddIcon />}
-            onClick={() => setIsModalOpen(true)}
-            sx={{
-              backgroundColor: "#164F9E",
-              "&:hover": { backgroundColor: "#0D3B7A" },
-            }}
-          >
-            상담 등록
-          </Button>
-        </Box>
 
         <Paper
           sx={{

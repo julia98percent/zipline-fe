@@ -9,6 +9,8 @@ import styles from "./styles/ContractListPage.module.css";
 import Select from "react-select";
 import "./styles/reactSelect.css";
 import ContractAddModal from "./ContractAddButtonList/ContractAddModal/ContractAddModal";
+import { Button } from "@mui/material";
+import AddIcon from "@mui/icons-material/Add";
 
 export interface ContractItem {
   uid: number;
@@ -179,9 +181,20 @@ function ContractListPage() {
               </div>
             </div>
 
-            <button className={styles.outlinedButton} onClick={() => setIsAddModalOpen(true)}>
-              + 계약 등록
-            </button>
+            <Button
+              variant="contained"
+              startIcon={<AddIcon />}
+              onClick={() => setIsAddModalOpen(true)}
+              sx={{
+                backgroundColor: "#164F9E",
+                "&:hover": { backgroundColor: "#0D3B7A" },
+                height: "36px",
+                fontSize: "13px",
+                padding: "0 16px",
+              }}
+            >
+              계약 등록
+            </Button>
           </div>
         </div>
 

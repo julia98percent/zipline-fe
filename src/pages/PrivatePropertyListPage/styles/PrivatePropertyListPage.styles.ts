@@ -33,7 +33,7 @@ export const FilterButtonCard = styled(Box)({
   borderRadius: "12px",
   boxShadow: "0 2px 8px rgba(0,0,0,0.04)",
   padding: "20px 24px",
-  marginBottom: "24px",
+  marginBottom: "28px",
   gap: "20px",
 });
 
@@ -50,12 +50,12 @@ export const ActionButtonWrapper = styled(Box)({
 });
 
 export const FilterButton = styled(Button)({
-  border: "1.5px solid #1976d2",
+  border: "1px solid #1976d2",
   color: "#1976d2",
   backgroundColor: "transparent",
   padding: "4px 31px",
   borderRadius: "20px",
-  fontWeight: 500,
+  fontWeight: 400,
   fontSize: "14px",
   minWidth: "100px",
   boxShadow: "none",
@@ -63,7 +63,7 @@ export const FilterButton = styled(Button)({
   '&:hover': {
     backgroundColor: "rgba(25, 118, 210, 0.05)",
     boxShadow: "none",
-    border: "1.5px solid #1976d2",
+    border: "1px solid #1976d2",
   },
 });
 
@@ -139,7 +139,7 @@ export const StyledSelect = styled(Select)({
   fontFamily: "'Pretendard', sans-serif",
   background: "#fff",
   '& .MuiSelect-select': {
-    padding: "8px 32px 8px 12px",
+    padding: "8px 28px 8px 12px",
     minHeight: "32px",
     display: "flex",
     alignItems: "center",

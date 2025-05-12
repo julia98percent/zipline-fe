@@ -14,7 +14,6 @@ import {
   Chip,
 } from "@mui/material";
 import { PropertyItem } from "../PrivatePropertyListPage";
-import { useNavigate } from "react-router-dom";
 
 interface Props {
   propertyList: PropertyItem[];
@@ -71,7 +70,6 @@ const PropertyTable = ({
   onRowsPerPageChange,
 }: Props) => {
   const [useMetric, setUseMetric] = useState(true);
-  const navigate = useNavigate();
 
   const handleToggleUnitChange = () => {
     setUseMetric(!useMetric);
@@ -87,7 +85,7 @@ const PropertyTable = ({
   };
 
   return (
-    <Box sx={{ width: "100%", mt: 4 }}>
+    <Box sx={{ width: "100%", mt: "28px" }}>
       <FormControlLabel
         control={
           <Switch
@@ -98,7 +96,14 @@ const PropertyTable = ({
         }
         label={useMetric ? "제곱미터(m²)" : "평(py)"}
       />
-      <Paper sx={{ width: "100%", overflow: "hidden" }}>
+      <Paper
+        sx={{
+          width: "100%",
+          overflow: "hidden",
+          border: "none",
+          boxShadow: "0 2px 6px rgba(0, 0, 0, 0.05)",
+        }}
+      >
         <TableContainer>
           <Table sx={{ minWidth: 650 }}>
             <TableHead>
@@ -175,8 +180,11 @@ const PropertyTable = ({
           rowsPerPage={rowsPerPage}
           onPageChange={onPageChange}
           onRowsPerPageChange={onRowsPerPageChange}
-          rowsPerPageOptions={[10]}
-          labelRowsPerPage="페이지당 행"
+          rowsPerPageOptions={[10, 25, 50]}
+          labelRowsPerPage="페이지당 행 수"
+          labelDisplayedRows={({ from, to, count }) =>
+            `${count}개 중 ${from}-${to}개`
+          }
         />
       </Paper>
     </Box>

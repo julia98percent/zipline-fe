@@ -124,7 +124,7 @@ const ContractTable = ({
   };
 
   return (
-    <Box sx={{ width: "100%", mt: 4 }}>
+    <Box sx={{ width: "100%", mt: "28px" }}>
       <Paper sx={{ width: "100%", overflow: "hidden" }}>
         <TableContainer>
           <Table sx={{ minWidth: 650 }}>
@@ -190,8 +190,11 @@ const ContractTable = ({
           rowsPerPage={rowsPerPage}
           onPageChange={onPageChange}
           onRowsPerPageChange={onRowsPerPageChange}
-          rowsPerPageOptions={[10]}
-          labelRowsPerPage="페이지당 행"
+          rowsPerPageOptions={[10, 25, 50]}
+          labelRowsPerPage="페이지당 행 수"
+          labelDisplayedRows={({ from, to, count }) =>
+            `${count}개 중 ${from}-${to}개`
+          }
         />
       </Paper>
     </Box>

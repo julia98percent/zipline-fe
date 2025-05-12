@@ -240,9 +240,9 @@ function CounselListPage() {
         <Paper
           sx={{
             width: "100%",
-            borderRadius: "12px",
-            boxShadow: "none",
-            border: "1px solid #E0E0E0",
+            borderRadius: "8px",
+            boxShadow: "0 2px 6px rgba(0, 0, 0, 0.05)",
+            // border: "1px solid #E0E0E0",
           }}
         >
           <TableContainer>

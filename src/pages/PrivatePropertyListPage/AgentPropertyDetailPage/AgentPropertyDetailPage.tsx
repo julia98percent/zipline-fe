@@ -20,6 +20,8 @@ import DeleteConfirmModal from "@components/DeleteConfirm/DeleteConfirmModal";
 import PageHeader from "@components/PageHeader/PageHeader";
 import useUserStore from "@stores/useUserStore";
 import PropertyEditModal from "../PropertyAddButtonList/PropertyEditModal/PropertyEditModal";
+import EditIcon from "@mui/icons-material/Edit";
+import DeleteIcon from "@mui/icons-material/Delete";
 
 interface AgentPropertyDetail {
   customer: string;
@@ -243,7 +245,9 @@ const AgentPropertyDetailPage = () => {
     ContractHistoryItem[]
   >([]);
   const [tab, setTab] = useState(0);
-  const [counselHistories, setCounselHistories] = useState<CounselHistory[]>([]);
+  const [counselHistories, setCounselHistories] = useState<CounselHistory[]>(
+    []
+  );
 
   useEffect(() => {
     if (!propertyUid) return;
@@ -290,9 +294,9 @@ const AgentPropertyDetailPage = () => {
 
   useEffect(() => {
     if (!propertyUid) return;
-      apiClient
+    apiClient
       .get(`/properties/${propertyUid}/counsels`)
-        .then((res) => {
+      .then((res) => {
         setCounselHistories(res.data.data.counsels || []);
       })
       .catch(() => {
@@ -362,14 +366,24 @@ const AgentPropertyDetailPage = () => {
     return `${value}${suffix}`;
   };
 
-  const getCustomerNames = (customers: ContractCustomer[], role: ContractCustomer["customerRole"]) => {
-    const names = customers.filter((c) => c.customerRole === role).map((c) => c.customerName);
+  const getCustomerNames = (
+    customers: ContractCustomer[],
+    role: ContractCustomer["customerRole"]
+  ) => {
+    const names = customers
+      .filter((c) => c.customerRole === role)
+      .map((c) => c.customerName);
     if (names.length === 0) return "-";
     return names.join(", ");
   };
 
-  const getCustomerSummary = (customers: ContractCustomer[], role: ContractCustomer["customerRole"]) => {
-    const names = customers.filter((c) => c.customerRole === role).map((c) => c.customerName);
+  const getCustomerSummary = (
+    customers: ContractCustomer[],
+    role: ContractCustomer["customerRole"]
+  ) => {
+    const names = customers
+      .filter((c) => c.customerRole === role)
+      .map((c) => c.customerName);
     if (names.length === 0) return "-";
     if (names.length === 1) return names[0];
     return `${names[0]} 외 ${names.length - 1}명`;
@@ -377,7 +391,7 @@ const AgentPropertyDetailPage = () => {
 
   return (
     <PageContainer>
-        <PageHeader title="매물 상세 조회" userName={user?.name || "-"} />
+      <PageHeader title="매물 상세 조회" userName={user?.name || "-"} />
       <DetailPageContainer>
         {editModalOpen && property && (
           <PropertyEditModal
@@ -407,14 +421,26 @@ const AgentPropertyDetailPage = () => {
               property.detailAddress ?? ""
             }`.trim() || "-"}
           </HeaderTitle>
-        <Box display="flex" justifyContent="flex-end" mb={2} gap={1}>
-          <Button variant="outlined" onClick={handleEdit}>
-            수정
-          </Button>
-          <Button variant="outlined" color="error" onClick={handleDelete}>
-            삭제
-          </Button>
-        </Box>
+          <Box display="flex" justifyContent="flex-end" gap={1}>
+            <Button
+              variant="outlined"
+              color="primary"
+              startIcon={<EditIcon />}
+              onClick={handleEdit}
+              sx={{ mr: 1, backgroundColor: "white" }}
+            >
+              수정
+            </Button>
+            <Button
+              variant="outlined"
+              color="error"
+              startIcon={<DeleteIcon />}
+              onClick={handleDelete}
+              sx={{ backgroundColor: "white" }}
+            >
+              삭제
+            </Button>
+          </Box>
         </DetailHeader>
         <InfoCard sx={{ mb: 3 }}>
           <MapContainer>
@@ -654,7 +680,12 @@ const AgentPropertyDetailPage = () => {
                 <InfoItem>
                   <InfoLabel>임대인/매도인</InfoLabel>
                   <InfoValue>
-                    {contractInfo ? getCustomerNames(contractInfo.customers, "LESSOR_OR_SELLER") : "-"}
+                    {contractInfo
+                      ? getCustomerNames(
+                          contractInfo.customers,
+                          "LESSOR_OR_SELLER"
+                        )
+                      : "-"}
                   </InfoValue>
                 </InfoItem>
               </Box>
@@ -664,7 +695,12 @@ const AgentPropertyDetailPage = () => {
                 <InfoItem>
                   <InfoLabel>임차인/매수인</InfoLabel>
                   <InfoValue>
-                    {contractInfo ? getCustomerNames(contractInfo.customers, "LESSEE_OR_BUYER") : "-"}
+                    {contractInfo
+                      ? getCustomerNames(
+                          contractInfo.customers,
+                          "LESSEE_OR_BUYER"
+                        )
+                      : "-"}
                   </InfoValue>
                 </InfoItem>
               </Box>
@@ -681,7 +717,12 @@ const AgentPropertyDetailPage = () => {
         >
           {property.details && (
             <InfoCard
-              sx={{ flex: 4, display: "flex", flexDirection: "column", height: "100%" }}
+              sx={{
+                flex: 4,
+                display: "flex",
+                flexDirection: "column",
+                height: "100%",
+              }}
             >
               <Typography variant="h6" fontWeight="bold" gutterBottom>
                 상세 정보
@@ -693,7 +734,14 @@ const AgentPropertyDetailPage = () => {
             </InfoCard>
           )}
 
-          <InfoCard sx={{ flex: 6, display: "flex", flexDirection: "column", height: "100%" }}>
+          <InfoCard
+            sx={{
+              flex: 6,
+              display: "flex",
+              flexDirection: "column",
+              height: "100%",
+            }}
+          >
             <Tabs value={tab} onChange={(_, v) => setTab(v)} sx={{ mb: 2 }}>
               <Tab label="계약 히스토리" />
               <Tab label="상담 히스토리" />
@@ -707,14 +755,26 @@ const AgentPropertyDetailPage = () => {
                   fontSize={14}
                   sx={{ borderBottom: "1px solid #ccc", pb: 1, mb: 1 }}
                 >
-                  <Box flex={1} textAlign="center">임대인/매도인</Box>
-                  <Box flex={1} textAlign="center">임차인/매수인</Box>
-                  <Box flex={1} textAlign="center">카테고리</Box>
-                  <Box flex={1} textAlign="center">상태</Box>
-                  <Box flex={1} textAlign="center">변경일</Box>
+                  <Box flex={1} textAlign="center">
+                    임대인/매도인
+                  </Box>
+                  <Box flex={1} textAlign="center">
+                    임차인/매수인
+                  </Box>
+                  <Box flex={1} textAlign="center">
+                    카테고리
+                  </Box>
+                  <Box flex={1} textAlign="center">
+                    상태
+                  </Box>
+                  <Box flex={1} textAlign="center">
+                    변경일
+                  </Box>
                 </Box>
                 {contractHistories.length === 0 ? (
-                  <Typography color="text.secondary" align="center">히스토리 없음</Typography>
+                  <Typography color="text.secondary" align="center">
+                    히스토리 없음
+                  </Typography>
                 ) : (
                   contractHistories.map((history, idx) => {
                     return (
@@ -728,8 +788,18 @@ const AgentPropertyDetailPage = () => {
                           py: 1,
                         }}
                       >
-                        <Box flex={1} textAlign="center">{getCustomerSummary(history.customers, "LESSOR_OR_SELLER")}</Box>
-                        <Box flex={1} textAlign="center">{getCustomerSummary(history.customers, "LESSEE_OR_BUYER")}</Box>
+                        <Box flex={1} textAlign="center">
+                          {getCustomerSummary(
+                            history.customers,
+                            "LESSOR_OR_SELLER"
+                          )}
+                        </Box>
+                        <Box flex={1} textAlign="center">
+                          {getCustomerSummary(
+                            history.customers,
+                            "LESSEE_OR_BUYER"
+                          )}
+                        </Box>
                         <Box flex={1} textAlign="center">
                           {getCategoryChip(history.contractCategory)}
                         </Box>
@@ -748,21 +818,50 @@ const AgentPropertyDetailPage = () => {
 
             {tab === 1 && (
               <>
-                <Box display="flex" fontWeight="bold" fontSize={14} sx={{ borderBottom: "1px solid #ccc", pb: 1, mb: 1 }}>
-                  <Box flex={1} textAlign="center">상담 제목</Box>
-                  <Box flex={1} textAlign="center">상담일</Box>
-                  <Box flex={1} textAlign="center">고객명</Box>
-                  <Box flex={1} textAlign="center">연락처</Box>
+                <Box
+                  display="flex"
+                  fontWeight="bold"
+                  fontSize={14}
+                  sx={{ borderBottom: "1px solid #ccc", pb: 1, mb: 1 }}
+                >
+                  <Box flex={1} textAlign="center">
+                    상담 제목
+                  </Box>
+                  <Box flex={1} textAlign="center">
+                    상담일
+                  </Box>
+                  <Box flex={1} textAlign="center">
+                    고객명
+                  </Box>
+                  <Box flex={1} textAlign="center">
+                    연락처
+                  </Box>
                 </Box>
                 {counselHistories.length === 0 ? (
-                  <Typography color="text.secondary" align="center">히스토리 없음</Typography>
+                  <Typography color="text.secondary" align="center">
+                    히스토리 없음
+                  </Typography>
                 ) : (
                   counselHistories.map((counsel) => (
-                    <Box key={counsel.counselUid} display="flex" alignItems="center" fontSize={14} sx={{ borderBottom: "1px solid #eee", py: 1 }}>
-                      <Box flex={1} textAlign="center">{counsel.counselTitle}</Box>
-                      <Box flex={1} textAlign="center">{counsel.counselDate}</Box>
-                      <Box flex={1} textAlign="center">{counsel.customerName}</Box>
-                      <Box flex={1} textAlign="center">{counsel.customerPhoneNo}</Box>
+                    <Box
+                      key={counsel.counselUid}
+                      display="flex"
+                      alignItems="center"
+                      fontSize={14}
+                      sx={{ borderBottom: "1px solid #eee", py: 1 }}
+                    >
+                      <Box flex={1} textAlign="center">
+                        {counsel.counselTitle}
+                      </Box>
+                      <Box flex={1} textAlign="center">
+                        {counsel.counselDate}
+                      </Box>
+                      <Box flex={1} textAlign="center">
+                        {counsel.customerName}
+                      </Box>
+                      <Box flex={1} textAlign="center">
+                        {counsel.customerPhoneNo}
+                      </Box>
                     </Box>
                   ))
                 )}

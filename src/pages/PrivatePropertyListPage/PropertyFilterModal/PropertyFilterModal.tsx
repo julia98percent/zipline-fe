@@ -242,16 +242,14 @@ const PropertyFilterModal = ({
         <Box display="flex" gap={2}>
           <TextField
             label="최소 매매가"
-            type="number"
-            inputProps={{ step: 'any' }}
+            type="text"
             value={priceInputs.minPrice}
             onChange={(e) => handleInputChange(e, "minPrice")}
             fullWidth
           />
           <TextField
             label="최대 매매가"
-            type="number"
-            inputProps={{ step: 'any' }}
+            type="text"
             value={priceInputs.maxPrice}
             onChange={(e) => handleInputChange(e, "maxPrice")}
             fullWidth
@@ -262,16 +260,14 @@ const PropertyFilterModal = ({
         <Box display="flex" gap={2}>
           <TextField
             label="최소 보증금"
-            type="number"
-            inputProps={{ step: 'any' }}
+            type="text"
             value={priceInputs.minDeposit}
             onChange={(e) => handleInputChange(e, "minDeposit")}
             fullWidth
           />
           <TextField
             label="최대 보증금"
-            type="number"
-            inputProps={{ step: 'any' }}
+            type="text"
             value={priceInputs.maxDeposit}
             onChange={(e) => handleInputChange(e, "maxDeposit")}
             fullWidth
@@ -281,16 +277,14 @@ const PropertyFilterModal = ({
         <Box display="flex" gap={2}>
           <TextField
             label="최소 월세"
-            type="number"
-            inputProps={{ step: 'any' }}
+            type="text"
             value={priceInputs.minMonthlyRent}
             onChange={(e) => handleInputChange(e, "minMonthlyRent")}
             fullWidth
           />
           <TextField
             label="최대 월세"
-            type="number"
-            inputProps={{ step: 'any' }}
+            type="text"
             value={priceInputs.maxMonthlyRent}
             onChange={(e) => handleInputChange(e, "maxMonthlyRent")}
             fullWidth

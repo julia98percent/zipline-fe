@@ -7,14 +7,8 @@ import {
   TableHead,
   TableRow,
   Paper,
-  Box,
-  Typography,
-  FormControl,
-  InputLabel,
-  Select,
-  MenuItem,
-  Pagination,
   Chip,
+  TablePagination,
 } from "@mui/material";
 import { useNavigate } from "react-router-dom";
 import { formatPriceWithKorean } from "@utils/numberUtil";
@@ -104,13 +98,12 @@ function PropertyTable({ propertyList = [] }: PropertyTableProps) {
         <Table>
           <TableHead>
             <TableRow>
-              <TableCell>주소</TableCell>
-              <TableCell>상세주소</TableCell>
-              <TableCell>유형</TableCell>
-              <TableCell>매매가</TableCell>
-              <TableCell>보증금</TableCell>
-              <TableCell>월세</TableCell>
-              <TableCell>입주가능일</TableCell>
+              <TableCell sx={{ width: "28%" }}>주소</TableCell>
+              <TableCell sx={{ width: "5%" }}>유형</TableCell>
+              <TableCell sx={{ width: "20%" }}>매매가</TableCell>
+              <TableCell sx={{ width: "17%" }}>보증금</TableCell>
+              <TableCell sx={{ width: "17%" }}>월세</TableCell>
+              <TableCell sx={{ width: "12%" }}>입주가능일</TableCell>
             </TableRow>
           </TableHead>
           <TableBody>
@@ -126,8 +119,9 @@ function PropertyTable({ propertyList = [] }: PropertyTableProps) {
                     },
                   }}
                 >
-                  <TableCell>{property.address}</TableCell>
-                  <TableCell>{property.detailAddress}</TableCell>
+                  <TableCell>
+                    {`${property.address ?? ""}${property.detailAddress ? " " + property.detailAddress : ""}`}
+                  </TableCell>
                   <TableCell>
                     <Chip
                       label={getTypeLabel(property.type)}
@@ -135,14 +129,14 @@ function PropertyTable({ propertyList = [] }: PropertyTableProps) {
                       sx={getTypeColor(property.type)}
                     />
                   </TableCell>
-                  <TableCell>{formatPriceWithKorean(property.price)}</TableCell>
+                  <TableCell sx={{ width: "90px" }}>{property.price ? formatPriceWithKorean(property.price) : "-"}</TableCell>
                   <TableCell>
-                    {formatPriceWithKorean(property.deposit)}
+                    {property.deposit ? formatPriceWithKorean(property.deposit) : "-"}
                   </TableCell>
                   <TableCell>
-                    {formatPriceWithKorean(property.monthlyRent)}
+                    {property.monthlyRent ? formatPriceWithKorean(property.monthlyRent) : "-"}
                   </TableCell>
-                  <TableCell>
+                  <TableCell sx={{ width: "140px" }}>
                     {new Date(property.moveInDate).toLocaleDateString()}
                   </TableCell>
                 </TableRow>
@@ -150,54 +144,31 @@ function PropertyTable({ propertyList = [] }: PropertyTableProps) {
             ) : (
               <TableRow>
                 <TableCell colSpan={7} align="center" sx={{ py: 8 }}>
-                  <Typography variant="body1" color="text.secondary">
+                  <div style={{ color: '#757575', fontSize: '1rem' }}>
                     등록된 매물이 없습니다
-                  </Typography>
+                  </div>
                 </TableCell>
               </TableRow>
             )}
           </TableBody>
         </Table>
       </TableContainer>
-      <Box
-        sx={{
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "space-between",
-          p: 2,
-          borderTop: "1px solid #E0E0E0",
+      <TablePagination
+        component="div"
+        count={propertyList.length}
+        page={page}
+        rowsPerPage={rowsPerPage}
+        onPageChange={(_, newPage) => setPage(newPage)}
+        onRowsPerPageChange={(e) => {
+          setRowsPerPage(Number(e.target.value));
+          setPage(0);
         }}
-      >
-        <Typography variant="body2" color="text.secondary">
-          총 {propertyList.length}건
-        </Typography>
-        <Box sx={{ display: "flex", alignItems: "center", gap: 2 }}>
-          <FormControl size="small" sx={{ minWidth: 120 }}>
-            <InputLabel>페이지당 행</InputLabel>
-            <Select
-              value={rowsPerPage}
-              label="페이지당 행"
-              onChange={(e) => {
-                setRowsPerPage(Number(e.target.value));
-                setPage(0); // 페이지당 행 수 변경시 첫 페이지로 이동
-              }}
-            >
-              <MenuItem value={10}>10</MenuItem>
-              <MenuItem value={25}>25</MenuItem>
-              <MenuItem value={50}>50</MenuItem>
-              <MenuItem value={100}>100</MenuItem>
-            </Select>
-          </FormControl>
-          <Pagination
-            count={Math.ceil(propertyList.length / rowsPerPage)}
-            page={page + 1}
-            onChange={(_, newPage) => setPage(newPage - 1)}
-            color="primary"
-            showFirstButton
-            showLastButton
-          />
-        </Box>
-      </Box>
+        rowsPerPageOptions={[10, 25, 50, 100]}
+        labelRowsPerPage="페이지당 행 수"
+        labelDisplayedRows={({ from, to, count }) =>
+          `${count}건 중 ${from}-${to}건`
+        }
+      />
     </Paper>
   );
 }

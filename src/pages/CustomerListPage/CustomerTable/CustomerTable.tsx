@@ -9,14 +9,9 @@ import {
   Paper,
   Chip,
   IconButton,
-  Select,
-  MenuItem,
-  FormControl,
-  InputLabel,
-  Pagination,
-  Typography,
   TextField,
   Autocomplete,
+  TablePagination,
 } from "@mui/material";
 import { useNavigate } from "react-router-dom";
 import DeleteIcon from "@mui/icons-material/DeleteOutline";
@@ -506,8 +501,16 @@ const CustomerTable = ({
   };
 
   return (
-    <Box sx={{ width: "100%", mt: 4 }}>
-      <Paper sx={{ width: "100%", overflow: "hidden" }} elevation={0}>
+    <Box sx={{ width: "100%", mt: "28px" }}>
+      <Paper
+        sx={{
+          width: "100%",
+          overflow: "hidden",
+          borderRadius: "8px",
+          boxShadow: "0 2px 6px rgba(0, 0, 0, 0.05)",
+        }}
+        elevation={0}
+      >
         <TableContainer>
           <Table sx={{ minWidth: 650 }} aria-label="customer table">
             <TableHead>
@@ -555,42 +558,19 @@ const CustomerTable = ({
             </TableBody>
           </Table>
         </TableContainer>
-        <Box
-          sx={{
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "space-between",
-            p: 2,
-            borderTop: "1px solid #E0E0E0",
-          }}
-        >
-          <Typography variant="body2" color="text.secondary">
-            총 {totalCount}명
-          </Typography>
-          <Box sx={{ display: "flex", alignItems: "center", gap: 2 }}>
-            <FormControl size="small" sx={{ minWidth: 120 }}>
-              <InputLabel>페이지당 행</InputLabel>
-              <Select
-                value={rowsPerPage}
-                label="페이지당 행"
-                onChange={(e) => setRowsPerPage(Number(e.target.value))}
-              >
-                <MenuItem value={10}>10</MenuItem>
-                <MenuItem value={25}>25</MenuItem>
-                <MenuItem value={50}>50</MenuItem>
-                <MenuItem value={100}>100</MenuItem>
-              </Select>
-            </FormControl>
-            <Pagination
-              count={Math.ceil(totalCount / rowsPerPage)}
-              page={page + 1}
-              onChange={(_, newPage) => setPage(newPage - 1)}
-              color="primary"
-              showFirstButton
-              showLastButton
-            />
-          </Box>
-        </Box>
+        <TablePagination
+          component="div"
+          count={totalCount}
+          page={page}
+          rowsPerPage={rowsPerPage}
+          onPageChange={(_, newPage) => setPage(newPage)}
+          onRowsPerPageChange={(e) => setRowsPerPage(Number(e.target.value))}
+          rowsPerPageOptions={[10, 25, 50, 100]}
+          labelRowsPerPage="페이지당 행 수"
+          labelDisplayedRows={({ from, to, count }) =>
+            `${count}명 중 ${from}-${to}명`
+          }
+        />
       </Paper>
       <DeleteConfirmModal
         open={deleteModalOpen}

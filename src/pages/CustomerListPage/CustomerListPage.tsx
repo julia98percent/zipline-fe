@@ -8,7 +8,6 @@ import FilterListIcon from "@mui/icons-material/FilterList";
 import useDebounce from "@hooks/useDebounce";
 import PageHeader from "@components/PageHeader/PageHeader";
 import useUserStore from "@stores/useUserStore";
-import { toast } from "react-toastify";
 
 interface Customer {
   uid: number;
@@ -230,9 +229,8 @@ const CustomerListPage = () => {
 
       <Box
         sx={{
-          p: { xs: 2, md: 3 },
-          pt: 0,
-          maxWidth: 1400,
+          p: "20px",
+          maxWidth: "100%",
           mx: "auto",
         }}
       >
@@ -240,6 +238,7 @@ const CustomerListPage = () => {
           style={{
             backgroundColor: "#ffffff",
             borderRadius: "8px",
+            boxShadow: "0 2px 6px rgba(0, 0, 0, 0.05)",
             padding: "18px",
             display: "flex",
             justifyContent: "space-between",
@@ -283,6 +282,7 @@ const CustomerListPage = () => {
           </Box>
         </div>
         <CustomerTable
+                
           customerList={customerList}
           totalCount={totalCount}
           setPage={setPage}

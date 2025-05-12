@@ -295,22 +295,24 @@ function CounselDetailPage() {
       <PageHeader title="상담 상세" userName={user?.name || "-"} />
 
       <Box className={styles.contentContainer}>
-        <div className={styles.buttonContainer}>
+        <div style={{ display: 'flex', justifyContent: 'flex-end', gap: 8, marginBottom: 16 }}>
           {!isEditing ? (
             <>
               <Button
-                variant="contained"
+                variant="outlined"
+                color="primary"
                 startIcon={<EditIcon />}
                 onClick={handleEdit}
-                className={styles.editButton}
+                sx={{ backgroundColor: 'white' }}
               >
                 수정
               </Button>
               <Button
-                variant="contained"
+                variant="outlined"
+                color="error"
                 startIcon={<DeleteOutlineIcon />}
                 onClick={handleDeleteClick}
-                className={styles.deleteButton}
+                sx={{ backgroundColor: 'white' }}
               >
                 삭제
               </Button>
@@ -318,18 +320,20 @@ function CounselDetailPage() {
           ) : (
             <>
               <Button
-                variant="contained"
+                variant="outlined"
+                color="inherit"
                 startIcon={<CloseIcon />}
                 onClick={handleCancelEdit}
-                className={styles.cancelButton}
+                sx={{ backgroundColor: 'white' }}
               >
                 취소
               </Button>
               <Button
-                variant="contained"
+                variant="outlined"
+                color="primary"
                 startIcon={<SaveIcon />}
                 onClick={handleSave}
-                className={styles.saveButton}
+                sx={{ backgroundColor: 'white' }}
               >
                 저장
               </Button>

@@ -338,7 +338,7 @@ const ContractEditModal = ({
 
         <TextField
           select
-          label="계약 상태"
+          label="계약 상태 *"
           value={status}
           onChange={(e) => setStatus(e.target.value as ContractStatus)}
           error={!!errors.status}

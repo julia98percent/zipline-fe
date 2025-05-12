@@ -33,7 +33,7 @@ export const FilterButtonCard = styled(Box)({
   borderRadius: "12px",
   boxShadow: "0 2px 8px rgba(0,0,0,0.04)",
   padding: "20px 24px",
-  marginBottom: "24px",
+  marginBottom: "28px",
   gap: "20px",
 });
 
@@ -139,7 +139,7 @@ export const StyledSelect = styled(Select)({
   fontFamily: "'Pretendard', sans-serif",
   background: "#fff",
   '& .MuiSelect-select': {
-    padding: "8px 32px 8px 12px",
+    padding: "8px 28px 8px 12px",
     minHeight: "32px",
     display: "flex",
     alignItems: "center",

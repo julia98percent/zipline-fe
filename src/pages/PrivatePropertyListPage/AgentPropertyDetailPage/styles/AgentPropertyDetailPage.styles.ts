@@ -8,7 +8,7 @@ export const PageContainer = styled(Box)({
 });
 
 export const DetailPageContainer = styled(Box)(({ theme }) => ({
-  padding: '40px 40px',
+  padding: '20px 20px',
   maxWidth: '100%',
   margin: '0 auto',
   backgroundColor: '#f5f5f5',
@@ -23,7 +23,7 @@ export const DetailHeader = styled(Box)(({ theme }) => ({
 }));
 
 export const HeaderTitle = styled(Typography)({
-  fontSize: '1.5rem',
+  fontSize: '1.4rem',
   fontWeight: 'bold',
   color: '#333',
 });

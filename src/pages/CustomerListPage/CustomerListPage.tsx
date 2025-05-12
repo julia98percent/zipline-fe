@@ -282,6 +282,7 @@ const CustomerListPage = () => {
           </Box>
         </div>
         <CustomerTable
+                
           customerList={customerList}
           totalCount={totalCount}
           setPage={setPage}

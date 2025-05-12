@@ -27,7 +27,6 @@ import { MenuItem, SelectChangeEvent } from "@mui/material";
 import PropertyAddButtonList from "./PropertyAddButtonList";
 import { Box } from "@mui/material";
 import { useNavigate } from "react-router-dom";
-import { create } from "zustand";
 
 export interface PropertyItem {
   uid: number;
@@ -72,26 +71,13 @@ const TYPE_OPTIONS = [
   { value: "MONTHLY", label: "월세" },
 ];
 
-// 필터 상태를 전역적으로 관리하는 store
-interface FilterStore {
-  filter: AgentPropertyFilterRequest;
-  setFilter: (filter: AgentPropertyFilterRequest) => void;
-  resetFilter: () => void;
-}
-
-const useFilterStore = create<FilterStore>((set) => ({
-  filter: {},
-  setFilter: (filter) => set({ filter }),
-  resetFilter: () => set({ filter: {} }),
-}));
-
 function PrivatePropertyListPage() {
   const [privatePropertyList, setPrivatePropertyList] = useState<
     PropertyItem[]
   >([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [filterModalOpen, setFilterModalOpen] = useState(false);
-  const { filter, setFilter, resetFilter } = useFilterStore();
+  const [filter, setFilter] = useState<AgentPropertyFilterRequest>({});
   const { user } = useUserStore();
   const navigate = useNavigate();
   const [page, setPage] = useState(0);
@@ -119,7 +105,7 @@ function PrivatePropertyListPage() {
       prefix = String(code).slice(0, 2); // 시/도: 앞 2자리
     }
   
-    setFilter((prev: AgentPropertyFilterRequest) => ({
+    setFilter((prev) => ({
       ...prev,
       legalDistrictCode: prefix || undefined,
     }));
@@ -131,14 +117,14 @@ function PrivatePropertyListPage() {
       (e.target.value as string) === ""
         ? undefined
         : (e.target.value as PropertyItem["realCategory"]);
-    setFilter((prev: AgentPropertyFilterRequest) => ({ ...prev, category: value }));
+    setFilter((prev) => ({ ...prev, category: value }));
   };
   const handleTypeChange = (e: SelectChangeEvent<unknown>) => {
     const value =
       (e.target.value as string) === ""
         ? undefined
         : (e.target.value as PropertyItem["type"]);
-    setFilter((prev: AgentPropertyFilterRequest) => ({ ...prev, type: value }));
+    setFilter((prev) => ({ ...prev, type: value }));
   };
 
   const fetchPropertyData = useCallback(() => {
@@ -147,7 +133,7 @@ function PrivatePropertyListPage() {
       .get("/properties", {
         params: {
           ...filter,
-          page: page + 1, 
+          page: page + 1, // 백엔드는 1부터 시작
           size: rowsPerPage,
         },
       })
@@ -166,35 +152,34 @@ function PrivatePropertyListPage() {
   }, [page, rowsPerPage]);
 
   const fetchFilteredProperties = useCallback(() => {
-    setLoading(true);    
-    const currentFilter = useFilterStore.getState().filter;
+    setLoading(true);
     apiClient
       .get("/properties", {
         params: {
-          ...currentFilter,
-          page: page + 1,
-          size: rowsPerPage,
+          ...filter,
+          page: 0,
+          size: 10,
         },
       })
       .then((res) => {
         const agentPropertyData = res?.data?.data?.agentProperty;
         setPrivatePropertyList(agentPropertyData || []);
-        setTotalElements(res?.data?.data?.totalElements || 0);
       })
       .catch((error) => {
         console.error("Failed to fetch filtered properties:", error);
         setPrivatePropertyList([]);
-        setTotalElements(0);
       })
       .finally(() => {
         setLoading(false);
         setFilterModalOpen(false);
       });
-  }, [page, rowsPerPage]); 
+  }, [filter]);
 
-  useEffect(() => {    
-    setPage(0); // 필터가 변경될 때 페이지를 초기화
-    fetchFilteredProperties();    
+  // 바깥 필터가 바뀔 때마다 자동으로 리스트 조회
+  useEffect(() => {
+    // 카테고리, 유형, legalDistrictCode 중 하나라도 바뀌면
+    fetchFilteredProperties();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [filter.category, filter.type, filter.legalDistrictCode]);
 
   useEffect(() => {
@@ -231,7 +216,7 @@ function PrivatePropertyListPage() {
     });
   }, [region.selectedSigungu]);
 
-  const handleSidoChange = (e: SelectChangeEvent<string>) => {
+  const handleSidoChange = (e: SelectChangeEvent) => {
     const newSido = e.target.value;
     const newState = {
       ...region,
@@ -243,7 +228,7 @@ function PrivatePropertyListPage() {
     updateLegalDistrictCode(newState);
   };
 
-  const handleGuChange = (e: SelectChangeEvent<string>) => {
+  const handleGuChange = (e: SelectChangeEvent) => {
     const newSigungu = e.target.value;
     const newState = {
       ...region,
@@ -254,7 +239,7 @@ function PrivatePropertyListPage() {
     updateLegalDistrictCode(newState);
   };
 
-  const handleDongChange = (e: SelectChangeEvent<string>) => {
+  const handleDongChange = (e: SelectChangeEvent) => {
     const newDong = e.target.value;
     const newState = {
       ...region,
@@ -291,7 +276,7 @@ function PrivatePropertyListPage() {
                 size="small"
                 value={region.selectedSido}
                 displayEmpty
-                onChange={handleSidoChange as (e: SelectChangeEvent<unknown>) => void}
+                onChange={handleSidoChange}
                 sx={{ width: 120, height: 35 }}
               >
                 <MenuItem value="">시/도</MenuItem>
@@ -306,7 +291,7 @@ function PrivatePropertyListPage() {
                 size="small"
                 value={region.selectedSigungu}
                 displayEmpty
-                onChange={handleGuChange as (e: SelectChangeEvent<unknown>) => void}
+                onChange={handleGuChange}
                 sx={{ width: 120, height: 35 }}
                 disabled={!region.selectedSido}
               >
@@ -322,7 +307,7 @@ function PrivatePropertyListPage() {
                 size="small"
                 value={region.selectedDong}
                 displayEmpty
-                onChange={handleDongChange as (e: SelectChangeEvent<unknown>) => void}
+                onChange={handleDongChange}
                 sx={{ width: 120, height: 35 }}
                 disabled={!region.selectedSigungu}
               >
@@ -423,7 +408,7 @@ function PrivatePropertyListPage() {
           filter={filter}
           setFilter={setFilter}
           onApply={fetchFilteredProperties}
-          onReset={resetFilter}
+          onReset={() => setFilter({})}
         />
       </ContentContainer>
     </PageContainer>

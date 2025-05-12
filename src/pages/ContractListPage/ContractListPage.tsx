@@ -126,9 +126,7 @@ function ContractListPage() {
 
   return (
     <div className={styles.container}>
-      <div className={styles.header}>
-        <PageHeader title="계약 목록" userName={user?.name || ""} />
-      </div>
+      <PageHeader title="계약 목록" userName={user?.name || ""} />
 
       <div className={styles.contents}>
         <div className={styles.controlsContainer}>

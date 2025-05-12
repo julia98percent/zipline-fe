@@ -40,6 +40,10 @@ const PageHeader = ({ title, userName, action }: PageHeaderProps) => {
         justifyContent: "space-between",
         height: "70px",
         px: 2,
+        position: "sticky",
+        top: 0,
+        zIndex: 1000,
+        boxShadow: "0px 2px 4px rgba(0, 0, 0, 0.05)",
       }}
     >
       <Typography

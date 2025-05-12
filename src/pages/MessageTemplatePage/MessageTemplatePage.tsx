@@ -251,27 +251,26 @@ const MessageTemplatePage = () => {
         p: 0,
         pb: 3,
         minHeight: "100vh",
-        backgroundColor: "#F8F9FA",
+        backgroundColor: "#f5f5f5",
       }}
     >
       <PageHeader title="문자 템플릿" userName={user?.name || "-"} />
 
-      <Box sx={{ p: 3, display: "flex", gap: 2 }}>
+      <Box sx={{ p: 3, display: "flex", gap: "28px" }}>
         {/* 왼쪽 영역: 템플릿 목록 */}
         <Box
           sx={{
             width: "300px",
             display: "flex",
             flexDirection: "column",
-            gap: 2,
+            gap: "28px",
           }}
         >
           <Paper
             sx={{
               p: 3,
-              borderRadius: "12px",
-              boxShadow: "none",
-              border: "1px solid #E0E0E0",
+              borderRadius: "8px",
+              boxShadow: "0 2px 6px rgba(0, 0, 0, 0.05)",
             }}
           >
             <Typography variant="h6" sx={{ mb: 1, color: "#333333" }}>
@@ -355,9 +354,8 @@ const MessageTemplatePage = () => {
           <Paper
             sx={{
               p: 3,
-              borderRadius: "12px",
-              boxShadow: "none",
-              border: "1px solid #E0E0E0",
+              borderRadius: "8px",
+              boxShadow: "0 2px 6px rgba(0, 0, 0, 0.05)",
             }}
           >
             <Typography variant="h6" sx={{ mb: 2, color: "#333333" }}>
@@ -479,13 +477,12 @@ const MessageTemplatePage = () => {
         <Paper
           sx={{
             flex: 1,
-            p: 3,
-            borderRadius: "12px",
-            boxShadow: "none",
-            border: "1px solid #E0E0E0",
+            p: "20px",
+            borderRadius: "8px",
+            boxShadow: "0 2px 6px rgba(0, 0, 0, 0.05)",
           }}
         >
-          <Box sx={{ display: "flex", gap: 2, mb: 2 }}>
+          <Box sx={{ display: "flex", gap: "28px", mb: 2 }}>
             <TextField
               fullWidth
               placeholder="템플릿 제목"
@@ -496,6 +493,7 @@ const MessageTemplatePage = () => {
                 "& .MuiOutlinedInput-root": {
                   "& fieldset": {
                     borderColor: "#E0E0E0",
+                    borderRadius: "20px",
                   },
                   "&:hover fieldset": {
                     borderColor: "#164F9E",
@@ -517,6 +515,7 @@ const MessageTemplatePage = () => {
                 backgroundColor: "#FFFFFF",
                 "& .MuiOutlinedInput-notchedOutline": {
                   borderColor: "#E0E0E0",
+                  borderRadius: "20px",
                 },
                 "&:hover .MuiOutlinedInput-notchedOutline": {
                   borderColor: "#164F9E",
@@ -546,6 +545,7 @@ const MessageTemplatePage = () => {
             sx={{
               backgroundColor: "#FFFFFF",
               "& .MuiOutlinedInput-root": {
+                borderRadius: "20px",
                 "& fieldset": {
                   borderColor: "#E0E0E0",
                 },
@@ -565,7 +565,7 @@ const MessageTemplatePage = () => {
             </Typography>
             <Box
               sx={{
-                p: 2,
+                p: "28px",
                 background: "#F8F9FA",
                 borderRadius: 2,
                 minHeight: 48,
@@ -582,7 +582,12 @@ const MessageTemplatePage = () => {
             )}
           </Box>
           <Box
-            sx={{ display: "flex", justifyContent: "flex-end", gap: 2, mt: 2 }}
+            sx={{
+              display: "flex",
+              justifyContent: "flex-end",
+              gap: "28px",
+              mt: 2,
+            }}
           >
             {selectedTemplate && (
               <Button

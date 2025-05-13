@@ -314,11 +314,19 @@ function CustomerDetailPage() {
               }}
             >
               <Button
-                variant="outlined"
+                variant="contained"
                 color="primary"
                 startIcon={<EditIcon />}
                 onClick={handleEditClick}
-                sx={{ mr: 1, backgroundColor: "white" }}
+                sx={{
+                  mr: 1,
+                  backgroundColor: "#164F9E",
+                  boxShadow: "none",
+                  "&:hover": {
+                    backgroundColor: "#0D3B7A",
+                    boxShadow: "none",
+                  },
+                }}
               >
                 수정
               </Button>
@@ -327,7 +335,9 @@ function CustomerDetailPage() {
                 color="error"
                 startIcon={<DeleteIcon />}
                 onClick={handleDeleteClick}
-                sx={{ backgroundColor: "white" }}
+                sx={{
+                  backgroundColor: "white",
+                }}
               >
                 삭제
               </Button>

@@ -65,8 +65,6 @@ function RegionSelect({
 
   // 시도 데이터 초기 로드 및 초기 지역 설정
   useEffect(() => {
-    if (!value.legalDistrictCode && !value.name && !value.code) return;
-
     apiClient
       .get("/region/0")
       .then((res) => {

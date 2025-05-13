@@ -1,13 +1,13 @@
 import { useState, useEffect } from "react";
 import apiClient from "@apis/apiClient";
 import CustomerAddButtonList from "./CustomerAddButtonList";
-import CustomerTable from "./CustomerTable/CustomerTable";
 import CustomerFilterModal from "./CustomerFilterModal/CustomerFilterModal";
 import { Box, CircularProgress, TextField, IconButton } from "@mui/material";
 import FilterListIcon from "@mui/icons-material/FilterList";
 import useDebounce from "@hooks/useDebounce";
 import PageHeader from "@components/PageHeader/PageHeader";
 import useUserStore from "@stores/useUserStore";
+import CustomerTable from "./CustomerTable/CustomerTable";
 
 interface Customer {
   uid: number;
@@ -159,7 +159,6 @@ const CustomerListPage = () => {
       const existingCustomer = customerList.find((c) => c.uid === customer.uid);
       if (!existingCustomer) return;
 
-      // 서버에서 허용하는 필드만 포함하여 전송
       const dataToSend = {
         name: customer.name,
         phoneNo: customer.phoneNo,
@@ -260,12 +259,23 @@ const CustomerListPage = () => {
               size="small"
               sx={{
                 width: 250,
+                "& .MuiOutlinedInput-root": {
+                  borderRadius: "14px",
+                  boxShadow: "0 2px 6px rgba(0, 0, 0, 0.05)",
+                  "&:hover .MuiOutlinedInput-notchedOutline": {
+                    borderColor: "rgba(0, 0, 0, 0.25)",
+                  },
+                },
               }}
             />
             <IconButton
               onClick={() => setFilterModalOpen(true)}
               sx={{
-                borderRadius: "4px",
+                borderRadius: "14px",
+                border: "1px solid rgba(0, 0, 0, 0.23)",
+                "&:hover": {
+                  backgroundColor: "#F5F5F5",
+                },
               }}
             >
               <FilterListIcon />
@@ -282,7 +292,6 @@ const CustomerListPage = () => {
           </Box>
         </div>
         <CustomerTable
-                
           customerList={customerList}
           totalCount={totalCount}
           setPage={setPage}

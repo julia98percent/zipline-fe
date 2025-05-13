@@ -107,6 +107,33 @@ const SignInPage = () => {
             <Box
               sx={{
                 display: "flex",
+                flexDirection: "column",
+                alignItems: "center",
+                mt: 3,
+                p: 2,
+                backgroundColor: "#F9FAFB",
+                borderRadius: "8px",
+                border: "1px solid #E5E7EB",
+              }}
+            >
+              <Typography
+                variant="subtitle2"
+                color="text.secondary"
+                sx={{ mb: 1 }}
+              >
+                테스트 계정
+              </Typography>
+              <Typography variant="body2" color="text.secondary">
+                ID: test01
+              </Typography>
+              <Typography variant="body2" color="text.secondary">
+                Password: test1234!
+              </Typography>
+            </Box>
+
+            <Box
+              sx={{
+                display: "flex",
                 justifyContent: "center",
                 alignItems: "center",
                 mt: 3,

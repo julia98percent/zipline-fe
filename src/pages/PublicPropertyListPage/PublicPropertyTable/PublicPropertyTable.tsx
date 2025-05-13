@@ -273,7 +273,9 @@ const PublicPropertyTable = ({
                   {useMetric ? `${property.exclusiveArea}m²` : `${(property.exclusiveArea / 3.3).toFixed(1)}평`}
                 </TableCell>
                 <TableCell align="center" sx={{ maxWidth: '100px', whiteSpace: 'normal' }}>
-                  {useMetric ? `${property.supplyArea}m²` : `${(property.supplyArea / 3.3).toFixed(1)}평`}
+                  {useMetric
+                    ? `${property.supplyArea == null ? 0 : property.supplyArea}m²`
+                    : `${((property.supplyArea == null ? 0 : property.supplyArea) / 3.3).toFixed(1)}평`}
                 </TableCell>
               </TableRow>
             ))

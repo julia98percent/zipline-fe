@@ -107,6 +107,10 @@ const SubmitSurveyPage = () => {
     }
   };
 
+  const handleFileRemove = (questionIndex: number) => {
+    handleAnswerChange(questionIndex, null);
+  };
+
   const validateRequiredFields = (): boolean => {
     const errors: { [key: number]: boolean } = {};
     let isValid = true;
@@ -268,15 +272,52 @@ const SubmitSurveyPage = () => {
 
             {question.type === "FILE_UPLOAD" && (
               <Box sx={{ mt: 2 }}>
-                <input
-                  type="file"
-                  onChange={(e) => handleFileChange(questionIndex, e)}
-                  style={{ marginTop: "8px" }}
-                />
-                {answers[questionIndex]?.file && (
-                  <Typography variant="body2" sx={{ mt: 1 }}>
-                    선택된 파일: {answers[questionIndex].file.name}
-                  </Typography>
+                {!answers[questionIndex]?.file ? (
+                  <input
+                    type="file"
+                    onChange={(e) => handleFileChange(questionIndex, e)}
+                    style={{ marginTop: "8px" }}
+                  />
+                ) : (
+                  <Box sx={{ display: "flex", alignItems: "center", mt: 1 }}>
+                    <Typography variant="body2">
+                      선택된 파일: {answers[questionIndex].file.name}
+                    </Typography>
+                    <Button
+                      text="파일 변경"
+                      onClick={() => {
+                        const fileInput = document.createElement("input");
+                        fileInput.type = "file";
+                        fileInput.onchange = (e: Event) => {
+                          const target = e.target as HTMLInputElement;
+                          handleFileChange(questionIndex, {
+                            target,
+                          } as React.ChangeEvent<HTMLInputElement>);
+                        };
+                        fileInput.click();
+                      }}
+                      sx={{
+                        ml: 2,
+                        backgroundColor: "#164F9E",
+                        color: "white",
+                        "&:hover": {
+                          backgroundColor: "#0d3b7e",
+                        },
+                      }}
+                    />
+                    <Button
+                      text="제거"
+                      onClick={() => handleFileRemove(questionIndex)}
+                      sx={{
+                        ml: 1,
+                        backgroundColor: "#f44336",
+                        color: "white",
+                        "&:hover": {
+                          backgroundColor: "#d32f2f",
+                        },
+                      }}
+                    />
+                  </Box>
                 )}
               </Box>
             )}

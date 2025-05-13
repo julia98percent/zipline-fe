@@ -180,7 +180,7 @@ const PublicPropertyTable = ({
       <Table sx={{ minWidth: 650 }}>
         <TableHead>
           <TableRow>
-            <TableCell align="center">매물 ID</TableCell>
+            <TableCell align="center">플랫폼</TableCell>
             <TableCell align="center">매물 유형</TableCell>
             <TableCell align="center">건물 정보</TableCell>
             <TableCell align="center">주소</TableCell>
@@ -221,7 +221,7 @@ const PublicPropertyTable = ({
             propertyList.map((property) => (
               <TableRow key={property.id}>
                 <TableCell align="center" sx={{ maxWidth: '100px', whiteSpace: 'normal' }}>
-                  {property.id}
+                  {property.platform}
                 </TableCell>
                 <TableCell align="center" sx={{ maxWidth: '100px', whiteSpace: 'normal' }}>
                   {CATEGORY_LABELS[property.category]}

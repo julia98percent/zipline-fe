@@ -266,7 +266,6 @@ const SubmitSurveyPage = () => {
                   handleAnswerChange(questionIndex, e.target.value)
                 }
                 error={isError}
-                helperText={isError ? "이 필드는 필수입니다" : ""}
               />
             )}
 

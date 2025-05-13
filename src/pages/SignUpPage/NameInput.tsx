@@ -1,6 +1,7 @@
 import { ChangeEvent } from "react";
 import { TextField, Tooltip } from "@mui/material";
 import ErrorOutlineIcon from "@mui/icons-material/ErrorOutline";
+import TextFieldComponent from "@components/TextField";
 
 export interface NameInputProps {
   name: string;
@@ -8,6 +9,7 @@ export interface NameInputProps {
   error?: boolean;
   helperText?: string;
   onBlur?: () => void;
+  onKeyDown?: React.KeyboardEventHandler<HTMLInputElement>;
 }
 
 const isValidName = (name: string) => {
@@ -20,6 +22,7 @@ const NameInput = ({
   error,
   helperText,
   onBlur,
+  onKeyDown,
 }: NameInputProps) => {
   const isError = error || (name && !isValidName(name));
   const errorMessage =
@@ -30,13 +33,14 @@ const NameInput = ({
 
   return (
     <div style={{ position: "relative" }}>
-      <TextField
+      <TextFieldComponent
         fullWidth
         required
         label="이름"
         value={name}
         onChange={handleChangeName}
         onBlur={onBlur}
+        onKeyDown={onKeyDown}
         error={isError}
         placeholder="2자 이상 20자 이하로 입력해주세요"
         InputProps={{

@@ -1,6 +1,7 @@
 import { ChangeEvent } from "react";
 import { TextField, Tooltip } from "@mui/material";
 import ErrorOutlineIcon from "@mui/icons-material/ErrorOutline";
+import TextFieldComponent from "@components/TextField";
 
 export interface PasswordInputProps {
   password: string;
@@ -10,6 +11,7 @@ export interface PasswordInputProps {
   error?: boolean;
   helperText?: string;
   onBlur?: () => void;
+  onKeyDown?: React.KeyboardEventHandler<HTMLInputElement>;
 }
 
 const isValidPassword = (pw: string) =>
@@ -25,6 +27,7 @@ const PasswordInput = ({
   error,
   helperText,
   onBlur,
+  onKeyDown,
 }: PasswordInputProps) => {
   const isPasswordError = error || (password && !isValidPassword(password));
   const isPasswordCheckError =
@@ -45,7 +48,7 @@ const PasswordInput = ({
   return (
     <>
       <div style={{ position: "relative" }}>
-        <TextField
+        <TextFieldComponent
           fullWidth
           required
           type="password"
@@ -62,10 +65,11 @@ const PasswordInput = ({
               </Tooltip>
             ),
           }}
+          onKeyDown={onKeyDown}
         />
       </div>
       <div style={{ position: "relative" }}>
-        <TextField
+        <TextFieldComponent
           fullWidth
           required
           type="password"
@@ -86,6 +90,7 @@ const PasswordInput = ({
               </Tooltip>
             ),
           }}
+          onKeyDown={onKeyDown}
         />
       </div>
     </>

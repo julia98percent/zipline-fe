@@ -1,6 +1,7 @@
 import { ChangeEvent } from "react";
 import { TextField, Tooltip } from "@mui/material";
 import ErrorOutlineIcon from "@mui/icons-material/ErrorOutline";
+import TextFieldComponent from "@components/TextField";
 
 export interface EmailInputProps {
   email: string;
@@ -8,6 +9,7 @@ export interface EmailInputProps {
   error?: boolean;
   helperText?: string;
   onBlur?: () => void;
+  onKeyDown?: React.KeyboardEventHandler<HTMLInputElement>;
 }
 
 const isValidEmail = (email: string) =>
@@ -19,6 +21,7 @@ const EmailInput = ({
   error,
   helperText,
   onBlur,
+  onKeyDown,
 }: EmailInputProps) => {
   const isError = error || (email && !isValidEmail(email));
   const errorMessage =
@@ -27,11 +30,12 @@ const EmailInput = ({
 
   return (
     <div style={{ position: "relative" }}>
-      <TextField
+      <TextFieldComponent
         label="이메일"
         value={email}
         onChange={handleChangeEmail}
         onBlur={onBlur}
+        onKeyDown={onKeyDown}
         fullWidth
         required
         variant="outlined"

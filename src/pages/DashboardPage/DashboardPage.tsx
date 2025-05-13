@@ -1302,7 +1302,9 @@ const DashboardPage = () => {
                                     ? "-"
                                     : contract.lessorOrSellerNames.length === 1
                                     ? contract.lessorOrSellerNames[0]
-                                    : `${contract.lessorOrSellerNames[0]} 외 ${contract.lessorOrSellerNames.length - 1}명`
+                                    : `${contract.lessorOrSellerNames[0]} 외 ${
+                                        contract.lessorOrSellerNames.length - 1
+                                      }명`
                                   : "-"}
                               </TableCell>
                               <TableCell>
@@ -1311,7 +1313,9 @@ const DashboardPage = () => {
                                     ? "-"
                                     : contract.lesseeOrBuyerNames.length === 1
                                     ? contract.lesseeOrBuyerNames[0]
-                                    : `${contract.lesseeOrBuyerNames[0]} 외 ${contract.lesseeOrBuyerNames.length - 1}명`
+                                    : `${contract.lesseeOrBuyerNames[0]} 외 ${
+                                        contract.lesseeOrBuyerNames.length - 1
+                                      }명`
                                   : "-"}
                               </TableCell>
                               <TableCell>
@@ -1409,7 +1413,28 @@ const DashboardPage = () => {
                     },
                   }}
                 >
-                  <Tab value="request" label="의뢰일 임박순" />
+                  <Tab
+                    value="request"
+                    label={
+                      <Box
+                        sx={{
+                          display: "flex",
+                          alignItems: "center",
+                          gap: 0.5,
+                        }}
+                      >
+                        의뢰일 임박 순
+                        <Tooltip
+                          title="2주 이내 의뢰 마감 예정인 상담이 표시됩니다."
+                          arrow
+                        >
+                          <HelpOutlineIcon
+                            sx={{ fontSize: 16, color: "#164F9E" }}
+                          />
+                        </Tooltip>
+                      </Box>
+                    }
+                  />
                   <Tab value="latest" label="최신순" />
                 </Tabs>
               </Box>

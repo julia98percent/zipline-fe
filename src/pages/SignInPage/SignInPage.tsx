@@ -39,6 +39,12 @@ const SignInPage = () => {
       });
   };
 
+  const handleKeyDown = (e: React.KeyboardEvent) => {
+    if (e.key === "Enter" && !isSignInButtonDisabled) {
+      handleClickSignInButton();
+    }
+  };
+
   return (
     <div className="h-screen bg-gray-50">
       <div className="h-full flex">
@@ -71,10 +77,12 @@ const SignInPage = () => {
               <UserIdInput
                 userId={userId}
                 handleChangeUserId={handleChangeUserId}
+                onKeyDown={handleKeyDown}
               />
               <PasswordInput
                 password={password}
                 handleChangePassword={handleChangePassword}
+                onKeyDown={handleKeyDown}
               />
             </div>
 

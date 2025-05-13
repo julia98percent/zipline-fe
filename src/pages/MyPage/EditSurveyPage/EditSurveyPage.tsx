@@ -246,28 +246,40 @@ const EditSurveyPage = () => {
     <Box>
       <PageHeader title="설문 수정" userName={user?.name || ""} />
 
+      <Box
+        sx={{
+          display: "flex",
+          justifyContent: "flex-end",
+          position: "sticky",
+          top: "64px",
+          zIndex: 999,
+          backgroundColor: "white",
+          padding: "16px 32px",
+          borderBottom: "1px solid #e0e0e0",
+          boxShadow: "0 2px 4px rgba(0,0,0,0.05)",
+        }}
+      >
+        <Button
+          text="질문 추가"
+          onClick={handleAddQuestion}
+          sx={{
+            mr: 2,
+            border: "1px solid #164F9E",
+            color: "#164F9E",
+          }}
+        />
+        <Button
+          text="설문 저장"
+          onClick={requestUpdateSurvey}
+          sx={{
+            backgroundColor: "#164F9E",
+            color: "white",
+          }}
+        />
+      </Box>
+
       {/* Content */}
       <Box sx={{ p: 4 }}>
-        <Box sx={{ display: "flex", justifyContent: "flex-end", mb: 4 }}>
-          <Button
-            text="질문 추가"
-            onClick={handleAddQuestion}
-            sx={{
-              mr: 2,
-              border: "1px solid #164F9E",
-              color: "#164F9E",
-            }}
-          />
-          <Button
-            text="설문 저장"
-            onClick={requestUpdateSurvey}
-            sx={{
-              backgroundColor: "#164F9E",
-              color: "white",
-            }}
-          />
-        </Box>
-
         <TextField
           fullWidth
           label="설문 제목"

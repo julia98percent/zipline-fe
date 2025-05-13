@@ -1,16 +1,11 @@
 import SearchIcon from '@mui/icons-material/Search';
 import {
   Box,
-  Button,
-  FormControlLabel,
   IconButton,
   InputAdornment,
-  Paper,
-  Switch,
   Table,
   TableBody,
   TableCell,
-  TableContainer,
   TableHead,
   TablePagination,
   TableRow,
@@ -33,7 +28,8 @@ interface Props {
   onRowsPerPageChange: (newSize: number) => void;
   onSort: (field: string) => void;
   sortFields: { [key: string]: string };
-  onSortReset: () => void;
+  useMetric: boolean;
+  useRoadAddress: boolean;
 }
 
 const CATEGORY_LABELS: { [key: string]: string } = {
@@ -53,10 +49,9 @@ const PublicPropertyTable = ({
   onRowsPerPageChange,
   onSort,
   sortFields,
-  onSortReset
+  useMetric,
+  useRoadAddress,
 }: Props) => {
-  const [useMetric, setUseMetric] = useState(true);
-  const [useRoadAddress, setUseRoadAddress] = useState(true);
   const [pageInput, setPageInput] = useState<string>('');
 
   const formatPrice = (value: number) => {
@@ -64,10 +59,6 @@ const PublicPropertyTable = ({
     return value >= 10000
       ? `${Math.floor(value / 10000)}억 ${value % 10000 > 0 ? `${value % 10000}만` : ''}`
       : `${value}만`;
-  };
-
-  const handleToggleUnitChange = () => {
-    setUseMetric(!useMetric);
   };
 
   const handleChangePage = (_: unknown, newPage: number) => {
@@ -185,236 +176,180 @@ const PublicPropertyTable = ({
   colSpanCount += 2; // Area columns
 
   return (
-    <Box sx={{ width: "100%", mt: 0 }}>
-      
-      <Box sx={{ display: 'flex', width: '100%', justifyContent: 'space-between', alignItems: 'center', gap: 2, mb: 2 }}>
-        <Button
-          variant="outlined"
-          size="small"
-          onClick={onSortReset}
-          sx={{ height: '32px' }}
-        >
-          정렬 초기화
-        </Button>
-      <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
-        <FormControlLabel
-          control={
-            <Switch
-              checked={useMetric}
-              onChange={handleToggleUnitChange}
-              color="primary"
-            />
-          }
-          label={useMetric ? "제곱미터(m²)" : "평(py)"}
-        />
-        <FormControlLabel
-          control={
-            <Switch
-              checked={useRoadAddress}
-              onChange={() => setUseRoadAddress(!useRoadAddress)}
-              color="primary"
-            />
-          }
-          label={useRoadAddress ? "도로명 주소" : "지번 주소"}
-        />
-      </Box>
-
-
-      </Box>
-      <Paper sx={{ width: "100%", overflow: "hidden" }}>
-        <TableContainer sx={{ maxHeight: 'calc(100vh - 300px)' }}>
-          <Table stickyHeader sx={{ minWidth: 650 }}>
-            <TableHead>
-              <TableRow>
-                <TableCell align="center">
-                  <SortableHeader field="id" label="매물 ID" />
+    <Box sx={{ width: "100%", mt: "0px" }}>
+      <Table sx={{ minWidth: 650 }}>
+        <TableHead>
+          <TableRow>
+            <TableCell align="center">매물 ID</TableCell>
+            <TableCell align="center">매물 유형</TableCell>
+            <TableCell align="center">건물 정보</TableCell>
+            <TableCell align="center">주소</TableCell>
+            <TableCell align="center">설명</TableCell>
+            {showPriceHeader && (
+              <TableCell align="center">
+                <SortableHeader field="price" label="매매 가격" />
+              </TableCell>
+            )}
+            {showDepositHeader && (
+              <TableCell align="center">
+                <SortableHeader field="deposit" label="보증금" />
+              </TableCell>
+            )}
+            {showMonthlyRentHeader && (
+              <TableCell align="center">
+                <SortableHeader field="monthlyRent" label="월세" />
+              </TableCell>
+            )}
+            <TableCell align="center">
+              <SortableHeader
+                field="exclusiveArea"
+                label="전용면적"
+                unit={useMetric ? "(m²)" : "(평)"}
+              />
+            </TableCell>
+            <TableCell align="center">
+              <SortableHeader
+                field="supplyArea"
+                label="공급면적"
+                unit={useMetric ? "(m²)" : "(평)"}
+              />
+            </TableCell>
+          </TableRow>
+        </TableHead>
+        <TableBody>
+          {propertyList.length > 0 ? (
+            propertyList.map((property) => (
+              <TableRow key={property.id}>
+                <TableCell align="center" sx={{ maxWidth: '100px', whiteSpace: 'normal' }}>
+                  {property.id}
                 </TableCell>
-                <TableCell align="center">매물 유형</TableCell>
-                <TableCell align="center">건물 정보</TableCell>
-                <TableCell align="center">주소</TableCell>
-                <TableCell align="center">설명</TableCell>
+                <TableCell align="center" sx={{ maxWidth: '100px', whiteSpace: 'normal' }}>
+                  {CATEGORY_LABELS[property.category]}
+                </TableCell>
+                <TableCell align="center" sx={{ maxWidth: '150px', whiteSpace: 'normal' }}>
+                  {formatBuildingInfo(property)}
+                </TableCell>
+                <TableCell align="center" sx={{ maxWidth: '200px', whiteSpace: 'normal' }}>
+                  {property.address ? (
+                    <Tooltip
+                      title={
+                        <Box>
+                          {property.address.road_address && (
+                            <div>도로명: {property.address.road_address.address_name}</div>
+                          )}
+                          {property.address.address && (
+                            <div>지번: {property.address.address.address_name}</div>
+                          )}
+                        </Box>
+                      }
+                    >
+                      <span>
+                        {useRoadAddress
+                          ? property.address.road_address?.address_name
+                          : property.address.address?.address_name || "-"}
+                      </span>
+                    </Tooltip>
+                  ) : "-"}
+                </TableCell>
+                <TableCell align="center" sx={{ maxWidth: '200px', whiteSpace: 'normal' }}>
+                  {property.description ?? "-"}
+                </TableCell>
                 {showPriceHeader && (
-                  <TableCell align="center">
-                    <SortableHeader field="price" label="매매 가격" />
+                  <TableCell align="center" sx={{ maxWidth: '100px', whiteSpace: 'normal' }}>
+                    {formatPrice(property.price)}
                   </TableCell>
                 )}
                 {showDepositHeader && (
-                  <TableCell align="center">
-                    <SortableHeader field="deposit" label="보증금" />
+                  <TableCell align="center" sx={{ maxWidth: '100px', whiteSpace: 'normal' }}>
+                    {formatPrice(property.deposit)}
                   </TableCell>
                 )}
                 {showMonthlyRentHeader && (
-                  <TableCell align="center">
-                    <SortableHeader field="monthlyRent" label="월세" />
+                  <TableCell align="center" sx={{ maxWidth: '100px', whiteSpace: 'normal' }}>
+                    {property.monthlyRent === 0 ? "-" : `${property.monthlyRent}만`}
                   </TableCell>
                 )}
-                <TableCell align="center">
-                  <SortableHeader
-                    field="exclusiveArea"
-                    label="전용면적"
-                    unit={useMetric ? "(m²)" : "(평)"}
-                  />
+                <TableCell align="center" sx={{ maxWidth: '100px', whiteSpace: 'normal' }}>
+                  {useMetric ? `${property.exclusiveArea}m²` : `${(property.exclusiveArea / 3.3).toFixed(1)}평`}
                 </TableCell>
-                <TableCell align="center">
-                  <SortableHeader
-                    field="supplyArea"
-                    label="공급면적"
-                    unit={useMetric ? "(m²)" : "(평)"}
-                  />
+                <TableCell align="center" sx={{ maxWidth: '100px', whiteSpace: 'normal' }}>
+                  {useMetric ? `${property.supplyArea}m²` : `${(property.supplyArea / 3.3).toFixed(1)}평`}
                 </TableCell>
-                {/* <TableCell align="center">플랫폼</TableCell> */}
-                {/* <TableCell align="center"> */}
-                {/*   <SortableHeader field="createdAt" label="등록일" /> */}
-                {/* </TableCell> */}
-                {/* <TableCell align="center"> */}
-                {/*   <SortableHeader field="updatedAt" label="수정일" /> */}
-                {/* </TableCell> */}
               </TableRow>
-            </TableHead>
-            <TableBody>
-              {propertyList.length > 0 ? (
-                propertyList.map((property) => (
-                  <TableRow key={property.id}>
-                    <TableCell align="center" sx={{ maxWidth: '100px', whiteSpace: 'normal' }}>
-                      {property.id}
-                    </TableCell>
-                    <TableCell align="center" sx={{ maxWidth: '100px', whiteSpace: 'normal' }}>
-                      {CATEGORY_LABELS[property.category]}
-                    </TableCell>
-                    <TableCell align="center" sx={{ maxWidth: '150px', whiteSpace: 'normal' }}>
-                      {formatBuildingInfo(property)}
-                    </TableCell>
-                    <TableCell align="center" sx={{ maxWidth: '200px', whiteSpace: 'normal' }}>
-                      {property.address ? (
-                        <Tooltip
-                          title={
-                            <Box>
-                              {property.address.road_address && (
-                                <div>도로명: {property.address.road_address.address_name}</div>
-                              )}
-                              {property.address.address && (
-                                <div>지번: {property.address.address.address_name}</div>
-                              )}
-                            </Box>
-                          }
-                        >
-                          <span>
-                            {useRoadAddress
-                              ? property.address.road_address?.address_name
-                              : property.address.address?.address_name || "-"}
-                          </span>
-                        </Tooltip>
-                      ) : "-"}
-                    </TableCell>
-                    <TableCell align="center" sx={{ maxWidth: '200px', whiteSpace: 'normal' }}>
-                      {property.description ?? "-"}
-                    </TableCell>
-                    {showPriceHeader && (
-                      <TableCell align="center" sx={{ maxWidth: '100px', whiteSpace: 'normal' }}>
-                        {formatPrice(property.price)}
-                      </TableCell>
-                    )}
-                    {showDepositHeader && (
-                      <TableCell align="center" sx={{ maxWidth: '100px', whiteSpace: 'normal' }}>
-                        {formatPrice(property.deposit)}
-                      </TableCell>
-                    )}
-                    {showMonthlyRentHeader && (
-                      <TableCell align="center" sx={{ maxWidth: '100px', whiteSpace: 'normal' }}>
-                        {property.monthlyRent === 0 ? "-" : `${property.monthlyRent}만`}
-                      </TableCell>
-                    )}
-                    <TableCell align="center" sx={{ maxWidth: '100px', whiteSpace: 'normal' }}>
-                      {useMetric ? `${property.exclusiveArea}m²` : `${(property.exclusiveArea / 3.3).toFixed(1)}평`}
-                    </TableCell>
-                    <TableCell align="center" sx={{ maxWidth: '100px', whiteSpace: 'normal' }}>
-                      {useMetric ? `${property.supplyArea}m²` : `${(property.supplyArea / 3.3).toFixed(1)}평`}
-                    </TableCell>
-                    {/* <TableCell align="center" sx={{ maxWidth: '100px', whiteSpace: 'normal' }}> */}
-                    {/*   {property.platform} */}
-                    {/* </TableCell> */}
-                    {/* <TableCell align="center" sx={{ maxWidth: '100px', whiteSpace: 'normal' }}> */}
-                    {/*   {new Date(property.createdAt).toLocaleDateString()} */}
-                    {/* </TableCell> */}
-                    {/* <TableCell align="center" sx={{ maxWidth: '100px', whiteSpace: 'normal' }}> */}
-                    {/*   {new Date(property.updatedAt).toLocaleDateString()} */}
-                    {/* </TableCell> */}
-                  </TableRow>
-                ))
-              ) : (
-                <TableRow>
-                  <TableCell
-                    colSpan={colSpanCount}
-                    align="center"
-                    sx={{
-                      padding: "20px 0",
-                    }}
+            ))
+          ) : (
+            <TableRow>
+              <TableCell
+                colSpan={colSpanCount}
+                align="center"
+                sx={{
+                  padding: "20px 0",
+                }}
+              >
+                매물 데이터가 없습니다
+              </TableCell>
+            </TableRow>
+          )}
+        </TableBody>
+      </Table>
+      <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', p: 1 }}>
+        <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
+          <TextField
+            size="small"
+            type="text"
+            value={pageInput}
+            onChange={handlePageInputChange}
+            onKeyPress={(e) => {
+              if (e.key === 'Enter') {
+                handlePageInputSubmit();
+              }
+            }}
+            InputProps={{
+              endAdornment: (
+                <InputAdornment position="end">
+                  <IconButton
+                    size="small"
+                    onClick={handlePageInputSubmit}
                   >
-                    매물 데이터가 없습니다
-                  </TableCell>
-                </TableRow>
-              )}
-            </TableBody>
-          </Table>
-        </TableContainer>
-        <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', p: 1 }}>
-          <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
-            <TextField
-              size="small"
-              type="text"
-              value={pageInput}
-              onChange={handlePageInputChange}
-              onKeyPress={(e) => {
-                if (e.key === 'Enter') {
-                  handlePageInputSubmit();
+                    <SearchIcon fontSize="small" />
+                  </IconButton>
+                </InputAdornment>
+              ),
+              sx: {
+                height: '28px',
+                '& input': {
+                  padding: '0px 8px',
+                  '&::-webkit-inner-spin-button, &::-webkit-outer-spin-button': {
+                    '-webkit-appearance': 'none',
+                    margin: 0,
+                  },
+                  '-moz-appearance': 'textfield',
                 }
-              }}
-              InputProps={{
-                endAdornment: (
-                  <InputAdornment position="end">
-                    <IconButton
-                      size="small"
-                      onClick={handlePageInputSubmit}
-                    >
-                      <SearchIcon fontSize="small" />
-                    </IconButton>
-                  </InputAdornment>
-                ),
-                sx: {
-                  height: '32px',
-                  '& input': {
-                    padding: '4px 8px',
-                    '&::-webkit-inner-spin-button, &::-webkit-outer-spin-button': {
-                      '-webkit-appearance': 'none',
-                      margin: 0,
-                    },
-                    '-moz-appearance': 'textfield',
-                  }
-                }
-              }}
-              sx={{
-                width: '150px',
-                '& .MuiOutlinedInput-root': {
-                  height: '32px',
-                }
-              }}
-            />
-            <Typography variant="body2" sx={{ whiteSpace: 'nowrap' }}>
-              / {totalPages} 페이지
-            </Typography>
-          </Box>
-          <TablePagination
-            component="div"
-            count={totalElements}
-            page={page}
-            rowsPerPage={rowsPerPage}
-            onPageChange={handleChangePage}
-            onRowsPerPageChange={handleChangeRowsPerPage}
-            rowsPerPageOptions={[10, 20, 50]}
-            labelRowsPerPage="페이지당 행"
+              }
+            }}
+            sx={{
+              width: '110px',
+              '& .MuiOutlinedInput-root': {
+                height: '28px',
+              }
+            }}
           />
+          <Typography variant="body2" sx={{ whiteSpace: 'nowrap' }}>
+            / {totalPages} 페이지
+          </Typography>
         </Box>
-      </Paper>
+        <TablePagination
+          component="div"
+          count={totalElements}
+          page={page}
+          rowsPerPage={rowsPerPage}
+          onPageChange={handleChangePage}
+          onRowsPerPageChange={handleChangeRowsPerPage}
+          rowsPerPageOptions={[10, 25, 50]}
+          labelRowsPerPage="페이지당 행 수"
+          labelDisplayedRows={({ from, to, count }) => `${count}개 중 ${from}-${to}개`}
+        />
+      </Box>
     </Box>
   );
 };

@@ -6,11 +6,15 @@ import {
   CircularProgress,
   Paper,
   SelectChangeEvent,
-  Typography
+  Typography,
+  FormControlLabel,
+  Switch,
 } from "@mui/material";
 import { useCallback, useEffect, useState } from "react";
 import PublicPropertyFilterModal from "./PublicPropertyFilterModal/PublicPropertyFilterModal";
 import PublicPropertyTable from "./PublicPropertyTable";
+import PageHeader from "@components/PageHeader/PageHeader";
+import useUserStore from "@stores/useUserStore";
 
 export interface KakaoAddress {
   road_address?: {
@@ -86,9 +90,11 @@ export interface SearchParams {
   maxSupplyArea?: number;
 }
 
-
 function PublicPropertyListPage() {
-  const [publicPropertyList, setPublicPropertyList] = useState<PublicPropertyItem[]>([]);
+  const { user } = useUserStore();
+  const [publicPropertyList, setPublicPropertyList] = useState<
+    PublicPropertyItem[]
+  >([]);
   const [loading, setLoading] = useState<boolean>(false);
   const [showFilterModal, setShowFilterModal] = useState<boolean>(false);
   const [totalElements, setTotalElements] = useState<number>(0);
@@ -98,6 +104,10 @@ function PublicPropertyListPage() {
   const [selectedSido, setSelectedSido] = useState("");
   const [selectedGu, setSelectedGu] = useState("");
   const [selectedDong, setSelectedDong] = useState("");
+
+  // 단위/주소 스위치 상태
+  const [useMetric, setUseMetric] = useState(true);
+  const [useRoadAddress, setUseRoadAddress] = useState(true);
 
   // Search params - manage all filter state here
   const [searchParams, setSearchParams] = useState<SearchParams>({
@@ -149,7 +159,7 @@ function PublicPropertyListPage() {
       // }
     } else {
       // Clear region code if dong is deselected
-      setSearchParams(prev => ({ ...prev, regionCode: undefined }));
+      setSearchParams((prev) => ({ ...prev, regionCode: undefined }));
     }
   };
 
@@ -177,17 +187,17 @@ function PublicPropertyListPage() {
       });
     } else {
       // Normal apply case - update only the changed fields
-      setSearchParams(prev => ({
+      setSearchParams((prev) => ({
         ...prev,
         ...newFilters,
-        page: 0 // Reset to first page when filters change
+        page: 0, // Reset to first page when filters change
       }));
     }
   };
 
   // Handle sort
   const handleSort = (field: string) => {
-    setSearchParams(prev => {
+    setSearchParams((prev) => {
       const currentSort = prev.sortFields[field];
       const newSortFields: { [key: string]: string } = {};
 
@@ -202,34 +212,37 @@ function PublicPropertyListPage() {
       return {
         ...prev,
         sortFields: newSortFields,
-        page: 0 // Reset to first page when sort changes
+        page: 0, // Reset to first page when sort changes
       };
     });
   };
 
   // Handle sort reset
   const handleSortReset = () => {
-    setSearchParams(prev => ({
+    setSearchParams((prev) => ({
       ...prev,
-      sortFields: { id: 'ASC' }, // Reset sort to default
-      page: 0 // Reset to first page
+      sortFields: { id: "ASC" }, // Reset sort to default
+      page: 0, // Reset to first page
     }));
   };
 
   // Function to get address from coordinates using Kakao API
-  const getAddressFromCoordinates = async (latitude: number, longitude: number): Promise<KakaoAddress | null> => {
+  const getAddressFromCoordinates = async (
+    latitude: number,
+    longitude: number
+  ): Promise<KakaoAddress | null> => {
     try {
       const KAKAO_API_KEY = import.meta.env.VITE_KAKAO_MAP_SECRET;
       const response = await fetch(
         `https://dapi.kakao.com/v2/local/geo/coord2address.json?` +
-        `x=${longitude}&` +
-        `y=${latitude}&` +
-        `input_coord=WGS84`,
+          `x=${longitude}&` +
+          `y=${latitude}&` +
+          `input_coord=WGS84`,
         {
           headers: {
-            'Authorization': `KakaoAK ${KAKAO_API_KEY}`,
-            'Content-Type': 'application/json',
-          }
+            Authorization: `KakaoAK ${KAKAO_API_KEY}`,
+            "Content-Type": "application/json",
+          },
         }
       );
 
@@ -259,20 +272,20 @@ function PublicPropertyListPage() {
     const activeSortField = Object.keys(apiParams.sortFields)[0];
     const sortDirection = apiParams.sortFields[activeSortField];
 
-    if (sortDirection === 'ASC') {
-      if (activeSortField === 'price' && !apiParams.minPrice) {
+    if (sortDirection === "ASC") {
+      if (activeSortField === "price" && !apiParams.minPrice) {
         apiParams.minPrice = 1;
       }
-      if (activeSortField === 'deposit' && !apiParams.minDeposit) {
+      if (activeSortField === "deposit" && !apiParams.minDeposit) {
         apiParams.minDeposit = 1;
       }
-      if (activeSortField === 'monthlyRent' && !apiParams.minMonthlyRent) {
+      if (activeSortField === "monthlyRent" && !apiParams.minMonthlyRent) {
         apiParams.minMonthlyRent = 1;
       }
-      if (activeSortField === 'exclusiveArea' && !apiParams.minExclusiveArea) {
+      if (activeSortField === "exclusiveArea" && !apiParams.minExclusiveArea) {
         apiParams.minExclusiveArea = 1; // Assuming area can't be < 1
       }
-      if (activeSortField === 'supplyArea' && !apiParams.minSupplyArea) {
+      if (activeSortField === "supplyArea" && !apiParams.minSupplyArea) {
         apiParams.minSupplyArea = 1; // Assuming area can't be < 1
       }
     }
@@ -326,10 +339,16 @@ function PublicPropertyListPage() {
 
     // Add area ranges only if they have values in apiParams
     if (apiParams.minExclusiveArea) {
-      queryParams.append("minExclusiveArea", apiParams.minExclusiveArea.toString());
+      queryParams.append(
+        "minExclusiveArea",
+        apiParams.minExclusiveArea.toString()
+      );
     }
     if (apiParams.maxExclusiveArea) {
-      queryParams.append("maxExclusiveArea", apiParams.maxExclusiveArea.toString());
+      queryParams.append(
+        "maxExclusiveArea",
+        apiParams.maxExclusiveArea.toString()
+      );
     }
 
     if (apiParams.minSupplyArea) {
@@ -340,7 +359,9 @@ function PublicPropertyListPage() {
     }
 
     try {
-      const res = await apiClient.get(`/property-articles/search?${queryParams.toString()}`);
+      const res = await apiClient.get(
+        `/property-articles/search?${queryParams.toString()}`
+      );
       const propertyData = res?.data?.content;
       const total = res?.data?.totalElements;
       const pages = res?.data?.totalPages;
@@ -355,10 +376,13 @@ function PublicPropertyListPage() {
         const fetchAddresses = async () => {
           const propertiesWithAddresses = await Promise.all(
             propertyData.map(async (property: PublicPropertyItem) => {
-              const address = await getAddressFromCoordinates(property.latitude, property.longitude);
+              const address = await getAddressFromCoordinates(
+                property.latitude,
+                property.longitude
+              );
               return {
                 ...property,
-                address: address || {}
+                address: address || {},
               };
             })
           );
@@ -389,63 +413,116 @@ function PublicPropertyListPage() {
 
   if (loading) {
     return (
-      <Box sx={{ display: "flex", justifyContent: "center", alignItems: "center", height: "100vh" }}>
-        <CircularProgress color="primary" />
-      </Box>
+      <>
+        <PageHeader title="공개 매물 목록" userName={user?.name || "-"} />
+        <Box
+          sx={{
+            display: "flex",
+            justifyContent: "center",
+            alignItems: "center",
+            height: "100vh",
+            paddingTop: "80px",
+          }}
+        >
+          <CircularProgress color="primary" />
+        </Box>
+      </>
     );
   }
 
   return (
-    <Box sx={{ padding: "32px" }}>
-      <Paper elevation={3} sx={{ padding: 3, marginBottom: 3 }}>
-        <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 1 }}>
-          <Typography variant="h5" fontWeight="bold">
-            공개 매물 검색 결과 : {totalElements} 건
-          </Typography>
-
-          <Box sx={{ display: "flex", justifyContent: "center", mt: 1 }}>
-            <Button
-              startIcon={<FilterListIcon />}
-              color={showFilterModal ? "primary" : "inherit"}
-              variant={showFilterModal ? "contained" : "outlined"}
-              onClick={() => setShowFilterModal(true)}
-            >
-              상세 필터
-            </Button>
+    <>
+      <PageHeader title="공개 매물 목록" userName={user?.name || "-"} />
+      <Box sx={{ padding: "20px", paddingTop: "20px", backgroundColor: "#f5f5f5", minHeight: '100vh' }}>
+        {/* 상단 필터 바 컨테이너 */}
+        <Paper sx={{ p: 3, mb: 3, borderRadius: "8px", boxShadow: '0 2px 8px rgba(0,0,0,0.04)' }}>
+          <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2 }}>
+            <Typography variant="h6" fontWeight="bold">
+              공개 매물 검색 결과 : {totalElements} 건
+            </Typography>
+            <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+              <Button
+                variant="outlined"
+                size="small"
+                onClick={handleSortReset}
+                sx={{ height: '32px' }}
+              >
+                정렬 초기화
+              </Button>
+              <Button
+                startIcon={<FilterListIcon />}
+                color={showFilterModal ? "primary" : "inherit"}
+                variant={showFilterModal ? "contained" : "outlined"}
+                onClick={() => setShowFilterModal(true)}
+                sx={{ height: '32px', ml: 1 }}
+              >
+                상세 필터
+              </Button>
+            </Box>
           </Box>
+        </Paper>
+        {/* 단위/주소 스위치: 두 컨테이너 사이로 이동 */}
+        <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, mb: "3px", mt: "5px", ml: "8px" }}>
+          <FormControlLabel
+            control={
+              <Switch
+                checked={useMetric}
+                onChange={() => setUseMetric((prev) => !prev)}
+                color="primary"
+                size="small"
+              />
+            }
+            label={useMetric ? "제곱미터(m²)" : "평(py)"}
+            sx={{ '& .MuiFormControlLabel-label': { fontSize: '13px' } }}
+          />
+          <FormControlLabel
+            control={
+              <Switch
+                checked={useRoadAddress}
+                onChange={() => setUseRoadAddress((prev) => !prev)}
+                color="primary"
+                size="small"
+              />
+            }
+            label={useRoadAddress ? "도로명 주소" : "지번 주소"}
+            sx={{ '& .MuiFormControlLabel-label': { fontSize: '13px' } }}
+          />
         </Box>
-      </Paper>
-
-      {/* Results Section */}
-      <Paper elevation={3} sx={{ padding: 3 }}>
-        <PublicPropertyTable
-          propertyList={publicPropertyList}
-          totalElements={totalElements}
-          totalPages={totalPages}
-          page={searchParams.page}
-          rowsPerPage={searchParams.size}
-          onPageChange={(newPage) => setSearchParams(prev => ({ ...prev, page: newPage }))}
-          onRowsPerPageChange={(newSize) => setSearchParams(prev => ({ ...prev, size: newSize, page: 0 }))}
-          onSort={handleSort}
-          sortFields={searchParams.sortFields}
-          category={searchParams.category}
-          onSortReset={handleSortReset}
+        {/* 매물 리스트 컨테이너 */}
+        <Paper sx={{ p: 3, borderRadius: "8px", boxShadow: '0 2px 8px rgba(0,0,0,0.04)' }}>
+          <PublicPropertyTable
+            propertyList={publicPropertyList}
+            totalElements={totalElements}
+            totalPages={totalPages}
+            page={searchParams.page}
+            rowsPerPage={searchParams.size}
+            onPageChange={(newPage) =>
+              setSearchParams((prev) => ({ ...prev, page: newPage }))
+            }
+            onRowsPerPageChange={(newSize) =>
+              setSearchParams((prev) => ({ ...prev, size: newSize, page: 0 }))
+            }
+            onSort={handleSort}
+            sortFields={searchParams.sortFields}
+            category={searchParams.category}
+            useMetric={useMetric}
+            useRoadAddress={useRoadAddress}
+          />
+        </Paper>
+        <PublicPropertyFilterModal
+          open={showFilterModal}
+          onClose={() => setShowFilterModal(false)}
+          onApply={handleFilterApply}
+          filters={searchParams}
+          selectedSido={selectedSido}
+          selectedGu={selectedGu}
+          selectedDong={selectedDong}
+          onSidoChange={handleSidoChange}
+          onGuChange={handleGuChange}
+          onDongChange={handleDongChange}
         />
-      </Paper>
-
-      <PublicPropertyFilterModal
-        open={showFilterModal}
-        onClose={() => setShowFilterModal(false)}
-        onApply={handleFilterApply}
-        filters={searchParams}
-        selectedSido={selectedSido}
-        selectedGu={selectedGu}
-        selectedDong={selectedDong}
-        onSidoChange={handleSidoChange}
-        onGuChange={handleGuChange}
-        onDongChange={handleDongChange}
-      />
-    </Box>
+      </Box>
+    </>
   );
 }
 

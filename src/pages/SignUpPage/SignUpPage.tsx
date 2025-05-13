@@ -69,6 +69,27 @@ const SignUpPage = () => {
     }
   };
 
+  const handleKeyDown = (e: React.KeyboardEvent) => {
+    if (
+      e.key === "Enter" &&
+      name &&
+      userId &&
+      email &&
+      password &&
+      passwordCheck &&
+      phoneNumber &&
+      questionAnswer &&
+      isValidName(name) &&
+      isValidUserId(userId) &&
+      isValidEmail(email) &&
+      isValidPassword(password) &&
+      isValidPhoneNumber(phoneNumber) &&
+      password === passwordCheck
+    ) {
+      handleClickSignUpButton();
+    }
+  };
+
   const handleClickSignUpButton = () => {
     if (!isValidName(name)) {
       toast.error("이름을 올바르게 입력해주세요.");
@@ -166,27 +187,32 @@ const SignUpPage = () => {
                 name={name}
                 handleChangeName={handleChangeName}
                 onBlur={() => handleBlur("name", name)}
+                onKeyDown={handleKeyDown}
               />
               <UserIdInput
                 userId={userId}
                 handleChangeUserId={handleChangeUserId}
                 onBlur={() => handleBlur("userId", userId)}
+                onKeyDown={handleKeyDown}
               />
               <EmailInput
                 email={email}
                 handleChangeEmail={handleChangeEmail}
                 onBlur={() => handleBlur("email", email)}
+                onKeyDown={handleKeyDown}
               />
               <PasswordInput
                 password={password}
                 passwordCheck={passwordCheck}
                 handleChangePassword={handleChangePassword}
                 handleChangePasswordCheck={handleChangePasswordCheck}
+                onKeyDown={handleKeyDown}
               />
               <PhoneNumberInput
                 phoneNumber={phoneNumber}
                 handleChangePhoneNumber={handleChangePhoneNumber}
                 onBlur={() => handleBlur("phoneNumber", phoneNumber)}
+                onKeyDown={handleKeyDown}
               />
 
               {/* Password Question Fields */}
@@ -196,6 +222,7 @@ const SignUpPage = () => {
                   value={passwordQuestionUid}
                   onChange={(e) => setPasswordQuestionUid(e.target.value)}
                   label="비밀번호 찾기 질문"
+                  onKeyDown={handleKeyDown}
                 >
                   {PASSWORD_QUESTIONS.map((q) => (
                     <MenuItem key={q.uid} value={q.uid}>
@@ -212,6 +239,7 @@ const SignUpPage = () => {
                 value={questionAnswer}
                 onChange={(e) => setQuestionAnswer(e.target.value)}
                 placeholder="질문에 대한 답변을 입력해주세요"
+                onKeyDown={handleKeyDown}
               />
             </div>
 

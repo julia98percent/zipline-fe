@@ -8,12 +8,15 @@ export interface PhoneNumberInputProps {
   error?: boolean;
   helperText?: string;
   onBlur?: () => void;
+  onKeyDown?: React.KeyboardEventHandler<HTMLInputElement>;
 }
-
 
 const isValidPhoneNumber = (phone: string) => {
-  return /^01[0|1|6|7|8|9]-\d{3,4}-\d{4}$/.test(phone) && (phone.length === 12 || phone.length === 13);
-}
+  return (
+    /^01[0|1|6|7|8|9]-\d{3,4}-\d{4}$/.test(phone) &&
+    (phone.length === 12 || phone.length === 13)
+  );
+};
 
 const formatPhoneNumber = (input: string): string => {
   const cleanedInput = input.replace(/[^0-9]/g, "");
@@ -25,7 +28,10 @@ const formatPhoneNumber = (input: string): string => {
     } else if (cleanedInput.length <= 6) {
       formattedNumber = cleanedInput.replace(/^(\d{2})(\d{0,4})/, "$1-$2");
     } else {
-      formattedNumber = cleanedInput.replace(/^(\d{2})(\d{4})(\d{4})/, "$1-$2-$3");
+      formattedNumber = cleanedInput.replace(
+        /^(\d{2})(\d{4})(\d{4})/,
+        "$1-$2-$3"
+      );
     }
     if (formattedNumber.length > 11) {
       formattedNumber = formattedNumber.slice(0, 11);
@@ -36,7 +42,10 @@ const formatPhoneNumber = (input: string): string => {
     } else if (cleanedInput.length <= 7) {
       formattedNumber = cleanedInput.replace(/^(\d{3})(\d{0,4})/, "$1-$2");
     } else {
-      formattedNumber = cleanedInput.replace(/^(\d{3})(\d{4})(\d{4})/, "$1-$2-$3");
+      formattedNumber = cleanedInput.replace(
+        /^(\d{3})(\d{4})(\d{4})/,
+        "$1-$2-$3"
+      );
     }
     if (formattedNumber.length > 13) {
       formattedNumber = formattedNumber.slice(0, 13);
@@ -52,6 +61,7 @@ const PhoneNumberInput = ({
   error,
   helperText,
   onBlur,
+  onKeyDown,
 }: PhoneNumberInputProps) => {
   const isError = error || (phoneNumber && !isValidPhoneNumber(phoneNumber));
   const errorMessage =
@@ -80,6 +90,7 @@ const PhoneNumberInput = ({
         value={phoneNumber}
         onChange={handleChange}
         onBlur={onBlur}
+        onKeyDown={onKeyDown}
         placeholder="010-1234-5678"
         type="tel"
         fullWidth

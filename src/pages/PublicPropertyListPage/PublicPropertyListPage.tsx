@@ -232,7 +232,7 @@ function PublicPropertyListPage() {
     longitude: number
   ): Promise<KakaoAddress | null> => {
     try {
-      const KAKAO_API_KEY = import.meta.env.VITE_KAKAO_MAP_SECRET;
+      const KAKAO_API_KEY = import.meta.env.VITE_KAKAO_MAP_KEY;
       const response = await fetch(
         `https://dapi.kakao.com/v2/local/geo/coord2address.json?` +
           `x=${longitude}&` +

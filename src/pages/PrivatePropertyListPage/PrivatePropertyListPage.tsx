@@ -261,7 +261,7 @@ function PrivatePropertyListPage() {
   }
 
   return (
-    <PageContainer>
+    <PageContainer sx={{ minWidth: "800px" }}>
       <PageHeader title="내 매물 목록" userName={user?.name || "-"} />
 
       <ContentContainer>

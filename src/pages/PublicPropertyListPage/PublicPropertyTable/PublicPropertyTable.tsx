@@ -12,7 +12,8 @@ import {
   TableSortLabel,
   TextField,
   Tooltip,
-  Typography
+  Typography,
+  Chip
 } from "@mui/material";
 import { useEffect, useState } from "react";
 import { PublicPropertyItem } from "../PublicPropertyListPage";
@@ -32,10 +33,29 @@ interface Props {
   useRoadAddress: boolean;
 }
 
-const CATEGORY_LABELS: { [key: string]: string } = {
-  SALE: "매매",
-  MONTHLY: "월세",
-  DEPOSIT: "전세"
+// 연한 파스텔톤 색상 매핑
+const colorMap: Record<string, string> = {
+  SALE: "#e8f5e9",    // 연한 초록
+  DEPOSIT: "#e3f2fd", // 연한 파랑
+  MONTHLY: "#fff3e0", // 연한 주황
+};
+const textColorMap: Record<string, string> = {
+  SALE: "#388e3c",    // 진한 초록
+  DEPOSIT: "#1976d2", // 진한 파랑
+  MONTHLY: "#f57c00", // 진한 주황
+};
+
+const translateType = (type: string) => {
+  switch (type) {
+    case "SALE":
+      return "매매";
+    case "DEPOSIT":
+      return "전세";
+    case "MONTHLY":
+      return "월세";
+    default:
+      return "-";
+  }
 };
 
 const PublicPropertyTable = ({
@@ -221,10 +241,28 @@ const PublicPropertyTable = ({
             propertyList.map((property) => (
               <TableRow key={property.id}>
                 <TableCell align="center" sx={{ maxWidth: '100px', whiteSpace: 'normal' }}>
-                  {property.platform}
+                  <Chip
+                    label={property.platform}
+                    color="success"
+                    variant="outlined"
+                    size="small"
+                    sx={{ fontWeight: 500 }}
+                  />
                 </TableCell>
                 <TableCell align="center" sx={{ maxWidth: '100px', whiteSpace: 'normal' }}>
-                  {CATEGORY_LABELS[property.category]}
+                  <Chip
+                    label={translateType(property.category)}
+                    sx={{
+                      backgroundColor: colorMap[property.category] || "#e0e0e0",
+                      color: textColorMap[property.category] || "#222",
+                      fontWeight: 500,
+                      borderRadius: "6px",
+                      fontSize: "0.95em",
+                      px: 1.5,
+                      py: 0.5,
+                    }}
+                    size="small"
+                  />
                 </TableCell>
                 <TableCell align="center" sx={{ maxWidth: '150px', whiteSpace: 'normal' }}>
                   {formatBuildingInfo(property)}

@@ -18,7 +18,10 @@ interface SurveyAnswer {
   description: string;
   questionType: string;
   answer: string;
-  choices: string[];
+  choices: {
+    choiceUid: number;
+    choiceText: string;
+  }[];
   required: boolean;
 }
 
@@ -147,7 +150,23 @@ const SurveyDetailModal = ({
                         borderRadius: "4px",
                       }}
                     >
-                      <Typography variant="body2">{item.answer}</Typography>
+                      <Typography variant="body2">
+                        {item.questionType === "SINGLE_CHOICE"
+                          ? item.choices.find(
+                              (choice) => choice.choiceUid === Number(item.answer)
+                            )?.choiceText || item.answer
+                          : item.questionType === "MULTIPLE_CHOICE"
+                          ? item.answer
+                              .split(",")
+                              .map((uid) =>
+                                item.choices.find(
+                                  (choice) => choice.choiceUid === Number(uid)
+                                )?.choiceText
+                              )
+                              .filter(Boolean)
+                              .join(", ")
+                          : item.answer}
+                      </Typography>
                     </Box>
                   </Box>
                 </Paper>

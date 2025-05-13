@@ -256,12 +256,9 @@ const PublicPropertyTable = ({
                       backgroundColor: colorMap[property.category] || "#e0e0e0",
                       color: textColorMap[property.category] || "#222",
                       fontWeight: 500,
-                      borderRadius: "6px",
                       fontSize: "0.95em",
-                      px: 1.5,
-                      py: 0.5,
                     }}
-                    size="small"
+                    size="small"                    
                   />
                 </TableCell>
                 <TableCell align="center" sx={{ maxWidth: '150px', whiteSpace: 'normal' }}>

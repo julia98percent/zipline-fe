@@ -38,16 +38,18 @@ const categoryColors: Record<
   COMMERCIAL: "error",
 };
 
-const typeColors: Record<
-  PropertyItem["type"],
-  "default" | "primary" | "secondary" | "success" | "error" | "warning" | "info"
-> = {
-  SALE: "primary",
-  DEPOSIT: "success",
-  MONTHLY: "warning",
+// 연한 파스텔톤 색상 매핑
+const colorMap: Record<string, string> = {
+  SALE: "#e8f5e9",    // 연한 초록
+  DEPOSIT: "#e3f2fd", // 연한 파랑
+  MONTHLY: "#fff3e0", // 연한 주황
 };
-
-const translateType = (type: PropertyItem["type"]) => {
+const textColorMap: Record<string, string> = {
+  SALE: "#388e3c",    // 진한 초록
+  DEPOSIT: "#1976d2", // 진한 파랑
+  MONTHLY: "#f57c00", // 진한 주황
+};
+const translateType = (type: string) => {
   switch (type) {
     case "SALE":
       return "매매";
@@ -145,10 +147,13 @@ const PropertyTable = ({
                     <TableCell align="center">
                       <Chip
                         label={translateType(property.type)}
-                        color={typeColors[property.type] || "default"}
-                        variant="filled"
+                        sx={{
+                          backgroundColor: colorMap[property.type] || "#e0e0e0",
+                          color: textColorMap[property.type] || "#222",
+                          fontWeight: 500,
+                          fontSize: "0.95em",
+                        }}
                         size="small"
-                        sx={{ fontWeight: 500 }}
                       />
                     </TableCell>
                     <TableCell align="center">

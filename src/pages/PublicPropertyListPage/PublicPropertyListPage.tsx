@@ -231,34 +231,49 @@ function PublicPropertyListPage() {
     latitude: number,
     longitude: number
   ): Promise<KakaoAddress | null> => {
-    try {
-      const KAKAO_API_KEY = import.meta.env.VITE_KAKAO_MAP_KEY;
-      const response = await fetch(
-        `https://dapi.kakao.com/v2/local/geo/coord2address.json?` +
-          `x=${longitude}&` +
-          `y=${latitude}&` +
-          `input_coord=WGS84`,
-        {
-          headers: {
-            Authorization: `KakaoAK ${KAKAO_API_KEY}`,
-            "Content-Type": "application/json",
-          },
+    // 카카오맵 JS SDK가 없으면 동적으로 로드
+    function loadKakaoMapScript(): Promise<void> {
+      return new Promise((resolve, reject) => {
+        if (document.getElementById('kakao-map-sdk')) {
+          // 이미 로드된 경우
+          resolve();
+          return;
         }
-      );
-
-      if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
-      }
-
-      const data = await response.json();
-      if (data.documents && data.documents.length > 0) {
-        return data.documents[0];
-      }
-      return null;
-    } catch (error) {
-      console.error("Failed to get address from Kakao API:", error);
-      return null;
+        const script = document.createElement('script');
+        script.id = 'kakao-map-sdk';
+        script.src = `https://dapi.kakao.com/v2/maps/sdk.js?appkey=${import.meta.env.VITE_KAKAO_MAP_SECRET}&autoload=false&libraries=services`;
+        script.async = true;
+        script.onload = () => {
+          (window as any).kakao.maps.load(() => {
+            resolve();
+          });
+        };
+        script.onerror = () => {
+          reject('카카오맵 스크립트 로드 실패');
+        };
+        document.head.appendChild(script);
+      });
     }
+
+    // 실제 주소 변환 함수
+    function geocode(): Promise<KakaoAddress | null> {
+      return new Promise((resolve) => {
+        const kakao = (window as any).kakao;
+        const geocoder = new kakao.maps.services.Geocoder();
+        geocoder.coord2Address(longitude, latitude, (result: unknown[], status: string) => {
+          if (status === kakao.maps.services.Status.OK && result.length > 0) {
+            resolve(result[0] as KakaoAddress);
+          } else {
+            resolve(null);
+          }
+        });
+      });
+    }
+
+    if (!(window as any).kakao || !(window as any).kakao.maps) {
+      await loadKakaoMapScript();
+    }
+    return geocode();
   };
 
   // Fetch property data with all search parameters

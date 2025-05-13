@@ -1,4 +1,3 @@
-import { useState } from "react";
 import {
   Table,
   TableBody,
@@ -14,6 +13,12 @@ import { useNavigate } from "react-router-dom";
 
 interface ConsultationTableProps {
   counselList: Consultation[];
+  totalCount: number;
+  page: number;
+  rowsPerPage: number;
+  onPageChange: (newPage: number) => void;
+  onRowsPerPageChange: (newRowsPerPage: number) => void;
+  loading?: boolean;
 }
 
 interface Consultation {
@@ -26,16 +31,16 @@ interface Consultation {
   completed: boolean;
 }
 
-function ConsultationTable({ counselList = [] }: ConsultationTableProps) {
+function ConsultationTable({
+  counselList = [],
+  totalCount,
+  page,
+  rowsPerPage,
+  onPageChange,
+  onRowsPerPageChange,
+  loading = false,
+}: ConsultationTableProps) {
   const navigate = useNavigate();
-  const [page, setPage] = useState(0);
-  const [rowsPerPage, setRowsPerPage] = useState(10);
-  console.log(counselList);
-  // 클라이언트 사이드 페이지네이션
-  const paginatedConsultations = counselList.slice(
-    page * rowsPerPage,
-    (page + 1) * rowsPerPage
-  );
 
   const handleRowClick = (counselUid: number) => {
     navigate(`/counsels/${counselUid}`);
@@ -44,7 +49,13 @@ function ConsultationTable({ counselList = [] }: ConsultationTableProps) {
   return (
     <Paper elevation={0}>
       <TableContainer>
-        <Table>
+        <Table
+          sx={{
+            "& .MuiTableCell-root": {
+              borderBottom: "1px solid #E0E0E0",
+            },
+          }}
+        >
           <TableHead>
             <TableRow>
               <TableCell>제목</TableCell>
@@ -55,8 +66,16 @@ function ConsultationTable({ counselList = [] }: ConsultationTableProps) {
             </TableRow>
           </TableHead>
           <TableBody>
-            {paginatedConsultations.length > 0 ? (
-              paginatedConsultations.map((consultation) => (
+            {loading ? (
+              <TableRow>
+                <TableCell colSpan={5} align="center" sx={{ py: 8 }}>
+                  <div style={{ color: "#757575", fontSize: "1rem" }}>
+                    데이터를 불러오는 중입니다...
+                  </div>
+                </TableCell>
+              </TableRow>
+            ) : counselList.length > 0 ? (
+              counselList.map((consultation) => (
                 <TableRow
                   key={consultation.counselUid}
                   onClick={() => handleRowClick(consultation.counselUid)}
@@ -80,13 +99,15 @@ function ConsultationTable({ counselList = [] }: ConsultationTableProps) {
                       label={consultation.completed ? "완료" : "진행중"}
                       size="small"
                       sx={{
-                        backgroundColor: consultation.completed ? "#E9F7EF" : "#FEF5EB",
+                        backgroundColor: consultation.completed
+                          ? "#E9F7EF"
+                          : "#FEF5EB",
                         color: consultation.completed ? "#219653" : "#F2994A",
                         height: "24px",
                         "& .MuiChip-label": {
                           px: 1,
-                          fontSize: "12px"
-                        }
+                          fontSize: "12px",
+                        },
                       }}
                     />
                   </TableCell>
@@ -95,7 +116,7 @@ function ConsultationTable({ counselList = [] }: ConsultationTableProps) {
             ) : (
               <TableRow>
                 <TableCell colSpan={5} align="center" sx={{ py: 8 }}>
-                  <div style={{ color: '#757575', fontSize: '1rem' }}>
+                  <div style={{ color: "#757575", fontSize: "1rem" }}>
                     등록된 상담 내역이 없습니다
                   </div>
                 </TableCell>
@@ -106,13 +127,12 @@ function ConsultationTable({ counselList = [] }: ConsultationTableProps) {
       </TableContainer>
       <TablePagination
         component="div"
-        count={counselList.length}
+        count={totalCount}
         page={page}
         rowsPerPage={rowsPerPage}
-        onPageChange={(_, newPage) => setPage(newPage)}
+        onPageChange={(_, newPage) => onPageChange(newPage)}
         onRowsPerPageChange={(e) => {
-          setRowsPerPage(Number(e.target.value));
-          setPage(0);
+          onRowsPerPageChange(Number(e.target.value));
         }}
         rowsPerPageOptions={[10, 25, 50, 100]}
         labelRowsPerPage="페이지당 행 수"

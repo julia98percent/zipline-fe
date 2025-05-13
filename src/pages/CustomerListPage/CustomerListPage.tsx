@@ -7,6 +7,7 @@ import FilterListIcon from "@mui/icons-material/FilterList";
 import useDebounce from "@hooks/useDebounce";
 import PageHeader from "@components/PageHeader/PageHeader";
 import useUserStore from "@stores/useUserStore";
+import CustomerTable from "./CustomerTable/CustomerTable";
 
 interface Customer {
   uid: number;

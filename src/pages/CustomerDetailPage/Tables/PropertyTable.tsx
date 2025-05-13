@@ -1,5 +1,11 @@
-import { useState } from "react";
 import {
+  Box,
+  FormControl,
+  InputLabel,
+  MenuItem,
+  Select,
+  Typography,
+  Pagination,
   Table,
   TableBody,
   TableCell,
@@ -8,14 +14,10 @@ import {
   TableRow,
   Paper,
   Chip,
-  TablePagination,
+  CircularProgress,
 } from "@mui/material";
 import { useNavigate } from "react-router-dom";
 import { formatPriceWithKorean } from "@utils/numberUtil";
-
-interface PropertyTableProps {
-  propertyList: Property[];
-}
 
 interface Property {
   uid: number;
@@ -37,6 +39,16 @@ interface Property {
   netArea: number;
   totalArea: number;
   details: string;
+}
+
+interface PropertyTableProps {
+  properties: Property[];
+  totalCount: number;
+  page: number;
+  rowsPerPage: number;
+  onPageChange: (newPage: number) => void;
+  onRowsPerPageChange: (newRowsPerPage: number) => void;
+  loading: boolean;
 }
 
 const getTypeColor = (type: string) => {
@@ -77,16 +89,16 @@ const getTypeLabel = (type: string) => {
   }
 };
 
-function PropertyTable({ propertyList = [] }: PropertyTableProps) {
+function PropertyTable({
+  properties,
+  totalCount,
+  page,
+  rowsPerPage,
+  onPageChange,
+  onRowsPerPageChange,
+  loading,
+}: PropertyTableProps) {
   const navigate = useNavigate();
-  const [page, setPage] = useState(0);
-  const [rowsPerPage, setRowsPerPage] = useState(10);
-
-  // 클라이언트 사이드 페이지네이션
-  const paginatedProperties = propertyList.slice(
-    page * rowsPerPage,
-    (page + 1) * rowsPerPage
-  );
 
   const handleRowClick = (uid: number) => {
     navigate(`/properties/${uid}`);
@@ -107,8 +119,14 @@ function PropertyTable({ propertyList = [] }: PropertyTableProps) {
             </TableRow>
           </TableHead>
           <TableBody>
-            {paginatedProperties.length > 0 ? (
-              paginatedProperties.map((property) => (
+            {loading ? (
+              <TableRow>
+                <TableCell colSpan={7} align="center" sx={{ py: 8 }}>
+                  <CircularProgress size={24} />
+                </TableCell>
+              </TableRow>
+            ) : properties.length > 0 ? (
+              properties.map((property) => (
                 <TableRow
                   key={property.uid}
                   onClick={() => handleRowClick(property.uid)}
@@ -120,7 +138,9 @@ function PropertyTable({ propertyList = [] }: PropertyTableProps) {
                   }}
                 >
                   <TableCell>
-                    {`${property.address ?? ""}${property.detailAddress ? " " + property.detailAddress : ""}`}
+                    {`${property.address ?? ""}${
+                      property.detailAddress ? " " + property.detailAddress : ""
+                    }`}
                   </TableCell>
                   <TableCell>
                     <Chip
@@ -129,12 +149,20 @@ function PropertyTable({ propertyList = [] }: PropertyTableProps) {
                       sx={getTypeColor(property.type)}
                     />
                   </TableCell>
-                  <TableCell sx={{ width: "90px" }}>{property.price ? formatPriceWithKorean(property.price) : "-"}</TableCell>
-                  <TableCell>
-                    {property.deposit ? formatPriceWithKorean(property.deposit) : "-"}
+                  <TableCell sx={{ width: "90px" }}>
+                    {property.price
+                      ? formatPriceWithKorean(property.price)
+                      : "-"}
                   </TableCell>
                   <TableCell>
-                    {property.monthlyRent ? formatPriceWithKorean(property.monthlyRent) : "-"}
+                    {property.deposit
+                      ? formatPriceWithKorean(property.deposit)
+                      : "-"}
+                  </TableCell>
+                  <TableCell>
+                    {property.monthlyRent
+                      ? formatPriceWithKorean(property.monthlyRent)
+                      : "-"}
                   </TableCell>
                   <TableCell sx={{ width: "140px" }}>
                     {new Date(property.moveInDate).toLocaleDateString()}
@@ -144,7 +172,7 @@ function PropertyTable({ propertyList = [] }: PropertyTableProps) {
             ) : (
               <TableRow>
                 <TableCell colSpan={7} align="center" sx={{ py: 8 }}>
-                  <div style={{ color: '#757575', fontSize: '1rem' }}>
+                  <div style={{ color: "#757575", fontSize: "1rem" }}>
                     등록된 매물이 없습니다
                   </div>
                 </TableCell>
@@ -153,22 +181,43 @@ function PropertyTable({ propertyList = [] }: PropertyTableProps) {
           </TableBody>
         </Table>
       </TableContainer>
-      <TablePagination
-        component="div"
-        count={propertyList.length}
-        page={page}
-        rowsPerPage={rowsPerPage}
-        onPageChange={(_, newPage) => setPage(newPage)}
-        onRowsPerPageChange={(e) => {
-          setRowsPerPage(Number(e.target.value));
-          setPage(0);
+      <Box
+        sx={{
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "space-between",
+          p: 2,
         }}
-        rowsPerPageOptions={[10, 25, 50, 100]}
-        labelRowsPerPage="페이지당 행 수"
-        labelDisplayedRows={({ from, to, count }) =>
-          `${count}건 중 ${from}-${to}건`
-        }
-      />
+      >
+        <Typography variant="body2" color="text.secondary">
+          총 {totalCount}건
+        </Typography>
+        <Box sx={{ display: "flex", alignItems: "center", gap: 2 }}>
+          <FormControl size="small" sx={{ minWidth: 120 }}>
+            <InputLabel>페이지당 행</InputLabel>
+            <Select
+              value={rowsPerPage}
+              label="페이지당 행"
+              onChange={(e) => {
+                onRowsPerPageChange(Number(e.target.value));
+              }}
+            >
+              <MenuItem value={10}>10</MenuItem>
+              <MenuItem value={25}>25</MenuItem>
+              <MenuItem value={50}>50</MenuItem>
+              <MenuItem value={100}>100</MenuItem>
+            </Select>
+          </FormControl>
+          <Pagination
+            count={Math.ceil(totalCount / rowsPerPage)}
+            page={page}
+            onChange={(_, newPage) => onPageChange(newPage)}
+            color="primary"
+            showFirstButton
+            showLastButton
+          />
+        </Box>
+      </Box>
     </Paper>
   );
 }

@@ -1,25 +1,36 @@
-import { useState } from "react";
 import {
+  Box,
+  Paper,
+  FormControl,
+  InputLabel,
+  MenuItem,
+  Select,
+  Typography,
+  Pagination,
   Table,
   TableBody,
   TableCell,
   TableContainer,
   TableHead,
   TableRow,
-  Paper,
   Chip,
-  TablePagination,
+  CircularProgress,
 } from "@mui/material";
-import { useNavigate } from "react-router-dom";
 
 interface ContractTableProps {
   contractList: Contract[];
+  totalCount: number;
+  page: number;
+  rowsPerPage: number;
+  onPageChange: (newPage: number) => void;
+  onRowsPerPageChange: (newRowsPerPage: number) => void;
+  loading: boolean;
 }
 
-interface Contract {
+export interface Contract {
   uid: number;
-  lessorOrSellerName: string;
-  lesseeOrBuyerName: string | null;
+  lessorOrSellerNames: string[];
+  lesseeOrBuyerNames: string[];
   category: string | null;
   contractDate: string | null;
   contractStartDate: string | null;
@@ -29,7 +40,7 @@ interface Contract {
 }
 
 const CONTRACT_STATUS_TYPES = [
-  { value: "LISTED", name: "매물 등록됨", color: "default" },
+  { value: "LISTED", name: "매물 등록", color: "default" },
   { value: "NEGOTIATING", name: "협상 중", color: "info" },
   { value: "INTENT_SIGNED", name: "가계약", color: "warning" },
   { value: "CANCELLED", name: "계약 취소", color: "error" },
@@ -42,22 +53,20 @@ const CONTRACT_STATUS_TYPES = [
 ];
 
 const PROPERTY_TYPES = [
-  { value: "SALE", name: "매매", color: "#4CAF50" },
-  { value: "DEPOSIT", name: "전세", color: "#2196F3" },
-  { value: "MONTHLY", name: "월세", color: "#FF9800" },
+  { value: "SALE", name: "매매", color: "#4caf50" },
+  { value: "DEPOSIT", name: "전세", color: "#2196f3" },
+  { value: "MONTHLY", name: "월세", color: "#ff9800" },
 ];
 
-function ContractTable({ contractList = [] }: ContractTableProps) {
-  const [page, setPage] = useState(0);
-  const [rowsPerPage, setRowsPerPage] = useState(10);
-  const navigate = useNavigate();
-
-  // 클라이언트 사이드 페이지네이션
-  const paginatedContracts = contractList.slice(
-    page * rowsPerPage,
-    (page + 1) * rowsPerPage
-  );
-
+function ContractTable({
+  contractList,
+  totalCount,
+  page,
+  rowsPerPage,
+  onPageChange,
+  onRowsPerPageChange,
+  loading,
+}: ContractTableProps) {
   const getStatusChip = (status: string) => {
     const statusInfo = CONTRACT_STATUS_TYPES.find(
       (item) => item.value === status
@@ -128,6 +137,8 @@ function ContractTable({ contractList = [] }: ContractTableProps) {
             <TableRow>
               <TableCell>계약 카테고리</TableCell>
               <TableCell>주소</TableCell>
+              <TableCell>임대인/매도인</TableCell>
+              <TableCell>임차인/매수인</TableCell>
               <TableCell>계약일</TableCell>
               <TableCell>계약 시작일</TableCell>
               <TableCell>계약 종료일</TableCell>
@@ -135,22 +146,25 @@ function ContractTable({ contractList = [] }: ContractTableProps) {
             </TableRow>
           </TableHead>
           <TableBody>
-            {paginatedContracts.length > 0 ? (
-              paginatedContracts.map((contract) => (
-                <TableRow
-                  key={contract.uid}
-                  onClick={() => navigate(`/contracts/${contract.uid}`)}
-                  sx={{
-                    cursor: "pointer",
-                    "&:hover": {
-                      backgroundColor: "rgba(0, 0, 0, 0.04)",
-                    },
-                  }}
-                >
+            {loading ? (
+              <TableRow>
+                <TableCell colSpan={8} align="center" sx={{ py: 8 }}>
+                  <CircularProgress size={24} />
+                </TableCell>
+              </TableRow>
+            ) : contractList.length > 0 ? (
+              contractList.map((contract) => (
+                <TableRow key={contract.uid}>
                   <TableCell>
                     {getCategoryChip(contract.category) ?? "-"}
                   </TableCell>
                   <TableCell>{contract.address}</TableCell>
+                  <TableCell>
+                    {contract.lessorOrSellerNames.join(", ") || "-"}
+                  </TableCell>
+                  <TableCell>
+                    {contract.lesseeOrBuyerNames.join(", ") || "-"}
+                  </TableCell>
                   <TableCell>{contract.contractDate ?? "-"}</TableCell>
                   <TableCell>{contract.contractStartDate ?? "-"}</TableCell>
                   <TableCell>{contract.contractEndDate ?? "-"}</TableCell>
@@ -160,7 +174,7 @@ function ContractTable({ contractList = [] }: ContractTableProps) {
             ) : (
               <TableRow>
                 <TableCell colSpan={8} align="center" sx={{ py: 8 }}>
-                  <div style={{ color: '#757575', fontSize: '1rem' }}>
+                  <div style={{ color: "#757575", fontSize: "1rem" }}>
                     등록된 계약이 없습니다
                   </div>
                 </TableCell>
@@ -169,22 +183,43 @@ function ContractTable({ contractList = [] }: ContractTableProps) {
           </TableBody>
         </Table>
       </TableContainer>
-      <TablePagination
-        component="div"
-        count={contractList.length}
-        page={page}
-        rowsPerPage={rowsPerPage}
-        onPageChange={(_, newPage) => setPage(newPage)}
-        onRowsPerPageChange={(e) => {
-          setRowsPerPage(Number(e.target.value));
-          setPage(0);
+      <Box
+        sx={{
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "space-between",
+          p: 2,
         }}
-        rowsPerPageOptions={[10, 25, 50, 100]}
-        labelRowsPerPage="페이지당 행 수"
-        labelDisplayedRows={({ from, to, count }) =>
-          `${count}건 중 ${from}-${to}건`
-        }
-      />
+      >
+        <Typography variant="body2" color="text.secondary">
+          총 {totalCount}건
+        </Typography>
+        <Box sx={{ display: "flex", alignItems: "center", gap: 2 }}>
+          <FormControl size="small" sx={{ minWidth: 120 }}>
+            <InputLabel>페이지당 행</InputLabel>
+            <Select
+              value={rowsPerPage}
+              label="페이지당 행"
+              onChange={(e) => {
+                onRowsPerPageChange(Number(e.target.value));
+              }}
+            >
+              <MenuItem value={10}>10</MenuItem>
+              <MenuItem value={25}>25</MenuItem>
+              <MenuItem value={50}>50</MenuItem>
+              <MenuItem value={100}>100</MenuItem>
+            </Select>
+          </FormControl>
+          <Pagination
+            count={Math.ceil(totalCount / rowsPerPage)}
+            page={page}
+            onChange={(_, newPage) => onPageChange(newPage)}
+            color="primary"
+            showFirstButton
+            showLastButton
+          />
+        </Box>
+      </Box>
     </Paper>
   );
 }

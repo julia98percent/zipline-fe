@@ -13,20 +13,20 @@ function CustomerAddButtonList({ fetchCustomerList }: any) {
   return (
     <>
       <div className="flex w-full justify-end gap-2">
-      <MuiButton
-              variant="contained"
-              startIcon={<AddIcon />}
-              onClick= {handleOpen}
-              sx={{
-                backgroundColor: "#164F9E",
-                "&:hover": { backgroundColor: "#0D3B7A" },
-                height: "36px",
-                fontSize: "13px",
-                padding: "0 16px",
-              }}
-            >
-              고객 등록
-            </MuiButton>
+        <MuiButton
+          variant="contained"
+          startIcon={<AddIcon />}
+          onClick={handleOpen}
+          sx={{
+            backgroundColor: "#164F9E",
+            "&:hover": { backgroundColor: "#0D3B7A" },
+            height: "36px",
+            fontSize: "13px",
+            padding: "0 16px",
+          }}
+        >
+          고객 등록
+        </MuiButton>
 
         <Button
           text="고객 데이터 일괄 등록(.csv)"
@@ -34,7 +34,9 @@ function CustomerAddButtonList({ fetchCustomerList }: any) {
           sx={{
             color: "white",
             minHeight: "40px",
+            borderRadius: "14px",
             backgroundColor: "#164F9E",
+            padding: "8px 12px",
             "&:hover": {
               backgroundColor: "#0D3B7A",
             },

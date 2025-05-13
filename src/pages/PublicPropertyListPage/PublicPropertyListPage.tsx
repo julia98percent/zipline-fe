@@ -283,10 +283,12 @@ function PublicPropertyListPage() {
         apiParams.minMonthlyRent = 1;
       }
       if (activeSortField === "exclusiveArea" && !apiParams.minExclusiveArea) {
-        apiParams.minExclusiveArea = 1; // Assuming area can't be < 1
+        apiParams.minExclusiveArea = 1;
       }
-      if (activeSortField === "supplyArea" && !apiParams.minSupplyArea) {
-        apiParams.minSupplyArea = 1; // Assuming area can't be < 1
+      if (activeSortField === "supplyArea") {
+        // supplyArea가 null인 데이터는 제외
+        apiParams.minSupplyArea = 1;
+        apiParams.maxSupplyArea = 999999; // 충분히 큰 값으로 설정
       }
     }
 
@@ -367,15 +369,20 @@ function PublicPropertyListPage() {
       const pages = res?.data?.totalPages;
 
       if (propertyData) {
-        // Set the property data first
-        setPublicPropertyList(propertyData);
+        // supplyArea가 null/undefined면 0으로 변환
+        const normalizedData = propertyData.map((item: PublicPropertyItem) => ({
+          ...item,
+          supplyArea: item.supplyArea == null ? 0 : item.supplyArea,
+        }));
+
+        setPublicPropertyList(normalizedData);
         setTotalElements(total);
         setTotalPages(pages);
 
         // Then fetch addresses in the background
         const fetchAddresses = async () => {
           const propertiesWithAddresses = await Promise.all(
-            propertyData.map(async (property: PublicPropertyItem) => {
+            normalizedData.map(async (property: PublicPropertyItem) => {
               const address = await getAddressFromCoordinates(
                 property.latitude,
                 property.longitude

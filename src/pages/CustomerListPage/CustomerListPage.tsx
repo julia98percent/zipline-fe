@@ -288,7 +288,7 @@ const CustomerListPage = () => {
               alignItems: "center",
             }}
           >
-            <CustomerAddButtonList fetchCustomerList={fetchCustomerList} />
+            <CustomerAddButtonList fetchCustomerData={fetchCustomerList} />
           </Box>
         </div>
         <CustomerTable

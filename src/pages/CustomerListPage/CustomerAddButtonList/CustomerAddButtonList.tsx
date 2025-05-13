@@ -1,18 +1,26 @@
 import { useState } from "react";
 import Button from "@components/Button";
-import CustomerAddModal from "./CustomerAddModal/CustomerAddModal";
+import CustomerAddModal from "./CustomerAddModal";
+import CustomerBulkUploadModal from "./CustomerBulkUploadModal";
 import AddIcon from "@mui/icons-material/Add";
 import { Button as MuiButton } from "@mui/material";
 
-function CustomerAddButtonList({ fetchCustomerList }: any) {
-  const [open, setOpen] = useState(false); // 모달 열림 상태 관리
+interface Props {
+  fetchCustomerData: () => void;
+}
+
+function CustomerAddButtonList({ fetchCustomerData }: Props) {
+  const [open, setOpen] = useState(false);
+  const [openBulkUpload, setOpenBulkUpload] = useState(false);
 
   const handleOpen = () => setOpen(true);
   const handleClose = () => setOpen(false);
+  const handleOpenBulkUpload = () => setOpenBulkUpload(true);
+  const handleCloseBulkUpload = () => setOpenBulkUpload(false);
 
   return (
     <>
-      <div className="flex w-full justify-end gap-2">
+      <div>
         <MuiButton
           variant="contained"
           startIcon={<AddIcon />}
@@ -30,19 +38,16 @@ function CustomerAddButtonList({ fetchCustomerList }: any) {
 
         <Button
           text="고객 데이터 일괄 등록(.csv)"
-          disabled
+          variant="outlined"
+          onClick={handleOpenBulkUpload}
           sx={{
-            color: "white",
-            minHeight: "40px",
-            borderRadius: "14px",
-            backgroundColor: "#164F9E",
-            padding: "8px 12px",
+            color: "#164F9E",
+            minHeight: "32px",
+            borderColor: "#164F9E",
+            marginLeft: "12px",
             "&:hover": {
-              backgroundColor: "#0D3B7A",
-            },
-            "&:disabled": {
-              backgroundColor: "lightgray",
-              color: "white",
+              borderColor: "#0D3B7A",
+              color: "#0D3B7A",
             },
           }}
         />
@@ -50,7 +55,12 @@ function CustomerAddButtonList({ fetchCustomerList }: any) {
       <CustomerAddModal
         open={open}
         handleClose={handleClose}
-        fetchCustomerList={fetchCustomerList}
+        fetchCustomerList={fetchCustomerData}
+      />
+      <CustomerBulkUploadModal
+        open={openBulkUpload}
+        handleClose={handleCloseBulkUpload}
+        fetchCustomerData={fetchCustomerData}
       />
     </>
   );

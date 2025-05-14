@@ -1,9 +1,17 @@
-import { Box, Typography, Button, Menu, MenuItem } from "@mui/material";
+import {
+  Box,
+  Typography,
+  Button,
+  Menu,
+  MenuItem,
+  IconButton,
+} from "@mui/material";
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import useUserStore from "@stores/useUserStore";
 import AccountCircleIcon from "@mui/icons-material/AccountCircle";
 import apiClient from "@apis/apiClient";
+import ArrowBackIcon from "@mui/icons-material/ArrowBackIos";
 
 interface PageHeaderProps {
   title: string;
@@ -74,13 +82,25 @@ const PageHeader = ({ title, userName, action }: PageHeaderProps) => {
         boxShadow: "0px 2px 4px rgba(0, 0, 0, 0.05)",
       }}
     >
-      <Typography
-        variant="h5"
-        component="h1"
-        sx={{ fontWeight: "bold", color: "#222222" }}
-      >
-        {title}
-      </Typography>
+      <Box sx={{ display: "flex", alignItems: "center", gap: 2 }}>
+        {
+          <IconButton
+            onClick={() => navigate(-1)}
+            sx={{
+              color: "#222222",
+            }}
+          >
+            <ArrowBackIcon />
+          </IconButton>
+        }
+        <Typography
+          variant="h5"
+          component="h1"
+          sx={{ fontWeight: "bold", color: "#222222" }}
+        >
+          {title}
+        </Typography>
+      </Box>
 
       <Box sx={{ display: "flex", alignItems: "center", gap: 2 }}>
         {action}

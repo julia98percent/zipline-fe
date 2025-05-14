@@ -153,11 +153,6 @@ function AddScheduleModal({ open, onClose, onSubmit }: AddScheduleModalProps) {
       return;
     }
 
-    if (!formData.description.trim()) {
-      setErrorMessage("세부사항을 입력해주세요.");
-      return;
-    }
-
     // 시작 시간이 종료 시간보다 늦은 경우 체크
     if (formData.includeTime && formData.endTime) {
       const startDateTime = new Date(

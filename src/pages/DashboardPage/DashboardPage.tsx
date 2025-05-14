@@ -22,6 +22,7 @@ import {
   Alert,
   Chip,
   Tooltip,
+  CircularProgress,
 } from "@mui/material";
 import "./DashboardPage.css";
 import AssignmentIcon from "@mui/icons-material/Assignment";
@@ -156,6 +157,8 @@ const DashboardPage = () => {
   );
   const [isSurveyDetailModalOpen, setIsSurveyDetailModalOpen] = useState(false);
   const [surveyDetailLoading, setSurveyDetailLoading] = useState(false);
+  const [isRecentCustomersModalOpen, setIsRecentCustomersModalOpen] =
+    useState(false);
 
   const fetchWeeklySchedules = async () => {
     try {
@@ -510,12 +513,16 @@ const DashboardPage = () => {
               }}
             >
               <CardContent
+                onClick={() =>
+                  recentCustomers > 0 && setIsRecentCustomersModalOpen(true)
+                }
                 sx={{
                   flex: 1,
                   display: "flex",
                   flexDirection: "column",
                   justifyContent: "space-between",
                   p: 2,
+                  "&:hover": { cursor: "pointer" },
                 }}
               >
                 <Box sx={{ display: "flex", alignItems: "center", mb: 1 }}>
@@ -531,42 +538,35 @@ const DashboardPage = () => {
                 <Box>
                   <Box sx={{ display: "flex", alignItems: "baseline" }}>
                     {isLoading ? (
-                      <Typography
-                        variant="h5"
-                        component="p"
-                        sx={{ fontWeight: "bold", color: "#164F9E" }}
-                      >
-                        -
-                      </Typography>
+                      <CircularProgress />
                     ) : (
-                      <Typography
-                        variant="h5"
-                        component="p"
-                        sx={{
-                          fontWeight: "bold",
-                          color: "#164F9E",
-                          ...(recentCustomers > 0 && {
-                            cursor: "pointer",
-                            textDecoration: "underline",
-                            "&:hover": {
-                              color: "#0D3B7A",
-                            },
-                          }),
-                        }}
-                        onClick={() =>
-                          recentCustomers > 0 && navigate("/customers")
-                        }
-                      >
-                        {recentCustomers}
-                      </Typography>
+                      <>
+                        <Typography
+                          variant="h5"
+                          component="p"
+                          sx={{
+                            fontWeight: "bold",
+                            color: "#164F9E",
+                            ...(recentCustomers > 0 && {
+                              cursor: "pointer",
+                              textDecoration: "underline",
+                              "&:hover": {
+                                color: "#0D3B7A",
+                              },
+                            }),
+                          }}
+                        >
+                          {recentCustomers}
+                        </Typography>
+                        <Typography
+                          component="span"
+                          variant="body2"
+                          sx={{ ml: 1, color: "#222222" }}
+                        >
+                          명
+                        </Typography>
+                      </>
                     )}
-                    <Typography
-                      component="span"
-                      variant="body2"
-                      sx={{ ml: 1, color: "#222222" }}
-                    >
-                      명
-                    </Typography>
                   </Box>
                 </Box>
               </CardContent>
@@ -1600,6 +1600,83 @@ const DashboardPage = () => {
         surveyDetail={selectedSurvey}
         isLoading={surveyDetailLoading}
       />
+      {/* 최근 유입 고객 모달 */}
+      <Dialog
+        open={isRecentCustomersModalOpen}
+        onClose={() => setIsRecentCustomersModalOpen(false)}
+        maxWidth="md"
+        fullWidth
+        PaperProps={{
+          sx: {
+            borderRadius: "12px",
+          },
+        }}
+      >
+        <DialogTitle sx={{ pb: 1 }}>
+          <Typography
+            variant="h6"
+            sx={{ fontWeight: "bold", color: "#164F9E" }}
+          >
+            최근 유입 고객
+          </Typography>
+        </DialogTitle>
+        <DialogContent sx={{ pt: "16px !important" }}>
+          <TableContainer sx={{ maxHeight: 480, overflow: "auto" }}>
+            <Table stickyHeader>
+              <TableHead>
+                <TableRow>
+                  <TableCell>고객명</TableCell>
+                  <TableCell>연락처</TableCell>
+                  <TableCell>제출일</TableCell>
+                </TableRow>
+              </TableHead>
+              <TableBody>
+                {Array.isArray(surveyResponses) &&
+                surveyResponses.length === 0 ? (
+                  <TableRow>
+                    <TableCell colSpan={3} align="center">
+                      신규 설문이 없습니다.
+                    </TableCell>
+                  </TableRow>
+                ) : (
+                  Array.isArray(surveyResponses) &&
+                  surveyResponses.map((res) => (
+                    <TableRow
+                      key={res.id}
+                      hover
+                      onClick={() => handleSurveyClick(res.surveyResponseUid)}
+                      sx={{
+                        cursor: "pointer",
+                        "&:hover": {
+                          backgroundColor: "rgba(22, 79, 158, 0.04)",
+                        },
+                      }}
+                    >
+                      <TableCell>{res.name}</TableCell>
+                      <TableCell>{res.phoneNumber}</TableCell>
+                      <TableCell>{formatDate(res.submittedAt)}</TableCell>
+                    </TableRow>
+                  ))
+                )}
+              </TableBody>
+            </Table>
+          </TableContainer>
+        </DialogContent>
+        <DialogActions sx={{ p: 2 }}>
+          <Button
+            onClick={() => setIsRecentCustomersModalOpen(false)}
+            variant="contained"
+            sx={{
+              backgroundColor: "#164F9E",
+              "&:hover": {
+                backgroundColor: "#0D3B7A",
+              },
+            }}
+          >
+            닫기
+          </Button>
+        </DialogActions>
+      </Dialog>
       {/* Toast 메시지 */}
       <Snackbar
         open={toast.open}

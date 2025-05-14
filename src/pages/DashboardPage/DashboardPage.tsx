@@ -839,89 +839,6 @@ const DashboardPage = () => {
                     cursor: "pointer",
                   },
                 }}
-                onClick={() => setCompletedContractsOpen(true)}
-              >
-                <Box sx={{ display: "flex", alignItems: "center", mb: 1 }}>
-                  <CheckCircleIcon sx={{ fontSize: 32, color: "#222222" }} />
-                  <Typography
-                    variant="subtitle1"
-                    component="h2"
-                    sx={{ ml: 2, color: "#222222", fontWeight: "bold" }}
-                  >
-                    완료된 계약 건수
-                  </Typography>
-                </Box>
-                <Box>
-                  <Box sx={{ display: "flex", alignItems: "baseline" }}>
-                    {isLoading ? (
-                      <CircularProgress />
-                    ) : (
-                      <Typography
-                        variant="h5"
-                        component="p"
-                        sx={{
-                          fontWeight: "bold",
-                          color: "#164F9E",
-                          ...(completedContracts > 0 && {
-                            cursor: "pointer",
-                            textDecoration: "underline",
-                            "&:hover": {
-                              color: "#0D3B7A",
-                            },
-                          }),
-                        }}
-                      >
-                        {completedContracts}
-                      </Typography>
-                    )}
-                    <Typography
-                      component="span"
-                      variant="body2"
-                      sx={{ ml: 1, color: "#222222" }}
-                    >
-                      건
-                    </Typography>
-                  </Box>
-                </Box>
-              </CardContent>
-            </Card>
-          </Box>
-
-          <Box
-            sx={{
-              flex: {
-                xs: "1 1 100%",
-                md: "1 1 calc(50% - 12px)",
-                lg: "1 1 calc(25% - 12px)",
-              },
-              height: "120px",
-            }}
-          >
-            <Card
-              sx={{
-                height: "100%",
-                display: "flex",
-                flexDirection: "column",
-                boxShadow: "0 2px 6px rgba(0, 0, 0, 0.05)",
-                borderRadius: "6px",
-                backgroundColor: "#fff",
-                transition: "background-color 0.2s ease",
-                "&:hover": {
-                  backgroundColor: "#f8f9fa",
-                },
-              }}
-            >
-              <CardContent
-                sx={{
-                  flex: 1,
-                  display: "flex",
-                  flexDirection: "column",
-                  justifyContent: "space-between",
-                  p: 2,
-                  "&:hover": {
-                    cursor: "pointer",
-                  },
-                }}
                 onClick={() =>
                   ongoingContracts > 0 && setOngoingContractsOpen(true)
                 }
@@ -957,6 +874,88 @@ const DashboardPage = () => {
                         }}
                       >
                         {ongoingContracts}
+                      </Typography>
+                    )}
+                    <Typography
+                      component="span"
+                      variant="body2"
+                      sx={{ ml: 1, color: "#222222" }}
+                    >
+                      건
+                    </Typography>
+                  </Box>
+                </Box>
+              </CardContent>
+            </Card>
+          </Box>
+          <Box
+            sx={{
+              flex: {
+                xs: "1 1 100%",
+                md: "1 1 calc(50% - 12px)",
+                lg: "1 1 calc(25% - 12px)",
+              },
+              height: "120px",
+            }}
+          >
+            <Card
+              sx={{
+                height: "100%",
+                display: "flex",
+                flexDirection: "column",
+                boxShadow: "0 2px 6px rgba(0, 0, 0, 0.05)",
+                borderRadius: "6px",
+                backgroundColor: "#fff",
+                transition: "background-color 0.2s ease",
+                "&:hover": {
+                  backgroundColor: "#f8f9fa",
+                },
+              }}
+            >
+              <CardContent
+                sx={{
+                  flex: 1,
+                  display: "flex",
+                  flexDirection: "column",
+                  justifyContent: "space-between",
+                  p: 2,
+                  "&:hover": {
+                    cursor: "pointer",
+                  },
+                }}
+                onClick={() => setCompletedContractsOpen(true)}
+              >
+                <Box sx={{ display: "flex", alignItems: "center", mb: 1 }}>
+                  <CheckCircleIcon sx={{ fontSize: 32, color: "#222222" }} />
+                  <Typography
+                    variant="subtitle1"
+                    component="h2"
+                    sx={{ ml: 2, color: "#222222", fontWeight: "bold" }}
+                  >
+                    완료된 계약 건수
+                  </Typography>
+                </Box>
+                <Box>
+                  <Box sx={{ display: "flex", alignItems: "baseline" }}>
+                    {isLoading ? (
+                      <CircularProgress />
+                    ) : (
+                      <Typography
+                        variant="h5"
+                        component="p"
+                        sx={{
+                          fontWeight: "bold",
+                          color: "#164F9E",
+                          ...(completedContracts > 0 && {
+                            cursor: "pointer",
+                            textDecoration: "underline",
+                            "&:hover": {
+                              color: "#0D3B7A",
+                            },
+                          }),
+                        }}
+                      >
+                        {completedContracts}
                       </Typography>
                     )}
                     <Typography

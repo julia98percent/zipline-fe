@@ -164,7 +164,12 @@ const SubmitSurveyPage = () => {
     // 파일 추가
     answers.forEach((answer) => {
       if (answer.file) {
-        formData.append(`files`, answer.file);
+        const originalFileName = answer.file.name;
+        const newFileName = `${answer.questionId}$$###${originalFileName}`;
+        const newFile = new File([answer.file], newFileName, {
+          type: answer.file.type,
+        });
+        formData.append(`files`, newFile);
       }
     });
 

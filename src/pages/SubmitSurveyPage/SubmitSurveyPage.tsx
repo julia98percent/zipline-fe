@@ -14,6 +14,7 @@ import { useNavigate, useParams } from "react-router-dom";
 import apiClient from "@apis/apiClient";
 import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import { formatPhoneNumber } from "@utils/numberUtil";
 
 interface Question {
   choices: { id: number; text: string }[];
@@ -300,7 +301,12 @@ const SubmitSurveyPage = () => {
                 placeholder="답변을 입력하세요"
                 value={answers[questionIndex]?.answer || ""}
                 onChange={(e) =>
-                  handleAnswerChange(questionIndex, e.target.value)
+                  handleAnswerChange(
+                    questionIndex,
+                    questionIndex === 1
+                      ? formatPhoneNumber(e.target.value)
+                      : e.target.value
+                  )
                 }
                 error={isError}
               />

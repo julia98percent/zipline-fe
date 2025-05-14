@@ -49,6 +49,7 @@ import { formatDate } from "@utils/dateUtil";
 import RecentCustomersModal from "./RecentCustomersModal";
 import RecentContractsModal from "./RecentContractsModal";
 import OngoingContractsModal from "./OngoingContractsModal";
+import CompletedContractsModal from "./CompletedContractsModal";
 
 dayjs.extend(isSameOrAfter);
 dayjs.extend(isSameOrBefore);
@@ -62,7 +63,7 @@ interface Contract {
   contractStartDate: string | null;
   contractEndDate: string | null;
   status: string;
-  address?: string;
+  address: string;
 }
 
 interface counsel {
@@ -184,15 +185,26 @@ const DashboardPage = () => {
   const [recentContractsPage, setRecentContractsPage] = useState(0);
   const [recentContractsRowsPerPage, setRecentContractsRowsPerPage] =
     useState(10);
-  const [isOngoingContractsModalOpen, setIsOngoingContractsModalOpen] =
-    useState(false);
-  const [ongoingContractsList, setOngoingContractsList] = useState([]);
+  const [ongoingContractsOpen, setOngoingContractsOpen] = useState(false);
+  const [ongoingContractsList, setOngoingContractsList] = useState<Contract[]>(
+    []
+  );
   const [ongoingContractsPage, setOngoingContractsPage] = useState(0);
   const [ongoingContractsRowsPerPage, setOngoingContractsRowsPerPage] =
     useState(10);
-  const [isOngoingContractsLoading, setIsOngoingContractsLoading] =
-    useState(false);
+  const [ongoingContractsLoading, setOngoingContractsLoading] = useState(false);
   const [ongoingContractsTotalCount, setOngoingContractsTotalCount] =
+    useState(0);
+  const [completedContractsOpen, setCompletedContractsOpen] = useState(false);
+  const [completedContractsList, setCompletedContractsList] = useState<
+    Contract[]
+  >([]);
+  const [completedContractsPage, setCompletedContractsPage] = useState(0);
+  const [completedContractsRowsPerPage, setCompletedContractsRowsPerPage] =
+    useState(10);
+  const [completedContractsLoading, setCompletedContractsLoading] =
+    useState(false);
+  const [completedContractsTotalCount, setCompletedContractsTotalCount] =
     useState(0);
 
   const fetchWeeklySchedules = async () => {
@@ -546,36 +558,60 @@ const DashboardPage = () => {
     setRecentContractsModalOpen(true);
   };
 
-  const fetchOngoingContracts = useCallback(() => {
-    setIsOngoingContractsLoading(true);
-    apiClient
-      .get("/contracts", {
+  const fetchOngoingContracts = useCallback(async () => {
+    try {
+      setOngoingContractsLoading(true);
+      const response = await apiClient.get("/contracts", {
         params: {
           progress: true,
           page: ongoingContractsPage + 1,
           size: ongoingContractsRowsPerPage,
         },
-      })
-      .then((res) => {
-        const contractData = res?.data?.data?.contracts;
-        const pageInfo = res?.data?.data;
-        setOngoingContractsList(contractData || []);
-        setOngoingContractsTotalCount(pageInfo?.totalElements || 0);
-      })
-      .catch((error) => {
-        console.error("Failed to fetch ongoing contracts:", error);
-        setOngoingContractsList([]);
-      })
-      .finally(() => {
-        setIsOngoingContractsLoading(false);
       });
+
+      if (response.data.success) {
+        setOngoingContractsList(response.data.data.contracts);
+        setOngoingContractsTotalCount(response.data.data.totalElements);
+      }
+    } catch (error) {
+      console.error("Failed to fetch ongoing contracts:", error);
+    } finally {
+      setOngoingContractsLoading(false);
+    }
   }, [ongoingContractsPage, ongoingContractsRowsPerPage]);
 
   useEffect(() => {
-    if (isOngoingContractsModalOpen) {
+    if (ongoingContractsOpen) {
       fetchOngoingContracts();
     }
-  }, [isOngoingContractsModalOpen, fetchOngoingContracts]);
+  }, [ongoingContractsOpen, fetchOngoingContracts]);
+
+  const fetchCompletedContracts = useCallback(async () => {
+    try {
+      setCompletedContractsLoading(true);
+      const response = await apiClient.get("/contracts", {
+        params: {
+          progress: false,
+          page: completedContractsPage + 1,
+          size: completedContractsRowsPerPage,
+        },
+      });
+      if (response.data.success) {
+        setCompletedContractsList(response.data.data.contracts);
+        setCompletedContractsTotalCount(response.data.data.totalElements);
+      }
+    } catch (error) {
+      console.error("Failed to fetch completed contracts:", error);
+    } finally {
+      setCompletedContractsLoading(false);
+    }
+  }, [completedContractsPage, completedContractsRowsPerPage]);
+
+  useEffect(() => {
+    if (completedContractsOpen) {
+      fetchCompletedContracts();
+    }
+  }, [completedContractsOpen]);
 
   return (
     <Box
@@ -625,9 +661,7 @@ const DashboardPage = () => {
               }}
             >
               <CardContent
-                onClick={() =>
-                  recentCustomers > 0 && setIsRecentCustomersModalOpen(true)
-                }
+                onClick={() => setIsRecentCustomersModalOpen(true)}
                 sx={{
                   flex: 1,
                   display: "flex",
@@ -801,7 +835,11 @@ const DashboardPage = () => {
                   flexDirection: "column",
                   justifyContent: "space-between",
                   p: 2,
+                  "&:hover": {
+                    cursor: "pointer",
+                  },
                 }}
+                onClick={() => setCompletedContractsOpen(true)}
               >
                 <Box sx={{ display: "flex", alignItems: "center", mb: 1 }}>
                   <CheckCircleIcon sx={{ fontSize: 32, color: "#222222" }} />
@@ -816,13 +854,7 @@ const DashboardPage = () => {
                 <Box>
                   <Box sx={{ display: "flex", alignItems: "baseline" }}>
                     {isLoading ? (
-                      <Typography
-                        variant="h5"
-                        component="p"
-                        sx={{ fontWeight: "bold", color: "#164F9E" }}
-                      >
-                        -
-                      </Typography>
+                      <CircularProgress />
                     ) : (
                       <Typography
                         variant="h5"
@@ -838,9 +870,6 @@ const DashboardPage = () => {
                             },
                           }),
                         }}
-                        onClick={() =>
-                          completedContracts > 0 && navigate("/contracts")
-                        }
                       >
                         {completedContracts}
                       </Typography>
@@ -894,7 +923,7 @@ const DashboardPage = () => {
                   },
                 }}
                 onClick={() =>
-                  ongoingContracts > 0 && setIsOngoingContractsModalOpen(true)
+                  ongoingContracts > 0 && setOngoingContractsOpen(true)
                 }
               >
                 <Box sx={{ display: "flex", alignItems: "center", mb: 1 }}>
@@ -1738,17 +1767,44 @@ const DashboardPage = () => {
       />
       {/* Ongoing Contracts Modal */}
       <OngoingContractsModal
-        open={isOngoingContractsModalOpen}
-        onClose={() => setIsOngoingContractsModalOpen(false)}
+        open={ongoingContractsOpen}
+        onClose={() => {
+          setOngoingContractsOpen(false);
+          setOngoingContractsPage(0);
+          setOngoingContractsRowsPerPage(10);
+        }}
         contracts={ongoingContractsList}
-        loading={isOngoingContractsLoading}
+        loading={ongoingContractsLoading}
         totalCount={ongoingContractsTotalCount}
         page={ongoingContractsPage}
         rowsPerPage={ongoingContractsRowsPerPage}
-        onPageChange={(newPage) => setOngoingContractsPage(newPage)}
+        onPageChange={(newPage) => {
+          setOngoingContractsPage(newPage);
+        }}
         onRowsPerPageChange={(newRowsPerPage) => {
           setOngoingContractsRowsPerPage(newRowsPerPage);
           setOngoingContractsPage(0);
+        }}
+      />
+      {/* Completed Contracts Modal */}
+      <CompletedContractsModal
+        open={completedContractsOpen}
+        onClose={() => {
+          setCompletedContractsOpen(false);
+          setCompletedContractsPage(0);
+          setCompletedContractsRowsPerPage(10);
+        }}
+        contracts={completedContractsList}
+        loading={completedContractsLoading}
+        totalCount={completedContractsTotalCount}
+        page={completedContractsPage}
+        rowsPerPage={completedContractsRowsPerPage}
+        onPageChange={(newPage) => {
+          setCompletedContractsPage(newPage);
+        }}
+        onRowsPerPageChange={(newRowsPerPage) => {
+          setCompletedContractsRowsPerPage(newRowsPerPage);
+          setCompletedContractsPage(0);
         }}
       />
       {/* Toast 메시지 */}

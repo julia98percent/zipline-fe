@@ -34,7 +34,7 @@ import PersonAddIcon from "@mui/icons-material/PersonAdd";
 import ChevronLeftIcon from "@mui/icons-material/ChevronLeft";
 import ChevronRightIcon from "@mui/icons-material/ChevronRight";
 import HelpOutlineIcon from "@mui/icons-material/HelpOutline";
-import { useState, useEffect, useMemo } from "react";
+import { useState, useEffect, useMemo, useCallback } from "react";
 import dayjs from "dayjs";
 import isSameOrAfter from "dayjs/plugin/isSameOrAfter";
 import isSameOrBefore from "dayjs/plugin/isSameOrBefore";
@@ -48,6 +48,7 @@ import useUserStore from "@stores/useUserStore";
 import { formatDate } from "@utils/dateUtil";
 import RecentCustomersModal from "./RecentCustomersModal";
 import RecentContractsModal from "./RecentContractsModal";
+import OngoingContractsModal from "./OngoingContractsModal";
 
 dayjs.extend(isSameOrAfter);
 dayjs.extend(isSameOrBefore);
@@ -183,6 +184,16 @@ const DashboardPage = () => {
   const [recentContractsPage, setRecentContractsPage] = useState(0);
   const [recentContractsRowsPerPage, setRecentContractsRowsPerPage] =
     useState(10);
+  const [isOngoingContractsModalOpen, setIsOngoingContractsModalOpen] =
+    useState(false);
+  const [ongoingContractsList, setOngoingContractsList] = useState([]);
+  const [ongoingContractsPage, setOngoingContractsPage] = useState(0);
+  const [ongoingContractsRowsPerPage, setOngoingContractsRowsPerPage] =
+    useState(10);
+  const [isOngoingContractsLoading, setIsOngoingContractsLoading] =
+    useState(false);
+  const [ongoingContractsTotalCount, setOngoingContractsTotalCount] =
+    useState(0);
 
   const fetchWeeklySchedules = async () => {
     try {
@@ -535,6 +546,37 @@ const DashboardPage = () => {
     setRecentContractsModalOpen(true);
   };
 
+  const fetchOngoingContracts = useCallback(() => {
+    setIsOngoingContractsLoading(true);
+    apiClient
+      .get("/contracts", {
+        params: {
+          progress: true,
+          page: ongoingContractsPage + 1,
+          size: ongoingContractsRowsPerPage,
+        },
+      })
+      .then((res) => {
+        const contractData = res?.data?.data?.contracts;
+        const pageInfo = res?.data?.data;
+        setOngoingContractsList(contractData || []);
+        setOngoingContractsTotalCount(pageInfo?.totalElements || 0);
+      })
+      .catch((error) => {
+        console.error("Failed to fetch ongoing contracts:", error);
+        setOngoingContractsList([]);
+      })
+      .finally(() => {
+        setIsOngoingContractsLoading(false);
+      });
+  }, [ongoingContractsPage, ongoingContractsRowsPerPage]);
+
+  useEffect(() => {
+    if (isOngoingContractsModalOpen) {
+      fetchOngoingContracts();
+    }
+  }, [isOngoingContractsModalOpen, fetchOngoingContracts]);
+
   return (
     <Box
       sx={{
@@ -762,13 +804,13 @@ const DashboardPage = () => {
                 }}
               >
                 <Box sx={{ display: "flex", alignItems: "center", mb: 1 }}>
-                  <DonutLargeIcon sx={{ fontSize: 32, color: "#222222" }} />
+                  <CheckCircleIcon sx={{ fontSize: 32, color: "#222222" }} />
                   <Typography
                     variant="subtitle1"
                     component="h2"
                     sx={{ ml: 2, color: "#222222", fontWeight: "bold" }}
                   >
-                    진행중인 계약 건수
+                    완료된 계약 건수
                   </Typography>
                 </Box>
                 <Box>
@@ -788,7 +830,7 @@ const DashboardPage = () => {
                         sx={{
                           fontWeight: "bold",
                           color: "#164F9E",
-                          ...(ongoingContracts > 0 && {
+                          ...(completedContracts > 0 && {
                             cursor: "pointer",
                             textDecoration: "underline",
                             "&:hover": {
@@ -797,10 +839,10 @@ const DashboardPage = () => {
                           }),
                         }}
                         onClick={() =>
-                          ongoingContracts > 0 && navigate("/contracts")
+                          completedContracts > 0 && navigate("/contracts")
                         }
                       >
-                        {ongoingContracts}
+                        {completedContracts}
                       </Typography>
                     )}
                     <Typography
@@ -847,28 +889,28 @@ const DashboardPage = () => {
                   flexDirection: "column",
                   justifyContent: "space-between",
                   p: 2,
+                  "&:hover": {
+                    cursor: "pointer",
+                  },
                 }}
+                onClick={() =>
+                  ongoingContracts > 0 && setIsOngoingContractsModalOpen(true)
+                }
               >
                 <Box sx={{ display: "flex", alignItems: "center", mb: 1 }}>
-                  <CheckCircleIcon sx={{ fontSize: 32, color: "#222222" }} />
+                  <DonutLargeIcon sx={{ fontSize: 32, color: "#222222" }} />
                   <Typography
                     variant="subtitle1"
                     component="h2"
                     sx={{ ml: 2, color: "#222222", fontWeight: "bold" }}
                   >
-                    완료된 계약 건수
+                    진행중인 계약 건수
                   </Typography>
                 </Box>
                 <Box>
                   <Box sx={{ display: "flex", alignItems: "baseline" }}>
                     {isLoading ? (
-                      <Typography
-                        variant="h5"
-                        component="p"
-                        sx={{ fontWeight: "bold", color: "#164F9E" }}
-                      >
-                        -
-                      </Typography>
+                      <CircularProgress />
                     ) : (
                       <Typography
                         variant="h5"
@@ -876,7 +918,7 @@ const DashboardPage = () => {
                         sx={{
                           fontWeight: "bold",
                           color: "#164F9E",
-                          ...(completedContracts > 0 && {
+                          ...(ongoingContracts > 0 && {
                             cursor: "pointer",
                             textDecoration: "underline",
                             "&:hover": {
@@ -884,11 +926,8 @@ const DashboardPage = () => {
                             },
                           }),
                         }}
-                        onClick={() =>
-                          completedContracts > 0 && navigate("/contracts")
-                        }
                       >
-                        {completedContracts}
+                        {ongoingContracts}
                       </Typography>
                     )}
                     <Typography
@@ -1695,6 +1734,21 @@ const DashboardPage = () => {
           setRecentContractsRowsPerPage(newRowsPerPage);
           setRecentContractsPage(0);
           fetchRecentContracts(0);
+        }}
+      />
+      {/* Ongoing Contracts Modal */}
+      <OngoingContractsModal
+        open={isOngoingContractsModalOpen}
+        onClose={() => setIsOngoingContractsModalOpen(false)}
+        contracts={ongoingContractsList}
+        loading={isOngoingContractsLoading}
+        totalCount={ongoingContractsTotalCount}
+        page={ongoingContractsPage}
+        rowsPerPage={ongoingContractsRowsPerPage}
+        onPageChange={(newPage) => setOngoingContractsPage(newPage)}
+        onRowsPerPageChange={(newRowsPerPage) => {
+          setOngoingContractsRowsPerPage(newRowsPerPage);
+          setOngoingContractsPage(0);
         }}
       />
       {/* Toast 메시지 */}

@@ -166,11 +166,18 @@ const SubmitSurveyPage = () => {
     const formData = new FormData();
 
     // requestDTO를 JSON 문자열로 변환하여 FormData에 추가
-    const requestDTO = answers.map((answer) => ({
-      questionId: answer.questionId,
-      choiceIds: answer.choiceIds || [],
-      answer: answer.answer || "",
-    }));
+    const requestDTO = answers
+      .filter((answer) => {
+        const question = surveyQuestions.find(
+          (q) => q.id === answer.questionId
+        );
+        return question?.type !== "FILE_UPLOAD";
+      })
+      .map((answer) => ({
+        questionId: answer.questionId,
+        choiceIds: answer.choiceIds || [],
+        answer: answer.answer || "",
+      }));
 
     formData.append("requestDTO", JSON.stringify(requestDTO));
 

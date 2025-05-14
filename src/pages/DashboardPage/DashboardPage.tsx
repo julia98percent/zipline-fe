@@ -22,6 +22,9 @@ import {
   Alert,
   Chip,
   Tooltip,
+  CircularProgress,
+  Modal,
+  TablePagination,
 } from "@mui/material";
 import "./DashboardPage.css";
 import AssignmentIcon from "@mui/icons-material/Assignment";
@@ -31,7 +34,7 @@ import PersonAddIcon from "@mui/icons-material/PersonAdd";
 import ChevronLeftIcon from "@mui/icons-material/ChevronLeft";
 import ChevronRightIcon from "@mui/icons-material/ChevronRight";
 import HelpOutlineIcon from "@mui/icons-material/HelpOutline";
-import { useState, useEffect, useMemo } from "react";
+import { useState, useEffect, useMemo, useCallback } from "react";
 import dayjs from "dayjs";
 import isSameOrAfter from "dayjs/plugin/isSameOrAfter";
 import isSameOrBefore from "dayjs/plugin/isSameOrBefore";
@@ -43,6 +46,10 @@ import SurveyDetailModal from "@pages/DashboardPage/SurveyDetailModal";
 import { Schedule } from "../../interfaces/schedule";
 import useUserStore from "@stores/useUserStore";
 import { formatDate } from "@utils/dateUtil";
+import RecentCustomersModal from "./RecentCustomersModal";
+import RecentContractsModal from "./RecentContractsModal";
+import OngoingContractsModal from "./OngoingContractsModal";
+import CompletedContractsModal from "./CompletedContractsModal";
 
 dayjs.extend(isSameOrAfter);
 dayjs.extend(isSameOrBefore);
@@ -51,10 +58,10 @@ interface Contract {
   uid: number;
   lessorOrSellerNames: string[];
   lesseeOrBuyerNames: string[];
-  category: string;
-  contractDate: string;
-  contractStartDate: string;
-  contractEndDate: string;
+  category: "SALE" | "DEPOSIT" | "MONTHLY" | null;
+  contractDate: string | null;
+  contractStartDate: string | null;
+  contractEndDate: string | null;
   status: string;
   address: string;
 }
@@ -112,6 +119,19 @@ interface SurveyDetail {
 
 const SURVEY_PAGE_SIZE = 10;
 
+const CONTRACT_STATUS_TYPES = [
+  { value: "LISTED", name: "매물 등록", color: "default" },
+  { value: "NEGOTIATING", name: "협상 중", color: "info" },
+  { value: "INTENT_SIGNED", name: "가계약", color: "warning" },
+  { value: "CANCELLED", name: "계약 취소", color: "error" },
+  { value: "CONTRACTED", name: "계약 체결", color: "success" },
+  { value: "IN_PROGRESS", name: "계약 진행 중", color: "primary" },
+  { value: "PAID_COMPLETE", name: "잔금 지급 완료", color: "secondary" },
+  { value: "REGISTERED", name: "등기 완료", color: "success" },
+  { value: "MOVED_IN", name: "입주 완료", color: "success" },
+  { value: "TERMINATED", name: "계약 해지", color: "error" },
+] as const;
+
 const DashboardPage = () => {
   const [selectedDate, setSelectedDate] = useState(new Date());
   const [counselTab, setcounselTab] = useState<"request" | "latest">("request");
@@ -120,7 +140,8 @@ const DashboardPage = () => {
   );
   const navigate = useNavigate();
   const [recentCustomers, setRecentCustomers] = useState<number>(0);
-  const [recentContracts, setRecentContracts] = useState<number>(0);
+  const [recentContractsCount, setRecentContractsCount] = useState<number>(0);
+  const [recentContracts, setRecentContracts] = useState<Contract[]>([]);
   const [recentContractsList, setRecentContractsList] = useState<Contract[]>(
     []
   );
@@ -156,6 +177,35 @@ const DashboardPage = () => {
   );
   const [isSurveyDetailModalOpen, setIsSurveyDetailModalOpen] = useState(false);
   const [surveyDetailLoading, setSurveyDetailLoading] = useState(false);
+  const [isRecentCustomersModalOpen, setIsRecentCustomersModalOpen] =
+    useState(false);
+  const [recentContractsModalOpen, setRecentContractsModalOpen] =
+    useState(false);
+  const [recentContractsLoading, setRecentContractsLoading] = useState(false);
+  const [recentContractsPage, setRecentContractsPage] = useState(0);
+  const [recentContractsRowsPerPage, setRecentContractsRowsPerPage] =
+    useState(10);
+  const [ongoingContractsOpen, setOngoingContractsOpen] = useState(false);
+  const [ongoingContractsList, setOngoingContractsList] = useState<Contract[]>(
+    []
+  );
+  const [ongoingContractsPage, setOngoingContractsPage] = useState(0);
+  const [ongoingContractsRowsPerPage, setOngoingContractsRowsPerPage] =
+    useState(10);
+  const [ongoingContractsLoading, setOngoingContractsLoading] = useState(false);
+  const [ongoingContractsTotalCount, setOngoingContractsTotalCount] =
+    useState(0);
+  const [completedContractsOpen, setCompletedContractsOpen] = useState(false);
+  const [completedContractsList, setCompletedContractsList] = useState<
+    Contract[]
+  >([]);
+  const [completedContractsPage, setCompletedContractsPage] = useState(0);
+  const [completedContractsRowsPerPage, setCompletedContractsRowsPerPage] =
+    useState(10);
+  const [completedContractsLoading, setCompletedContractsLoading] =
+    useState(false);
+  const [completedContractsTotalCount, setCompletedContractsTotalCount] =
+    useState(0);
 
   const fetchWeeklySchedules = async () => {
     try {
@@ -182,7 +232,7 @@ const DashboardPage = () => {
           (async () => {
             const [
               recentCustomersRes,
-              recentContractsRes,
+              recentContractsCountRes,
               ongoingContractsRes,
               completedContractsRes,
             ] = await Promise.all([
@@ -195,8 +245,8 @@ const DashboardPage = () => {
             if (recentCustomersRes.data.success) {
               setRecentCustomers(recentCustomersRes.data.data);
             }
-            if (recentContractsRes.data.success) {
-              setRecentContracts(recentContractsRes.data.data);
+            if (recentContractsCountRes.data.success) {
+              setRecentContractsCount(recentContractsCountRes.data.data);
             }
             if (ongoingContractsRes.data.success) {
               setOngoingContracts(ongoingContractsRes.data.data);
@@ -204,6 +254,17 @@ const DashboardPage = () => {
             if (completedContractsRes.data.success) {
               setCompletedContracts(completedContractsRes.data.data);
             }
+
+            // 최근 계약 목록 초기 데이터 로딩
+            const recentContractsListRes = await apiClient.get("/contracts", {
+              params: { recent: true, page: 1, size: 10 },
+            });
+            setRecentContracts(
+              recentContractsListRes.data?.data?.contracts ?? []
+            );
+            setRecentContractsCount(
+              recentContractsListRes.data?.data?.totalElements ?? 0
+            );
           })(),
         ]);
       } catch (error) {
@@ -328,17 +389,45 @@ const DashboardPage = () => {
             },
           }),
         ]);
-        setExpiringContracts(expiringRes.data?.data?.contracts ?? []);
-        setRecentContractsList(recentRes.data?.data?.contracts ?? []);
+        const expiringContracts = expiringRes.data?.data?.contracts ?? [];
+        const recentContracts = recentRes.data?.data?.contracts ?? [];
+        setExpiringContracts(expiringContracts);
+        setRecentContractsList(recentContracts);
+        setRecentContractsCount(recentContracts.length);
       } catch {
         setExpiringContracts([]);
         setRecentContractsList([]);
+        setRecentContractsCount(0);
       } finally {
         setContractLoading(false);
       }
     };
     fetchAllContracts();
   }, []);
+
+  // 최근 계약 목록을 가져오는 함수
+  const fetchRecentContracts = async (page: number) => {
+    setRecentContractsLoading(true);
+    try {
+      const response = await apiClient.get("/contracts", {
+        params: {
+          recent: true,
+          page: page + 1, // 0-based를 1-based로 변환
+          size: recentContractsRowsPerPage,
+        },
+      });
+      const contracts = response.data?.data?.contracts ?? [];
+      const totalElements = response.data?.data?.totalElements ?? 0;
+      setRecentContracts(contracts);
+      setRecentContractsCount(totalElements);
+    } catch (error) {
+      console.error("Failed to fetch recent contracts:", error);
+      setRecentContracts([]);
+      setRecentContractsCount(0);
+    } finally {
+      setRecentContractsLoading(false);
+    }
+  };
 
   // 더보기 클릭 핸들러
   const handleMoreClick = (daySchedules: Schedule[], dayStr: string) => {
@@ -462,6 +551,68 @@ const DashboardPage = () => {
     setSelectedSurvey(null);
   };
 
+  // 최근 계약 건수 카드 클릭 핸들러
+  const handleRecentContractsClick = () => {
+    setRecentContractsPage(0); // 0-based로 초기화
+    fetchRecentContracts(0);
+    setRecentContractsModalOpen(true);
+  };
+
+  const fetchOngoingContracts = useCallback(async () => {
+    try {
+      setOngoingContractsLoading(true);
+      const response = await apiClient.get("/contracts", {
+        params: {
+          progress: true,
+          page: ongoingContractsPage + 1,
+          size: ongoingContractsRowsPerPage,
+        },
+      });
+
+      if (response.data.success) {
+        setOngoingContractsList(response.data.data.contracts);
+        setOngoingContractsTotalCount(response.data.data.totalElements);
+      }
+    } catch (error) {
+      console.error("Failed to fetch ongoing contracts:", error);
+    } finally {
+      setOngoingContractsLoading(false);
+    }
+  }, [ongoingContractsPage, ongoingContractsRowsPerPage]);
+
+  useEffect(() => {
+    if (ongoingContractsOpen) {
+      fetchOngoingContracts();
+    }
+  }, [ongoingContractsOpen, fetchOngoingContracts]);
+
+  const fetchCompletedContracts = useCallback(async () => {
+    try {
+      setCompletedContractsLoading(true);
+      const response = await apiClient.get("/contracts", {
+        params: {
+          progress: false,
+          page: completedContractsPage + 1,
+          size: completedContractsRowsPerPage,
+        },
+      });
+      if (response.data.success) {
+        setCompletedContractsList(response.data.data.contracts);
+        setCompletedContractsTotalCount(response.data.data.totalElements);
+      }
+    } catch (error) {
+      console.error("Failed to fetch completed contracts:", error);
+    } finally {
+      setCompletedContractsLoading(false);
+    }
+  }, [completedContractsPage, completedContractsRowsPerPage]);
+
+  useEffect(() => {
+    if (completedContractsOpen) {
+      fetchCompletedContracts();
+    }
+  }, [completedContractsOpen]);
+
   return (
     <Box
       sx={{
@@ -510,12 +661,14 @@ const DashboardPage = () => {
               }}
             >
               <CardContent
+                onClick={() => setIsRecentCustomersModalOpen(true)}
                 sx={{
                   flex: 1,
                   display: "flex",
                   flexDirection: "column",
                   justifyContent: "space-between",
                   p: 2,
+                  "&:hover": { cursor: "pointer" },
                 }}
               >
                 <Box sx={{ display: "flex", alignItems: "center", mb: 1 }}>
@@ -531,42 +684,35 @@ const DashboardPage = () => {
                 <Box>
                   <Box sx={{ display: "flex", alignItems: "baseline" }}>
                     {isLoading ? (
-                      <Typography
-                        variant="h5"
-                        component="p"
-                        sx={{ fontWeight: "bold", color: "#164F9E" }}
-                      >
-                        -
-                      </Typography>
+                      <CircularProgress />
                     ) : (
-                      <Typography
-                        variant="h5"
-                        component="p"
-                        sx={{
-                          fontWeight: "bold",
-                          color: "#164F9E",
-                          ...(recentCustomers > 0 && {
-                            cursor: "pointer",
-                            textDecoration: "underline",
-                            "&:hover": {
-                              color: "#0D3B7A",
-                            },
-                          }),
-                        }}
-                        onClick={() =>
-                          recentCustomers > 0 && navigate("/customers")
-                        }
-                      >
-                        {recentCustomers}
-                      </Typography>
+                      <>
+                        <Typography
+                          variant="h5"
+                          component="p"
+                          sx={{
+                            fontWeight: "bold",
+                            color: "#164F9E",
+                            ...(recentCustomers > 0 && {
+                              cursor: "pointer",
+                              textDecoration: "underline",
+                              "&:hover": {
+                                color: "#0D3B7A",
+                              },
+                            }),
+                          }}
+                        >
+                          {recentCustomers}
+                        </Typography>
+                        <Typography
+                          component="span"
+                          variant="body2"
+                          sx={{ ml: 1, color: "#222222" }}
+                        >
+                          명
+                        </Typography>
+                      </>
                     )}
-                    <Typography
-                      component="span"
-                      variant="body2"
-                      sx={{ ml: 1, color: "#222222" }}
-                    >
-                      명
-                    </Typography>
                   </Box>
                 </Box>
               </CardContent>
@@ -604,7 +750,11 @@ const DashboardPage = () => {
                   flexDirection: "column",
                   justifyContent: "space-between",
                   p: 2,
+                  "&:hover": {
+                    cursor: "pointer",
+                  },
                 }}
+                onClick={handleRecentContractsClick}
               >
                 <Box sx={{ display: "flex", alignItems: "center", mb: 1 }}>
                   <AssignmentIcon sx={{ fontSize: 32, color: "#222222" }} />
@@ -619,42 +769,35 @@ const DashboardPage = () => {
                 <Box>
                   <Box sx={{ display: "flex", alignItems: "baseline" }}>
                     {isLoading ? (
-                      <Typography
-                        variant="h5"
-                        component="p"
-                        sx={{ fontWeight: "bold", color: "#164F9E" }}
-                      >
-                        -
-                      </Typography>
+                      <CircularProgress />
                     ) : (
-                      <Typography
-                        variant="h5"
-                        component="p"
-                        sx={{
-                          fontWeight: "bold",
-                          color: "#164F9E",
-                          ...(recentContracts > 0 && {
-                            cursor: "pointer",
-                            textDecoration: "underline",
-                            "&:hover": {
-                              color: "#0D3B7A",
-                            },
-                          }),
-                        }}
-                        onClick={() =>
-                          recentContracts > 0 && navigate("/contracts")
-                        }
-                      >
-                        {recentContracts}
-                      </Typography>
+                      <>
+                        <Typography
+                          variant="h5"
+                          component="p"
+                          sx={{
+                            fontWeight: "bold",
+                            color: "#164F9E",
+                            ...(recentContractsCount > 0 && {
+                              cursor: "pointer",
+                              textDecoration: "underline",
+                              "&:hover": {
+                                color: "#0D3B7A",
+                              },
+                            }),
+                          }}
+                        >
+                          {recentContractsCount}
+                        </Typography>
+                        <Typography
+                          component="span"
+                          variant="body2"
+                          sx={{ ml: 1, color: "#222222" }}
+                        >
+                          명
+                        </Typography>
+                      </>
                     )}
-                    <Typography
-                      component="span"
-                      variant="body2"
-                      sx={{ ml: 1, color: "#222222" }}
-                    >
-                      건
-                    </Typography>
                   </Box>
                 </Box>
               </CardContent>
@@ -692,7 +835,13 @@ const DashboardPage = () => {
                   flexDirection: "column",
                   justifyContent: "space-between",
                   p: 2,
+                  "&:hover": {
+                    cursor: "pointer",
+                  },
                 }}
+                onClick={() =>
+                  ongoingContracts > 0 && setOngoingContractsOpen(true)
+                }
               >
                 <Box sx={{ display: "flex", alignItems: "center", mb: 1 }}>
                   <DonutLargeIcon sx={{ fontSize: 32, color: "#222222" }} />
@@ -707,13 +856,7 @@ const DashboardPage = () => {
                 <Box>
                   <Box sx={{ display: "flex", alignItems: "baseline" }}>
                     {isLoading ? (
-                      <Typography
-                        variant="h5"
-                        component="p"
-                        sx={{ fontWeight: "bold", color: "#164F9E" }}
-                      >
-                        -
-                      </Typography>
+                      <CircularProgress />
                     ) : (
                       <Typography
                         variant="h5"
@@ -729,9 +872,6 @@ const DashboardPage = () => {
                             },
                           }),
                         }}
-                        onClick={() =>
-                          ongoingContracts > 0 && navigate("/contracts")
-                        }
                       >
                         {ongoingContracts}
                       </Typography>
@@ -748,7 +888,6 @@ const DashboardPage = () => {
               </CardContent>
             </Card>
           </Box>
-
           <Box
             sx={{
               flex: {
@@ -780,7 +919,11 @@ const DashboardPage = () => {
                   flexDirection: "column",
                   justifyContent: "space-between",
                   p: 2,
+                  "&:hover": {
+                    cursor: "pointer",
+                  },
                 }}
+                onClick={() => setCompletedContractsOpen(true)}
               >
                 <Box sx={{ display: "flex", alignItems: "center", mb: 1 }}>
                   <CheckCircleIcon sx={{ fontSize: 32, color: "#222222" }} />
@@ -795,13 +938,7 @@ const DashboardPage = () => {
                 <Box>
                   <Box sx={{ display: "flex", alignItems: "baseline" }}>
                     {isLoading ? (
-                      <Typography
-                        variant="h5"
-                        component="p"
-                        sx={{ fontWeight: "bold", color: "#164F9E" }}
-                      >
-                        -
-                      </Typography>
+                      <CircularProgress />
                     ) : (
                       <Typography
                         variant="h5"
@@ -817,9 +954,6 @@ const DashboardPage = () => {
                             },
                           }),
                         }}
-                        onClick={() =>
-                          completedContracts > 0 && navigate("/contracts")
-                        }
                       >
                         {completedContracts}
                       </Typography>
@@ -1599,6 +1733,78 @@ const DashboardPage = () => {
         onClose={handleCloseSurveyDetailModal}
         surveyDetail={selectedSurvey}
         isLoading={surveyDetailLoading}
+      />
+      {/* 최근 유입 고객 모달 */}
+      <RecentCustomersModal
+        open={isRecentCustomersModalOpen}
+        onClose={() => setIsRecentCustomersModalOpen(false)}
+        surveyResponses={surveyResponses}
+        onSurveyClick={handleSurveyClick}
+      />
+      {/* 최근 계약 목록 모달 */}
+      <RecentContractsModal
+        open={recentContractsModalOpen}
+        onClose={() => {
+          setRecentContractsModalOpen(false);
+          setRecentContractsPage(0); // 0-based로 초기화
+          setRecentContractsRowsPerPage(10);
+        }}
+        contracts={recentContracts}
+        loading={recentContractsLoading}
+        totalCount={recentContractsCount}
+        page={recentContractsPage}
+        rowsPerPage={recentContractsRowsPerPage}
+        onPageChange={(newPage) => {
+          setRecentContractsPage(newPage);
+          fetchRecentContracts(newPage);
+        }}
+        onRowsPerPageChange={(newRowsPerPage) => {
+          setRecentContractsRowsPerPage(newRowsPerPage);
+          setRecentContractsPage(0);
+          fetchRecentContracts(0);
+        }}
+      />
+      {/* Ongoing Contracts Modal */}
+      <OngoingContractsModal
+        open={ongoingContractsOpen}
+        onClose={() => {
+          setOngoingContractsOpen(false);
+          setOngoingContractsPage(0);
+          setOngoingContractsRowsPerPage(10);
+        }}
+        contracts={ongoingContractsList}
+        loading={ongoingContractsLoading}
+        totalCount={ongoingContractsTotalCount}
+        page={ongoingContractsPage}
+        rowsPerPage={ongoingContractsRowsPerPage}
+        onPageChange={(newPage) => {
+          setOngoingContractsPage(newPage);
+        }}
+        onRowsPerPageChange={(newRowsPerPage) => {
+          setOngoingContractsRowsPerPage(newRowsPerPage);
+          setOngoingContractsPage(0);
+        }}
+      />
+      {/* Completed Contracts Modal */}
+      <CompletedContractsModal
+        open={completedContractsOpen}
+        onClose={() => {
+          setCompletedContractsOpen(false);
+          setCompletedContractsPage(0);
+          setCompletedContractsRowsPerPage(10);
+        }}
+        contracts={completedContractsList}
+        loading={completedContractsLoading}
+        totalCount={completedContractsTotalCount}
+        page={completedContractsPage}
+        rowsPerPage={completedContractsRowsPerPage}
+        onPageChange={(newPage) => {
+          setCompletedContractsPage(newPage);
+        }}
+        onRowsPerPageChange={(newRowsPerPage) => {
+          setCompletedContractsRowsPerPage(newRowsPerPage);
+          setCompletedContractsPage(0);
+        }}
       />
       {/* Toast 메시지 */}
       <Snackbar

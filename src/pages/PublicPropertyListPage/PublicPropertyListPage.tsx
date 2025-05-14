@@ -9,12 +9,15 @@ import {
   Typography,
   FormControlLabel,
   Switch,
+  TextField,
+  InputAdornment,
 } from "@mui/material";
 import { useCallback, useEffect, useState } from "react";
 import PublicPropertyFilterModal from "./PublicPropertyFilterModal/PublicPropertyFilterModal";
 import PublicPropertyTable from "./PublicPropertyTable";
 import PageHeader from "@components/PageHeader/PageHeader";
 import useUserStore from "@stores/useUserStore";
+import SearchIcon from "@mui/icons-material/Search";
 
 export interface KakaoAddress {
   road_address?: {
@@ -129,6 +132,11 @@ function PublicPropertyListPage() {
     maxSupplyArea: undefined,
   });
 
+  const [searchKeyword, setSearchKeyword] = useState<string>("");
+  const [filteredPropertyList, setFilteredPropertyList] = useState<
+    PublicPropertyItem[]
+  >([]);
+
   // Handle location selection
   const handleSidoChange = (event: SelectChangeEvent<string>) => {
     const value = event.target.value;
@@ -234,14 +242,16 @@ function PublicPropertyListPage() {
     // 카카오맵 JS SDK가 없으면 동적으로 로드
     function loadKakaoMapScript(): Promise<void> {
       return new Promise((resolve, reject) => {
-        if (document.getElementById('kakao-map-sdk')) {
+        if (document.getElementById("kakao-map-sdk")) {
           // 이미 로드된 경우
           resolve();
           return;
         }
-        const script = document.createElement('script');
-        script.id = 'kakao-map-sdk';
-        script.src = `https://dapi.kakao.com/v2/maps/sdk.js?appkey=${import.meta.env.VITE_KAKAO_MAP_SECRET}&autoload=false&libraries=services`;
+        const script = document.createElement("script");
+        script.id = "kakao-map-sdk";
+        script.src = `https://dapi.kakao.com/v2/maps/sdk.js?appkey=${
+          import.meta.env.VITE_KAKAO_MAP_SECRET
+        }&autoload=false&libraries=services`;
         script.async = true;
         script.onload = () => {
           (window as any).kakao.maps.load(() => {
@@ -249,7 +259,7 @@ function PublicPropertyListPage() {
           });
         };
         script.onerror = () => {
-          reject('카카오맵 스크립트 로드 실패');
+          reject("카카오맵 스크립트 로드 실패");
         };
         document.head.appendChild(script);
       });
@@ -260,13 +270,17 @@ function PublicPropertyListPage() {
       return new Promise((resolve) => {
         const kakao = (window as any).kakao;
         const geocoder = new kakao.maps.services.Geocoder();
-        geocoder.coord2Address(longitude, latitude, (result: unknown[], status: string) => {
-          if (status === kakao.maps.services.Status.OK && result.length > 0) {
-            resolve(result[0] as KakaoAddress);
-          } else {
-            resolve(null);
+        geocoder.coord2Address(
+          longitude,
+          latitude,
+          (result: unknown[], status: string) => {
+            if (status === kakao.maps.services.Status.OK && result.length > 0) {
+              resolve(result[0] as KakaoAddress);
+            } else {
+              resolve(null);
+            }
           }
-        });
+        );
       });
     }
 
@@ -301,9 +315,8 @@ function PublicPropertyListPage() {
         apiParams.minExclusiveArea = 1;
       }
       if (activeSortField === "supplyArea") {
-        // supplyArea가 null인 데이터는 제외
         apiParams.minSupplyArea = 1;
-        apiParams.maxSupplyArea = 999999; // 충분히 큰 값으로 설정
+        apiParams.maxSupplyArea = 999999;
       }
     }
 
@@ -390,29 +403,23 @@ function PublicPropertyListPage() {
           supplyArea: item.supplyArea == null ? 0 : item.supplyArea,
         }));
 
-        setPublicPropertyList(normalizedData);
+        // 주소 변환을 먼저 수행하고 결과를 설정
+        const propertiesWithAddresses = await Promise.all(
+          normalizedData.map(async (property: PublicPropertyItem) => {
+            const address = await getAddressFromCoordinates(
+              property.latitude,
+              property.longitude
+            );
+            return {
+              ...property,
+              address: address || {},
+            };
+          })
+        );
+
+        setPublicPropertyList(propertiesWithAddresses);
         setTotalElements(total);
         setTotalPages(pages);
-
-        // Then fetch addresses in the background
-        const fetchAddresses = async () => {
-          const propertiesWithAddresses = await Promise.all(
-            normalizedData.map(async (property: PublicPropertyItem) => {
-              const address = await getAddressFromCoordinates(
-                property.latitude,
-                property.longitude
-              );
-              return {
-                ...property,
-                address: address || {},
-              };
-            })
-          );
-          setPublicPropertyList(propertiesWithAddresses);
-        };
-
-        // Start fetching addresses without waiting
-        fetchAddresses();
       } else {
         setPublicPropertyList([]);
         setTotalElements(0);
@@ -432,6 +439,49 @@ function PublicPropertyListPage() {
   useEffect(() => {
     fetchPropertyData();
   }, [fetchPropertyData]);
+
+  // 검색어에 따른 매물 필터링 함수
+  const filterPropertiesByAddress = useCallback(
+    (keyword: string) => {
+      if (!keyword.trim()) {
+        setFilteredPropertyList(publicPropertyList);
+        return;
+      }
+
+      const filtered = publicPropertyList.filter((property) => {
+        const roadAddress = property.address?.road_address?.address_name || "";
+        const jibunAddress = property.address?.address?.address_name || "";
+
+        return (
+          roadAddress.toLowerCase().includes(keyword.toLowerCase()) ||
+          jibunAddress.toLowerCase().includes(keyword.toLowerCase())
+        );
+      });
+
+      setFilteredPropertyList(filtered);
+    },
+    [publicPropertyList]
+  );
+
+  // 검색어 변경 핸들러
+  const handleSearchChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const value = event.target.value;
+    setSearchKeyword(value);
+    filterPropertiesByAddress(value);
+  };
+
+  // 검색어 초기화 핸들러
+  const handleSearchReset = () => {
+    setSearchKeyword("");
+    setFilteredPropertyList(publicPropertyList);
+  };
+
+  // fetchPropertyData 함수 내부의 setPublicPropertyList 호출 부분 수정
+  useEffect(() => {
+    if (publicPropertyList.length > 0) {
+      setFilteredPropertyList(publicPropertyList);
+    }
+  }, [publicPropertyList]);
 
   if (loading) {
     return (
@@ -455,19 +505,51 @@ function PublicPropertyListPage() {
   return (
     <>
       <PageHeader title="공개 매물 목록" userName={user?.name || "-"} />
-      <Box sx={{ padding: "20px", paddingTop: "20px", backgroundColor: "#f5f5f5", minHeight: '100vh' }}>
+      <Box
+        sx={{
+          padding: "20px",
+          paddingTop: "20px",
+          backgroundColor: "#f5f5f5",
+          minHeight: "100vh",
+        }}
+      >
         {/* 상단 필터 바 컨테이너 */}
-        <Paper sx={{ p: 3, mb: "28px", borderRadius: "8px", boxShadow: '0 2px 8px rgba(0,0,0,0.04)' }}>
-          <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-            <Typography variant="h6" fontWeight="bold">
-              공개 매물 검색 결과 : {totalElements} 건
-            </Typography>
-            <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+        <Paper
+          sx={{
+            p: 3,
+            mb: "28px",
+            borderRadius: "8px",
+            boxShadow: "0 2px 8px rgba(0,0,0,0.04)",
+          }}
+        >
+          {/* 상단: 검색 입력 필드(왼쪽) + 버튼들(오른쪽) */}
+          <Box
+            sx={{
+              display: "flex",
+              justifyContent: "space-between",
+              alignItems: "flex-start",
+            }}
+          >
+            <TextField
+              size="small"
+              placeholder="주소로 검색"
+              value={searchKeyword}
+              onChange={handleSearchChange}
+              InputProps={{
+                startAdornment: (
+                  <InputAdornment position="start">
+                    <SearchIcon />
+                  </InputAdornment>
+                ),
+              }}
+              sx={{ maxWidth: "920px" }}
+            />
+            <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
               <Button
                 variant="outlined"
                 size="small"
                 onClick={handleSortReset}
-                sx={{ height: '32px' }}
+                sx={{ height: "32px" }}
               >
                 정렬 초기화
               </Button>
@@ -476,15 +558,37 @@ function PublicPropertyListPage() {
                 color={showFilterModal ? "primary" : "inherit"}
                 variant={showFilterModal ? "contained" : "outlined"}
                 onClick={() => setShowFilterModal(true)}
-                sx={{ height: '32px', ml: 1 }}
+                sx={{ height: "32px", ml: 1 }}
               >
                 상세 필터
               </Button>
             </Box>
           </Box>
+          {/* 두 번째 줄: 검색 결과 건수(오른쪽 끝) */}
+          <Box
+            sx={{
+              display: "flex",
+              justifyContent: "flex-end",
+              alignItems: "center",
+              mb: 1,
+            }}
+          >
+            <Typography variant="body2" color="text.secondary">
+              공개 매물 검색 결과 : {filteredPropertyList.length}건
+            </Typography>
+          </Box>
         </Paper>
         {/* 단위/주소 스위치: 두 컨테이너 사이로 이동 */}
-        <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, mb: "3px", mt: "5px", ml: "8px" }}>
+        <Box
+          sx={{
+            display: "flex",
+            alignItems: "center",
+            gap: 2,
+            mb: "3px",
+            mt: "5px",
+            ml: "8px",
+          }}
+        >
           <FormControlLabel
             control={
               <Switch
@@ -495,7 +599,7 @@ function PublicPropertyListPage() {
               />
             }
             label={useMetric ? "제곱미터(m²)" : "평(py)"}
-            sx={{ '& .MuiFormControlLabel-label': { fontSize: '13px' } }}
+            sx={{ "& .MuiFormControlLabel-label": { fontSize: "13px" } }}
           />
           <FormControlLabel
             control={
@@ -507,15 +611,23 @@ function PublicPropertyListPage() {
               />
             }
             label={useRoadAddress ? "도로명 주소" : "지번 주소"}
-            sx={{ '& .MuiFormControlLabel-label': { fontSize: '13px' } }}
+            sx={{ "& .MuiFormControlLabel-label": { fontSize: "13px" } }}
           />
         </Box>
         {/* 매물 리스트 컨테이너 */}
-        <Paper sx={{ p: 3, borderRadius: "8px", boxShadow: '0 2px 8px rgba(0,0,0,0.04)' }}>
+        <Paper
+          sx={{
+            p: 3,
+            borderRadius: "8px",
+            boxShadow: "0 2px 8px rgba(0,0,0,0.04)",
+          }}
+        >
           <PublicPropertyTable
-            propertyList={publicPropertyList}
-            totalElements={totalElements}
-            totalPages={totalPages}
+            propertyList={filteredPropertyList}
+            totalElements={filteredPropertyList.length}
+            totalPages={Math.ceil(
+              filteredPropertyList.length / searchParams.size
+            )}
             page={searchParams.page}
             rowsPerPage={searchParams.size}
             onPageChange={(newPage) =>

@@ -47,6 +47,7 @@ import { Schedule } from "../../interfaces/schedule";
 import useUserStore from "@stores/useUserStore";
 import { formatDate } from "@utils/dateUtil";
 import RecentCustomersModal from "./RecentCustomersModal";
+import RecentContractsModal from "./RecentContractsModal";
 
 dayjs.extend(isSameOrAfter);
 dayjs.extend(isSameOrBefore);
@@ -208,7 +209,7 @@ const DashboardPage = () => {
           (async () => {
             const [
               recentCustomersRes,
-              recentContractsRes,
+              recentContractsCountRes,
               ongoingContractsRes,
               completedContractsRes,
             ] = await Promise.all([
@@ -221,8 +222,8 @@ const DashboardPage = () => {
             if (recentCustomersRes.data.success) {
               setRecentCustomers(recentCustomersRes.data.data);
             }
-            if (recentContractsRes.data.success) {
-              setRecentContracts(recentContractsRes.data.data);
+            if (recentContractsCountRes.data.success) {
+              setRecentContractsCount(recentContractsCountRes.data.data);
             }
             if (ongoingContractsRes.data.success) {
               setOngoingContracts(ongoingContractsRes.data.data);
@@ -231,12 +232,15 @@ const DashboardPage = () => {
               setCompletedContracts(completedContractsRes.data.data);
             }
 
-            // 최근 계약 건수는 contracts API의 totalElements로 세팅
-            const recentContractsRes = await apiClient.get("/contracts", {
-              params: { recent: true, page: 0, size: 1 },
+            // 최근 계약 목록 초기 데이터 로딩
+            const recentContractsListRes = await apiClient.get("/contracts", {
+              params: { recent: true, page: 1, size: 10 },
             });
+            setRecentContracts(
+              recentContractsListRes.data?.data?.contracts ?? []
+            );
             setRecentContractsCount(
-              recentContractsRes.data?.data?.totalElements ?? 0
+              recentContractsListRes.data?.data?.totalElements ?? 0
             );
           })(),
         ]);
@@ -379,13 +383,13 @@ const DashboardPage = () => {
   }, []);
 
   // 최근 계약 목록을 가져오는 함수
-  const fetchRecentContracts = async () => {
+  const fetchRecentContracts = async (page: number) => {
     setRecentContractsLoading(true);
     try {
       const response = await apiClient.get("/contracts", {
         params: {
           recent: true,
-          page: recentContractsPage,
+          page: page + 1, // 0-based를 1-based로 변환
           size: recentContractsRowsPerPage,
         },
       });
@@ -526,7 +530,8 @@ const DashboardPage = () => {
 
   // 최근 계약 건수 카드 클릭 핸들러
   const handleRecentContractsClick = () => {
-    fetchRecentContracts();
+    setRecentContractsPage(0); // 0-based로 초기화
+    fetchRecentContracts(0);
     setRecentContractsModalOpen(true);
   };
 
@@ -1670,201 +1675,28 @@ const DashboardPage = () => {
         onSurveyClick={handleSurveyClick}
       />
       {/* 최근 계약 목록 모달 */}
-      <Modal
+      <RecentContractsModal
         open={recentContractsModalOpen}
-        onClose={() => setRecentContractsModalOpen(false)}
-        aria-labelledby="recent-contracts-modal"
-      >
-        <Box
-          sx={{
-            position: "absolute",
-            top: "50%",
-            left: "50%",
-            transform: "translate(-50%, -50%)",
-            width: "80%",
-            maxWidth: 1000,
-            bgcolor: "background.paper",
-            boxShadow: 24,
-            p: 4,
-            borderRadius: 2,
-            maxHeight: "80vh",
-            overflow: "auto",
-          }}
-        >
-          <Typography variant="h6" component="h2" gutterBottom>
-            최근 계약 목록
-          </Typography>
-          <TableContainer component={Paper}>
-            <Table sx={{ minWidth: 650 }}>
-              <TableHead>
-                <TableRow>
-                  <TableCell align="center">임대/매도인</TableCell>
-                  <TableCell align="center">임차/매수인</TableCell>
-                  <TableCell align="center">주소</TableCell>
-                  <TableCell align="center">계약 카테고리</TableCell>
-                  <TableCell align="center">계약일</TableCell>
-                  <TableCell align="center">계약 시작일</TableCell>
-                  <TableCell align="center">계약 종료일</TableCell>
-                  <TableCell align="center">상태</TableCell>
-                </TableRow>
-              </TableHead>
-              <TableBody>
-                {recentContractsLoading ? (
-                  <TableRow>
-                    <TableCell colSpan={8} align="center">
-                      불러오는 중...
-                    </TableCell>
-                  </TableRow>
-                ) : recentContracts.length === 0 ? (
-                  <TableRow>
-                    <TableCell colSpan={8} align="center">
-                      계약 데이터가 없습니다
-                    </TableCell>
-                  </TableRow>
-                ) : (
-                  recentContracts.map((contract) => (
-                    <TableRow
-                      key={contract.uid}
-                      hover
-                      sx={{ cursor: "pointer" }}
-                      onClick={() => {
-                        navigate(`/contracts/${contract.uid}`);
-                        setRecentContractsModalOpen(false);
-                      }}
-                    >
-                      <TableCell align="center">
-                        {Array.isArray(contract.lessorOrSellerNames)
-                          ? contract.lessorOrSellerNames.length === 0
-                            ? "-"
-                            : contract.lessorOrSellerNames.length === 1
-                            ? contract.lessorOrSellerNames[0]
-                            : `${contract.lessorOrSellerNames[0]} 외 ${
-                                contract.lessorOrSellerNames.length - 1
-                              }명`
-                          : "-"}
-                      </TableCell>
-                      <TableCell align="center">
-                        {Array.isArray(contract.lesseeOrBuyerNames)
-                          ? contract.lesseeOrBuyerNames.length === 0
-                            ? "-"
-                            : contract.lesseeOrBuyerNames.length === 1
-                            ? contract.lesseeOrBuyerNames[0]
-                            : `${contract.lesseeOrBuyerNames[0]} 외 ${
-                                contract.lesseeOrBuyerNames.length - 1
-                              }명`
-                          : "-"}
-                      </TableCell>
-                      <TableCell align="center">
-                        {contract.address ?? "-"}
-                      </TableCell>
-                      <TableCell align="center">
-                        {(() => {
-                          const categoryKoreanMap: Record<string, string> = {
-                            SALE: "매매",
-                            DEPOSIT: "전세",
-                            MONTHLY: "월세",
-                          };
-                          const colorMap: Record<string, string> = {
-                            SALE: "#4caf50",
-                            DEPOSIT: "#2196f3",
-                            MONTHLY: "#ff9800",
-                          };
-                          if (!contract.category) return "-";
-                          return (
-                            <Chip
-                              label={
-                                categoryKoreanMap[contract.category] ??
-                                contract.category
-                              }
-                              variant="outlined"
-                              sx={{
-                                color: colorMap[contract.category],
-                                borderColor: colorMap[contract.category],
-                                fontWeight: 500,
-                                height: 26,
-                                fontSize: 13,
-                              }}
-                            />
-                          );
-                        })()}
-                      </TableCell>
-                      <TableCell align="center">
-                        {contract.contractDate ?? "-"}
-                      </TableCell>
-                      <TableCell align="center">
-                        {contract.contractStartDate ?? "-"}
-                      </TableCell>
-                      <TableCell align="center">
-                        {contract.contractEndDate ?? "-"}
-                      </TableCell>
-                      <TableCell align="center">
-                        {(() => {
-                          const statusInfo = CONTRACT_STATUS_TYPES.find(
-                            (item) => item.value === contract.status
-                          );
-                          const getColor = (color: string) => {
-                            switch (color) {
-                              case "primary":
-                                return "#1976d2";
-                              case "success":
-                                return "#2e7d32";
-                              case "error":
-                                return "#d32f2f";
-                              case "warning":
-                                return "#ed6c02";
-                              case "info":
-                                return "#0288d1";
-                              case "secondary":
-                                return "#9c27b0";
-                              default:
-                                return "#999";
-                            }
-                          };
-                          return statusInfo ? (
-                            <Chip
-                              label={statusInfo.name}
-                              variant="outlined"
-                              sx={{
-                                color: getColor(statusInfo.color),
-                                borderColor: getColor(statusInfo.color),
-                                fontWeight: 500,
-                                height: 28,
-                                fontSize: 13,
-                              }}
-                            />
-                          ) : (
-                            contract.status
-                          );
-                        })()}
-                      </TableCell>
-                    </TableRow>
-                  ))
-                )}
-              </TableBody>
-            </Table>
-          </TableContainer>
-          <TablePagination
-            component="div"
-            count={recentContractsCount}
-            page={recentContractsPage}
-            rowsPerPage={recentContractsRowsPerPage}
-            onPageChange={(_, newPage) => {
-              setRecentContractsPage(newPage);
-              fetchRecentContracts();
-            }}
-            onRowsPerPageChange={(e) => {
-              setRecentContractsRowsPerPage(parseInt(e.target.value, 10));
-              setRecentContractsPage(0);
-              fetchRecentContracts();
-            }}
-            rowsPerPageOptions={[10, 25, 50]}
-            labelRowsPerPage="페이지당 행 수"
-            labelDisplayedRows={({ from, to, count }) =>
-              `${count}개 중 ${from}-${to}개`
-            }
-          />
-        </Box>
-      </Modal>
+        onClose={() => {
+          setRecentContractsModalOpen(false);
+          setRecentContractsPage(0); // 0-based로 초기화
+          setRecentContractsRowsPerPage(10);
+        }}
+        contracts={recentContracts}
+        loading={recentContractsLoading}
+        totalCount={recentContractsCount}
+        page={recentContractsPage}
+        rowsPerPage={recentContractsRowsPerPage}
+        onPageChange={(newPage) => {
+          setRecentContractsPage(newPage);
+          fetchRecentContracts(newPage);
+        }}
+        onRowsPerPageChange={(newRowsPerPage) => {
+          setRecentContractsRowsPerPage(newRowsPerPage);
+          setRecentContractsPage(0);
+          fetchRecentContracts(0);
+        }}
+      />
       {/* Toast 메시지 */}
       <Snackbar
         open={toast.open}

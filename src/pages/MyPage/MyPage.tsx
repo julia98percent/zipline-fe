@@ -90,7 +90,6 @@ function MyPage() {
               display: "flex",
               alignItems: "center",
               justifyContent: "space-between",
-              mb: 1,
             }}
           >
             <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>

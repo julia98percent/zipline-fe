@@ -391,13 +391,15 @@ function PrivatePropertyListPage() {
                     minWidth: "40px",
                     padding: "5px",
                     borderRadius: "20px",
+                    width: "117px",
                     "&:hover": {
                       backgroundColor: "#F5F5F5",
                       border: "1px solid #164F9E",
                     },
                   }}
                 >
-                  <FilterListIcon />
+                  <FilterListIcon sx={{ mr: "8px" }} />
+                  상세 필터
                 </FilterButton>
               </FilterButtonWrapper>
             </LeftButtonGroup>

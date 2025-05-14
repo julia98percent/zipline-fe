@@ -22,6 +22,7 @@ import Button from "@components/Button";
 import TextField from "@components/TextField";
 import apiClient from "@apis/apiClient";
 import AddIcon from '@mui/icons-material/Add';
+import { toast } from "react-toastify";
 
 const phoneRegex = /^\d{3}-\d{3,4}-\d{4}$/;
 
@@ -171,11 +172,12 @@ function CustomerAddModal({
       const response = await apiClient.post("/customers", customerData);
 
       if (response.status === 201) {
-        fetchCustomerList();  // 목록 새로고침
-        onClose();           // 모달 닫기
+        toast.success("고객 등록에 성공했습니다.");
+        fetchCustomerList();  
+        onClose();     
       }
     } catch (error) {
-      console.error("고객 등록 실패:", error);
+      toast.error("고객 등록 실패:", error);
     }
   };
 

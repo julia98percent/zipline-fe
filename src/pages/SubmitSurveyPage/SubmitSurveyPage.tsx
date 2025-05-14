@@ -12,6 +12,8 @@ import {
 } from "@mui/material";
 import { useNavigate, useParams } from "react-router-dom";
 import apiClient from "@apis/apiClient";
+import { toast, ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 interface Question {
   choices: { id: number; text: string }[];
@@ -103,7 +105,18 @@ const SubmitSurveyPage = () => {
     event: React.ChangeEvent<HTMLInputElement>
   ) => {
     if (event.target.files && event.target.files.length > 0) {
-      handleAnswerChange(questionIndex, event.target.files[0]);
+      const file = event.target.files[0];
+      const maxSize = 10 * 1024 * 1024; // 10MB
+
+      if (file.size > maxSize) {
+        toast.error("파일 크기는 10MB를 초과할 수 없습니다.");
+        // 파일 선택 초기화
+        event.target.value = "";
+        handleAnswerChange(questionIndex, null);
+        return;
+      }
+
+      handleAnswerChange(questionIndex, file);
     }
   };
 
@@ -153,18 +166,30 @@ const SubmitSurveyPage = () => {
     const formData = new FormData();
 
     // requestDTO를 JSON 문자열로 변환하여 FormData에 추가
-    const requestDTO = answers.map((answer) => ({
-      questionId: answer.questionId,
-      choiceIds: answer.choiceIds || [],
-      answer: answer.answer || "",
-    }));
+    const requestDTO = answers
+      .filter((answer) => {
+        const question = surveyQuestions.find(
+          (q) => q.id === answer.questionId
+        );
+        return question?.type !== "FILE_UPLOAD";
+      })
+      .map((answer) => ({
+        questionId: answer.questionId,
+        choiceIds: answer.choiceIds || [],
+        answer: answer.answer || "",
+      }));
 
     formData.append("requestDTO", JSON.stringify(requestDTO));
 
     // 파일 추가
     answers.forEach((answer) => {
       if (answer.file) {
-        formData.append(`files`, answer.file);
+        const originalFileName = answer.file.name;
+        const newFileName = `${answer.questionId}$$###${originalFileName}`;
+        const newFile = new File([answer.file], newFileName, {
+          type: answer.file.type,
+        });
+        formData.append(`files`, newFile);
       }
     });
 
@@ -199,6 +224,18 @@ const SubmitSurveyPage = () => {
 
   return (
     <Box sx={{ p: 4 }}>
+      <ToastContainer
+        position="top-center"
+        autoClose={3000}
+        hideProgressBar={false}
+        newestOnTop
+        closeOnClick
+        rtl={false}
+        pauseOnFocusLoss
+        draggable
+        pauseOnHover
+        theme="light"
+      />
       <Typography variant="h4" sx={{ mb: 4 }}>
         설문 답변 제출
       </Typography>

@@ -44,3 +44,40 @@ function numberToKorean(num: number): string {
   }
   return result;
 }
+
+export function formatPhoneNumber(input: string): string {
+  const cleanedInput = input.replace(/[^0-9]/g, "");
+  let formattedNumber = "";
+
+  if (cleanedInput.startsWith("02")) {
+    if (cleanedInput.length <= 2) {
+      formattedNumber = cleanedInput;
+    } else if (cleanedInput.length <= 6) {
+      formattedNumber = cleanedInput.replace(/^(\d{2})(\d{0,4})/, "$1-$2");
+    } else {
+      formattedNumber = cleanedInput.replace(
+        /^(\d{2})(\d{4})(\d{4})/,
+        "$1-$2-$3"
+      );
+    }
+    if (formattedNumber.length > 11) {
+      formattedNumber = formattedNumber.slice(0, 11);
+    }
+  } else {
+    if (cleanedInput.length <= 3) {
+      formattedNumber = cleanedInput;
+    } else if (cleanedInput.length <= 7) {
+      formattedNumber = cleanedInput.replace(/^(\d{3})(\d{0,4})/, "$1-$2");
+    } else {
+      formattedNumber = cleanedInput.replace(
+        /^(\d{3})(\d{4})(\d{4})/,
+        "$1-$2-$3"
+      );
+    }
+    if (formattedNumber.length > 13) {
+      formattedNumber = formattedNumber.slice(0, 13);
+    }
+  }
+
+  return formattedNumber;
+}

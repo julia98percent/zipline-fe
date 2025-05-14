@@ -15,6 +15,7 @@ import apiClient from "@apis/apiClient";
 import { formatDate } from "@utils/dateUtil";
 import QRCode from "react-qr-code";
 import PageHeader from "@components/PageHeader/PageHeader";
+import { formatPhoneNumber } from "@utils/numberUtil";
 
 function MyPage() {
   const { user } = useUserStore();
@@ -90,7 +91,6 @@ function MyPage() {
               display: "flex",
               alignItems: "center",
               justifyContent: "space-between",
-              mb: 1,
             }}
           >
             <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
@@ -132,7 +132,7 @@ function MyPage() {
               <TextField
                 label="전화번호"
                 value={phoneNo}
-                onChange={(e) => setPhoneNo(e.target.value)}
+                onChange={(e) => setPhoneNo(formatPhoneNumber(e.target.value))}
                 fullWidth
                 size="small"
               />

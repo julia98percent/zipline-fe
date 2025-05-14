@@ -23,6 +23,7 @@ import DeleteIcon from "@mui/icons-material/Delete";
 import { toast } from "react-toastify";
 import DeleteConfirmModal from "@components/DeleteConfirm/DeleteConfirmModal";
 import RegionSelect from "@components/RegionSelect/RegionSelect";
+import { formatPhoneNumber } from "@utils/numberUtil";
 
 interface CustomerData {
   uid: number;
@@ -190,7 +191,7 @@ function CustomerDetailPage() {
 
       const requestData = {
         name: editedCustomer.name,
-        phoneNo: editedCustomer.phoneNo,
+        phoneNo: formatPhoneNumber(editedCustomer.phoneNo),
         telProvider: editedCustomer.telProvider,
         legalDistrictCode: editedCustomer.legalDistrictCode,
         minRent: editedCustomer.minRent,
@@ -391,7 +392,7 @@ function CustomerDetailPage() {
                   <TextField
                     fullWidth
                     size="small"
-                    value={editedCustomer?.phoneNo}
+                    value={formatPhoneNumber(editedCustomer?.phoneNo ?? "")}
                     onChange={(e) =>
                       handleInputChange("phoneNo", e.target.value)
                     }

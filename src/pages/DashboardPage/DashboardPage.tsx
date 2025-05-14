@@ -46,6 +46,7 @@ import SurveyDetailModal from "@pages/DashboardPage/SurveyDetailModal";
 import { Schedule } from "../../interfaces/schedule";
 import useUserStore from "@stores/useUserStore";
 import { formatDate } from "@utils/dateUtil";
+import RecentCustomersModal from "./RecentCustomersModal";
 
 dayjs.extend(isSameOrAfter);
 dayjs.extend(isSameOrBefore);
@@ -1662,82 +1663,12 @@ const DashboardPage = () => {
         isLoading={surveyDetailLoading}
       />
       {/* 최근 유입 고객 모달 */}
-      <Dialog
+      <RecentCustomersModal
         open={isRecentCustomersModalOpen}
         onClose={() => setIsRecentCustomersModalOpen(false)}
-        maxWidth="md"
-        fullWidth
-        PaperProps={{
-          sx: {
-            borderRadius: "12px",
-          },
-        }}
-      >
-        <DialogTitle sx={{ pb: 1 }}>
-          <Typography
-            variant="h6"
-            sx={{ fontWeight: "bold", color: "#164F9E" }}
-          >
-            최근 유입 고객
-          </Typography>
-        </DialogTitle>
-        <DialogContent sx={{ pt: "16px !important" }}>
-          <TableContainer sx={{ maxHeight: 480, overflow: "auto" }}>
-            <Table stickyHeader>
-              <TableHead>
-                <TableRow>
-                  <TableCell>고객명</TableCell>
-                  <TableCell>연락처</TableCell>
-                  <TableCell>제출일</TableCell>
-                </TableRow>
-              </TableHead>
-              <TableBody>
-                {Array.isArray(surveyResponses) &&
-                surveyResponses.length === 0 ? (
-                  <TableRow>
-                    <TableCell colSpan={3} align="center">
-                      신규 설문이 없습니다.
-                    </TableCell>
-                  </TableRow>
-                ) : (
-                  Array.isArray(surveyResponses) &&
-                  surveyResponses.map((res) => (
-                    <TableRow
-                      key={res.id}
-                      hover
-                      onClick={() => handleSurveyClick(res.surveyResponseUid)}
-                      sx={{
-                        cursor: "pointer",
-                        "&:hover": {
-                          backgroundColor: "rgba(22, 79, 158, 0.04)",
-                        },
-                      }}
-                    >
-                      <TableCell>{res.name}</TableCell>
-                      <TableCell>{res.phoneNumber}</TableCell>
-                      <TableCell>{formatDate(res.submittedAt)}</TableCell>
-                    </TableRow>
-                  ))
-                )}
-              </TableBody>
-            </Table>
-          </TableContainer>
-        </DialogContent>
-        <DialogActions sx={{ p: 2 }}>
-          <Button
-            onClick={() => setIsRecentCustomersModalOpen(false)}
-            variant="contained"
-            sx={{
-              backgroundColor: "#164F9E",
-              "&:hover": {
-                backgroundColor: "#0D3B7A",
-              },
-            }}
-          >
-            닫기
-          </Button>
-        </DialogActions>
-      </Dialog>
+        surveyResponses={surveyResponses}
+        onSurveyClick={handleSurveyClick}
+      />
       {/* 최근 계약 목록 모달 */}
       <Modal
         open={recentContractsModalOpen}

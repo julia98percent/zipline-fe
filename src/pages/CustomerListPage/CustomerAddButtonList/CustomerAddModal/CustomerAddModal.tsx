@@ -117,10 +117,31 @@ function CustomerAddModal({
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value, type, checked } = e.target;
-    setFormData(prev => ({
-      ...prev,
-      [name]: type === 'checkbox' ? checked : value
-    }));
+    
+    if (name === 'phoneNo') {
+      // 숫자만 추출
+      const numbers = value.replace(/[^0-9]/g, '');
+      
+      // 전화번호 형식으로 변환
+      let formattedNumber = '';
+      if (numbers.length <= 3) {
+        formattedNumber = numbers;
+      } else if (numbers.length <= 7) {
+        formattedNumber = `${numbers.slice(0, 3)}-${numbers.slice(3)}`;
+      } else {
+        formattedNumber = `${numbers.slice(0, 3)}-${numbers.slice(3, 7)}-${numbers.slice(7, 11)}`;
+      }
+      
+      setFormData(prev => ({
+        ...prev,
+        [name]: formattedNumber
+      }));
+    } else {
+      setFormData(prev => ({
+        ...prev,
+        [name]: type === 'checkbox' ? checked : value
+      }));
+    }
   };
 
   const handleRegionChange = (type: 'sido' | 'sigungu' | 'dong') => (event: SelectChangeEvent) => {
@@ -139,6 +160,19 @@ function CustomerAddModal({
 
   const handleSubmit = async () => {
     try {
+      if (!formData.name) {
+        toast.error("이름을 입력해주세요.");
+        return;
+      }
+      if (!formData.phoneNo) {
+        toast.error("전화번호를 입력해주세요.");
+        return;
+      }
+      if (formData.birthDay && !/^\d{8}$/.test(formData.birthDay)) {
+        toast.error("생년월일을 올바르게 입력해주세요. ex)19910501");
+        return;
+      }
+
       // 선택된 지역 코드 (동 > 군구 > 시도 순으로 선택)
       const selectedRegion = region.selectedDong || region.selectedSigungu || region.selectedSido;
 
@@ -176,8 +210,9 @@ function CustomerAddModal({
         fetchCustomerList();  
         onClose();     
       }
-    } catch (error) {
-      toast.error("고객 등록 실패:", error);
+    } catch (error: any) {
+      console.error("Failed to register customer:", error);
+      toast.error(error.response?.data?.message || "고객 등록 실패");
     }
   };
 
@@ -702,7 +737,7 @@ function CustomerAddModal({
           onClick={handleSubmit}
           variant="contained"
           sx={{ bgcolor: '#6366F1' }}
-          disabled={isSubmitButtonDisabled}
+          disabled={false}
         />
       </DialogActions>
     </Dialog>

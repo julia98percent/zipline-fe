@@ -174,27 +174,40 @@ function CustomerDetailPage() {
   const handleSaveEdit = async () => {
     if (!editedCustomer) return;
 
-    const requestData = {
-      name: editedCustomer.name,
-      phoneNo: editedCustomer.phoneNo,
-      telProvider: editedCustomer.telProvider,
-      legalDistrictCode: editedCustomer.legalDistrictCode,
-      minRent: editedCustomer.minRent,
-      maxRent: editedCustomer.maxRent,
-      trafficSource: editedCustomer.trafficSource || null,
-      landlord: editedCustomer.landlord,
-      tenant: editedCustomer.tenant,
-      buyer: editedCustomer.buyer,
-      seller: editedCustomer.seller,
-      maxPrice: editedCustomer.maxPrice,
-      minPrice: editedCustomer.minPrice,
-      minDeposit: editedCustomer.minDeposit,
-      maxDeposit: editedCustomer.maxDeposit,
-      birthday: editedCustomer.birthDay,
-      labelUids: editedCustomer.labels.map((label) => label.uid),
-    };
-
     try {
+      if (!editedCustomer.name) {
+        toast.error("이름을 입력해주세요.");
+        return;
+      }
+      if (!editedCustomer.phoneNo) {
+        toast.error("전화번호를 입력해주세요.");
+        return;
+      }
+      if (editedCustomer.birthDay && !/^\d{8}$/.test(editedCustomer.birthDay)) {
+        toast.error("생년월일을 올바르게 입력해주세요. ex)19910501");
+        return;
+      }
+
+      const requestData = {
+        name: editedCustomer.name,
+        phoneNo: editedCustomer.phoneNo,
+        telProvider: editedCustomer.telProvider,
+        legalDistrictCode: editedCustomer.legalDistrictCode,
+        minRent: editedCustomer.minRent,
+        maxRent: editedCustomer.maxRent,
+        trafficSource: editedCustomer.trafficSource || null,
+        landlord: editedCustomer.landlord,
+        tenant: editedCustomer.tenant,
+        buyer: editedCustomer.buyer,
+        seller: editedCustomer.seller,
+        maxPrice: editedCustomer.maxPrice,
+        minPrice: editedCustomer.minPrice,
+        minDeposit: editedCustomer.minDeposit,
+        maxDeposit: editedCustomer.maxDeposit,
+        birthday: editedCustomer.birthDay,
+        labelUids: editedCustomer.labels.map((label) => label.uid),
+      };
+
       const response = await apiClient.put(
         `/customers/${customerId}`,
         requestData
@@ -205,9 +218,9 @@ function CustomerDetailPage() {
         setIsEditing(false);
         fetchCustomerData();
       }
-    } catch (error) {
+    } catch (error: any) {
       console.error("Failed to update customer:", error);
-      toast.error("고객 정보 수정에 실패했습니다.");
+      toast.error(error.response?.data?.message || "고객 정보 수정에 실패했습니다.");
     }
   };
 

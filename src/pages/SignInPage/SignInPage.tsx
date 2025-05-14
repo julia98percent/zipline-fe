@@ -18,11 +18,26 @@ const SignInPage = () => {
   const isSignInButtonDisabled = !userId || !password;
 
   const handleClickSignInButton = () => {
+    let deviceId = localStorage.getItem("deviceId");
+    if (!deviceId) {
+      deviceId = crypto.randomUUID(); // 브라우저에서 UUID 생성
+      localStorage.setItem("deviceId", deviceId);
+    }
+  
     apiClient
-      .post("/users/login", {
-        id: userId,
-        password,
-      })
+      .post(
+        "/users/login",
+        {
+          id: userId,
+          password,
+        },
+        {
+          headers: {
+            "X-Device-Id": deviceId,
+          },
+          withCredentials: true,
+        }
+      )
       .then((res) => {
         const accessToken = res?.data?.data?.accessToken;
         if (res.status === 200 && accessToken) {

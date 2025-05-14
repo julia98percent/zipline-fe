@@ -10,6 +10,7 @@ import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import useUserStore from "@stores/useUserStore";
 import AccountCircleIcon from "@mui/icons-material/AccountCircle";
+import apiClient from "@apis/apiClient";
 import ArrowBackIcon from "@mui/icons-material/ArrowBackIos";
 
 interface PageHeaderProps {
@@ -31,11 +32,38 @@ const PageHeader = ({ title, userName, action }: PageHeaderProps) => {
     setAnchorEl(null);
   };
 
-  const handleLogout = () => {
-    sessionStorage.removeItem("_ZA");
-    clearUser();
-    navigate("/sign-in");
-    handleClose();
+  const handleLogout = async () => {
+    try {
+      const accessToken = sessionStorage.getItem("_ZA");
+      const deviceId = localStorage.getItem("deviceId");
+  
+      if (!accessToken || !deviceId) {
+        throw new Error("로그아웃 정보가 부족합니다.");
+      }
+  
+      await apiClient.post(
+        "/users/logout",
+        {},
+        {
+          headers: {
+            Authorization: `Bearer ${accessToken}`,
+            "X-Device-Id": deviceId,
+          },
+          withCredentials: true,
+        }
+      );
+  
+      sessionStorage.removeItem("_ZA");
+      clearUser();
+      navigate("/sign-in");
+    } catch (error) {
+      console.error("로그아웃 실패", error);      
+      sessionStorage.removeItem("_ZA");
+      clearUser();
+      navigate("/sign-in");
+    } finally {
+      handleClose();
+    }
   };
 
   return (

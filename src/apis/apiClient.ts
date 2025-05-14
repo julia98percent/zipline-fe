@@ -49,7 +49,13 @@ apiClient.interceptors.response.use(
       try {
         originalRequest.__isRetryRequest = true;
 
-        const refreshResponse = await reissueTokenClient.get("/users/reissue");
+        const deviceId = localStorage.getItem("deviceId");
+
+const refreshResponse = await reissueTokenClient.get("/users/reissue", {
+  headers: {
+    "X-Device-Id": deviceId ?? "",
+  },
+});;
         const newAccessToken = refreshResponse?.data?.data?.accessToken ?? null;
 
         if (!newAccessToken) {

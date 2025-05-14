@@ -167,7 +167,11 @@ const PropertyTable = ({
                       {formatArea(property.netArea)}
                     </TableCell>
                     <TableCell align="center">
-                      {property.details ?? "-"}
+                      {property.details
+                        ? property.details.length > 20
+                          ? property.details.slice(0, 20) + "..."
+                          : property.details
+                        : "-"}
                     </TableCell>
                   </TableRow>
                 ))

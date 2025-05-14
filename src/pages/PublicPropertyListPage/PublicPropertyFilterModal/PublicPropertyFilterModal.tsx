@@ -240,8 +240,15 @@ const PublicPropertyFilterModal = ({
   };
 
   const handleApply = () => {
-    // Create filter object with region code
-    const regionCode = region.selectedDong || region.selectedSigungu || region.selectedSido || undefined;
+    let regionCode: string | undefined;
+    if (region.selectedDong) {
+      regionCode = String(region.selectedDong);
+    } else if (region.selectedSigungu) {
+      regionCode = String(region.selectedSigungu).slice(0, 5);
+    } else if (region.selectedSido) {
+      regionCode = String(region.selectedSido).slice(0, 2);
+    }
+
     const updatedFilters = {
       ...localFilters,
       regionCode,

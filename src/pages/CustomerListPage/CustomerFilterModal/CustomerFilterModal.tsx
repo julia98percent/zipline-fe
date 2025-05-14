@@ -45,9 +45,9 @@ interface FilterState {
 interface CustomerFilterModalProps {
   open: boolean;
   onClose: () => void;
-  filters: any;                     // 🔥 부모에서 관리하는 필터
-  setFilters: (filters: any) => void; // 🔥 부모 setter
-  onApply: (filters: any) => void;    // 🔥 적용 시 호출
+  filters: any;
+  setFilters: (filters: any) => void;
+  onApply: (filters: any) => void;
 }
 
 const CustomerFilterModal = ({ open, onClose, filters, setFilters, onApply }: CustomerFilterModalProps) => {
@@ -67,7 +67,7 @@ const CustomerFilterModal = ({ open, onClose, filters, setFilters, onApply }: Cu
   const [labels, setLabels] = useState<Label[]>([]);
   const [selectedLabels, setSelectedLabels] = useState<Label[]>([]);
 
-  // 라벨 목록 불러오기
+  
   const fetchLabels = async () => {
     try {
       const response = await apiClient.get("/labels");
@@ -92,15 +92,6 @@ const CustomerFilterModal = ({ open, onClose, filters, setFilters, onApply }: Cu
         );
         setSelectedLabels(selectedLabelsData);
       }
-    } else {
-      setRegion({
-        sido: [],
-        sigungu: [],
-        dong: [],
-        selectedSido: null,
-        selectedSigungu: null,
-        selectedDong: null,
-      });
     }
   }, [open, filters]);
 
@@ -221,6 +212,15 @@ const CustomerFilterModal = ({ open, onClose, filters, setFilters, onApply }: Cu
       return Number(price.replace(/[^0-9]/g, ''));
     };
 
+    let regionCode: string | undefined;
+    if (region.selectedDong) {
+      regionCode = String(region.selectedDong);
+    } else if (region.selectedSigungu) {
+      regionCode = String(region.selectedSigungu).slice(0, 5);
+    } else if (region.selectedSido) {
+      regionCode = String(region.selectedSido).slice(0, 2);
+    }
+
     const filterData = {
       ...filtersTemp,
       minPrice: parsePrice(filtersTemp.minPrice as string),
@@ -229,7 +229,7 @@ const CustomerFilterModal = ({ open, onClose, filters, setFilters, onApply }: Cu
       maxDeposit: parsePrice(filtersTemp.maxDeposit as string),
       minRent: parsePrice(filtersTemp.minRent as string),
       maxRent: parsePrice(filtersTemp.maxRent as string),
-      regionCode: region.selectedDong || region.selectedSigungu || region.selectedSido || undefined,
+      regionCode,
       labelUids: selectedLabels.length > 0 ? selectedLabels.map(label => label.uid) : undefined,
     };
 
@@ -252,6 +252,33 @@ const CustomerFilterModal = ({ open, onClose, filters, setFilters, onApply }: Cu
 
     onApply(finalFilterData);
     onClose();
+  };
+
+  // 필터 초기화 함수
+  const handleReset = () => {
+    setFiltersTemp({
+      tenant: false,
+      landlord: false,
+      buyer: false,
+      seller: false,
+      noRole: false,
+      minPrice: "",
+      maxPrice: "",
+      minDeposit: "",
+      maxDeposit: "",
+      minRent: "",
+      maxRent: "",
+      labelUids: [],
+    });
+    setSelectedLabels([]);
+    setRegion({
+      sido: [],
+      sigungu: [],
+      dong: [],
+      selectedSido: null,
+      selectedSigungu: null,
+      selectedDong: null,
+    });
   };
 
   return (
@@ -410,7 +437,7 @@ const CustomerFilterModal = ({ open, onClose, filters, setFilters, onApply }: Cu
 
         {/* 버튼 영역 */}
         <Box sx={{ mt: 4, display: "flex", justifyContent: "flex-end", gap: 2 }}>
-          <Button onClick={onClose} variant="outlined">취소</Button>
+          <Button onClick={handleReset} variant="outlined">초기화</Button>
           <Button onClick={handleApply} variant="contained" sx={{ backgroundColor: "#164F9E" }}>
             적용하기
           </Button>

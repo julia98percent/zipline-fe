@@ -64,7 +64,7 @@ function BulkUploadModal({ open, handleClose, fetchPropertyData }: Props) {
     try {
       setIsLoading(true);
       await apiClient.post("/properties/bulk", formData);
-      toast.success("매물 정보 업로드에 성공했습니다");
+      toast.success("매물 정보를 업로드 했습니다.");
       handleClose();
       fetchPropertyData();
     } catch (error) {
@@ -131,7 +131,11 @@ function BulkUploadModal({ open, handleClose, fetchPropertyData }: Props) {
         )}
       </DialogContent>
       <DialogActions>
-        <Button onClick={handleClose} disabled={isLoading}>
+        <Button
+          onClick={handleClose}
+          disabled={isLoading}
+          sx={{ color: "#164F9E" }}
+        >
           취소
         </Button>
         <Button

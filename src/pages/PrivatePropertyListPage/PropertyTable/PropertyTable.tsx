@@ -12,7 +12,9 @@ import {
   FormControlLabel,
   Switch,
   Chip,
+  SwitchProps,
 } from "@mui/material";
+import { styled } from "@mui/material/styles";
 import { PropertyItem } from "../PrivatePropertyListPage";
 
 interface Props {
@@ -40,12 +42,12 @@ const categoryColors: Record<
 
 // 연한 파스텔톤 색상 매핑
 const colorMap: Record<string, string> = {
-  SALE: "#e8f5e9",    // 연한 초록
+  SALE: "#e8f5e9", // 연한 초록
   DEPOSIT: "#e3f2fd", // 연한 파랑
   MONTHLY: "#fff3e0", // 연한 주황
 };
 const textColorMap: Record<string, string> = {
-  SALE: "#388e3c",    // 진한 초록
+  SALE: "#388e3c", // 진한 초록
   DEPOSIT: "#1976d2", // 진한 파랑
   MONTHLY: "#f57c00", // 진한 주황
 };
@@ -61,6 +63,54 @@ const translateType = (type: string) => {
       return "-";
   }
 };
+
+const IOSSwitch = styled((props: SwitchProps) => (
+  <Switch focusVisibleClassName=".Mui-focusVisible" disableRipple {...props} />
+))(({ theme }) => ({
+  width: 44,
+  height: 22,
+  padding: 0,
+  "& .MuiSwitch-switchBase": {
+    padding: 0,
+    margin: 2,
+    transitionDuration: "300ms",
+    "&.Mui-checked": {
+      transform: "translateX(22px)",
+      color: "#fff",
+      "& + .MuiSwitch-track": {
+        backgroundColor: "#164F9E",
+        opacity: 1,
+        border: 0,
+      },
+      "&.Mui-disabled + .MuiSwitch-track": {
+        opacity: 0.5,
+      },
+    },
+    "&.Mui-focusVisible .MuiSwitch-thumb": {
+      color: "#164F9E",
+      border: "6px solid #fff",
+    },
+    "&.Mui-disabled .MuiSwitch-thumb": {
+      color: theme.palette.grey[100],
+    },
+    "&.Mui-disabled + .MuiSwitch-track": {
+      opacity: 0.7,
+    },
+  },
+  "& .MuiSwitch-thumb": {
+    boxSizing: "border-box",
+    width: 18,
+    height: 18,
+  },
+  "& .MuiSwitch-track": {
+    borderRadius: 26 / 2,
+    backgroundColor: "#E9E9EA",
+    opacity: 1,
+    transition: theme.transitions.create(["background-color"], {
+      duration: 500,
+    }),
+  },
+}));
 
 const PropertyTable = ({
   propertyList,
@@ -90,7 +140,7 @@ const PropertyTable = ({
     <Box sx={{ width: "100%", mt: "28px" }}>
       <FormControlLabel
         control={
-          <Switch
+          <IOSSwitch
             checked={useMetric}
             onChange={handleToggleUnitChange}
             color="primary"
@@ -99,11 +149,13 @@ const PropertyTable = ({
         }
         label={useMetric ? "제곱미터(m²)" : "평(py)"}
         sx={{
-          mb: "5px",
+          mb: "12px",
           ml: "0px",
-          '& .MuiFormControlLabel-label': {
-            fontSize: '14px',
-          }
+          "& .MuiFormControlLabel-label": {
+            fontSize: "14px",
+            marginLeft: "4px",
+            fontWeight: 500,
+          },
         }}
       />
       <Paper

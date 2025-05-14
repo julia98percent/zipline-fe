@@ -260,7 +260,7 @@ const CustomerListPage = () => {
               sx={{
                 width: 250,
                 "& .MuiOutlinedInput-root": {
-                  borderRadius: "14px",
+                  borderRadius: "14px",                  
                   boxShadow: "0 2px 6px rgba(0, 0, 0, 0.05)",
                   "&:hover .MuiOutlinedInput-notchedOutline": {
                     borderColor: "rgba(0, 0, 0, 0.25)",
@@ -272,6 +272,7 @@ const CustomerListPage = () => {
               onClick={() => setFilterModalOpen(true)}
               sx={{
                 borderRadius: "14px",
+                padding: "5px",
                 border: "1px solid rgba(0, 0, 0, 0.23)",
                 "&:hover": {
                   backgroundColor: "#F5F5F5",

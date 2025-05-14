@@ -457,8 +457,8 @@ function PublicPropertyListPage() {
       <PageHeader title="공개 매물 목록" userName={user?.name || "-"} />
       <Box sx={{ padding: "20px", paddingTop: "20px", backgroundColor: "#f5f5f5", minHeight: '100vh' }}>
         {/* 상단 필터 바 컨테이너 */}
-        <Paper sx={{ p: 3, mb: 3, borderRadius: "8px", boxShadow: '0 2px 8px rgba(0,0,0,0.04)' }}>
-          <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2 }}>
+        <Paper sx={{ p: 3, mb: "28px", borderRadius: "8px", boxShadow: '0 2px 8px rgba(0,0,0,0.04)' }}>
+          <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
             <Typography variant="h6" fontWeight="bold">
               공개 매물 검색 결과 : {totalElements} 건
             </Typography>

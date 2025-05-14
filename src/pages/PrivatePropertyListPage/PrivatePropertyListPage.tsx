@@ -27,6 +27,7 @@ import { MenuItem, SelectChangeEvent } from "@mui/material";
 import PropertyAddButtonList from "./PropertyAddButtonList";
 import { Box } from "@mui/material";
 import { useNavigate } from "react-router-dom";
+import FilterListIcon from "@mui/icons-material/FilterList";
 
 export interface PropertyItem {
   uid: number;
@@ -373,13 +374,25 @@ function PrivatePropertyListPage() {
                 </StyledSelect>
               </TypeButtonGroup>
               <FilterButtonWrapper>
-                <FilterButton
-                  variant="outlined"
-                  onClick={() => setFilterModalOpen(true)}
-                >
-                  상세 필터
-                </FilterButton>
-              </FilterButtonWrapper>
+  <FilterButton
+    variant="outlined"
+    onClick={() => setFilterModalOpen(true)}
+    sx={{
+      // 기존 스타일 유지
+      border: "1px solid #164F9E",
+      color: "#164F9E",
+      minWidth: "40px",
+      padding: "5px",
+      borderRadius: "14px",
+      "&:hover": {
+        backgroundColor: "#F5F5F5",
+        border: "1px solid #164F9E",
+      },
+    }}
+  >
+    <FilterListIcon />
+  </FilterButton>
+</FilterButtonWrapper>
             </LeftButtonGroup>
             <RightButtonGroup>
               <PropertyAddButtonList fetchPropertyData={fetchPropertyData} />

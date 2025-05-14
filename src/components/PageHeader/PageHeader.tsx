@@ -59,10 +59,7 @@ const PageHeader = ({ title, userName, action }: PageHeaderProps) => {
           <IconButton
             onClick={() => navigate(-1)}
             sx={{
-              color: "#164F9E",
-              "&:hover": {
-                backgroundColor: "rgba(22, 79, 158, 0.04)",
-              },
+              color: "#222222",
             }}
           >
             <ArrowBackIcon />

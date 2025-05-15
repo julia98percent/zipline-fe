@@ -12,7 +12,7 @@ import {
   Select,
   MenuItem,
 } from "@mui/material";
-import { toast } from "react-toastify";
+import DeleteConfirmModal from "@components/DeleteConfirm/DeleteConfirmModal";
 import PageHeader from "@components/PageHeader/PageHeader";
 import apiClient from "@apis/apiClient";
 import useUserStore from "@stores/useUserStore";
@@ -55,6 +55,7 @@ const MessageTemplatePage = () => {
     { id: 3, name: "계약 만료", category: "EXPIRED_NOTI", templates: [] },
   ]);
   const [isLoading, setIsLoading] = useState(false);
+  const [openDeleteDialog, setOpenDeleteDialog] = useState(false);
 
   // 변수 목록 정의
   const VARIABLE_LIST = ALLOWED_VARIABLES.map((key) => ({ label: key, key }));
@@ -149,6 +150,44 @@ const MessageTemplatePage = () => {
         message:
           e?.response?.data?.message ||
           "템플릿 수정 중 오류가 발생했습니다. 다시 시도해주세요.",
+        type: "error",
+      });
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  // 템플릿 삭제 확인 다이얼로그 열기
+  const handleOpenDeleteDialog = () => {
+    setOpenDeleteDialog(true);
+  };
+
+  // 템플릿 삭제 기능
+  const handleDeleteTemplate = async () => {
+    if (!selectedTemplate) return;
+
+    try {
+      setIsLoading(true);
+      const response = await apiClient.delete(
+        `/templates/${selectedTemplate.uid}`
+      );
+
+      if (response.data.success) {
+        fetchTemplates();
+        handleAddNewTemplate(); // 폼 초기화
+        setOpenDeleteDialog(false);
+        showToast({
+          message: "템플릿을 삭제했습니다.",
+          type: "success",
+        });
+      }
+    } catch (error) {
+      console.error("Error deleting template:", error);
+      const err = error as { response?: { data?: { message?: string } } };
+      showToast({
+        message:
+          err?.response?.data?.message ||
+          "템플릿 삭제 중 오류가 발생했습니다. 다시 시도해주세요.",
         type: "error",
       });
     } finally {
@@ -604,7 +643,7 @@ const MessageTemplatePage = () => {
             sx={{
               display: "flex",
               justifyContent: "flex-end",
-              gap: "28px",
+              gap: "12px",
               mt: 2,
             }}
           >
@@ -624,6 +663,24 @@ const MessageTemplatePage = () => {
                 취소
               </Button>
             )}
+            {/* 일반 템플릿이고 선택된 템플릿이 있을 때만 삭제 버튼 표시 */}
+            {selectedTemplate && selectedTemplate.category === "GENERAL" && (
+              <Button
+                variant="outlined"
+                color="error"
+                onClick={handleOpenDeleteDialog}
+                sx={{
+                  borderColor: "#FF5050",
+                  color: "#FF5050",
+                  "&:hover": {
+                    borderColor: "#FF3333",
+                    backgroundColor: "rgba(255, 80, 80, 0.04)",
+                  },
+                }}
+              >
+                삭제하기
+              </Button>
+            )}
             <Button
               variant="contained"
               onClick={
@@ -638,7 +695,9 @@ const MessageTemplatePage = () => {
               }
               sx={{
                 backgroundColor: "#164F9E",
+                boxShadow: "none",
                 "&:hover": {
+                  boxShadow: "none",
                   backgroundColor: "#0D3B7A",
                 },
                 "&.Mui-disabled": {
@@ -652,6 +711,13 @@ const MessageTemplatePage = () => {
           </Box>
         </Paper>
       </Box>
+
+      <DeleteConfirmModal
+        open={openDeleteDialog}
+        onConfirm={handleDeleteTemplate}
+        onCancel={() => setOpenDeleteDialog(false)}
+        category="문자 템플릿"
+      />
     </Box>
   );
 };

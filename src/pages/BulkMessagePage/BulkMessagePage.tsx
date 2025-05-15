@@ -968,13 +968,6 @@ const BulkMessagePage = () => {
                   borderRadius: "20px",
                 },
               }}
-              SelectProps={{
-                sx: {
-                  "& .MuiOutlinedInput-notchedOutline": {
-                    borderRadius: "20px",
-                  },
-                },
-              }}
               MenuProps={{
                 PaperProps: {
                   borderRadius: "20px",

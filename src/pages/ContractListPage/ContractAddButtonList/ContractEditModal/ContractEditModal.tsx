@@ -605,11 +605,17 @@ const ContractEditModal = ({
             })}
           </Box>
         )}
-        <Button
-          text="수정"
-          onClick={handleSubmit}
-          sx={{ mt: 2, color: "white !important", backgroundColor: "#164F9E" }}
-        />
+        <Box sx={{ display: "flex", justifyContent: "flex-end" }}>
+          <Button
+            text="수정"
+            onClick={handleSubmit}
+            sx={{
+              mt: 2,
+              color: "white !important",
+              backgroundColor: "#164F9E",
+            }}
+          />
+        </Box>
       </Box>
     </Modal>
   );

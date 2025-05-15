@@ -75,7 +75,6 @@ function CustomerBulkUploadModal({
       handleClose();
       fetchCustomerData();
     } catch (error) {
-      console.log(error);
       const axiosError = error as AxiosError<ErrorResponse>;
       const errorMessage =
         axiosError.response?.data?.message ||

@@ -136,10 +136,9 @@ const ContractEditModal = ({
       );
 
       const matchedProperty = allProperties.find(
-        (p: { propertyUid: string }) => p.propertyUid === data.propertyUid
+        (p) => p.address === data.propertyAddress
       );
-      console.log(price.a);
-      setPropertyUid(matchedProperty?.uid ?? null);
+      setPropertyUid(matchedProperty ? matchedProperty.uid : null);
 
       setCategory(
         data.category === "null" || data.category === undefined

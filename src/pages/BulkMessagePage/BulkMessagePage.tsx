@@ -32,6 +32,7 @@ import PageHeader from "@components/PageHeader/PageHeader";
 import apiClient from "@apis/apiClient";
 import { SelectChangeEvent } from "@mui/material";
 import useUserStore from "@stores/useUserStore";
+import { showToast } from "@components/Toast/Toast";
 
 interface Customer {
   uid: number;
@@ -701,19 +702,17 @@ const BulkMessagePage = () => {
 
     try {
       await apiClient.post("/messages", payload);
-      setToast({
-        open: true,
-        message: "문자 발송이 완료되었습니다.",
-        severity: "success",
+      showToast({
+        message: "문자를 발송했습니다.",
+        type: "success",
       });
       setCustomers([]);
       setSelectedTemplate("");
       setMessageContent("");
     } catch {
-      setToast({
-        open: true,
+      showToast({
         message: "문자 발송에 실패했습니다.",
-        severity: "error",
+        type: "error",
       });
     }
   };

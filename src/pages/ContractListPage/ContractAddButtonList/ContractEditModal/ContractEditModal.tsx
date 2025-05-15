@@ -135,9 +135,12 @@ const ContractEditModal = ({
           .filter((uid: number | null): uid is number => uid !== null)
       );
 
+      const normalize = (str?: string) => str?.trim().replace(/\s+/g, "") ?? "";
+
       const matchedProperty = allProperties.find(
-        (p) => p.address === data.propertyAddress
+        (p) => normalize(p.address) === normalize(data.propertyAddress)
       );
+
       setPropertyUid(matchedProperty ? matchedProperty.uid : null);
 
       setCategory(

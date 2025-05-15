@@ -10,7 +10,8 @@ import { toast } from "react-toastify";
 import DeleteConfirmModal from "@components/DeleteConfirm/DeleteConfirmModal";
 import useUserStore from "@stores/useUserStore";
 import EditIcon from "@mui/icons-material/Edit";
-import DeleteIcon from "@mui/icons-material/DeleteOutline";
+import DeleteIcon from "@mui/icons-material/Delete";
+import { showToast } from "@components/Toast/Toast";
 
 const ContractDetailPage = () => {
   const { contractUid } = useParams<{ contractUid: string }>();
@@ -33,12 +34,18 @@ const ContractDetailPage = () => {
     apiClient
       .delete(`/contracts/${contractUid}`)
       .then(() => {
-        toast.success("계약 삭제 성공");
+        showToast({
+          message: "계약을 삭제했습니다.",
+          type: "success",
+        });
         navigate("/contracts");
       })
       .catch((err) => {
         console.error("계약 삭제 실패", err);
-        toast.error("계약 삭제 중 오류가 발생했습니다.");
+        showToast({
+          message: "계약 삭제 중 오류가 발생했습니다.",
+          type: "error",
+        });
       })
       .finally(() => {
         setDeleteModalOpen(false);
@@ -77,9 +84,7 @@ const ContractDetailPage = () => {
 
   return (
     <div className={styles.container}>
-      <div className={styles.header}>
-        <PageHeader title="계약 상세 조회" userName={user?.name || "-"} />
-      </div>
+      <PageHeader title="계약 상세 조회" userName={user?.name || "-"} />
 
       <div className={styles.contents}>
         {editModalOpen && (
@@ -104,10 +109,11 @@ const ContractDetailPage = () => {
           open={deleteModalOpen}
           onConfirm={confirmDelete}
           onCancel={() => setDeleteModalOpen(false)}
+          category="계약"
         />
 
         <div className={styles.contents2}>
-          <Box display="flex" justifyContent="flex-end" mt={0} gap={1} mb={2}>
+          <Box display="flex" justifyContent="flex-end" mt={0} gap={2} mb={3}>
             <Button
               variant="outlined"
               color="primary"

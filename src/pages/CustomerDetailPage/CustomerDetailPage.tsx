@@ -24,6 +24,7 @@ import { toast } from "react-toastify";
 import DeleteConfirmModal from "@components/DeleteConfirm/DeleteConfirmModal";
 import RegionSelect from "@components/RegionSelect/RegionSelect";
 import { formatPhoneNumber } from "@utils/numberUtil";
+import { showToast } from "@components/Toast/Toast";
 
 interface CustomerData {
   uid: number;
@@ -177,15 +178,24 @@ function CustomerDetailPage() {
 
     try {
       if (!editedCustomer.name) {
-        toast.error("이름을 입력해주세요.");
+        showToast({
+          message: "이름을 입력해주세요.",
+          type: "error",
+        });
         return;
       }
       if (!editedCustomer.phoneNo) {
-        toast.error("전화번호를 입력해주세요.");
+        showToast({
+          message: "전화번호를 입력해주세요.",
+          type: "error",
+        });
         return;
       }
       if (editedCustomer.birthDay && !/^\d{8}$/.test(editedCustomer.birthDay)) {
-        toast.error("생년월일을 올바르게 입력해주세요. ex)19910501");
+        showToast({
+          message: "생년월일을 올바르게 입력해주세요. ex)19910501",
+          type: "error",
+        });
         return;
       }
 
@@ -215,13 +225,20 @@ function CustomerDetailPage() {
       );
 
       if (response.status === 200) {
-        toast.success("고객 정보를 수정했습니다.");
+        showToast({
+          message: "고객 정보를 수정했습니다.",
+          type: "success",
+        });
         setIsEditing(false);
         fetchCustomerData();
       }
     } catch (error: any) {
       console.error("Failed to update customer:", error);
-      toast.error(error.response?.data?.message || "고객 정보 수정에 실패했습니다.");
+      showToast({
+        message:
+          error.response?.data?.message || "고객 정보 수정에 실패했습니다.",
+        type: "error",
+      });
     }
   };
 
@@ -237,7 +254,10 @@ function CustomerDetailPage() {
     try {
       const response = await apiClient.delete(`/customers/${customerId}`);
       if (response.status === 200) {
-        toast.success("고객이 삭제되었습니다.");
+        showToast({
+          message: "고객을 삭제했습니다.",
+          type: "success",
+        });
         navigate("/customers");
       }
     } catch (error) {
@@ -328,18 +348,16 @@ function CustomerDetailPage() {
               }}
             >
               <Button
-                variant="contained"
+                variant="outlined"
                 color="primary"
                 startIcon={<EditIcon />}
                 onClick={handleEditClick}
                 sx={{
                   mr: 1,
-                  backgroundColor: "#164F9E",
-                  boxShadow: "none",
-                  "&:hover": {
-                    backgroundColor: "#0D3B7A",
-                    boxShadow: "none",
-                  },
+                  color: "#164F9E",
+                  minHeight: "32px",
+                  marginLeft: "12px",
+                  backgroundColor: "white",
                 }}
               >
                 수정
@@ -886,6 +904,7 @@ function CustomerDetailPage() {
         open={isDeleteModalOpen}
         onConfirm={handleDeleteConfirm}
         onCancel={handleDeleteCancel}
+        category="고객"
       />
     </Box>
   );

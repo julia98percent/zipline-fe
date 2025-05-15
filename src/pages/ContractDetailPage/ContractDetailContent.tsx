@@ -86,7 +86,7 @@ const ContractDetailContent = ({ contract, histories }: Props) => {
     <>
       {/* 계약 기본정보, 당사자 정보 */}
       <Box display="flex" gap={3} mb={3}>
-        <Card sx={{ flex: 1 }}>
+        <Card sx={{ flex: 1, borderRadius: 2 }}>
           <CardContent>
             <Typography variant="h6" fontWeight="bold" gutterBottom>
               계약 기본 정보
@@ -143,8 +143,14 @@ const ContractDetailContent = ({ contract, histories }: Props) => {
                 );
               })()}
             />
-            <InfoRow label="계약 시작일" value={contract.contractStartDate ?? "-"} />
-            <InfoRow label="계약 종료일" value={contract.contractEndDate ?? "-"} />
+            <InfoRow
+              label="계약 시작일"
+              value={contract.contractStartDate ?? "-"}
+            />
+            <InfoRow
+              label="계약 종료일"
+              value={contract.contractEndDate ?? "-"}
+            />
             {contract.status === "CANCELLED" && (
               <InfoRow
                 label="계약 예상 종료일"
@@ -179,12 +185,15 @@ const ContractDetailContent = ({ contract, histories }: Props) => {
           </CardContent>
         </Card>
 
-        <Card sx={{ flex: 1 }}>
+        <Card sx={{ flex: 1, borderRadius: 2 }}>
           <CardContent>
             <Typography variant="h6" fontWeight="bold" gutterBottom>
               계약 당사자 정보
             </Typography>
-            <InfoRow label="임대/매도인" value={getCustomerNamesDisplay(contract.lessorOrSellerNames)} />
+            <InfoRow
+              label="임대/매도인"
+              value={getCustomerNamesDisplay(contract.lessorOrSellerNames)}
+            />
             <InfoRow
               label="임차/매수인"
               value={getCustomerNamesDisplay(contract.lesseeOrBuyerNames)}
@@ -196,7 +205,7 @@ const ContractDetailContent = ({ contract, histories }: Props) => {
 
       {/* 첨부문서, 히스토리 */}
       <Box display="flex" gap={3}>
-        <Card sx={{ flex: 1, minHeight: 200 }}>
+        <Card sx={{ flex: 1, minHeight: 200, borderRadius: 2 }}>
           <CardContent>
             <Typography variant="h6" fontWeight="bold" gutterBottom>
               첨부 문서
@@ -245,12 +254,21 @@ const ContractDetailContent = ({ contract, histories }: Props) => {
                 </Box>
               ))
             ) : (
-              <Typography color="text.secondary">첨부 문서 없음</Typography>
+              <Box
+                sx={{
+                  display: "flex",
+                  justifyContent: "center",
+                  alignItems: "center",
+                  minHeight: "200px",
+                }}
+              >
+                <Typography color="text.secondary">첨부 문서 없음</Typography>
+              </Box>
             )}
           </CardContent>
         </Card>
 
-        <Card sx={{ flex: 1.4, minHeight: 200 }}>
+        <Card sx={{ flex: 1.4, minHeight: 200, borderRadius: 2 }}>
           <CardContent>
             <Typography variant="h6" fontWeight="bold" gutterBottom>
               상태 변경 이력
@@ -268,10 +286,40 @@ const ContractDetailContent = ({ contract, histories }: Props) => {
                   {histories.map((h, idx) => (
                     <TableRow key={idx}>
                       <TableCell>
-                        {statusKoreanMap[h.prevStatus] ?? h.prevStatus}
+                        <Chip
+                          label={statusKoreanMap[h.prevStatus] ?? h.prevStatus}
+                          variant="outlined"
+                          sx={{
+                            color: CONTRACT_STATUS_TYPES.find(
+                              (item) => item.value === h.prevStatus
+                            )?.color,
+                            borderColor: CONTRACT_STATUS_TYPES.find(
+                              (item) => item.value === h.prevStatus
+                            )?.color,
+                            fontWeight: 500,
+                            fontSize: 13,
+                            height: 28,
+                          }}
+                        />
                       </TableCell>
                       <TableCell>
-                        {statusKoreanMap[h.currentStatus] ?? h.currentStatus}
+                        <Chip
+                          label={
+                            statusKoreanMap[h.currentStatus] ?? h.currentStatus
+                          }
+                          variant="outlined"
+                          sx={{
+                            color: CONTRACT_STATUS_TYPES.find(
+                              (item) => item.value === h.currentStatus
+                            )?.color,
+                            borderColor: CONTRACT_STATUS_TYPES.find(
+                              (item) => item.value === h.currentStatus
+                            )?.color,
+                            fontWeight: 500,
+                            fontSize: 13,
+                            height: 28,
+                          }}
+                        />
                       </TableCell>
                       <TableCell>{h.changedAt}</TableCell>
                     </TableRow>
@@ -279,9 +327,16 @@ const ContractDetailContent = ({ contract, histories }: Props) => {
                 </TableBody>
               </Table>
             ) : (
-              <Typography color="text.secondary" align="center">
-                히스토리 없음
-              </Typography>
+              <Box
+                sx={{
+                  display: "flex",
+                  justifyContent: "center",
+                  alignItems: "center",
+                  minHeight: "200px",
+                }}
+              >
+                <Typography color="text.secondary">히스토리 없음</Typography>
+              </Box>
             )}
           </CardContent>
         </Card>

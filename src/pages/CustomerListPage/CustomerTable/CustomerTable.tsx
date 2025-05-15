@@ -20,8 +20,8 @@ import DoneIcon from "@mui/icons-material/Done";
 import CloseIcon from "@mui/icons-material/Close";
 import { useState, useEffect } from "react";
 import apiClient from "@apis/apiClient";
-import DeleteConfirmModal from "./DeleteConfirmModal";
-import { toast } from "react-toastify";
+import DeleteConfirmModal from "@components/DeleteConfirm/DeleteConfirmModal";
+import { showToast } from "@components/Toast/Toast";
 
 interface Label {
   uid: number;
@@ -119,11 +119,17 @@ const CustomerTable = ({
           setPage(newPage);
         }
         onRefresh();
-        toast.success("고객을 삭제했습니다.");
+        showToast({
+          message: "고객을 삭제했습니다.",
+          type: "success",
+        });
       }
     } catch (error) {
       console.error("Failed to delete customer:", error);
-      toast.error("고객 삭제에 실패했습니다.");
+      showToast({
+        message: "고객 삭제에 실패했습니다.",
+        type: "error",
+      });
     } finally {
       setDeleteModalOpen(false);
       setCustomerToDelete(null);
@@ -574,9 +580,9 @@ const CustomerTable = ({
       </Paper>
       <DeleteConfirmModal
         open={deleteModalOpen}
-        onClose={handleDeleteCancel}
         onConfirm={handleDeleteConfirm}
-        customerName={customerToDelete?.name || ""}
+        onCancel={handleDeleteCancel}
+        category="고객"
       />
     </Box>
   );

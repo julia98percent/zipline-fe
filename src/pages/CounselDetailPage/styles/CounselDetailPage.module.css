@@ -38,10 +38,13 @@
 }
 
 .cardTitle {
-  font-size: 18px;
-  font-weight: 600;
-  margin-bottom: 16px;
-  color: #333;
+  margin: 0;
+  font-size: 1.2rem !important;
+  font-weight: 700 !important;
+  padding-bottom: 8px !important;
+  line-height: 1.6;
+  letter-spacing: 0.0075em;
+  margin-bottom: 0.35em !important;
 }
 
 .infoGrid {
@@ -179,4 +182,4 @@
   border-radius: 4px;
   cursor: pointer;
   font-weight: 500;
-} 
+}

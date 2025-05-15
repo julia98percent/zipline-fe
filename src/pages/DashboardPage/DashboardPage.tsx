@@ -18,13 +18,9 @@ import {
   DialogContent,
   DialogActions,
   Button,
-  Snackbar,
-  Alert,
   Chip,
   Tooltip,
   CircularProgress,
-  Modal,
-  TablePagination,
 } from "@mui/material";
 import "./DashboardPage.css";
 import AssignmentIcon from "@mui/icons-material/Assignment";
@@ -1806,22 +1802,6 @@ const DashboardPage = () => {
           setCompletedContractsPage(0);
         }}
       />
-      {/* Toast 메시지 */}
-      <Snackbar
-        open={toast.open}
-        autoHideDuration={2000}
-        onClose={() => setToast({ ...toast, open: false })}
-        anchorOrigin={{ vertical: "bottom", horizontal: "center" }}
-        sx={{ bottom: "24px !important" }}
-      >
-        <Alert
-          onClose={() => setToast({ ...toast, open: false })}
-          severity={toast.severity}
-          sx={{ width: "100%", minWidth: "240px", borderRadius: "8px" }}
-        >
-          {toast.message}
-        </Alert>
-      </Snackbar>
     </Box>
   );
 };

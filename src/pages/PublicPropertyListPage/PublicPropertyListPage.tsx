@@ -8,7 +8,6 @@ import {
   SelectChangeEvent,
   Typography,
   FormControlLabel,
-  Switch,
   TextField,
   InputAdornment,
 } from "@mui/material";

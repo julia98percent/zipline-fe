@@ -16,10 +16,9 @@ import {
   MenuItem,
   TextField,
 } from "@mui/material";
-import { toast } from "react-toastify";
-import "react-toastify/dist/ReactToastify.css";
 import signUpImage from "@assets/sign-up.png";
 import { useState } from "react";
+import { showToast } from "@components/Toast/Toast";
 
 const isValidName = (name: string) => {
   return name.length >= 2 && name.length <= 20;
@@ -64,7 +63,10 @@ const SignUpPage = () => {
   const handleBlur = (field: string, value: string) => {
     if (field === "passwordCheck") {
       if (password !== value) {
-        toast.error("비밀번호가 일치하지 않습니다.");
+        showToast({
+          message: "비밀번호가 일치하지 않습니다.",
+          type: "error",
+        });
       }
     }
   };
@@ -92,31 +94,52 @@ const SignUpPage = () => {
 
   const handleClickSignUpButton = () => {
     if (!isValidName(name)) {
-      toast.error("이름을 올바르게 입력해주세요.");
+      showToast({
+        message: "이름을 올바르게 입력해주세요.",
+        type: "error",
+      });
       return;
     }
     if (!isValidUserId(userId)) {
-      toast.error("아이디를 올바르게 입력해주세요.");
+      showToast({
+        message: "아이디를 올바르게 입력해주세요.",
+        type: "error",
+      });
       return;
     }
     if (!isValidEmail(email)) {
-      toast.error("이메일을 올바르게 입력해주세요.");
+      showToast({
+        message: "이메일을 올바르게 입력해주세요.",
+        type: "error",
+      });
       return;
     }
     if (!isValidPassword(password)) {
-      toast.error("비밀번호를 올바르게 입력해주세요.");
+      showToast({
+        message: "비밀번호를 올바르게 입력해주세요.",
+        type: "error",
+      });
       return;
     }
     if (password !== passwordCheck) {
-      toast.error("비밀번호가 일치하지 않습니다.");
+      showToast({
+        message: "비밀번호가 일치하지 않습니다.",
+        type: "error",
+      });
       return;
     }
     if (!isValidPhoneNumber(phoneNumber)) {
-      toast.error("전화번호를 올바르게 입력해주세요.");
+      showToast({
+        message: "전화번호를 올바르게 입력해주세요.",
+        type: "error",
+      });
       return;
     }
     if (!questionAnswer) {
-      toast.error("비밀번호 찾기 답변을 입력해주세요.");
+      showToast({
+        message: "비밀번호 찾기 답변을 입력해주세요.",
+        type: "error",
+      });
       return;
     }
 
@@ -133,13 +156,19 @@ const SignUpPage = () => {
       })
       .then((res) => {
         if (res.status === 201) {
-          toast.success("회원가입에 성공했습니다.");
+          showToast({
+            message: "회원가입에 성공했습니다.",
+            type: "success",
+          });
           navigate("/sign-in");
         }
       })
       .catch((error) => {
         const msg = error.response?.data?.message;
-        toast.error(msg || "회원가입 중 오류가 발생했습니다.");
+        showToast({
+          message: msg || "회원가입 중 오류가 발생했습니다.",
+          type: "error",
+        });
       });
   };
 

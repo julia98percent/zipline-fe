@@ -290,7 +290,6 @@ function PropertyAddModal({
             disabled={!address}
             variant="outlined"
             fullWidth
-            sx={{ mt: 2 }}
           />
 
           <FormControlLabel

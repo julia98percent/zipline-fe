@@ -90,6 +90,25 @@ interface CustomerListResponse {
   };
 }
 
+interface Region {
+  cortarNo: number;
+  cortarName: string;
+  centerLat: number;
+  centerLon: number;
+  level: number;
+  parentCortarNo: number;
+}
+
+interface RegionState {
+  sido: Region[];
+  sigungu: Region[];
+  dong: Region[];
+  selectedSido: number | null;
+  selectedSigungu: number | null;
+  selectedDong: number | null;
+  [key: string]: Region[] | number | null;
+}
+
 interface CustomerSelectModalProps {
   open: boolean;
   onClose: () => void;
@@ -112,7 +131,14 @@ const CustomerSelectModal = ({
   const [totalCount, setTotalCount] = useState(0);
   const [loading, setLoading] = useState(false);
   const [search, setSearch] = useState("");
-  const [regionCode, setRegionCode] = useState("");
+  const [region, setRegion] = useState<RegionState>({
+    sido: [],
+    sigungu: [],
+    dong: [],
+    selectedSido: null,
+    selectedSigungu: null,
+    selectedDong: null,
+  });
   const [roleFilters, setRoleFilters] = useState({
     tenant: false,
     landlord: false,
@@ -146,6 +172,36 @@ const CustomerSelectModal = ({
     },
   };
 
+  // 필터 초기화 함수
+  const resetFilters = () => {
+    setSearch("");
+    setRegion({
+      sido: [],
+      sigungu: [],
+      dong: [],
+      selectedSido: null,
+      selectedSigungu: null,
+      selectedDong: null,
+    });
+    setRoleFilters({
+      tenant: false,
+      landlord: false,
+      buyer: false,
+      seller: false,
+      noRole: false,
+    });
+    setLabelUids([]);
+    setPage(0);
+    setSelectedTab(0);
+  };
+
+  // 모달이 닫힐 때 필터 초기화
+  useEffect(() => {
+    if (!open) {
+      resetFilters();
+    }
+  }, [open]);
+
   useEffect(() => {
     const fetchLabels = async () => {
       if (!open) return;
@@ -170,6 +226,82 @@ const CustomerSelectModal = ({
 
   useEffect(() => {
     if (!open) return;
+    const handleOpen = () => {
+      apiClient
+        .get("/region/0")
+        .then((res) => {
+          if (res.data?.data) {
+            setRegion((prev) => ({ ...prev, sido: res.data.data }));
+          }
+        })
+        .catch(console.error);
+    };
+    handleOpen();
+  }, [open]);
+
+  // 시/도 선택 시 군구 불러오기
+  useEffect(() => {
+    if (!region.selectedSido) return;
+    apiClient
+      .get(`/region/${region.selectedSido}`)
+      .then((res) => {
+        if (res.data?.data) {
+          setRegion((prev) => ({
+            ...prev,
+            sigungu: res.data.data,
+            selectedSigungu: null,
+            selectedDong: null,
+            dong: [],
+          }));
+        }
+      })
+      .catch(console.error);
+  }, [region.selectedSido]);
+
+  // 군구 선택 시 동 불러오기
+  useEffect(() => {
+    if (!region.selectedSigungu) return;
+    apiClient
+      .get(`/region/${region.selectedSigungu}`)
+      .then((res) => {
+        if (res.data?.data) {
+          setRegion((prev) => ({
+            ...prev,
+            dong: res.data.data,
+            selectedDong: null,
+          }));
+        }
+      })
+      .catch(console.error);
+  }, [region.selectedSigungu]);
+
+  const handleRegionChange =
+    (type: "sido" | "sigungu" | "dong") =>
+    (event: SelectChangeEvent<string>) => {
+      const selectedRegion = region[type].find(
+        (item) => item.cortarName === event.target.value
+      );
+      if (selectedRegion) {
+        setRegion((prev) => ({
+          ...prev,
+          [`selected${type.charAt(0).toUpperCase() + type.slice(1)}`]:
+            selectedRegion.cortarNo,
+          ...(type === "sido"
+            ? {
+                selectedSigungu: null,
+                selectedDong: null,
+                sigungu: [],
+                dong: [],
+              }
+            : type === "sigungu"
+            ? { selectedDong: null, dong: [] }
+            : {}),
+        }));
+      }
+    };
+
+  useEffect(() => {
+    if (!open) return;
     const fetchCustomers = async () => {
       setLoading(true);
       try {
@@ -177,7 +309,18 @@ const CustomerSelectModal = ({
         params.append("page", (page + 1).toString());
         params.append("size", rowsPerPage.toString());
         if (search) params.append("search", search);
+
+        // 지역 코드 처리
+        let regionCode: string | undefined;
+        if (region.selectedDong) {
+          regionCode = String(region.selectedDong);
+        } else if (region.selectedSigungu) {
+          regionCode = String(region.selectedSigungu).slice(0, 5);
+        } else if (region.selectedSido) {
+          regionCode = String(region.selectedSido).slice(0, 2);
+        }
         if (regionCode) params.append("regionCode", regionCode);
+
         Object.entries(roleFilters).forEach(([key, value]) => {
           if (value) params.append(key, "true");
         });
@@ -198,7 +341,17 @@ const CustomerSelectModal = ({
       }
     };
     fetchCustomers();
-  }, [open, page, rowsPerPage, search, regionCode, roleFilters, labelUids]);
+  }, [
+    open,
+    page,
+    rowsPerPage,
+    search,
+    region.selectedSido,
+    region.selectedSigungu,
+    region.selectedDong,
+    roleFilters,
+    labelUids,
+  ]);
 
   useEffect(() => {
     if (open) {
@@ -224,9 +377,8 @@ const CustomerSelectModal = ({
 
   const filteredCustomers = customers.filter((customer) => {
     const regionMatch =
-      regionCode === "전체" ||
-      !regionCode ||
-      customer.trafficSource === regionCode;
+      !region.selectedDong ||
+      customer.trafficSource === String(region.selectedDong);
     // 역할 필터: noRole은 별도 처리
     const roleKeys = ["tenant", "landlord", "buyer", "seller"] as const;
     const hasRoleFilter = roleKeys.some((key) => roleFilters[key]);
@@ -301,20 +453,70 @@ const CustomerSelectModal = ({
               sx={{ minWidth: 180 }}
             />
             {/* 지역 선택 */}
-            <Select
-              size="small"
-              value={regionCode}
-              onChange={(e) => setRegionCode(e.target.value)}
-              displayEmpty
-              sx={{ minWidth: 120 }}
-            >
-              <MenuItem value="">전체</MenuItem>
-              <MenuItem value="SEOUL">서울</MenuItem>
-              <MenuItem value="BUSAN">부산</MenuItem>
-              <MenuItem value="DAEJEON">대전</MenuItem>
-              <MenuItem value="GWANGJU">광주</MenuItem>
-              <MenuItem value="INCHEON">인천</MenuItem>
-            </Select>
+            <Box sx={{ display: "flex", gap: 2, alignItems: "center" }}>
+              <Typography
+                variant="body2"
+                sx={{ color: "#666666", minWidth: 60 }}
+              >
+                지역
+              </Typography>
+              <Box sx={{ display: "flex", gap: 1 }}>
+                {(["sido", "sigungu", "dong"] as const).map((type) => {
+                  const regions = region[type] as Region[];
+                  const selectedValue =
+                    region[
+                      `selected${type.charAt(0).toUpperCase() + type.slice(1)}`
+                    ];
+
+                  return (
+                    <FormControl key={type} size="small" sx={{ minWidth: 120 }}>
+                      <Select
+                        value={
+                          regions.find(
+                            (item) => item.cortarNo === selectedValue
+                          )?.cortarName || ""
+                        }
+                        onChange={handleRegionChange(type)}
+                        displayEmpty
+                        disabled={
+                          type !== "sido" &&
+                          !region[
+                            `selected${type === "dong" ? "Sigungu" : "Sido"}`
+                          ]
+                        }
+                        sx={{
+                          backgroundColor: "#fff",
+                          "& .MuiOutlinedInput-notchedOutline": {
+                            borderColor: "#E0E0E0",
+                          },
+                          "&:hover .MuiOutlinedInput-notchedOutline": {
+                            borderColor: "#164F9E",
+                          },
+                          "&.Mui-focused .MuiOutlinedInput-notchedOutline": {
+                            borderColor: "#164F9E",
+                          },
+                        }}
+                      >
+                        <MenuItem value="">
+                          <em>
+                            {type === "sido"
+                              ? "시/도"
+                              : type === "sigungu"
+                              ? "시/군/구"
+                              : "읍/면/동"}
+                          </em>
+                        </MenuItem>
+                        {regions.map((item) => (
+                          <MenuItem key={item.cortarNo} value={item.cortarName}>
+                            {item.cortarName}
+                          </MenuItem>
+                        ))}
+                      </Select>
+                    </FormControl>
+                  );
+                })}
+              </Box>
+            </Box>
             {/* 역할 필터 */}
             <Box sx={{ display: "flex", gap: 1, alignItems: "center" }}>
               <Typography

@@ -16,6 +16,7 @@ import { formatDate } from "@utils/dateUtil";
 import QRCode from "react-qr-code";
 import PageHeader from "@components/PageHeader/PageHeader";
 import { formatPhoneNumber } from "@utils/numberUtil";
+import { toast } from "react-toastify";
 
 function MyPage() {
   const { user } = useUserStore();
@@ -50,10 +51,10 @@ function MyPage() {
         url: newUrl,
       })
       .then(() => {
-        alert("수정되었습니다.");
+        toast.success("수정되었습니다.");
       })
       .catch((err) => {
-        alert("수정 실패: " + err.response?.data?.message);
+        toast.error("수정 실패: " + err.response?.data?.message);
       });
   };
 
@@ -261,9 +262,9 @@ function MyPage() {
                     navigator.clipboard.writeText(
                       `https://zip-line.kr/${user?.url}`
                     );
-                    alert("URL이 복사되었습니다.");
+                    toast("URL이 복사되었습니다.");
                   } else {
-                    alert("복사할 URL이 없습니다.");
+                    toast.error("복사할 URL이 없습니다.");
                   }
                 }}
                 sx={{ minWidth: "40px", height: "40px" }}

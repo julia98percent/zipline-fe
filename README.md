@@ -1,54 +1,83 @@
-# React + TypeScript + Vite
+<div align="center">
+<img src="https://github.com/user-attachments/assets/50dbf11f-ae88-4281-8267-5d63039c6148"  width="60%"/>
+</div>
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+# 🏁 Getting Started
 
-Currently, two official plugins are available:
+**ZIPLINE** 프로젝트를 로컬 환경에서 실행하기 위한 기본적인 가이드입니다.
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react/README.md) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+### 1️⃣ 환경 변수 설정 (.env 파일)
 
-## Expanding the ESLint configuration
+프로젝트 실행에 필요한 환경 변수 파일이 필요합니다.
+.env 파일은 보안상 Git에 포함되지 않아요! <br/>
+폭신폭신 팀에 `.env` 파일을 요청한 후, 프로젝트 루트 경로에 위치시켜 주세요.
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
+### 2️⃣ 패키지 설치
 
-```js
-export default tseslint.config({
-  extends: [
-    // Remove ...tseslint.configs.recommended and replace with this
-    ...tseslint.configs.recommendedTypeChecked,
-    // Alternatively, use this for stricter rules
-    ...tseslint.configs.strictTypeChecked,
-    // Optionally, add this for stylistic rules
-    ...tseslint.configs.stylisticTypeChecked,
-  ],
-  languageOptions: {
-    // other options...
-    parserOptions: {
-      project: ['./tsconfig.node.json', './tsconfig.app.json'],
-      tsconfigRootDir: import.meta.dirname,
-    },
-  },
-})
+아래 명령어를 실행하여 필요한 의존성을 설치합니다:
+
+```bash
+npm install
 ```
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+### 3️⃣ 개발 서버 실행
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
+개발 환경에서 프로젝트를 실행하려면 다음 명령어를 사용하세요:
 
-export default tseslint.config({
-  plugins: {
-    // Add the react-x and react-dom plugins
-    'react-x': reactX,
-    'react-dom': reactDom,
-  },
-  rules: {
-    // other rules...
-    // Enable its recommended typescript rules
-    ...reactX.configs['recommended-typescript'].rules,
-    ...reactDom.configs.recommended.rules,
-  },
-})
+```bash
+npm run dev
 ```
+
+### 4️⃣ 로컬 서버 접속
+
+정상적으로 실행되었다면, 브라우저에서 아래 주소로 접속해 프로젝트를 확인할 수 있어요!:
+
+```bash
+http://localhost:5173
+```
+
+## 🪾 브랜치 전략
+
+본 프로젝트는 다음과 같은 브랜치 전략을 따릅니다:
+
+- `main` : 실제 배포되는 안정적인 코드가 포함된 브랜치입니다.
+- `dev` : 개발 기능이 통합되는 브랜치입니다. `main`에 병합되기 전 테스트가 완료된 상태여야 합니다.
+- `feature/{issue-number}` : 새로운 기능 개발 시 사용하는 브랜치입니다. `dev`에서 분기하여 작업 후 다시 `dev`로 PR을 보냅니다.
+
+## 🚀 main 브랜치에 배포하는 방법
+
+아래는 `main` 브랜치로 배포를 준비하는 절차입니다:
+
+### 1️⃣ dev 브랜치로 이동합니다:
+
+```bash
+git checkout dev
+```
+
+### 2️⃣ 최신 커밋을 가져옵니다:
+
+```bash
+git pull origin dev
+```
+
+### 3️⃣ main 브랜치를 생성합니다:
+
+```bash
+git checkout -b main
+```
+
+| ❗ 이미 로컬에 `main` 브랜치가 있는 경우:
+
+```bash
+git branch -D main
+```
+
+| 실행 후 3️⃣번 다시 실행
+
+### 4️⃣ main 브랜치를 원격 저장소에 푸시합니다:
+
+```bash
+git push origin main
+```
+
+| ⚠️ 주의: `main` 브랜치에 푸시하기 전에 테스트가 완료되었는지, PR이나 리뷰 프로세스를 거쳤는지 반드시 확인해주세요.

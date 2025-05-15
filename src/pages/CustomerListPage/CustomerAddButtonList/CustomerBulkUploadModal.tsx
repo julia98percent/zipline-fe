@@ -12,7 +12,7 @@ import {
 } from "@mui/material";
 import { useDropzone } from "react-dropzone";
 import apiClient from "@apis/apiClient";
-import { toast } from "react-toastify";
+import { Link } from "react-router-dom";
 import { AxiosError } from "axios";
 import { showToast } from "@components/Toast/Toast";
 interface Props {
@@ -94,18 +94,167 @@ function CustomerBulkUploadModal({
     <Dialog open={open} onClose={handleClose} maxWidth="sm" fullWidth>
       <DialogTitle>고객 데이터 일괄 등록</DialogTitle>
       <DialogContent>
-        <Box sx={{ mb: 3 }}>
-          <Typography variant="subtitle2" color="text.secondary" gutterBottom>
-            엑셀 파일 업로드 정책
-          </Typography>
-          <Typography variant="body2" color="text.secondary" paragraph>
-            • 엑셀 파일(.xlsx, .xls)만 업로드 가능합니다.
-          </Typography>
-          <Typography variant="body2" color="text.secondary" paragraph>
-            • 파일 크기는 10MB 이하로 제한됩니다.
-          </Typography>
+        <Typography
+          variant="subtitle2"
+          sx={{
+            color: "#333333",
+            fontWeight: 600,
+            mb: 2,
+          }}
+        >
+          엑셀 파일 업로드 정책
+        </Typography>
+
+        <Box sx={{ display: "flex", flexDirection: "column", gap: 1.5, mb: 3 }}>
+          <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
+            <Typography variant="body2" color="text.secondary">
+              • 파일 형식:
+            </Typography>
+            <Typography
+              variant="body2"
+              sx={{ color: "#164F9E", fontWeight: 500 }}
+            >
+              .xlsx, .xls
+            </Typography>
+          </Box>
+
+          <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
+            <Typography variant="body2" color="text.secondary">
+              • 파일 크기:
+            </Typography>
+            <Typography
+              variant="body2"
+              sx={{ color: "#164F9E", fontWeight: 500 }}
+            >
+              10MB 이하
+            </Typography>
+          </Box>
+
           <Typography variant="body2" color="text.secondary">
             • 필수 입력 항목이 누락된 경우 업로드가 실패할 수 있습니다.
+          </Typography>
+        </Box>
+
+        <Box
+          sx={{
+            backgroundColor: "#F8F9FA",
+            p: 2,
+            borderRadius: 1,
+            border: "1px solid #E0E0E0",
+          }}
+        >
+          <Typography variant="body2" color="text.secondary" sx={{ mb: 1 }}>
+            엑셀의 열 순서가 변경되면 업로드가 실패할 수 있으니,{" "}
+            <Link
+              to={import.meta.env.VITE_PROPERTY_EXCEL_TEMPLATE_URL}
+              style={{
+                color: "#164F9E",
+                textDecoration: "none",
+                fontWeight: 500,
+              }}
+            >
+              제공되는 템플릿
+            </Link>
+            을 그대로 사용하는 것을 권장합니다.
+          </Typography>
+          <Typography variant="body2" sx={{ color: "#164F9E", mt: 1 }}>
+            <Link
+              to={import.meta.env.VITE_CUSTOMER_EXCEL_TEMPLATE_URL}
+              style={{
+                color: "#164F9E",
+                textDecoration: "none",
+                fontWeight: 500,
+              }}
+            >
+              → 템플릿 다운로드
+            </Link>
+          </Typography>
+        </Box>
+
+        <Box sx={{ mt: 3 }}>
+          <Typography
+            variant="body2"
+            sx={{ color: "#666666", mb: 2, fontWeight: 500 }}
+          >
+            • 지정된 입력 값 안내
+          </Typography>
+
+          <Box
+            sx={{ display: "flex", flexDirection: "column", gap: 1.5, pl: 2 }}
+          >
+            <Box>
+              <Typography
+                variant="body2"
+                sx={{ color: "#333333", fontWeight: 500, mb: 0.5 }}
+              >
+                고객 전화번호
+              </Typography>
+              <Typography variant="body2" color="text.secondary">
+                형식:{" "}
+                <Typography
+                  component="span"
+                  sx={{ color: "#164F9E", fontWeight: 500 }}
+                >
+                  000-0000-0000
+                </Typography>
+              </Typography>
+            </Box>
+
+            <Box>
+              <Typography
+                variant="body2"
+                sx={{ color: "#333333", fontWeight: 500, mb: 0.5 }}
+              >
+                생일
+              </Typography>
+              <Typography variant="body2" color="text.secondary">
+                형식:{" "}
+                <Typography
+                  component="span"
+                  sx={{ color: "#164F9E", fontWeight: 500 }}
+                >
+                  YYYYMMDD (숫자 8자리)
+                </Typography>
+              </Typography>
+            </Box>
+
+            <Box>
+              <Typography
+                variant="body2"
+                sx={{ color: "#333333", fontWeight: 500, mb: 0.5 }}
+              >
+                고객 역할 지정
+              </Typography>
+              <Typography variant="body2" color="text.secondary">
+                임대인, 매도인, 임차인, 매수인 항목에{" "}
+                <Typography
+                  component="span"
+                  sx={{ color: "#164F9E", fontWeight: 500 }}
+                >
+                  TRUE
+                </Typography>{" "}
+                또는{" "}
+                <Typography
+                  component="span"
+                  sx={{ color: "#164F9E", fontWeight: 500 }}
+                >
+                  FALSE
+                </Typography>
+                로 입력
+              </Typography>
+            </Box>
+          </Box>
+
+          <Typography
+            variant="body2"
+            color="error"
+            sx={{
+              my: 1,
+              fontSize: "12px",
+              borderRadius: 1,
+            }}
+          >
+            * 허용되지 않은 값이 입력될 경우, 업로드 과정에서 오류가 발생합니다.
           </Typography>
         </Box>
 

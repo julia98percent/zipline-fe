@@ -16,7 +16,7 @@ import { toast } from "react-toastify";
 import PageHeader from "@components/PageHeader/PageHeader";
 import apiClient from "@apis/apiClient";
 import useUserStore from "@stores/useUserStore";
-
+import { showToast } from "@components/Toast/Toast";
 interface Template {
   uid: number;
   name: string;
@@ -75,7 +75,10 @@ const MessageTemplatePage = () => {
 
   const handleCreateTemplate = async () => {
     if (!templateTitle || !templateContent || !selectedCategory) {
-      toast.error("모든 필드를 입력해주세요.");
+      showToast({
+        message: "모든 필드를 입력해주세요.",
+        type: "error",
+      });
       return;
     }
 
@@ -90,14 +93,19 @@ const MessageTemplatePage = () => {
       if (response.data.success) {
         fetchTemplates();
         handleAddNewTemplate(); // Reset form
-        toast.success("템플릿이 성공적으로 생성되었습니다.");
+        showToast({
+          message: "템플릿을 생성했습니다.",
+          type: "success",
+        });
       }
     } catch (error: unknown) {
       const err = error as { response?: { data?: { message?: string } } };
-      toast.error(
-        err?.response?.data?.message ||
-          "템플릿 생성 중 오류가 발생했습니다. 다시 시도해주세요."
-      );
+      showToast({
+        message:
+          err?.response?.data?.message ||
+          "템플릿 생성 중 오류가 발생했습니다. 다시 시도해주세요.",
+        type: "error",
+      });
     } finally {
       setIsLoading(false);
     }
@@ -110,7 +118,10 @@ const MessageTemplatePage = () => {
       !templateContent ||
       !selectedCategory
     ) {
-      toast.error("모든 필드를 입력해주세요.");
+      showToast({
+        message: "모든 필드를 입력해주세요.",
+        type: "error",
+      });
       return;
     }
 
@@ -127,11 +138,17 @@ const MessageTemplatePage = () => {
 
       if (response.data.success) {
         fetchTemplates();
-        toast.success("템플릿을 수정했습니다.");
+        showToast({
+          message: "템플릿을 수정했습니다.",
+          type: "success",
+        });
       }
     } catch (error) {
       console.error("Error updating template:", error);
-      toast.error("템플릿 수정 중 오류가 발생했습니다. 다시 시도해주세요.");
+      showToast({
+        message: "템플릿 수정 중 오류가 발생했습니다. 다시 시도해주세요.",
+        type: "error",
+      });
     } finally {
       setIsLoading(false);
     }

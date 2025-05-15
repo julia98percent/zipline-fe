@@ -27,7 +27,8 @@ function CustomerAddButtonList({ fetchCustomerData }: Props) {
           onClick={handleOpen}
           sx={{
             backgroundColor: "#164F9E",
-            "&:hover": { backgroundColor: "#0D3B7A" },
+            boxShadow: "none",
+            "&:hover": { backgroundColor: "#0D3B7A", boxShadow: "none" },
             height: "36px",
             fontSize: "13px",
             padding: "0 16px",

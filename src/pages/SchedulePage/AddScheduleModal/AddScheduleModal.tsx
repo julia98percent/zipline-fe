@@ -15,6 +15,7 @@ import {
   Checkbox,
   CircularProgress,
   Typography,
+  Autocomplete,
 } from "@mui/material";
 import { DatePicker } from "@mui/x-date-pickers/DatePicker";
 import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
@@ -94,24 +95,28 @@ function AddScheduleModal({ open, onClose, onSubmit }: AddScheduleModalProps) {
 
   useEffect(() => {
     const fetchCustomers = async () => {
-      if (open) {
-        setLoading(true);
-        try {
-          const response = await apiClient.get("/customers");
+      setLoading(true);
+      try {
+        const response = await apiClient.get("/customers", {
+          params: {
+            page: 1,
+            size: 100,
+            sort: "name,asc",
+          },
+        });
 
-          if (response?.data?.data?.customers) {
-            setCustomers(response.data.data.customers);
-          }
-        } catch (error) {
-          console.error("Failed to fetch customers:", error);
-        } finally {
-          setLoading(false);
+        if (response?.data?.data?.customers) {
+          setCustomers(response.data.data.customers);
         }
+      } catch (error) {
+        console.error("Failed to fetch customers:", error);
+      } finally {
+        setLoading(false);
       }
     };
 
     fetchCustomers();
-  }, [open]);
+  }, []);
 
   const handleFormChange = (
     field: keyof ScheduleFormData,
@@ -228,26 +233,36 @@ function AddScheduleModal({ open, onClose, onSubmit }: AddScheduleModalProps) {
       <DialogContent sx={{ p: 3, pt: "10px !important" }}>
         <Box sx={{ display: "flex", flexDirection: "column", gap: 1.5 }}>
           <Box sx={{ width: "100%" }}>
-            <FormControl fullWidth sx={inputStyle}>
-              <InputLabel>고객</InputLabel>
-              <Select
-                value={formData.customerId}
-                label="고객"
-                onChange={(e) => handleFormChange("customerId", e.target.value)}
-                disabled={loading}
-              >
-                {loading ? (
-                  <MenuItem disabled>
-                    <CircularProgress size={20} />
-                  </MenuItem>
-                ) : (
-                  customers.map((customer) => (
-                    <MenuItem key={customer.uid} value={customer.uid}>
-                      {`${customer.name}(${customer.uid})`}
-                    </MenuItem>
-                  ))
+            <FormControl fullWidth sx={{ mb: 2, ...inputStyle }}>
+              <Autocomplete
+                options={customers}
+                getOptionLabel={(option) => option.name}
+                value={
+                  customers.find((c) => c.uid === formData.customerId) || null
+                }
+                onChange={(_, newValue) => {
+                  handleFormChange("customerId", newValue?.uid || "");
+                }}
+                loading={loading}
+                renderInput={(params) => (
+                  <TextField
+                    {...params}
+                    label="고객"
+                    helperText={!formData.customerId ? errorMessage : ""}
+                    InputProps={{
+                      ...params.InputProps,
+                      endAdornment: (
+                        <>
+                          {loading ? (
+                            <CircularProgress color="inherit" size={20} />
+                          ) : null}
+                          {params.InputProps.endAdornment}
+                        </>
+                      ),
+                    }}
+                  />
                 )}
-              </Select>
+              />
             </FormControl>
           </Box>
           <Box sx={{ width: "100%" }}>
@@ -369,7 +384,7 @@ function AddScheduleModal({ open, onClose, onSubmit }: AddScheduleModalProps) {
             {errorMessage}
           </Typography>
         )}
-        <Button onClick={handleClose} sx={{ color: "#666666" }}>
+        <Button onClick={handleClose} sx={{ color: "#164F9E" }}>
           취소
         </Button>
         <Button
@@ -377,8 +392,10 @@ function AddScheduleModal({ open, onClose, onSubmit }: AddScheduleModalProps) {
           variant="contained"
           sx={{
             backgroundColor: "#164F9E",
+            boxShadow: "none",
             "&:hover": {
               backgroundColor: "#0D3B7A",
+              boxShadow: "none",
             },
           }}
         >

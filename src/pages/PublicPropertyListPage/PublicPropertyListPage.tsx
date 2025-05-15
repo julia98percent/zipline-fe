@@ -8,7 +8,6 @@ import {
   SelectChangeEvent,
   Typography,
   FormControlLabel,
-  Switch,
   TextField,
   InputAdornment,
 } from "@mui/material";
@@ -18,6 +17,7 @@ import PublicPropertyTable from "./PublicPropertyTable";
 import PageHeader from "@components/PageHeader/PageHeader";
 import useUserStore from "@stores/useUserStore";
 import SearchIcon from "@mui/icons-material/Search";
+import { IOSSwitch } from "@pages/PrivatePropertyListPage/PropertyTable/PropertyTable";
 
 export interface KakaoAddress {
   road_address?: {
@@ -526,56 +526,72 @@ function PublicPropertyListPage() {
           <Box
             sx={{
               display: "flex",
-              justifyContent: "space-between",
-              alignItems: "flex-start",
-            }}
-          >
-            <TextField
-              size="small"
-              placeholder="주소로 검색"
-              value={searchKeyword}
-              onChange={handleSearchChange}
-              InputProps={{
-                startAdornment: (
-                  <InputAdornment position="start">
-                    <SearchIcon />
-                  </InputAdornment>
-                ),
-              }}
-              sx={{ maxWidth: "920px" }}
-            />
-            <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
-              <Button
-                variant="outlined"
-                size="small"
-                onClick={handleSortReset}
-                sx={{ height: "32px" }}
-              >
-                정렬 초기화
-              </Button>
-              <Button
-                startIcon={<FilterListIcon />}
-                color={showFilterModal ? "primary" : "inherit"}
-                variant={showFilterModal ? "contained" : "outlined"}
-                onClick={() => setShowFilterModal(true)}
-                sx={{ height: "32px", ml: 1 }}
-              >
-                상세 필터
-              </Button>
-            </Box>
-          </Box>
-          {/* 두 번째 줄: 검색 결과 건수(오른쪽 끝) */}
-          <Box
-            sx={{
-              display: "flex",
-              justifyContent: "flex-end",
-              alignItems: "center",
-              mb: 1,
+              flexDirection: "column",
+              gap: 1,
             }}
           >
             <Typography variant="body2" color="text.secondary">
               공개 매물 검색 결과 : {filteredPropertyList.length}건
             </Typography>
+            <Box
+              sx={{
+                display: "flex",
+                justifyContent: "space-between",
+                alignItems: "center",
+              }}
+            >
+              <TextField
+                size="small"
+                placeholder="주소로 검색"
+                value={searchKeyword}
+                onChange={handleSearchChange}
+                InputProps={{
+                  startAdornment: (
+                    <InputAdornment position="start">
+                      <SearchIcon />
+                    </InputAdornment>
+                  ),
+                  sx: {
+                    borderRadius: "20px",
+                  },
+                }}
+                sx={{
+                  maxWidth: "920px",
+                  "& .MuiOutlinedInput-root": {
+                    borderRadius: "20px",
+                  },
+                }}
+              />
+              <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
+                <Button
+                  variant="outlined"
+                  size="small"
+                  onClick={handleSortReset}
+                  sx={{ height: "32px", fontSize: "14px" }}
+                >
+                  정렬 초기화
+                </Button>
+                <Button
+                  startIcon={<FilterListIcon />}
+                  color={showFilterModal ? "primary" : "inherit"}
+                  variant={showFilterModal ? "contained" : "outlined"}
+                  onClick={() => setShowFilterModal(true)}
+                  sx={{
+                    height: "32px",
+                    ml: 1,
+                    minWidth: "120px",
+                    border: "1px solid #164F9E",
+                    color: "#164F9E",
+                    "&:hover": {
+                      backgroundColor: "#F5F5F5",
+                      border: "1px solid #164F9E",
+                    },
+                  }}
+                >
+                  상세 필터
+                </Button>
+              </Box>
+            </Box>
           </Box>
         </Paper>
         {/* 단위/주소 스위치: 두 컨테이너 사이로 이동 */}
@@ -591,7 +607,7 @@ function PublicPropertyListPage() {
         >
           <FormControlLabel
             control={
-              <Switch
+              <IOSSwitch
                 checked={useMetric}
                 onChange={() => setUseMetric((prev) => !prev)}
                 color="primary"
@@ -599,11 +615,19 @@ function PublicPropertyListPage() {
               />
             }
             label={useMetric ? "제곱미터(m²)" : "평(py)"}
-            sx={{ "& .MuiFormControlLabel-label": { fontSize: "13px" } }}
+            sx={{
+              mb: "12px",
+              ml: "0px",
+              "& .MuiFormControlLabel-label": {
+                fontSize: "14px",
+                marginLeft: "4px",
+                fontWeight: 500,
+              },
+            }}
           />
           <FormControlLabel
             control={
-              <Switch
+              <IOSSwitch
                 checked={useRoadAddress}
                 onChange={() => setUseRoadAddress((prev) => !prev)}
                 color="primary"
@@ -611,7 +635,15 @@ function PublicPropertyListPage() {
               />
             }
             label={useRoadAddress ? "도로명 주소" : "지번 주소"}
-            sx={{ "& .MuiFormControlLabel-label": { fontSize: "13px" } }}
+            sx={{
+              mb: "12px",
+              ml: "0px",
+              "& .MuiFormControlLabel-label": {
+                fontSize: "14px",
+                marginLeft: "4px",
+                fontWeight: 500,
+              },
+            }}
           />
         </Box>
         {/* 매물 리스트 컨테이너 */}

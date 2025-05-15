@@ -14,6 +14,7 @@ import { useDropzone } from "react-dropzone";
 import apiClient from "@apis/apiClient";
 import { toast } from "react-toastify";
 import { AxiosError } from "axios";
+import { showToast } from "@components/Toast/Toast";
 
 interface Props {
   open: boolean;
@@ -64,7 +65,10 @@ function BulkUploadModal({ open, handleClose, fetchPropertyData }: Props) {
     try {
       setIsLoading(true);
       await apiClient.post("/properties/bulk", formData);
-      toast.success("매물 정보 업로드에 성공했습니다");
+      showToast({
+        message: "매물 정보를 업로드 했습니다.",
+        type: "success",
+      });
       handleClose();
       fetchPropertyData();
     } catch (error) {
@@ -74,7 +78,10 @@ function BulkUploadModal({ open, handleClose, fetchPropertyData }: Props) {
         axiosError.response?.data?.message ||
         "파일 업로드 중 오류가 발생했습니다.";
       setError(errorMessage);
-      toast.error(errorMessage);
+      showToast({
+        message: errorMessage,
+        type: "error",
+      });
     } finally {
       setIsLoading(false);
     }
@@ -131,7 +138,11 @@ function BulkUploadModal({ open, handleClose, fetchPropertyData }: Props) {
         )}
       </DialogContent>
       <DialogActions>
-        <Button onClick={handleClose} disabled={isLoading}>
+        <Button
+          onClick={handleClose}
+          disabled={isLoading}
+          sx={{ color: "#164F9E" }}
+        >
           취소
         </Button>
         <Button

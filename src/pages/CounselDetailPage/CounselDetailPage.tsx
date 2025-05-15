@@ -1,7 +1,6 @@
 import {
   Box,
   Typography,
-  Paper,
   CircularProgress,
   Button,
   Dialog,
@@ -32,6 +31,7 @@ import RemoveCircleOutlineIcon from "@mui/icons-material/RemoveCircleOutline";
 import { toast } from "react-toastify";
 import { AxiosError } from "axios";
 import styles from "./styles/CounselDetailPage.module.css";
+import { showToast } from "@components/Toast/Toast";
 
 const COUNSEL_TYPES = {
   PURCHASE: "매수",
@@ -147,7 +147,10 @@ function CounselDetailPage() {
         }
       } catch (error) {
         console.error("Failed to fetch counsel data:", error);
-        toast.error("상담 정보를 불러오는데 실패했습니다.");
+        showToast({
+          message: "상담 정보를 불러오는데 실패했습니다.",
+          type: "error",
+        });
       } finally {
         setIsLoading(false);
       }
@@ -188,7 +191,10 @@ function CounselDetailPage() {
       if (response.data.success) {
         setCounselData(editedData);
         setIsEditing(false);
-        toast.success("상담 내용을 수정했습니다.");
+        showToast({
+          message: "상담 내용을 수정했습니다.",
+          type: "success",
+        });
       }
     } catch (error) {
       console.error("Failed to update counsel:", error);
@@ -196,7 +202,10 @@ function CounselDetailPage() {
       const errorMessage =
         axiosError.response?.data?.message ||
         "상담 내용 수정 중 오류가 발생했습니다.";
-      toast.error(errorMessage);
+      showToast({
+        message: errorMessage,
+        type: "error",
+      });
     }
   };
 
@@ -234,7 +243,10 @@ function CounselDetailPage() {
     try {
       const response = await apiClient.delete(`/counsels/${counselUid}`);
       if (response.data.success) {
-        toast.success("상담이 성공적으로 삭제되었습니다.");
+        showToast({
+          message: "상담을 삭제했습니다.",
+          type: "success",
+        });
         navigate("/counsels", { replace: true });
       }
     } catch (error) {
@@ -243,7 +255,10 @@ function CounselDetailPage() {
       const errorMessage =
         axiosError.response?.data?.message ||
         "상담 삭제 중 오류가 발생했습니다.";
-      toast.error(errorMessage);
+      showToast({
+        message: errorMessage,
+        type: "error",
+      });
       setDeleteDialogOpen(false);
     }
   };
@@ -295,7 +310,14 @@ function CounselDetailPage() {
       <PageHeader title="상담 상세" userName={user?.name || "-"} />
 
       <Box className={styles.contentContainer}>
-        <div style={{ display: 'flex', justifyContent: 'flex-end', gap: 8, marginBottom: 16 }}>
+        <div
+          style={{
+            display: "flex",
+            justifyContent: "flex-end",
+            gap: 8,
+            marginBottom: 16,
+          }}
+        >
           {!isEditing ? (
             <>
               <Button
@@ -303,7 +325,7 @@ function CounselDetailPage() {
                 color="primary"
                 startIcon={<EditIcon />}
                 onClick={handleEdit}
-                sx={{ backgroundColor: 'white' }}
+                sx={{ backgroundColor: "white" }}
               >
                 수정
               </Button>
@@ -312,7 +334,7 @@ function CounselDetailPage() {
                 color="error"
                 startIcon={<DeleteOutlineIcon />}
                 onClick={handleDeleteClick}
-                sx={{ backgroundColor: 'white' }}
+                sx={{ backgroundColor: "white" }}
               >
                 삭제
               </Button>
@@ -324,7 +346,7 @@ function CounselDetailPage() {
                 color="inherit"
                 startIcon={<CloseIcon />}
                 onClick={handleCancelEdit}
-                sx={{ backgroundColor: 'white' }}
+                sx={{ backgroundColor: "white" }}
               >
                 취소
               </Button>
@@ -333,7 +355,7 @@ function CounselDetailPage() {
                 color="primary"
                 startIcon={<SaveIcon />}
                 onClick={handleSave}
-                sx={{ backgroundColor: 'white' }}
+                sx={{ backgroundColor: "white" }}
               >
                 저장
               </Button>
@@ -374,21 +396,27 @@ function CounselDetailPage() {
                   </Select>
                 </FormControl>
               ) : (
-                <Box sx={{ display: 'inline-block' }}>
+                <Box sx={{ display: "inline-block" }}>
                   <Chip
                     label={COUNSEL_TYPES[data.type]}
                     size="small"
                     sx={{
-                      backgroundColor: data.type === "PURCHASE" ? "#164F9E" :
-                                     data.type === "SALE" ? "#2E7D32" :
-                                     data.type === "LEASE" ? "#D4A72C" :
-                                     data.type === "RENT" ? "#7B1FA2" : "#666666",
+                      backgroundColor:
+                        data.type === "PURCHASE"
+                          ? "#164F9E"
+                          : data.type === "SALE"
+                          ? "#2E7D32"
+                          : data.type === "LEASE"
+                          ? "#D4A72C"
+                          : data.type === "RENT"
+                          ? "#7B1FA2"
+                          : "#666666",
                       color: "white",
                       height: "24px",
                       "& .MuiChip-label": {
                         px: 1,
-                        fontSize: "12px"
-                      }
+                        fontSize: "12px",
+                      },
                     }}
                   />
                 </Box>
@@ -400,7 +428,9 @@ function CounselDetailPage() {
                 <TextField
                   type="datetime-local"
                   value={dayjs(data.counselDate).format("YYYY-MM-DDTHH:mm")}
-                  onChange={(e) => handleInputChange("counselDate", e.target.value)}
+                  onChange={(e) =>
+                    handleInputChange("counselDate", e.target.value)
+                  }
                   fullWidth
                   size="small"
                 />
@@ -415,14 +445,18 @@ function CounselDetailPage() {
               {isEditing ? (
                 <TextField
                   type="date"
-                  value={data.dueDate ? dayjs(data.dueDate).format("YYYY-MM-DD") : ""}
+                  value={
+                    data.dueDate ? dayjs(data.dueDate).format("YYYY-MM-DD") : ""
+                  }
                   onChange={(e) => handleInputChange("dueDate", e.target.value)}
                   fullWidth
                   size="small"
                 />
               ) : (
                 <span className={styles.infoValue}>
-                  {data.dueDate ? dayjs(data.dueDate).format("YYYY-MM-DD") : "-"}
+                  {data.dueDate
+                    ? dayjs(data.dueDate).format("YYYY-MM-DD")
+                    : "-"}
                 </span>
               )}
             </div>
@@ -441,7 +475,7 @@ function CounselDetailPage() {
                   label="완료"
                 />
               ) : (
-                <Box sx={{ display: 'inline-block' }}>
+                <Box sx={{ display: "inline-block" }}>
                   <Chip
                     label={data.completed ? "완료" : "진행중"}
                     size="small"
@@ -451,8 +485,8 @@ function CounselDetailPage() {
                       height: "24px",
                       "& .MuiChip-label": {
                         px: 1,
-                        fontSize: "12px"
-                      }
+                        fontSize: "12px",
+                      },
                     }}
                   />
                 </Box>
@@ -475,44 +509,123 @@ function CounselDetailPage() {
             </div>
             <div className={styles.infoItem}>
               <span className={styles.infoLabel}>고객 유형</span>
-              <span className={styles.infoValue}>
-                {data.customer.tenant && '임차인'}
-                {data.customer.landlord && '임대인'}
-                {data.customer.buyer && '매수자'}
-                {data.customer.seller && '매도자'}
-                {!data.customer.tenant && !data.customer.landlord && !data.customer.buyer && !data.customer.seller && '-'}
-              </span>
+              <Box sx={{ display: "flex", gap: 1 }}>
+                {data.customer.tenant && (
+                  <Chip
+                    label="임차인"
+                    size="small"
+                    sx={{
+                      backgroundColor: "#FCE8D4",
+                      color: "#E67E00",
+                      height: "24px",
+                      "& .MuiChip-label": {
+                        px: 1,
+                        fontSize: "12px",
+                      },
+                    }}
+                  />
+                )}
+                {data.customer.landlord && (
+                  <Chip
+                    label="임대인"
+                    size="small"
+                    sx={{
+                      backgroundColor: "#FCDADA",
+                      color: "#D63939",
+                      height: "24px",
+                      "& .MuiChip-label": {
+                        px: 1,
+                        fontSize: "12px",
+                      },
+                    }}
+                  />
+                )}
+                {data.customer.buyer && (
+                  <Chip
+                    label="매수자"
+                    size="small"
+                    sx={{
+                      backgroundColor: "#D4EDDC",
+                      color: "#0E8A3E",
+                      height: "24px",
+                      "& .MuiChip-label": {
+                        px: 1,
+                        fontSize: "12px",
+                      },
+                    }}
+                  />
+                )}
+                {data.customer.seller && (
+                  <Chip
+                    label="매도자"
+                    size="small"
+                    sx={{
+                      backgroundColor: "#D6E6F9",
+                      color: "#1B64C2",
+                      height: "24px",
+                      "& .MuiChip-label": {
+                        px: 1,
+                        fontSize: "12px",
+                      },
+                    }}
+                  />
+                )}
+                {!data.customer.tenant &&
+                  !data.customer.landlord &&
+                  !data.customer.buyer &&
+                  !data.customer.seller && (
+                    <Chip
+                      label="없음"
+                      size="small"
+                      sx={{
+                        backgroundColor: "#F5F5F5",
+                        color: "#757575",
+                        height: "24px",
+                        "& .MuiChip-label": {
+                          px: 1,
+                          fontSize: "12px",
+                        },
+                      }}
+                    />
+                  )}
+              </Box>
             </div>
             <div className={styles.infoItem}>
               <span className={styles.infoLabel}>희망 지역</span>
               <span className={styles.infoValue}>
-                {data.customer.preferredRegion || '-'}
+                {data.customer.preferredRegion || "-"}
               </span>
             </div>
-            {data.customer.minPrice !== null && data.customer.maxPrice !== null && (
-              <div className={styles.infoItem}>
-                <span className={styles.infoLabel}>희망 매매가</span>
-                <span className={styles.infoValue}>
-                  {data.customer.minPrice.toLocaleString()} ~ {data.customer.maxPrice.toLocaleString()}원
-                </span>
-              </div>
-            )}
-            {data.customer.minDeposit !== null && data.customer.maxDeposit !== null && (
-              <div className={styles.infoItem}>
-                <span className={styles.infoLabel}>희망 보증금</span>
-                <span className={styles.infoValue}>
-                  {data.customer.minDeposit.toLocaleString()} ~ {data.customer.maxDeposit.toLocaleString()}원
-                </span>
-              </div>
-            )}
-            {data.customer.minRent !== null && data.customer.maxRent !== null && (
-              <div className={styles.infoItem}>
-                <span className={styles.infoLabel}>희망 월세</span>
-                <span className={styles.infoValue}>
-                  {data.customer.minRent.toLocaleString()} ~ {data.customer.maxRent.toLocaleString()}원
-                </span>
-              </div>
-            )}
+            {data.customer.minPrice !== null &&
+              data.customer.maxPrice !== null && (
+                <div className={styles.infoItem}>
+                  <span className={styles.infoLabel}>희망 매매가</span>
+                  <span className={styles.infoValue}>
+                    {data.customer.minPrice.toLocaleString()} ~{" "}
+                    {data.customer.maxPrice.toLocaleString()}원
+                  </span>
+                </div>
+              )}
+            {data.customer.minDeposit !== null &&
+              data.customer.maxDeposit !== null && (
+                <div className={styles.infoItem}>
+                  <span className={styles.infoLabel}>희망 보증금</span>
+                  <span className={styles.infoValue}>
+                    {data.customer.minDeposit.toLocaleString()} ~{" "}
+                    {data.customer.maxDeposit.toLocaleString()}원
+                  </span>
+                </div>
+              )}
+            {data.customer.minRent !== null &&
+              data.customer.maxRent !== null && (
+                <div className={styles.infoItem}>
+                  <span className={styles.infoLabel}>희망 월세</span>
+                  <span className={styles.infoValue}>
+                    {data.customer.minRent.toLocaleString()} ~{" "}
+                    {data.customer.maxRent.toLocaleString()}원
+                  </span>
+                </div>
+              )}
           </div>
         </div>
 
@@ -523,12 +636,16 @@ function CounselDetailPage() {
             <div className={styles.infoGrid}>
               <div className={styles.infoItem}>
                 <span className={styles.infoLabel}>주소</span>
-                <span className={styles.infoValue}>{data.property.address}</span>
+                <span className={styles.infoValue}>
+                  {data.property.address}
+                </span>
               </div>
               <div className={styles.infoItem}>
                 <span className={styles.infoLabel}>매물 유형</span>
                 <span className={styles.infoValue}>
-                  {PROPERTY_CATEGORIES[data.property.type as PropertyCategory] || data.property.type}
+                  {PROPERTY_CATEGORIES[
+                    data.property.type as PropertyCategory
+                  ] || data.property.type}
                 </span>
               </div>
               {data.property.price !== null && data.property.price !== 0 && (
@@ -539,22 +656,24 @@ function CounselDetailPage() {
                   </span>
                 </div>
               )}
-              {data.property.deposit !== null && data.property.deposit !== 0 && (
-                <div className={styles.infoItem}>
-                  <span className={styles.infoLabel}>보증금</span>
-                  <span className={styles.infoValue}>
-                    {data.property.deposit.toLocaleString()}원
-                  </span>
-                </div>
-              )}
-              {data.property.monthlyRent !== null && data.property.monthlyRent !== 0 && (
-                <div className={styles.infoItem}>
-                  <span className={styles.infoLabel}>월세</span>
-                  <span className={styles.infoValue}>
-                    {data.property.monthlyRent.toLocaleString()}원
-                  </span>
-                </div>
-              )}
+              {data.property.deposit !== null &&
+                data.property.deposit !== 0 && (
+                  <div className={styles.infoItem}>
+                    <span className={styles.infoLabel}>보증금</span>
+                    <span className={styles.infoValue}>
+                      {data.property.deposit.toLocaleString()}원
+                    </span>
+                  </div>
+                )}
+              {data.property.monthlyRent !== null &&
+                data.property.monthlyRent !== 0 && (
+                  <div className={styles.infoItem}>
+                    <span className={styles.infoLabel}>월세</span>
+                    <span className={styles.infoValue}>
+                      {data.property.monthlyRent.toLocaleString()}원
+                    </span>
+                  </div>
+                )}
               <div className={styles.infoItem}>
                 <span className={styles.infoLabel}>전용면적</span>
                 <span className={styles.infoValue}>
@@ -569,11 +688,17 @@ function CounselDetailPage() {
               </div>
               <div className={styles.infoItem}>
                 <span className={styles.infoLabel}>층수</span>
-                <span className={styles.infoValue}>{data.property.floor}층</span>
+                <span className={styles.infoValue}>
+                  {data.property.floor}층
+                </span>
               </div>
               <div className={styles.infoItem}>
                 <span className={styles.infoLabel}>준공년도</span>
-                <span className={styles.infoValue}>{data.property.constructionYear}년</span>
+                <span className={styles.infoValue}>
+                  {data.property.constructionYear
+                    ? `${data.property.constructionYear}년`
+                    : "-"}
+                </span>
               </div>
               <div className={styles.infoItem}>
                 <span className={styles.infoLabel}>특징</span>
@@ -582,7 +707,9 @@ function CounselDetailPage() {
                     <span className={styles.featureChip}>엘리베이터</span>
                   )}
                   {data.property.parkingCapacity > 0 && (
-                    <span className={styles.featureChip}>주차 {data.property.parkingCapacity}대</span>
+                    <span className={styles.featureChip}>
+                      주차 {data.property.parkingCapacity}대
+                    </span>
                   )}
                   {data.property.hasPet && (
                     <span className={styles.featureChip}>반려동물</span>
@@ -592,7 +719,9 @@ function CounselDetailPage() {
               {data.property.description && (
                 <div className={styles.infoItem}>
                   <span className={styles.infoLabel}>상세 설명</span>
-                  <span className={styles.infoValue}>{data.property.description}</span>
+                  <span className={styles.infoValue}>
+                    {data.property.description}
+                  </span>
                 </div>
               )}
             </div>
@@ -675,9 +804,7 @@ function CounselDetailPage() {
         <Dialog open={deleteDialogOpen} onClose={handleDeleteCancel}>
           <DialogTitle>상담 삭제</DialogTitle>
           <DialogContent>
-            <Typography>
-              정말로 상담을 삭제하시겠습니까?
-            </Typography>
+            <Typography>정말로 상담을 삭제하시겠습니까?</Typography>
           </DialogContent>
           <DialogActions>
             <Button onClick={handleDeleteCancel}>취소</Button>

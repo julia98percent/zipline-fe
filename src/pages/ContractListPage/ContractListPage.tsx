@@ -14,8 +14,8 @@ import AddIcon from "@mui/icons-material/Add";
 
 export interface ContractItem {
   uid: number;
-  lessorOrSellerName: string;
-  lesseeOrBuyerName: string | null;
+  lessorOrSellerNames: string[];
+  lesseeOrBuyerNames: string[];
   category: "SALE" | "DEPOSIT" | "MONTHLY" | null;
   contractDate: string | null;
   contractStartDate: string | null;
@@ -95,7 +95,7 @@ function ContractListPage() {
           period: selectedPeriod || "",
           status: selectedStatus,
           sort: selectedSort,
-          page: page+1,
+          page: page + 1,
           size: rowsPerPage,
         },
       })
@@ -113,7 +113,14 @@ function ContractListPage() {
         setLoading(false);
         setFilterModalOpen(false);
       });
-  }, [searchKeyword, selectedPeriod, selectedStatus, selectedSort, page, rowsPerPage]);
+  }, [
+    searchKeyword,
+    selectedPeriod,
+    selectedStatus,
+    selectedSort,
+    page,
+    rowsPerPage,
+  ]);
 
   useEffect(() => {
     fetchContractData();
@@ -138,7 +145,27 @@ function ContractListPage() {
               placeholder="정렬 기준"
               classNamePrefix="custom-select"
               menuShouldScrollIntoView={false}
-              styles={{ control: (base, state) => ({ ...base, width: 140, borderRadius: 14, border: state.isFocused ? "1.5px solid #1976d2" : "1.5px solid #ccc", fontSize: 13, minHeight: 36, paddingLeft: 8, boxShadow: "none", "&:hover": { borderColor: "#1976d2" } }), menu: (base) => ({ ...base, borderRadius: 8, zIndex: 9999, maxHeight: "none" }) }}
+              styles={{
+                control: (base, state) => ({
+                  ...base,
+                  width: 140,
+                  borderRadius: 14,
+                  border: state.isFocused
+                    ? "1.5px solid #1976d2"
+                    : "1.5px solid #ccc",
+                  fontSize: 13,
+                  minHeight: 36,
+                  paddingLeft: 8,
+                  boxShadow: "none",
+                  "&:hover": { borderColor: "#1976d2" },
+                }),
+                menu: (base) => ({
+                  ...base,
+                  borderRadius: 8,
+                  zIndex: 9999,
+                  maxHeight: "none",
+                }),
+              }}
             />
 
             <div className={styles.searchInputWrapper}>
@@ -158,19 +185,46 @@ function ContractListPage() {
             <div className={styles.filterGroup}>
               <Select
                 options={statusOptions}
-                value={statusOptions.find((opt) => opt.value === selectedStatus)}
-                onChange={(selected) => setSelectedStatus(selected?.value ?? "")}
+                value={statusOptions.find(
+                  (opt) => opt.value === selectedStatus
+                )}
+                onChange={(selected) =>
+                  setSelectedStatus(selected?.value ?? "")
+                }
                 placeholder="상태 선택"
                 classNamePrefix="custom-select"
                 menuShouldScrollIntoView={false}
-                styles={{ control: (base, state) => ({ ...base, borderRadius: 14, border: state.isFocused ? "1.5px solid #1976d2" : "1.5px solid #ccc", fontSize: 13, minHeight: 36, paddingLeft: 8, boxShadow: "none", "&:hover": { borderColor: "#1976d2" } }), menu: (base) => ({ ...base, borderRadius: 8, zIndex: 9999, maxHeight: "none" }) }}
+                styles={{
+                  control: (base, state) => ({
+                    ...base,
+                    borderRadius: 14,
+                    border: state.isFocused
+                      ? "1.5px solid #1976d2"
+                      : "1.5px solid #ccc",
+                    fontSize: 13,
+                    minHeight: 36,
+                    paddingLeft: 8,
+                    boxShadow: "none",
+                    "&:hover": { borderColor: "#1976d2" },
+                  }),
+                  menu: (base) => ({
+                    ...base,
+                    borderRadius: 8,
+                    zIndex: 9999,
+                    maxHeight: "none",
+                  }),
+                }}
               />
 
               <div className={styles.filterButtons}>
                 {Object.keys(periodMapping).map((label) => (
                   <button
                     key={label}
-                    className={periodMapping[label] === selectedPeriod ? `${styles.filterButton} ${styles.filterButtonActive}` : styles.filterButton}
+                    className={
+                      periodMapping[label] === selectedPeriod
+                        ? `${styles.filterButton} ${styles.filterButtonActive}`
+                        : styles.filterButton
+                    }
                     onClick={() => handlePeriodClick(label)}
                   >
                     {label}
@@ -185,7 +239,8 @@ function ContractListPage() {
               onClick={() => setIsAddModalOpen(true)}
               sx={{
                 backgroundColor: "#164F9E",
-                "&:hover": { backgroundColor: "#0D3B7A" },
+                boxShadow: "none",
+                "&:hover": { backgroundColor: "#0D3B7A", boxShadow: "none" },
                 height: "36px",
                 fontSize: "13px",
                 padding: "0 16px",
@@ -212,7 +267,10 @@ function ContractListPage() {
         <ContractFilterModal
           open={filterModalOpen}
           onClose={() => setFilterModalOpen(false)}
-          initialFilter={{ period: selectedPeriod || "", status: selectedStatus }}
+          initialFilter={{
+            period: selectedPeriod || "",
+            status: selectedStatus,
+          }}
           onApply={({ period, status }) => {
             setSelectedPeriod(period || null);
             setSelectedStatus(status);

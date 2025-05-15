@@ -6,9 +6,7 @@ import {
   MenuItem,
   TextField,
   Button as MuiButton,
-  Select,
-  Chip,
-  OutlinedInput,
+  Autocomplete,
 } from "@mui/material";
 import { Dayjs } from "dayjs";
 import { DesktopDatePicker } from "@mui/x-date-pickers";
@@ -16,7 +14,7 @@ import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import apiClient from "@apis/apiClient";
 import Button from "@components/Button";
-import { toast } from "react-toastify";
+import { showToast } from "@components/Toast/Toast";
 
 const CONTRACT_STATUS_OPTIONS = [
   { value: "LISTED", label: "매물 등록" },
@@ -190,7 +188,10 @@ const ContractAddModal = ({ open, handleClose, fetchContractData }: Props) => {
         headers: { "Content-Type": "multipart/form-data" },
       })
       .then(() => {
-        toast.success("계약 등록 성공!");
+        showToast({
+          message: "계약을 등록했습니다.",
+          type: "success",
+        });
         fetchContractData();
         handleModalClose();
       })
@@ -199,20 +200,32 @@ const ContractAddModal = ({ open, handleClose, fetchContractData }: Props) => {
         const message = err?.response?.data?.message;
 
         if (!message) {
-          toast.error("계약 등록에 실패했습니다.");
+          showToast({
+            message: "계약 등록에 실패했습니다.",
+            type: "error",
+          });
           return;
         }
 
         if (message.includes("이미 등록된 계약입니다")) {
-          toast.error("이미 등록된 계약입니다.");
+          showToast({
+            message: "이미 등록된 계약입니다.",
+            type: "error",
+          });
           return;
         }
 
         if (message.includes("해당 매물은 이미 계약 중입니다")) {
-          toast.error("해당 매물은 이미 진행 중인 계약이 있습니다.");
+          showToast({
+            message: "해당 매물은 이미 진행 중인 계약이 있습니다.",
+            type: "error",
+          });
           return;
         }
-        toast.error(message);
+        showToast({
+          message,
+          type: "error",
+        });
       });
   };
 
@@ -285,80 +298,48 @@ const ContractAddModal = ({ open, handleClose, fetchContractData }: Props) => {
           ))}
         </TextField>
 
-        <TextField
-          select
-          label="임대/매도자 선택 *"
-          value={lessorUids}
-          onChange={(e) =>
-            setLessorUids(
-              typeof e.target.value === "string"
-                ? e.target.value.split(",").map(Number)
-                : e.target.value
-            )
-          }
-          SelectProps={{
-            multiple: true,
-            displayEmpty: true,
-            renderValue: (selected) =>
-              selected.length === 0
-                ? undefined
-                : (selected as number[])
-                    .map((uid) => {
-                      const customer = customerOptions.find(
-                        (c) => c.uid === uid
-                      );
-                      return customer?.name || uid;
-                    })
-                    .join(", "),
+        <Autocomplete
+          multiple
+          options={customerOptions}
+          value={customerOptions.filter((customer) =>
+            lessorUids.includes(customer.uid)
+          )}
+          onChange={(_, newValue) => {
+            setLessorUids(newValue.map((option) => option.uid));
           }}
-          error={!!errors.lessorUids}
-          helperText={errors.lessorUids}
-          fullWidth
+          getOptionLabel={(option) => option.name}
+          renderInput={(params) => (
+            <TextField
+              {...params}
+              label="임대/매도자 선택 *"
+              error={!!errors.lessorUids}
+              helperText={errors.lessorUids}
+              fullWidth
+            />
+          )}
           sx={{ mb: 2 }}
-        >
-          {customerOptions.map((c) => (
-            <MenuItem key={c.uid} value={c.uid}>
-              {c.name}
-            </MenuItem>
-          ))}
-        </TextField>
-        <TextField
-          select
-          label="임차/매수자 선택"
-          value={lesseeUids ?? []}
-          onChange={(e) =>
-            setLesseeUids(
-              typeof e.target.value === "string"
-                ? e.target.value.split(",").map(Number)
-                : e.target.value
-            )
-          }
-          SelectProps={{
-            multiple: true,
-            displayEmpty: true,
-            renderValue: (selected) =>
-              selected.length === 0
-                ? undefined
-                : (selected as number[])
-                    .map((uid) => {
-                      const customer = customerOptions.find(
-                        (c) => c.uid === uid
-                      );
-                      return customer?.name || uid;
-                    })
-                    .join(", "),
+        />
+        <Autocomplete
+          multiple
+          options={customerOptions}
+          value={customerOptions.filter((customer) =>
+            lesseeUids.includes(customer.uid)
+          )}
+          onChange={(_, newValue) => {
+            setLesseeUids(newValue.map((option) => option.uid));
           }}
-          error={!!errors.lesseeUids}
-          helperText={errors.lesseeUids}
-          fullWidth
+          getOptionLabel={(option) => option.name}
+          renderInput={(params) => (
+            <TextField
+              {...params}
+              label="임차/매수자 선택"
+              error={!!errors.lesseeUids}
+              helperText={errors.lesseeUids}
+              fullWidth
+            />
+          )}
           sx={{ mb: 2 }}
-        >
-          {customerOptions.map((c) => (
-            <MenuItem key={c.uid} value={c.uid}>
-              {c.name}
-            </MenuItem>
-          ))}
-        </TextField>
+        />
 
         <TextField
           select

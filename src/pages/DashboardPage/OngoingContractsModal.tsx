@@ -159,22 +159,35 @@ const OngoingContractsModal = ({
           top: "50%",
           left: "50%",
           transform: "translate(-50%, -50%)",
-          width: "80%",
+          width: "100%",
           maxWidth: 1000,
-          bgcolor: "background.paper",
+          bgcolor: "#f5f5f5",
           boxShadow: 24,
           p: 4,
           borderRadius: 2,
           maxHeight: "80vh",
           overflow: "auto",
+          padding: "24px",
         }}
       >
-        <Typography variant="h6" component="h2" gutterBottom>
+        <Typography
+          variant="h6"
+          component="h2"
+          gutterBottom
+          sx={{ fontWeight: 700, marginBottom: "16px" }}
+        >
           진행중인 계약 목록
         </Typography>
 
-        <Box sx={{ width: "100%", mt: "28px" }}>
-          <Paper sx={{ width: "100%", overflow: "hidden" }}>
+        <Box sx={{ width: "100%" }}>
+          <Paper
+            sx={{
+              width: "100%",
+              overflow: "hidden",
+              borderRadius: "8px",
+              boxShadow: "0 2px 6px rgba(0, 0, 0, 0.02)",
+            }}
+          >
             <TableContainer>
               <Table sx={{ minWidth: 650 }}>
                 <TableHead>

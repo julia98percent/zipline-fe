@@ -44,6 +44,7 @@ const RecentCustomersModal = ({
       PaperProps={{
         sx: {
           borderRadius: "12px",
+          backgroundColor: "#f5f5f5",
         },
       }}
     >
@@ -53,7 +54,15 @@ const RecentCustomersModal = ({
         </Typography>
       </DialogTitle>
       <DialogContent sx={{ pt: "16px !important" }}>
-        <TableContainer sx={{ maxHeight: 480, overflow: "auto" }}>
+        <TableContainer
+          sx={{
+            maxHeight: 480,
+            overflow: "auto",
+            backgroundColor: "white",
+            borderRadius: "8px",
+            boxShadow: "0 2px 6px rgba(0, 0, 0, 0.02)",
+          }}
+        >
           <Table stickyHeader>
             <TableHead>
               <TableRow>
@@ -100,8 +109,10 @@ const RecentCustomersModal = ({
           variant="contained"
           sx={{
             backgroundColor: "#164F9E",
+            boxShadow: "none",
             "&:hover": {
               backgroundColor: "#0D3B7A",
+              boxShadow: "none",
             },
           }}
         >

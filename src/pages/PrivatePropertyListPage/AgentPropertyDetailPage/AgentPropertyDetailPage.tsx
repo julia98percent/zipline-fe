@@ -22,6 +22,7 @@ import useUserStore from "@stores/useUserStore";
 import PropertyEditModal from "../PropertyAddButtonList/PropertyEditModal/PropertyEditModal";
 import EditIcon from "@mui/icons-material/Edit";
 import DeleteIcon from "@mui/icons-material/Delete";
+import { showToast } from "@components/Toast/Toast";
 
 interface AgentPropertyDetail {
   customer: string;
@@ -201,7 +202,10 @@ const KakaoMap = ({ lat, lng }: { lat: number; lng: number }) => {
       if (!mapRef.current) return;
       const kakao = (window as any).kakao;
       if (!kakao || !kakao.maps) {
-        toast.error("카카오맵 객체가 없습니다.");
+        showToast({
+          message: "카카오맵 객체가 없습니다.",
+          type: "error",
+        });
         return;
       }
       const map = new kakao.maps.Map(mapRef.current, {
@@ -224,7 +228,10 @@ const KakaoMap = ({ lat, lng }: { lat: number; lng: number }) => {
         (window as any).kakao.maps.load(createMap);
       };
       script.onerror = () => {
-        toast.error("카카오맵 스크립트 로드 실패");
+        showToast({
+          message: "카카오맵 스크립트 로드 실패",
+          type: "error",
+        });
       };
       document.head.appendChild(script);
     } else {
@@ -258,7 +265,10 @@ const AgentPropertyDetailPage = () => {
         setProperty(propertyRes.data.data);
       } catch (err) {
         console.error(err);
-        toast.error("매물 정보를 불러오는 데 실패했습니다.");
+        showToast({
+          message: "매물 정보를 불러오는 데 실패했습니다.",
+          type: "error",
+        });
       }
 
       try {
@@ -285,7 +295,10 @@ const AgentPropertyDetailPage = () => {
         setContractHistories(res.data.data);
       } catch (err) {
         console.error("계약 히스토리 불러오기 실패", err);
-        toast.error("계약 히스토리를 불러오는 데 실패했습니다.");
+        showToast({
+          message: "계약 히스토리를 불러오는 데 실패했습니다.",
+          type: "error",
+        });
       }
     };
 
@@ -318,12 +331,18 @@ const AgentPropertyDetailPage = () => {
     apiClient
       .delete(`/properties/${propertyUid}`)
       .then(() => {
-        toast.success("매물 삭제 성공");
+        showToast({
+          message: "매물을 삭제했습니다.",
+          type: "success",
+        });
         navigate("/properties/private");
       })
       .catch((err) => {
         console.error("매물 삭제 실패", err);
-        toast.error("매물 삭제 중 오류가 발생했습니다.");
+        showToast({
+          message: "매물 삭제 중 오류가 발생했습니다.",
+          type: "error",
+        });
       })
       .finally(() => {
         setDeleteModalOpen(false);
@@ -405,7 +424,10 @@ const AgentPropertyDetailPage = () => {
                 .then((res) => setProperty(res.data.data))
                 .catch((err) => {
                   console.error(err);
-                  toast.error("매물 정보를 불러오는 데 실패했습니다.");
+                  showToast({
+                    message: "매물 정보를 불러오는 데 실패했습니다.",
+                    type: "error",
+                  });
                 });
             }}
           />
@@ -414,6 +436,7 @@ const AgentPropertyDetailPage = () => {
           open={deleteModalOpen}
           onConfirm={confirmDelete}
           onCancel={() => setDeleteModalOpen(false)}
+          category="매물"
         />
         <DetailHeader>
           <HeaderTitle>
@@ -636,85 +659,90 @@ const AgentPropertyDetailPage = () => {
               계약 정보
             </Typography>
 
-            <Box display="flex" flexWrap="wrap" columnGap={2} rowGap={1}>
-              {/* 계약 시작일 */}
-              <Box width="calc(50% - 8px)">
-                <InfoItem>
-                  <InfoLabel>계약 시작일</InfoLabel>
-                  <InfoValue>
-                    {contractInfo?.contractStartDate
-                      ? dayjs(contractInfo.contractStartDate).format(
-                          "YYYY.MM.DD"
-                        )
-                      : "-"}
-                  </InfoValue>
-                </InfoItem>
+            {!contractInfo || contractInfo?.contractUid === null ? (
+              <Box
+                sx={{
+                  display: "flex",
+                  justifyContent: "center",
+                  alignItems: "center",
+                  minHeight: "200px",
+                }}
+              >
+                <Typography color="text.secondary">첨부 문서 없음</Typography>
               </Box>
+            ) : (
+              <Box display="flex" flexWrap="wrap" columnGap={2} rowGap={1}>
+                {/* 계약 시작일 */}
+                <Box width="calc(50% - 8px)">
+                  <InfoItem>
+                    <InfoLabel>계약 시작일</InfoLabel>
+                    <InfoValue>
+                      {contractInfo.contractStartDate
+                        ? dayjs(contractInfo.contractStartDate).format(
+                            "YYYY.MM.DD"
+                          )
+                        : "-"}
+                    </InfoValue>
+                  </InfoItem>
+                </Box>
 
-              {/* 계약 종료일 */}
-              <Box width="calc(50% - 8px)">
-                <InfoItem>
-                  <InfoLabel>계약 종료일</InfoLabel>
-                  <InfoValue>
-                    {contractInfo?.contractEndDate
-                      ? dayjs(contractInfo.contractEndDate).format("YYYY.MM.DD")
-                      : "-"}
-                  </InfoValue>
-                </InfoItem>
-              </Box>
+                {/* 계약 종료일 */}
+                <Box width="calc(50% - 8px)">
+                  <InfoItem>
+                    <InfoLabel>계약 종료일</InfoLabel>
+                    <InfoValue>
+                      {contractInfo.contractEndDate
+                        ? dayjs(contractInfo.contractEndDate).format(
+                            "YYYY.MM.DD"
+                          )
+                        : "-"}
+                    </InfoValue>
+                  </InfoItem>
+                </Box>
 
-              {/* 계약일 */}
-              <Box width="calc(50% - 8px)">
-                <InfoItem>
-                  <InfoLabel>계약일</InfoLabel>
-                  <InfoValue>
-                    {contractInfo?.contractDate
-                      ? dayjs(contractInfo.contractDate).format("YYYY.MM.DD")
-                      : "-"}
-                  </InfoValue>
-                </InfoItem>
-              </Box>
+                {/* 계약일 */}
+                <Box width="calc(50% - 8px)">
+                  <InfoItem>
+                    <InfoLabel>계약일</InfoLabel>
+                    <InfoValue>
+                      {contractInfo.contractDate
+                        ? dayjs(contractInfo.contractDate).format("YYYY.MM.DD")
+                        : "-"}
+                    </InfoValue>
+                  </InfoItem>
+                </Box>
 
-              {/* 임대인/매도인 */}
-              <Box width="calc(50% - 8px)">
-                <InfoItem>
-                  <InfoLabel>임대인/매도인</InfoLabel>
-                  <InfoValue>
-                    {contractInfo
-                      ? getCustomerNames(
-                          contractInfo.customers,
-                          "LESSOR_OR_SELLER"
-                        )
-                      : "-"}
-                  </InfoValue>
-                </InfoItem>
-              </Box>
+                {/* 임대인/매도인 */}
+                <Box width="calc(50% - 8px)">
+                  <InfoItem>
+                    <InfoLabel>임대인/매도인</InfoLabel>
+                    <InfoValue>
+                      {getCustomerNames(
+                        contractInfo.customers,
+                        "LESSOR_OR_SELLER"
+                      )}
+                    </InfoValue>
+                  </InfoItem>
+                </Box>
 
-              {/* 임차인/매수인 */}
-              <Box width="calc(50% - 8px)">
-                <InfoItem>
-                  <InfoLabel>임차인/매수인</InfoLabel>
-                  <InfoValue>
-                    {contractInfo
-                      ? getCustomerNames(
-                          contractInfo.customers,
-                          "LESSEE_OR_BUYER"
-                        )
-                      : "-"}
-                  </InfoValue>
-                </InfoItem>
+                {/* 임차인/매수인 */}
+                <Box width="calc(50% - 8px)">
+                  <InfoItem>
+                    <InfoLabel>임차인/매수인</InfoLabel>
+                    <InfoValue>
+                      {getCustomerNames(
+                        contractInfo.customers,
+                        "LESSEE_OR_BUYER"
+                      )}
+                    </InfoValue>
+                  </InfoItem>
+                </Box>
               </Box>
-            </Box>
+            )}
           </InfoCard>
         </InfoGrid>
 
-        <Box
-          display="flex"
-          gap={3}
-          mt={3}
-          alignItems="stretch"
-          sx={{ height: "fit-content", alignItems: "stretch" }}
-        >
+        <Box display="flex" gap={3} mt={3} sx={{ height: "fit-content" }}>
           {property.details && (
             <InfoCard
               sx={{
@@ -722,6 +750,7 @@ const AgentPropertyDetailPage = () => {
                 display: "flex",
                 flexDirection: "column",
                 height: "100%",
+                minHeight: "230px",
               }}
             >
               <Typography variant="h6" fontWeight="bold" gutterBottom>
@@ -740,6 +769,7 @@ const AgentPropertyDetailPage = () => {
               display: "flex",
               flexDirection: "column",
               height: "100%",
+              minHeight: "230px",
             }}
           >
             <Tabs value={tab} onChange={(_, v) => setTab(v)} sx={{ mb: 2 }}>
@@ -773,7 +803,7 @@ const AgentPropertyDetailPage = () => {
                 </Box>
                 {contractHistories.length === 0 ? (
                   <Typography color="text.secondary" align="center">
-                    히스토리 없음
+                    매물과 관련된 계약 히스토리가 없습니다.
                   </Typography>
                 ) : (
                   contractHistories.map((history, idx) => {
@@ -839,7 +869,7 @@ const AgentPropertyDetailPage = () => {
                 </Box>
                 {counselHistories.length === 0 ? (
                   <Typography color="text.secondary" align="center">
-                    히스토리 없음
+                    매물과 관련된 상담 히스토리가 없습니다.
                   </Typography>
                 ) : (
                   counselHistories.map((counsel) => (

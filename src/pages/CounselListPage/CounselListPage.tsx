@@ -12,6 +12,9 @@ import {
   CircularProgress,
   Button,
 } from "@mui/material";
+import { DatePicker } from "@mui/x-date-pickers/DatePicker";
+import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
+import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import PageHeader from "@components/PageHeader/PageHeader";
 import useUserStore from "@stores/useUserStore";
 import { useEffect, useState } from "react";
@@ -59,7 +62,9 @@ function CounselListPage() {
   const [startDate, setStartDate] = useState<string | null>(null);
   const [endDate, setEndDate] = useState<string | null>(null);
   const [selectedType, setSelectedType] = useState<string | null>(null);
-  const [selectedCompleted, setSelectedCompleted] = useState<boolean | null>(null);
+  const [selectedCompleted, setSelectedCompleted] = useState<boolean | null>(
+    null
+  );
 
   const COUNSEL_TYPES = [
     { value: "PURCHASE", label: "매수" },
@@ -159,19 +164,92 @@ function CounselListPage() {
           </div>
 
           <div className={styles.dateFilterRow}>
-            <input
-              type="date"
-              className={styles.dateInput}
-              value={startDate ?? ""}
-              onChange={(e) => setStartDate(e.target.value)}
-            />
-            <span>~</span>
-            <input
-              type="date"
-              className={styles.dateInput}
-              value={endDate ?? ""}
-              onChange={(e) => setEndDate(e.target.value)}
-            />
+            <LocalizationProvider dateAdapter={AdapterDayjs}>
+              <Box
+                sx={{
+                  display: "flex",
+                  flexDirection: "row",
+                  alignItems: "center",
+                  gap: 1,
+                }}
+              >
+                <Typography
+                  variant="subtitle2"
+                  sx={{
+                    color: "#333333",
+                    fontWeight: 500,
+                    mr: 1,
+                  }}
+                >
+                  상담일
+                </Typography>
+                <Box sx={{ display: "flex", alignItems: "center" }}>
+                  <DatePicker
+                    value={startDate ? dayjs(startDate) : null}
+                    onChange={(newValue) => {
+                      setStartDate(
+                        newValue ? newValue.format("YYYY-MM-DD") : null
+                      );
+                    }}
+                    format="YYYY/MM/DD"
+                    slotProps={{
+                      textField: {
+                        size: "small",
+                        sx: {
+                          backgroundColor: "white",
+                          width: "170px",
+                          "& .MuiOutlinedInput-root": {
+                            "& fieldset": {
+                              borderColor: "#E0E0E0",
+                              borderRadius: "20px",
+                            },
+                            "&:hover fieldset": {
+                              borderColor: "#164F9E",
+                            },
+                            "&.Mui-focused fieldset": {
+                              borderColor: "#164F9E",
+                            },
+                          },
+                        },
+                      },
+                    }}
+                  />
+                  <Box component="span" sx={{ mx: 1 }}>
+                    ~
+                  </Box>
+                  <DatePicker
+                    value={endDate ? dayjs(endDate) : null}
+                    onChange={(newValue) => {
+                      setEndDate(
+                        newValue ? newValue.format("YYYY-MM-DD") : null
+                      );
+                    }}
+                    format="YYYY/MM/DD"
+                    slotProps={{
+                      textField: {
+                        size: "small",
+                        sx: {
+                          backgroundColor: "white",
+                          width: "170px",
+                          "& .MuiOutlinedInput-root": {
+                            "& fieldset": {
+                              borderColor: "#E0E0E0",
+                              borderRadius: "20px",
+                            },
+                            "&:hover fieldset": {
+                              borderColor: "#164F9E",
+                            },
+                            "&.Mui-focused fieldset": {
+                              borderColor: "#164F9E",
+                            },
+                          },
+                        },
+                      },
+                    }}
+                  />
+                </Box>
+              </Box>
+            </LocalizationProvider>
           </div>
 
           <div className={styles.filterButtons}>
@@ -226,7 +304,8 @@ function CounselListPage() {
               onClick={() => setIsModalOpen(true)}
               sx={{
                 backgroundColor: "#164F9E",
-                "&:hover": { backgroundColor: "#0D3B7A" },
+                boxShadow: "none",
+                "&:hover": { backgroundColor: "#0D3B7A", boxShadow: "none" },
                 height: "36px",
                 fontSize: "13px",
                 padding: "0 16px",
@@ -291,15 +370,23 @@ function CounselListPage() {
                         <Typography
                           variant="body2"
                           sx={{
-                            color: (!counsel.dueDate || counsel.completed) ? "#219653" : "#F2994A",
-                            backgroundColor: (!counsel.dueDate || counsel.completed) ? "#E9F7EF" : "#FEF5EB",
+                            color:
+                              !counsel.dueDate || counsel.completed
+                                ? "#219653"
+                                : "#F2994A",
+                            backgroundColor:
+                              !counsel.dueDate || counsel.completed
+                                ? "#E9F7EF"
+                                : "#FEF5EB",
                             py: 0.5,
                             px: 1,
                             borderRadius: 1,
                             display: "inline-block",
                           }}
                         >
-                          {(!counsel.dueDate || counsel.completed) ? "의뢰 마감" : "의뢰 진행중"}
+                          {!counsel.dueDate || counsel.completed
+                            ? "의뢰 마감"
+                            : "의뢰 진행중"}
                         </Typography>
                       </TableCell>
                     </TableRow>

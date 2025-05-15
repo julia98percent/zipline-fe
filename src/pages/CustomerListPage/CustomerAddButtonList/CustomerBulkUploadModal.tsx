@@ -14,7 +14,7 @@ import { useDropzone } from "react-dropzone";
 import apiClient from "@apis/apiClient";
 import { toast } from "react-toastify";
 import { AxiosError } from "axios";
-
+import { showToast } from "@components/Toast/Toast";
 interface Props {
   open: boolean;
   handleClose: () => void;
@@ -68,7 +68,10 @@ function CustomerBulkUploadModal({
     try {
       setIsLoading(true);
       await apiClient.post("/customers/bulk", formData);
-      toast.success("고객 정보 업로드에 성공했습니다");
+      showToast({
+        message: "고객 정보를 업데이트 했습니다.",
+        type: "success",
+      });
       handleClose();
       fetchCustomerData();
     } catch (error) {
@@ -78,7 +81,10 @@ function CustomerBulkUploadModal({
         axiosError.response?.data?.message ||
         "파일 업로드 중 오류가 발생했습니다.";
       setError(errorMessage);
-      toast.error(errorMessage);
+      showToast({
+        message: errorMessage,
+        type: "error",
+      });
     } finally {
       setIsLoading(false);
     }

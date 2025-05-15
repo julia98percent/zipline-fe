@@ -143,10 +143,12 @@ const MessageTemplatePage = () => {
           type: "success",
         });
       }
-    } catch (error) {
-      console.error("Error updating template:", error);
+    } catch (e) {
+      console.error("Error updating template:", e);
       showToast({
-        message: "템플릿 수정 중 오류가 발생했습니다. 다시 시도해주세요.",
+        message:
+          e?.response?.data?.message ||
+          "템플릿 수정 중 오류가 발생했습니다. 다시 시도해주세요.",
         type: "error",
       });
     } finally {

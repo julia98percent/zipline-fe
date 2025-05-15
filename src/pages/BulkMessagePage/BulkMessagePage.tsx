@@ -220,7 +220,7 @@ const CustomerSelectModal = ({
     onConfirm(selectedCustomers);
     onClose();
   };
-  console.log(customers);
+
   const filteredCustomers = customers.filter((customer) => {
     const regionMatch =
       regionCode === "전체" ||
@@ -451,10 +451,21 @@ const CustomerSelectModal = ({
                 sx={{
                   borderRadius: 1,
                   mb: 1,
-                  backgroundColor: "#F8F9FA",
+                  backgroundColor: selectedCustomers.some(
+                    (c) => c.uid === customer.uid
+                  )
+                    ? "#F6F8FF"
+                    : "#F8F9FA",
                   cursor: "pointer",
+                  border: selectedCustomers.some((c) => c.uid === customer.uid)
+                    ? "1px solid #164F9E"
+                    : "1px solid transparent",
                   "&:hover": {
-                    backgroundColor: "#E0E0E0",
+                    backgroundColor: selectedCustomers.some(
+                      (c) => c.uid === customer.uid
+                    )
+                      ? "#EBF2FC"
+                      : "#E0E0E0",
                   },
                 }}
                 onClick={() => handleCustomerSelect(customer)}
@@ -514,7 +525,7 @@ const CustomerSelectModal = ({
                     }}
                   >
                     {selectedCustomers.some((c) => c.uid === customer.uid) ? (
-                      <CloseIcon />
+                      <CloseIcon sx={{ color: "#164F9E" }} />
                     ) : (
                       <AddIcon />
                     )}

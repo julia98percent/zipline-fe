@@ -10,6 +10,7 @@ import {
   Paper,
   Divider,
   Link,
+  ListItem,
 } from "@mui/material";
 import { formatDate } from "@utils/dateUtil";
 
@@ -40,6 +41,8 @@ interface SurveyDetailModalProps {
   onClose: () => void;
   surveyDetail: SurveyDetail | null;
   isLoading: boolean;
+  selectedCustomers: { uid: number }[];
+  handleCustomerSelect: (customer: { uid: number }) => void;
 }
 
 const SurveyDetailModal = ({
@@ -47,6 +50,8 @@ const SurveyDetailModal = ({
   onClose,
   surveyDetail,
   isLoading,
+  selectedCustomers,
+  handleCustomerSelect,
 }: SurveyDetailModalProps) => {
   console.log(surveyDetail);
   return (

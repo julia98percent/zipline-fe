@@ -196,13 +196,14 @@ const RecentContractsModal = ({
                             DEPOSIT: "#2196f3",
                             MONTHLY: "#ff9800",
                           };
-                          if (!contract.category) return "-";
+                          if (
+                            !contract.category ||
+                            !categoryKoreanMap[contract.category]
+                          )
+                            return "-";
                           return (
                             <Chip
-                              label={
-                                categoryKoreanMap[contract.category] ??
-                                contract.category
-                              }
+                              label={categoryKoreanMap[contract.category]}
                               variant="outlined"
                               sx={{
                                 color: colorMap[contract.category],

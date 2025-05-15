@@ -9,6 +9,7 @@ import {
   CircularProgress,
   Paper,
   Divider,
+  Link,
 } from "@mui/material";
 import { formatDate } from "@utils/dateUtil";
 
@@ -18,6 +19,7 @@ interface SurveyAnswer {
   description: string;
   questionType: string;
   answer: string;
+  fileName?: string;
   choices: {
     choiceUid: number;
     choiceText: string;
@@ -46,6 +48,7 @@ const SurveyDetailModal = ({
   surveyDetail,
   isLoading,
 }: SurveyDetailModalProps) => {
+  console.log(surveyDetail);
   return (
     <Dialog
       open={open}
@@ -153,18 +156,37 @@ const SurveyDetailModal = ({
                       <Typography variant="body2">
                         {item.questionType === "SINGLE_CHOICE"
                           ? item.choices.find(
-                              (choice) => choice.choiceUid === Number(item.answer)
+                              (choice) =>
+                                choice.choiceUid === Number(item.answer)
                             )?.choiceText || item.answer
                           : item.questionType === "MULTIPLE_CHOICE"
                           ? item.answer
                               .split(",")
-                              .map((uid) =>
-                                item.choices.find(
-                                  (choice) => choice.choiceUid === Number(uid)
-                                )?.choiceText
+                              .map(
+                                (uid) =>
+                                  item.choices.find(
+                                    (choice) => choice.choiceUid === Number(uid)
+                                  )?.choiceText
                               )
                               .filter(Boolean)
                               .join(", ")
+                          : item.questionType === "FILE_UPLOAD"
+                          ? item.answer && (
+                              <Link
+                                href={item.answer}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                sx={{
+                                  color: "#164F9E",
+                                  textDecoration: "none",
+                                  "&:hover": {
+                                    textDecoration: "underline",
+                                  },
+                                }}
+                              >
+                                {item.fileName || "파일 다운로드"}
+                              </Link>
+                            )
                           : item.answer}
                       </Typography>
                     </Box>

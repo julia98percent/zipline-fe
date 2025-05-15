@@ -626,7 +626,9 @@ const BulkMessagePage = () => {
       "{{생년월일}}": customer.birthday
         ? formatBirthday(customer.birthday)
         : "생일 정보 없음",
-      "{{관심지역}}": customer.legalDistrictCode || "관심지역 정보 없음",
+      "{{관심지역}}": customer.legalDistrictCode
+        ? `$$###${customer.legalDistrictCode}`
+        : "",
     };
 
     return content.replace(/{{[^}]+}}/g, (match) => {

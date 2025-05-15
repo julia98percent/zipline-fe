@@ -45,17 +45,21 @@ apiClient.interceptors.response.use(
     const originalRequest = error.config;
 
     const isLoginRequest = originalRequest?.url?.includes("/users/login");
-    if (error.response.status === 401 && !originalRequest.__isRetryRequest && !isLoginRequest) {
+    if (
+      error.response.status === 401 &&
+      !originalRequest.__isRetryRequest &&
+      !isLoginRequest
+    ) {
       try {
         originalRequest.__isRetryRequest = true;
 
         const deviceId = localStorage.getItem("deviceId");
 
-const refreshResponse = await reissueTokenClient.get("/users/reissue", {
-  headers: {
-    "X-Device-Id": deviceId ?? "",
-  },
-});;
+        const refreshResponse = await reissueTokenClient.get("/users/reissue", {
+          headers: {
+            "X-Device-Id": deviceId ?? "",
+          },
+        });
         const newAccessToken = refreshResponse?.data?.data?.accessToken ?? null;
 
         if (!newAccessToken) {
@@ -71,7 +75,7 @@ const refreshResponse = await reissueTokenClient.get("/users/reissue", {
         return axios(originalRequest);
       } catch (refreshError) {
         sessionStorage.removeItem("_ZA");
-        toast.error("인증이 만료되었습니다. 다시 로그인하세요."); 
+        toast.error("인증이 만료되었습니다. 다시 로그인하세요.");
         window.location.replace("/sign-in");
         return Promise.reject(refreshError);
       }

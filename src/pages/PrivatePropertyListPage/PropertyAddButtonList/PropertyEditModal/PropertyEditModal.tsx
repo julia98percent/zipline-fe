@@ -20,6 +20,7 @@ import apiClient from "@apis/apiClient";
 import DaumPost from "./DaumPost";
 import { toast } from "react-toastify";
 import dayjs from "dayjs";
+import { showToast } from "@components/Toast/Toast";
 
 export interface AgentPropertyDetail {
   customer: string;
@@ -131,16 +132,30 @@ function PropertyEditModal({
   const [address, setAddress] = useState("");
   const [detailAddress, setdetailAddress] = useState("");
   const [legalDistrictCode, setLegalDistrictCode] = useState("");
-  const [deposit, handleChangeDeposit, , setDepositManually] = useNumericInput("");
-  const [monthlyRent, handleChangeMonthlyRent, , setMonthlyRentManually] = useNumericInput("");
+  const [deposit, handleChangeDeposit, , setDepositManually] =
+    useNumericInput("");
+  const [monthlyRent, handleChangeMonthlyRent, , setMonthlyRentManually] =
+    useNumericInput("");
   const [price, handleChangePrice, , setPriceManually] = useNumericInput("");
-  
-  const [netArea, handleChangeNetArea, , setNetAreaManually] = useRawNumericInput("");
-  const [totalArea, handleChangeTotalArea, , setTotalAreaManually] = useRawNumericInput("");
+
+  const [netArea, handleChangeNetArea, , setNetAreaManually] =
+    useRawNumericInput("");
+  const [totalArea, handleChangeTotalArea, , setTotalAreaManually] =
+    useRawNumericInput("");
   const [floor, handleChangeFloor, , setFloorManually] = useRawNumericInput("");
-  const [constructionYear, handleChangeConstructionYear, , setConstructionYearManually] = useRawNumericInput("");
-  const [parkingCapacity, handleChangeParkingCapacity, , setParkingCapacityManually] = useRawNumericInput("");
-  
+  const [
+    constructionYear,
+    handleChangeConstructionYear,
+    ,
+    setConstructionYearManually,
+  ] = useRawNumericInput("");
+  const [
+    parkingCapacity,
+    handleChangeParkingCapacity,
+    ,
+    setParkingCapacityManually,
+  ] = useRawNumericInput("");
+
   const [details, setDetails] = useState("");
   const [type, setType] = useState("SALE");
   const [longitude, setLongitude] = useState<number | null>(null);
@@ -152,21 +167,32 @@ function PropertyEditModal({
 
   useEffect(() => {
     if (open && initialData) {
-      if (initialData.customerUid != null) setCustomerUid(initialData.customerUid);
+      if (initialData.customerUid != null)
+        setCustomerUid(initialData.customerUid);
       if (initialData.address) setAddress(initialData.address);
-      if (initialData.detailAddress) setdetailAddress(initialData.detailAddress);
-      if (initialData.legalDistrictCode) setLegalDistrictCode(initialData.legalDistrictCode);
-  
-      if (initialData.deposit != null) setDepositManually(String(initialData.deposit));
-      if (initialData.monthlyRent != null) setMonthlyRentManually(String(initialData.monthlyRent));
-      if (initialData.price != null) setPriceManually(String(initialData.price));
-  
-      if (initialData.netArea != null) setNetAreaManually(String(initialData.netArea));
-      if (initialData.totalArea != null) setTotalAreaManually(String(initialData.totalArea));
-      if (initialData.floor != null) setFloorManually(String(initialData.floor));
-      if (initialData.constructionYear != null) setConstructionYearManually(String(initialData.constructionYear));
-      if (initialData.parkingCapacity != null) setParkingCapacityManually(String(initialData.parkingCapacity));
-  
+      if (initialData.detailAddress)
+        setdetailAddress(initialData.detailAddress);
+      if (initialData.legalDistrictCode)
+        setLegalDistrictCode(initialData.legalDistrictCode);
+
+      if (initialData.deposit != null)
+        setDepositManually(String(initialData.deposit));
+      if (initialData.monthlyRent != null)
+        setMonthlyRentManually(String(initialData.monthlyRent));
+      if (initialData.price != null)
+        setPriceManually(String(initialData.price));
+
+      if (initialData.netArea != null)
+        setNetAreaManually(String(initialData.netArea));
+      if (initialData.totalArea != null)
+        setTotalAreaManually(String(initialData.totalArea));
+      if (initialData.floor != null)
+        setFloorManually(String(initialData.floor));
+      if (initialData.constructionYear != null)
+        setConstructionYearManually(String(initialData.constructionYear));
+      if (initialData.parkingCapacity != null)
+        setParkingCapacityManually(String(initialData.parkingCapacity));
+
       if (initialData.details) setDetails(initialData.details);
       if (initialData.type) setType(initialData.type);
       if (initialData.longitude !== undefined && initialData.longitude !== null)
@@ -218,21 +244,41 @@ function PropertyEditModal({
         if (result) {
           setLongitude(Number(result.x));
           setLatitude(Number(result.y));
-          setLegalDistrictCode(result.b_code);          
+          setLegalDistrictCode(result.b_code);
         }
       });
   }, [address]);
   const handleSubmit = () => {
-    if (!customerUid) return toast.error("고객을 선택해주세요.");
-    if (!address) return toast.error("주소를 입력해주세요.");
-    if (!realCategory) return toast.error("매물 유형을 선택해주세요.");
-    if (!type) return toast.error("거래 유형을 선택해주세요.");
+    if (!customerUid)
+      return showToast({
+        message: "고객을 선택해주세요.",
+        type: "error",
+      });
+    if (!address)
+      return showToast({
+        message: "주소를 입력해주세요.",
+        type: "error",
+      });
+    if (!realCategory)
+      return showToast({
+        message: "매물 유형을 선택해주세요.",
+        type: "error",
+      });
     if (hasElevator === null || hasElevator === undefined)
-      return toast.error("엘리베이터 유무를 선택해주세요.");
+      return showToast({
+        message: "엘리베이터 유무를 선택해주세요.",
+        type: "error",
+      });
     if (!netArea || Number(netArea) <= 0)
-      return toast.error("전용면적을 입력해주세요.");
+      return showToast({
+        message: "공급면적을 입력해주세요.",
+        type: "error",
+      });
     if (!totalArea || Number(totalArea) <= 0)
-      return toast.error("공급면적을 입력해주세요.");
+      return showToast({
+        message: "공급면적을 입력해주세요.",
+        type: "error",
+      });
     const parseNumber = (str: string) => Number(str.replace(/,/g, ""));
 
     const payload = {
@@ -261,12 +307,18 @@ function PropertyEditModal({
     apiClient
       .patch(`/properties/${propertyUid}`, payload)
       .then(() => {
-        toast.success("매물 수정 완료");
+        showToast({
+          message: "매물을 수정했습니다.",
+          type: "success",
+        });
         fetchPropertyData();
         handleClose();
       })
       .catch(() => {
-        toast.error("매물 수정 실패");
+        showToast({
+          message: "매물 수정 중 오류가 발생했습니다. 다시 시도해주세요.",
+          type: "error",
+        });
       });
   };
 
@@ -338,41 +390,41 @@ function PropertyEditModal({
         </RadioGroup>
         {/* 조건부 TextField 렌더링 */}
         {type === "SALE" && (
-  <TextField
-    label="매매 가격"
-    value={price}
-    onChange={handleChangePrice}
-    sx={{ mt: 2 }}
-    fullWidth
-  />
-)}
-{type === "DEPOSIT" && (
-  <TextField
-    label="보증금"
-    value={deposit}
-    onChange={handleChangeDeposit}
-    sx={{ mt: 2 }}
-    fullWidth
-  />
-)}
-{type === "MONTHLY" && (
-  <>
-    <TextField
-      label="보증금"
-      value={deposit}
-      onChange={handleChangeDeposit}
-      sx={{ mt: 2 }}
-      fullWidth
-    />
-    <TextField
-      label="월세"
-      value={monthlyRent}
-      onChange={handleChangeMonthlyRent}
-      sx={{ mt: 2 }}
-      fullWidth
-    />
-  </>
-)}
+          <TextField
+            label="매매 가격"
+            value={price}
+            onChange={handleChangePrice}
+            sx={{ mt: 2 }}
+            fullWidth
+          />
+        )}
+        {type === "DEPOSIT" && (
+          <TextField
+            label="보증금"
+            value={deposit}
+            onChange={handleChangeDeposit}
+            sx={{ mt: 2 }}
+            fullWidth
+          />
+        )}
+        {type === "MONTHLY" && (
+          <>
+            <TextField
+              label="보증금"
+              value={deposit}
+              onChange={handleChangeDeposit}
+              sx={{ mt: 2 }}
+              fullWidth
+            />
+            <TextField
+              label="월세"
+              value={monthlyRent}
+              onChange={handleChangeMonthlyRent}
+              sx={{ mt: 2 }}
+              fullWidth
+            />
+          </>
+        )}
         <Typography variant="subtitle1" sx={{ mt: 2 }}>
           부동산 유형 선택
         </Typography>
@@ -402,28 +454,28 @@ function PropertyEditModal({
           />
         </RadioGroup>
         <TextField
-  label="공급 면적"
-  value={totalArea}
-  onChange={handleChangeTotalArea}
-  sx={{ mt: 2 }}
-  fullWidth
-/>
+          label="공급 면적"
+          value={totalArea}
+          onChange={handleChangeTotalArea}
+          sx={{ mt: 2 }}
+          fullWidth
+        />
 
-<TextField
-  label="전용 면적"
-  value={netArea}
-  onChange={handleChangeNetArea}
-  sx={{ mt: 2 }}
-  fullWidth
-/>
+        <TextField
+          label="전용 면적"
+          value={netArea}
+          onChange={handleChangeNetArea}
+          sx={{ mt: 2 }}
+          fullWidth
+        />
 
-<TextField
-  label="층수"
-  value={floor}
-  onChange={handleChangeFloor}
-  sx={{ mt: 2 }}
-  fullWidth
-/>
+        <TextField
+          label="층수"
+          value={floor}
+          onChange={handleChangeFloor}
+          sx={{ mt: 2 }}
+          fullWidth
+        />
         {/* 반려동물 여부 */}
         <Typography variant="subtitle1" sx={{ mt: 2 }}>
           반려동물 여부
@@ -448,7 +500,7 @@ function PropertyEditModal({
         >
           <FormControlLabel value="true" control={<Radio />} label="있음" />
           <FormControlLabel value="false" control={<Radio />} label="없음" />
-        </RadioGroup>       
+        </RadioGroup>
 
         <LocalizationProvider dateAdapter={AdapterDayjs}>
           <DemoContainer components={["DatePicker"]}>
@@ -468,21 +520,21 @@ function PropertyEditModal({
 
         {/* 건축년도 */}
         <TextField
-  label="건축년도"
-  value={constructionYear}
-  onChange={handleChangeConstructionYear}
-  sx={{ mt: 2 }}
-  fullWidth
-  placeholder="숫자만 입력하세요 ex)2010"
-/>
+          label="건축년도"
+          value={constructionYear}
+          onChange={handleChangeConstructionYear}
+          sx={{ mt: 2 }}
+          fullWidth
+          placeholder="숫자만 입력하세요 ex)2010"
+        />
 
-<TextField
-  label="주차 가능 대수"
-  value={parkingCapacity}
-  onChange={handleChangeParkingCapacity}
-  sx={{ mt: 2 }}
-  fullWidth
-/>
+        <TextField
+          label="주차 가능 대수"
+          value={parkingCapacity}
+          onChange={handleChangeParkingCapacity}
+          sx={{ mt: 2 }}
+          fullWidth
+        />
 
         {/* 특이사항 */}
         <TextField

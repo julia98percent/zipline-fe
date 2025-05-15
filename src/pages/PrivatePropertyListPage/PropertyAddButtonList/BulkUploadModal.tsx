@@ -12,8 +12,9 @@ import {
 } from "@mui/material";
 import { useDropzone } from "react-dropzone";
 import apiClient from "@apis/apiClient";
-import { toast } from "react-toastify";
+import { Link } from "react-router-dom";
 import { AxiosError } from "axios";
+import { showToast } from "@components/Toast/Toast";
 
 interface Props {
   open: boolean;
@@ -64,7 +65,10 @@ function BulkUploadModal({ open, handleClose, fetchPropertyData }: Props) {
     try {
       setIsLoading(true);
       await apiClient.post("/properties/bulk", formData);
-      toast.success("매물 정보 업로드에 성공했습니다");
+      showToast({
+        message: "매물 정보를 업로드 했습니다.",
+        type: "success",
+      });
       handleClose();
       fetchPropertyData();
     } catch (error) {
@@ -74,7 +78,10 @@ function BulkUploadModal({ open, handleClose, fetchPropertyData }: Props) {
         axiosError.response?.data?.message ||
         "파일 업로드 중 오류가 발생했습니다.";
       setError(errorMessage);
-      toast.error(errorMessage);
+      showToast({
+        message: errorMessage,
+        type: "error",
+      });
     } finally {
       setIsLoading(false);
     }
@@ -84,18 +91,116 @@ function BulkUploadModal({ open, handleClose, fetchPropertyData }: Props) {
     <Dialog open={open} onClose={handleClose} maxWidth="sm" fullWidth>
       <DialogTitle>매물 데이터 일괄 등록</DialogTitle>
       <DialogContent>
-        <Box sx={{ mb: 3 }}>
-          <Typography variant="subtitle2" color="text.secondary" gutterBottom>
-            엑셀 파일 업로드 정책
-          </Typography>
-          <Typography variant="body2" color="text.secondary" paragraph>
-            • 엑셀 파일(.xlsx, .xls)만 업로드 가능합니다.
-          </Typography>
-          <Typography variant="body2" color="text.secondary" paragraph>
-            • 파일 크기는 10MB 이하로 제한됩니다.
-          </Typography>
+        <Typography
+          variant="subtitle2"
+          sx={{
+            color: "#333333",
+            fontWeight: 600,
+            mb: 2,
+          }}
+        >
+          엑셀 파일 업로드 정책
+        </Typography>
+
+        <Box sx={{ display: "flex", flexDirection: "column", gap: 1.5, mb: 3 }}>
+          <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
+            <Typography variant="body2" color="text.secondary">
+              • 파일 형식:
+            </Typography>
+            <Typography
+              variant="body2"
+              sx={{ color: "#164F9E", fontWeight: 500 }}
+            >
+              .xlsx, .xls
+            </Typography>
+          </Box>
+
+          <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
+            <Typography variant="body2" color="text.secondary">
+              • 파일 크기:
+            </Typography>
+            <Typography
+              variant="body2"
+              sx={{ color: "#164F9E", fontWeight: 500 }}
+            >
+              10MB 이하
+            </Typography>
+          </Box>
+
           <Typography variant="body2" color="text.secondary">
             • 필수 입력 항목이 누락된 경우 업로드가 실패할 수 있습니다.
+          </Typography>
+        </Box>
+
+        <Box
+          sx={{
+            backgroundColor: "#F8F9FA",
+            p: 2,
+            borderRadius: 1,
+            border: "1px solid #E0E0E0",
+          }}
+        >
+          <Typography variant="body2" color="text.secondary" sx={{ mb: 1 }}>
+            엑셀의 열 순서가 변경되면 업로드가 실패할 수 있으니,{" "}
+            <Link
+              to={import.meta.env.VITE_PROPERTY_EXCEL_TEMPLATE_URL}
+              style={{
+                color: "#164F9E",
+                textDecoration: "none",
+                fontWeight: 500,
+              }}
+            >
+              제공되는 템플릿
+            </Link>
+            을 그대로 사용하는 것을 권장합니다.
+          </Typography>
+          <Typography variant="body2" sx={{ color: "#164F9E", mt: 1 }}>
+            <Link
+              to={import.meta.env.VITE_PROPERTY_EXCEL_TEMPLATE_URL}
+              style={{
+                color: "#164F9E",
+                textDecoration: "none",
+                fontWeight: 500,
+              }}
+            >
+              → 템플릿 다운로드
+            </Link>
+          </Typography>
+        </Box>
+
+        <Box sx={{ mt: 3 }}>
+          <Typography
+            variant="body2"
+            sx={{ color: "#666666", mb: 1, fontWeight: 500 }}
+          >
+            • 지정된 입력 값 안내
+          </Typography>
+          <Box sx={{ pl: 2 }}>
+            <Typography variant="body2" color="text.secondary" sx={{ mb: 1 }}>
+              - 매물 카테고리:{" "}
+              <Typography
+                component="span"
+                sx={{ color: "#164F9E", fontWeight: 500 }}
+              >
+                매매, 전세, 월세
+              </Typography>
+            </Typography>
+            <Typography variant="body2" color="text.secondary">
+              - 매물 유형:{" "}
+              <Typography
+                component="span"
+                sx={{ color: "#164F9E", fontWeight: 500 }}
+              >
+                아파트, 빌라, 상가, 오피스텔, 원룸, 투룸, 주택
+              </Typography>
+            </Typography>
+          </Box>
+          <Typography
+            variant="body2"
+            color="error"
+            sx={{ my: 1, fontSize: "12px" }}
+          >
+            * 허용되지 않은 값이 입력될 경우, 업로드 과정에서 오류가 발생합니다.
           </Typography>
         </Box>
 
@@ -131,7 +236,11 @@ function BulkUploadModal({ open, handleClose, fetchPropertyData }: Props) {
         )}
       </DialogContent>
       <DialogActions>
-        <Button onClick={handleClose} disabled={isLoading}>
+        <Button
+          onClick={handleClose}
+          disabled={isLoading}
+          sx={{ color: "#164F9E" }}
+        >
           취소
         </Button>
         <Button

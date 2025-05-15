@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { Box, Paper, Button, Snackbar, Alert } from "@mui/material";
+import { Box, Paper, Button } from "@mui/material";
 import dayjs from "dayjs";
 import AddIcon from "@mui/icons-material/Add";
 import FullCalendar from "@fullcalendar/react";
@@ -13,6 +13,7 @@ import ScheduleDetailModal from "@components/ScheduleDetailModal/ScheduleDetailM
 import { Schedule } from "../../interfaces/schedule";
 import useUserStore from "@stores/useUserStore";
 import AddScheduleModal from "./AddScheduleModal";
+import { showToast } from "@components/Toast/Toast";
 
 interface ScheduleFormData {
   startDateTime: string;
@@ -30,14 +31,9 @@ const SchedulePage = () => {
   );
   const [schedules, setSchedules] = useState<Schedule[]>([]);
   const [isUpdating, setIsUpdating] = useState(false);
-  const [toast, setToast] = useState({
-    open: false,
-    message: "",
-    severity: "success" as "success" | "error",
-  });
-  const [customers] = useState<Array<{ uid: number; name: string }>>([]);
+  const [dayMaxEvents, setDayMaxEvents] = useState(4);
+
   const { user } = useUserStore();
-  const [isLoading, setIsLoading] = useState(false);
 
   const fetchSchedules = (startDate: string, endDate: string) => {
     apiClient
@@ -46,6 +42,29 @@ const SchedulePage = () => {
         setSchedules(res.data.data);
       });
   };
+
+  useEffect(() => {
+    const calculateDayMaxEvents = () => {
+      const width = window.innerWidth;
+      if (width < 768) {
+        // 모바일
+        setDayMaxEvents(2);
+      } else if (width < 1024) {
+        // 태블릿
+        setDayMaxEvents(3);
+      } else {
+        // 데스크톱
+        setDayMaxEvents(4);
+      }
+    };
+
+    calculateDayMaxEvents();
+    window.addEventListener("resize", calculateDayMaxEvents);
+
+    return () => {
+      window.removeEventListener("resize", calculateDayMaxEvents);
+    };
+  }, []);
 
   useEffect(() => {
     // 초기 로드 시 현재 달의 첫날과 마지막날을 기준으로 일정을 가져옴
@@ -88,7 +107,6 @@ const SchedulePage = () => {
 
   const handleSubmitSchedule = async (formData: ScheduleFormData) => {
     try {
-      setIsLoading(true);
       const response = await apiClient.post("/schedules", formData);
 
       if (response.data.success) {
@@ -97,15 +115,11 @@ const SchedulePage = () => {
         const endOfMonth = dayjs().endOf("month").toISOString();
         fetchSchedules(startOfMonth, endOfMonth);
 
-        setToast({
-          open: true,
-          message: "일정을 생성했습니다.",
-          severity: "success",
-        });
+        showToast({ message: "일정을 등록했습니다.", type: "success" });
         setIsAddModalOpen(false);
       }
-    } finally {
-      setIsLoading(false);
+    } catch {
+      showToast({ message: "일정 등록에 실패했습니다.", type: "error" });
     }
   };
 
@@ -144,8 +158,6 @@ const SchedulePage = () => {
     };
   });
 
-  console.log("Calendar events:", events);
-
   const handleUpdateSchedule = async (updatedSchedule: Schedule) => {
     try {
       setIsUpdating(true);
@@ -165,26 +177,20 @@ const SchedulePage = () => {
           )
         );
         handleCloseDetailModal();
-        setToast({
-          open: true,
+        showToast({
           message: "일정을 수정했습니다.",
-          severity: "success",
+          type: "success",
         });
       }
     } catch (error) {
       console.error("Failed to update schedule:", error);
-      setToast({
-        open: true,
+      showToast({
         message: "일정 수정에 실패했습니다.",
-        severity: "error",
+        type: "error",
       });
     } finally {
       setIsUpdating(false);
     }
-  };
-
-  const handleCloseToast = () => {
-    setToast({ ...toast, open: false });
   };
 
   return (
@@ -193,7 +199,7 @@ const SchedulePage = () => {
         p: 0,
         pb: 3,
         minHeight: "100vh",
-        backgroundColor: "#F8F9FA",
+        backgroundColor: "#f5f5f5",
       }}
     >
       <PageHeader title="일정" userName={user?.name || "-"} />
@@ -205,8 +211,10 @@ const SchedulePage = () => {
           onClick={handleAddSchedule}
           sx={{
             backgroundColor: "#164F9E",
+            boxShadow: "none",
             "&:hover": {
               backgroundColor: "#0D3B7A",
+              boxShadow: "none",
             },
           }}
         >
@@ -220,7 +228,7 @@ const SchedulePage = () => {
           p: 3,
           mx: 3,
           mt: 3,
-          border: "1px solid #E0E0E0",
+
           borderRadius: "12px",
           backgroundColor: "#FFFFFF",
           "& .fc": {
@@ -446,7 +454,7 @@ const SchedulePage = () => {
           }}
           height="auto"
           locale={koLocale}
-          dayMaxEvents={4}
+          dayMaxEvents={dayMaxEvents}
           moreLinkContent={({ num }) => `+${num}개 더보기`}
           eventTimeFormat={{
             hour: "2-digit",
@@ -480,40 +488,8 @@ const SchedulePage = () => {
         onClose={handleCloseDetailModal}
         schedule={selectedSchedule}
         onSave={handleUpdateSchedule}
-        customers={customers}
         isUpdating={isUpdating}
       />
-
-      <Snackbar
-        open={toast.open}
-        autoHideDuration={2000}
-        onClose={handleCloseToast}
-        anchorOrigin={{ vertical: "bottom", horizontal: "center" }}
-        sx={{
-          bottom: "24px !important",
-        }}
-      >
-        <Alert
-          onClose={handleCloseToast}
-          severity={toast.severity}
-          sx={{
-            width: "100%",
-            minWidth: "240px",
-            borderRadius: "8px",
-            backgroundColor:
-              toast.severity === "success" ? "#F6F8FF" : "#FFF5F5",
-            color: toast.severity === "success" ? "#164F9E" : "#D32F2F",
-            border: `1px solid ${
-              toast.severity === "success" ? "#164F9E" : "#D32F2F"
-            }`,
-            "& .MuiAlert-icon": {
-              color: toast.severity === "success" ? "#164F9E" : "#D32F2F",
-            },
-          }}
-        >
-          {toast.message}
-        </Alert>
-      </Snackbar>
     </Box>
   );
 };

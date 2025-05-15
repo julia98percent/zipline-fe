@@ -82,7 +82,7 @@ function PrivatePropertyListPage() {
   const { user } = useUserStore();
   const navigate = useNavigate();
   const [page, setPage] = useState(0);
-  const [rowsPerPage, setRowsPerPage] = useState(10);
+  const [rowsPerPage, setRowsPerPage] = useState(50);
   const [totalElements, setTotalElements] = useState(0);
 
   const [region, setRegion] = useState({
@@ -94,10 +94,13 @@ function PrivatePropertyListPage() {
     selectedDong: "",
   });
   const updateLegalDistrictCode = (newState: typeof region) => {
-    const code = newState.selectedDong || newState.selectedSigungu || newState.selectedSido;
-  
+    const code =
+      newState.selectedDong ||
+      newState.selectedSigungu ||
+      newState.selectedSido;
+
     let prefix = "";
-  
+
     if (newState.selectedDong) {
       prefix = String(code).slice(0, 8); // 동: 앞 8자리 (정확한 법정동코드)
     } else if (newState.selectedSigungu) {
@@ -105,7 +108,7 @@ function PrivatePropertyListPage() {
     } else if (newState.selectedSido) {
       prefix = String(code).slice(0, 2); // 시/도: 앞 2자리
     }
-  
+
     setFilter((prev) => ({
       ...prev,
       legalDistrictCode: prefix || undefined,
@@ -253,7 +256,7 @@ function PrivatePropertyListPage() {
   if (loading) {
     return (
       <PageContainer>
-        <PageHeader title="내 매물 목록" userName={user?.name || "-"} />
+        <PageHeader title="개인 매물 목록" userName={user?.name || "-"} />
         <LoadingContainer>
           <CircularProgress color="primary" />
         </LoadingContainer>
@@ -263,7 +266,7 @@ function PrivatePropertyListPage() {
 
   return (
     <PageContainer sx={{ minWidth: "800px" }}>
-      <PageHeader title="내 매물 목록" userName={user?.name || "-"} />
+      <PageHeader title="개인 매물 목록" userName={user?.name || "-"} />
 
       <ContentContainer>
         {/* 상단 필터 바 */}
@@ -324,7 +327,11 @@ function PrivatePropertyListPage() {
 
           {/* 카테고리/판매유형/상세필터/등록 버튼 */}
           <FilterContainer>
-            <LeftButtonGroup>
+            <LeftButtonGroup
+              sx={{
+                gap: 1,
+              }}
+            >
               <CategoryButtonGroup>
                 <StyledSelect
                   size="small"
@@ -374,25 +381,27 @@ function PrivatePropertyListPage() {
                 </StyledSelect>
               </TypeButtonGroup>
               <FilterButtonWrapper>
-  <FilterButton
-    variant="outlined"
-    onClick={() => setFilterModalOpen(true)}
-    sx={{
-      // 기존 스타일 유지
-      border: "1px solid #164F9E",
-      color: "#164F9E",
-      minWidth: "40px",
-      padding: "5px",
-      borderRadius: "14px",
-      "&:hover": {
-        backgroundColor: "#F5F5F5",
-        border: "1px solid #164F9E",
-      },
-    }}
-  >
-    <FilterListIcon />
-  </FilterButton>
-</FilterButtonWrapper>
+                <FilterButton
+                  variant="outlined"
+                  onClick={() => setFilterModalOpen(true)}
+                  sx={{
+                    // 기존 스타일 유지
+                    border: "1px solid #164F9E",
+                    color: "#164F9E",
+                    minWidth: "40px",
+                    padding: "5px",
+                    borderRadius: "20px",
+                    width: "117px",
+                    "&:hover": {
+                      backgroundColor: "#F5F5F5",
+                      border: "1px solid #164F9E",
+                    },
+                  }}
+                >
+                  <FilterListIcon sx={{ mr: "8px" }} />
+                  상세 필터
+                </FilterButton>
+              </FilterButtonWrapper>
             </LeftButtonGroup>
             <RightButtonGroup>
               <PropertyAddButtonList fetchPropertyData={fetchPropertyData} />

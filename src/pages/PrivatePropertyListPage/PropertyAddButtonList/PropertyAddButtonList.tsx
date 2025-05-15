@@ -27,10 +27,11 @@ function PropertyAddButtonList({ fetchPropertyData }: Props) {
           onClick={handleOpen}
           sx={{
             backgroundColor: "#164F9E",
-            "&:hover": { backgroundColor: "#0D3B7A" },
+            boxShadow: "none",
             height: "36px",
             fontSize: "13px",
             padding: "0 16px",
+            "&:hover": { backgroundColor: "#0D3B7A", boxShadow: "none" },
           }}
         >
           매물 등록
@@ -48,6 +49,7 @@ function PropertyAddButtonList({ fetchPropertyData }: Props) {
             "&:hover": {
               borderColor: "#0D3B7A",
               color: "#0D3B7A",
+              backgroundColor: "rgba(22, 79, 158, 0.08)",
             },
           }}
         />

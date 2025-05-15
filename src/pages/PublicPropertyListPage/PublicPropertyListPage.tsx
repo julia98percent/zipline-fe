@@ -8,7 +8,6 @@ import {
   SelectChangeEvent,
   Typography,
   FormControlLabel,
-  Switch,
   TextField,
   InputAdornment,
   IconButton,
@@ -19,6 +18,7 @@ import PublicPropertyTable from "./PublicPropertyTable";
 import PageHeader from "@components/PageHeader/PageHeader";
 import useUserStore from "@stores/useUserStore";
 import SearchIcon from "@mui/icons-material/Search";
+import { IOSSwitch } from "@pages/PrivatePropertyListPage/PropertyTable/PropertyTable";
 
 export interface KakaoAddress {
   road_address?: {
@@ -408,7 +408,7 @@ function PublicPropertyListPage() {
         <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, mb: "3px", mt: "5px", ml: "8px" }}>
           <FormControlLabel
             control={
-              <Switch
+              <IOSSwitch
                 checked={useMetric}
                 onChange={() => setUseMetric((prev) => !prev)}
                 color="primary"

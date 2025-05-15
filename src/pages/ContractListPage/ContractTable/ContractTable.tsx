@@ -113,7 +113,9 @@ const ContractTable = ({
     );
   };
 
-  const getCustomerDisplay = (customer: string | string[] | null | undefined) => {
+  const getCustomerDisplay = (
+    customer: string | string[] | null | undefined
+  ) => {
     if (!customer || customer === "null") return "-";
     if (Array.isArray(customer)) {
       if (customer.length === 0) return "-";
@@ -125,7 +127,14 @@ const ContractTable = ({
 
   return (
     <Box sx={{ width: "100%", mt: "28px" }}>
-      <Paper sx={{ width: "100%", overflow: "hidden" }}>
+      <Paper
+        sx={{
+          width: "100%",
+          overflow: "hidden",
+          borderRadius: "8px",
+          boxShadow: "0 2px 6px rgba(0, 0, 0, 0.05)",
+        }}
+      >
         <TableContainer>
           <Table sx={{ minWidth: 650 }}>
             <TableHead>

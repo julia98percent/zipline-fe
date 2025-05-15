@@ -7,8 +7,8 @@ import PasswordInput from "./PasswordInput";
 import Button from "@components/Button";
 import { Box, Typography } from "@mui/material";
 import { toast } from "react-toastify";
-import "react-toastify/dist/ReactToastify.css";
 import signInImage from "@assets/sign-up.png";
+import { showToast } from "@components/Toast/Toast";
 
 const SignInPage = () => {
   const navigate = useNavigate();
@@ -23,7 +23,7 @@ const SignInPage = () => {
       deviceId = crypto.randomUUID(); // 브라우저에서 UUID 생성
       localStorage.setItem("deviceId", deviceId);
     }
-  
+
     apiClient
       .post(
         "/users/login",
@@ -42,14 +42,20 @@ const SignInPage = () => {
         const accessToken = res?.data?.data?.accessToken;
         if (res.status === 200 && accessToken) {
           sessionStorage.setItem("_ZA", accessToken);
-          toast.success("로그인에 성공했습니다.");
+          showToast({
+            message: "로그인에 성공했습니다.",
+            type: "success",
+          });
           navigate("/");
         }
       })
       .catch((error) => {
         const serverMessage =
           error.response?.data?.message || "로그인 중 오류가 발생했습니다.";
-        toast.error(serverMessage);
+        showToast({
+          message: serverMessage,
+          type: "error",
+        });
         console.log(error);
       });
   };

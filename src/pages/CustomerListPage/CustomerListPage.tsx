@@ -2,12 +2,14 @@ import { useState, useEffect } from "react";
 import apiClient from "@apis/apiClient";
 import CustomerAddButtonList from "./CustomerAddButtonList";
 import CustomerFilterModal from "./CustomerFilterModal/CustomerFilterModal";
-import { Box, CircularProgress, TextField, IconButton } from "@mui/material";
+import { Box, CircularProgress, TextField, Button } from "@mui/material";
 import FilterListIcon from "@mui/icons-material/FilterList";
 import useDebounce from "@hooks/useDebounce";
 import PageHeader from "@components/PageHeader/PageHeader";
 import useUserStore from "@stores/useUserStore";
 import CustomerTable from "./CustomerTable/CustomerTable";
+import { InputAdornment } from "@mui/material";
+import SearchIcon from "@mui/icons-material/Search";
 
 interface Customer {
   uid: number;
@@ -253,14 +255,21 @@ const CustomerListPage = () => {
             }}
           >
             <TextField
-              placeholder="전화번호 또는 고객이름 검색"
+              placeholder="전화번호 또는 고객이름으로 검색"
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
               size="small"
+              InputProps={{
+                startAdornment: (
+                  <InputAdornment position="start">
+                    <SearchIcon />
+                  </InputAdornment>
+                ),
+              }}
               sx={{
-                width: 250,
+                minWidth: 300,
                 "& .MuiOutlinedInput-root": {
-                  borderRadius: "14px",                  
+                  borderRadius: "20px",
                   boxShadow: "0 2px 6px rgba(0, 0, 0, 0.05)",
                   "&:hover .MuiOutlinedInput-notchedOutline": {
                     borderColor: "rgba(0, 0, 0, 0.25)",
@@ -268,19 +277,23 @@ const CustomerListPage = () => {
                 },
               }}
             />
-            <IconButton
+            <Button
+              startIcon={<FilterListIcon />}
               onClick={() => setFilterModalOpen(true)}
               sx={{
-                borderRadius: "14px",
-                padding: "5px",
-                border: "1px solid rgba(0, 0, 0, 0.23)",
+                height: "40px",
+                ml: 1,
+                minWidth: "120px",
+                border: "1px solid #164F9E",
+                color: "#164F9E",
+                borderRadius: "20px",
                 "&:hover": {
-                  backgroundColor: "#F5F5F5",
+                  border: "1px solid #164F9E",
                 },
               }}
             >
-              <FilterListIcon />
-            </IconButton>
+              상세 필터
+            </Button>
           </Box>
           <Box
             sx={{

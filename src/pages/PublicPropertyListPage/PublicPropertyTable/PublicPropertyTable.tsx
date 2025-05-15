@@ -265,26 +265,7 @@ const PublicPropertyTable = ({
                   {formatBuildingInfo(property)}
                 </TableCell>
                 <TableCell align="center" sx={{ maxWidth: '200px', whiteSpace: 'normal' }}>
-                  {property.address ? (
-                    <Tooltip
-                      title={
-                        <Box>
-                          {property.address.road_address && (
-                            <div>도로명: {property.address.road_address.address_name}</div>
-                          )}
-                          {property.address.address && (
-                            <div>지번: {property.address.address.address_name}</div>
-                          )}
-                        </Box>
-                      }
-                    >
-                      <span>
-                        {useRoadAddress
-                          ? property.address.road_address?.address_name
-                          : property.address.address?.address_name || "-"}
-                      </span>
-                    </Tooltip>
-                  ) : "-"}
+                  {property.address || "-"}
                 </TableCell>
                 <TableCell align="center" sx={{ maxWidth: '200px', whiteSpace: 'normal' }}>
                   {property.description ?? "-"}

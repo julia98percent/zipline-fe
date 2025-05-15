@@ -80,19 +80,19 @@ function CustomerInfo({ customerId }: { customerId: string }) {
   const [loading, setLoading] = useState(false);
 
   // Consultation 관련 상태
-  const [counselPage, setCounselPage] = useState(1);
+  const [counselPage, setCounselPage] = useState(0);
   const [counselRowsPerPage, setCounselRowsPerPage] = useState(10);
   const [counselTotalCount, setCounselTotalCount] = useState(0);
   const [counselLoading, setCounselLoading] = useState(false);
 
   // Property 관련 상태
-  const [propertyPage, setPropertyPage] = useState(1);
+  const [propertyPage, setPropertyPage] = useState(0);
   const [propertyRowsPerPage, setPropertyRowsPerPage] = useState(10);
   const [propertyTotalCount, setPropertyTotalCount] = useState(0);
   const [propertyLoading, setPropertyLoading] = useState(false);
 
   // Contract 관련 상태
-  const [contractPage, setContractPage] = useState(1);
+  const [contractPage, setContractPage] = useState(0);
   const [contractRowsPerPage, setContractRowsPerPage] = useState(10);
   const [contractTotalCount, setContractTotalCount] = useState(0);
   const [contractLoading, setContractLoading] = useState(false);

@@ -15,6 +15,7 @@ import {
   Paper,
   Chip,
   CircularProgress,
+  TablePagination,
 } from "@mui/material";
 import { useNavigate } from "react-router-dom";
 import { formatPriceWithKorean } from "@utils/numberUtil";
@@ -192,31 +193,21 @@ function PropertyTable({
         <Typography variant="body2" color="text.secondary">
           총 {totalCount}건
         </Typography>
-        <Box sx={{ display: "flex", alignItems: "center", gap: 2 }}>
-          <FormControl size="small" sx={{ minWidth: 120 }}>
-            <InputLabel>페이지당 행</InputLabel>
-            <Select
-              value={rowsPerPage}
-              label="페이지당 행"
-              onChange={(e) => {
-                onRowsPerPageChange(Number(e.target.value));
-              }}
-            >
-              <MenuItem value={10}>10</MenuItem>
-              <MenuItem value={25}>25</MenuItem>
-              <MenuItem value={50}>50</MenuItem>
-              <MenuItem value={100}>100</MenuItem>
-            </Select>
-          </FormControl>
-          <Pagination
-            count={Math.ceil(totalCount / rowsPerPage)}
-            page={page}
-            onChange={(_, newPage) => onPageChange(newPage)}
-            color="primary"
-            showFirstButton
-            showLastButton
-          />
-        </Box>
+        <TablePagination
+          component="div"
+          count={totalCount}
+          page={page}
+          rowsPerPage={rowsPerPage}
+          onPageChange={(_, newPage) => onPageChange(newPage)}
+          onRowsPerPageChange={(e) => {
+            onRowsPerPageChange(Number(e.target.value));
+          }}
+          rowsPerPageOptions={[10, 25, 50, 100]}
+          labelRowsPerPage="페이지당 행 수"
+          labelDisplayedRows={({ from, to, count }) =>
+            `${count}건 중 ${from}-${to}건`
+          }
+        />
       </Box>
     </Paper>
   );

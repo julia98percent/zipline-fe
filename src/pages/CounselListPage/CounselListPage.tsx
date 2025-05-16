@@ -24,6 +24,7 @@ import { useNavigate } from "react-router-dom";
 import AddIcon from "@mui/icons-material/Add";
 import CounselModal from "./CounselModal";
 import styles from "./styles/CounselListPage.module.css";
+import { showToast } from "@components/Toast/Toast";
 
 interface Counsel {
   counselUid: number;
@@ -414,7 +415,13 @@ function CounselListPage() {
       <CounselModal
         open={isModalOpen}
         onClose={() => setIsModalOpen(false)}
-        onSuccess={fetchCounsels}
+        onSuccess={() => {
+          fetchCounsels();
+          showToast({
+            message: "상담을 등록했습니다.",
+            type: "success",
+          });
+        }}
       />
     </Box>
   );

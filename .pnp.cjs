@@ -50,6 +50,7 @@ const RAW_RUNTIME_STATE =
           ["eslint", "virtual:060da70244b1d7f5ee27210e1c62145230ae478853b91a15aaf382a429b68eb0ab28a18ca49f4a929bb651d71f609a2db80f19c1931f7ef13945c0768261b29e#npm:9.27.0"],\
           ["eslint-plugin-react-hooks", "virtual:060da70244b1d7f5ee27210e1c62145230ae478853b91a15aaf382a429b68eb0ab28a18ca49f4a929bb651d71f609a2db80f19c1931f7ef13945c0768261b29e#npm:5.2.0"],\
           ["eslint-plugin-react-refresh", "virtual:060da70244b1d7f5ee27210e1c62145230ae478853b91a15aaf382a429b68eb0ab28a18ca49f4a929bb651d71f609a2db80f19c1931f7ef13945c0768261b29e#npm:0.4.20"],\
+          ["eventsource", "npm:4.0.0"],\
           ["globals", "npm:15.15.0"],\
           ["init", "npm:0.1.2"],\
           ["npx", "npm:10.2.2"],\
@@ -4520,6 +4521,25 @@ const RAW_RUNTIME_STATE =
         "packageLocation": "../.yarn/berry/cache/esutils-npm-2.0.3-f865beafd5-10c0.zip/node_modules/esutils/",\
         "packageDependencies": [\
           ["esutils", "npm:2.0.3"]\
+        ],\
+        "linkType": "HARD"\
+      }]\
+    ]],\
+    ["eventsource", [\
+      ["npm:4.0.0", {\
+        "packageLocation": "../.yarn/berry/cache/eventsource-npm-4.0.0-b5fd928b64-10c0.zip/node_modules/eventsource/",\
+        "packageDependencies": [\
+          ["eventsource", "npm:4.0.0"],\
+          ["eventsource-parser", "npm:3.0.2"]\
+        ],\
+        "linkType": "HARD"\
+      }]\
+    ]],\
+    ["eventsource-parser", [\
+      ["npm:3.0.2", {\
+        "packageLocation": "../.yarn/berry/cache/eventsource-parser-npm-3.0.2-e02b0db08c-10c0.zip/node_modules/eventsource-parser/",\
+        "packageDependencies": [\
+          ["eventsource-parser", "npm:3.0.2"]\
         ],\
         "linkType": "HARD"\
       }]\
@@ -10045,6 +10065,7 @@ const RAW_RUNTIME_STATE =
           ["eslint", "virtual:060da70244b1d7f5ee27210e1c62145230ae478853b91a15aaf382a429b68eb0ab28a18ca49f4a929bb651d71f609a2db80f19c1931f7ef13945c0768261b29e#npm:9.27.0"],\
           ["eslint-plugin-react-hooks", "virtual:060da70244b1d7f5ee27210e1c62145230ae478853b91a15aaf382a429b68eb0ab28a18ca49f4a929bb651d71f609a2db80f19c1931f7ef13945c0768261b29e#npm:5.2.0"],\
           ["eslint-plugin-react-refresh", "virtual:060da70244b1d7f5ee27210e1c62145230ae478853b91a15aaf382a429b68eb0ab28a18ca49f4a929bb651d71f609a2db80f19c1931f7ef13945c0768261b29e#npm:0.4.20"],\
+          ["eventsource", "npm:4.0.0"],\
           ["globals", "npm:15.15.0"],\
           ["init", "npm:0.1.2"],\
           ["npx", "npm:10.2.2"],\

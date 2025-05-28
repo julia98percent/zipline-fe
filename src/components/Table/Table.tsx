@@ -8,6 +8,7 @@ import {
   CircularProgress,
   Table as MuiTable,
   TablePagination,
+  SxProps,
 } from "@mui/material";
 
 interface RowData {
@@ -28,6 +29,7 @@ interface Props {
     HTMLInputElement | HTMLTextAreaElement
   >;
   noDataMessage?: string;
+  sx?: SxProps;
 }
 
 function Table({
@@ -41,13 +43,14 @@ function Table({
   rowsPerPage = 25,
   handleChangeRowsPerPage,
   noDataMessage = "데이터가 없습니다.",
+  sx,
 }: Props) {
   return (
     <Paper
       sx={{
-        width: "100%",
         borderRadius: "8px",
         boxShadow: "0 2px 6px rgba(0, 0, 0, 0.05)",
+        ...sx,
       }}
     >
       <TableContainer>

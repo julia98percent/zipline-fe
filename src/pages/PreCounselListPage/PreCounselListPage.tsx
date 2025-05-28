@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback } from "react";
-import { Box } from "@mui/material";
+
 import PageHeader from "@components/PageHeader";
 import apiClient from "@apis/apiClient";
 import dayjs from "dayjs";
@@ -56,25 +56,27 @@ function PreCounselListPage() {
   }, [page, rowsPerPage, fetchCounsels]);
 
   return (
-    <Box>
+    <div className="bg-[#f5f5f5]">
       <PageHeader title="사전 상담 목록" />
-      <Table
-        isLoading={isLoading}
-        headerList={["이름", "전화번호", "상담 요청일"]}
-        bodyList={counsels.map((counsel) => ({
-          name: counsel.name,
-          phoneNumber: counsel.phoneNumber,
-          submittedAt: dayjs(counsel.submittedAt).format("YYYY-MM-DD"),
-          id: `${counsel.surveyResponseUid}`,
-        }))}
-        handleRowClick={handleRowClick}
-        totalElements={totalElements}
-        page={page}
-        handleChangePage={handleChangePage}
-        rowsPerPage={rowsPerPage}
-        handleChangeRowsPerPage={handleChangeRowsPerPage}
-      />
-    </Box>
+      <div className="w-full p-5">
+        <Table
+          isLoading={isLoading}
+          headerList={["이름", "전화번호", "상담 요청일"]}
+          bodyList={counsels.map((counsel) => ({
+            name: counsel.name,
+            phoneNumber: counsel.phoneNumber,
+            submittedAt: dayjs(counsel.submittedAt).format("YYYY-MM-DD"),
+            id: `${counsel.surveyResponseUid}`,
+          }))}
+          handleRowClick={handleRowClick}
+          totalElements={totalElements}
+          page={page}
+          handleChangePage={handleChangePage}
+          rowsPerPage={rowsPerPage}
+          handleChangeRowsPerPage={handleChangeRowsPerPage}
+        />
+      </div>
+    </div>
   );
 }
 

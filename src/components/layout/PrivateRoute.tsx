@@ -1,47 +1,60 @@
 import { useEffect, useState } from "react";
 import { Outlet, Navigate } from "react-router-dom";
 import NavigationBar from "@components/NavigationBar";
-import apiClient from "@apis/apiClient";
+import { fetchNotifications } from "@apis/notificationService";
 import { Box, CircularProgress } from "@mui/material";
 import useUserStore from "@stores/useUserStore";
+import { fetchUserInfo } from "@apis/userService";
+import useNotificationStore from "@stores/useNotificationStore";
+
+const STORAGE_KEY = "_ZA";
 
 const PrivateRoute = () => {
   const { user, setUser, clearUser } = useUserStore();
   const [isLoading, setIsLoading] = useState(true);
+  const { setNotificationList } = useNotificationStore();
   const [shouldRedirect, setShouldRedirect] = useState(false);
 
-  useEffect(() => {
-    const token = sessionStorage.getItem("_ZA");
+  const clearUserSession = () => {
+    sessionStorage.clear();
+    clearUser();
+  };
+
+  const handleAuthError = () => {
+    clearUserSession();
+    setShouldRedirect(true);
+    setIsLoading(false);
+  };
+
+  const initializeAuth = async () => {
+    const token = sessionStorage.getItem(STORAGE_KEY);
 
     if (!token) {
-      sessionStorage.clear();
-      clearUser();
-      setShouldRedirect(true);
+      handleAuthError();
+      return;
+    }
+
+    if (user) {
       setIsLoading(false);
       return;
     }
 
-    if (!user) {
-      apiClient
-        .get("/users/info")
-        .then((res) => {
-          const userData = res?.data?.data;
-          if (res && res.status === 200 && userData) {
-            setUser(userData);
-          }
-          setIsLoading(false);
-        })
-        .catch((error) => {
-          console.log(error);
-          clearUser();
-          sessionStorage.removeItem("_ZA");
-          setShouldRedirect(true);
-          setIsLoading(false);
-        });
-    } else {
-      setIsLoading(false);
+    try {
+      const userFetched = await fetchUserInfo(setUser);
+      if (userFetched) {
+        await fetchNotifications(setNotificationList);
+      }
+    } catch {
+      handleAuthError();
+      return;
     }
-  }, [user, setUser, clearUser]);
+
+    setIsLoading(false);
+  };
+
+  useEffect(() => {
+    initializeAuth();
+  }, [user]); // 의존성 배열 단순화
 
   if (shouldRedirect) {
     return <Navigate to="/sign-in" />;

@@ -1,25 +1,79 @@
-import { Box, Typography, Button, Menu, MenuItem } from "@mui/material";
-import { useState } from "react";
+import {
+  Box,
+  Typography,
+  Button,
+  Menu,
+  MenuItem,
+  IconButton,
+  Badge,
+} from "@mui/material";
+import { useState, useRef, useEffect, useCallback } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import useUserStore from "@stores/useUserStore";
 import AccountCircleIcon from "@mui/icons-material/AccountCircle";
 import apiClient from "@apis/apiClient";
+import useSSE from "@hooks/useSSE";
+import { Notifications } from "@mui/icons-material";
+import NotificationList from "./NotificationList";
+import useNotificationStore from "@stores/useNotificationStore";
 
 interface PageHeaderProps {
   title: string;
 }
 
 const PageHeader = ({ title }: PageHeaderProps) => {
+  useSSE();
+  const { notificationList } = useNotificationStore();
+
+  const [isNotificationOpen, setIsNotificationOpen] = useState(false);
+  const [isChildModalOpen, setIsChildModalOpen] = useState(false);
+  const notificationRef = useRef<HTMLDivElement>(null);
+
+  const [userMenuAnchorEl, setUserMenuAnchorEl] = useState<null | HTMLElement>(
+    null
+  );
+
   const navigate = useNavigate();
-  const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
   const { user, clearUser } = useUserStore();
 
-  const handleClick = (event: React.MouseEvent<HTMLButtonElement>) => {
-    setAnchorEl(event.currentTarget);
+  const unreadCount =
+    notificationList?.filter((notification) => !notification.read).length || 0;
+
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (isChildModalOpen) return;
+
+      if (
+        notificationRef.current &&
+        !notificationRef.current.contains(event.target as Node)
+      ) {
+        setIsNotificationOpen(false);
+      }
+    };
+
+    if (isNotificationOpen) {
+      document.addEventListener("mousedown", handleClickOutside);
+    }
+
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, [isNotificationOpen, isChildModalOpen]);
+
+  const handleNotificationToggle = useCallback(() => {
+    setIsNotificationOpen((prev) => !prev);
+  }, []);
+
+  const handleChildModalStateChange = useCallback((isOpen: boolean) => {
+    setIsChildModalOpen(isOpen);
+  }, []);
+
+  const handleUserMenuClick = (event: React.MouseEvent<HTMLButtonElement>) => {
+    setUserMenuAnchorEl(event.currentTarget);
   };
 
-  const handleClose = () => {
-    setAnchorEl(null);
+  const handleUserMenuClose = () => {
+    setUserMenuAnchorEl(null);
   };
 
   const handleLogout = async () => {
@@ -46,12 +100,12 @@ const PageHeader = ({ title }: PageHeaderProps) => {
       sessionStorage.removeItem("_ZA");
       clearUser();
       navigate("/sign-in");
-    } catch (error) {
+    } catch {
       sessionStorage.removeItem("_ZA");
       clearUser();
       navigate("/sign-in");
     } finally {
-      handleClose();
+      handleUserMenuClose();
     }
   };
 
@@ -81,9 +135,32 @@ const PageHeader = ({ title }: PageHeaderProps) => {
         </Typography>
       </Box>
 
-      <Box sx={{ display: "flex", alignItems: "center", gap: 2 }}>
+      <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
+        <Box ref={notificationRef} sx={{ position: "relative" }}>
+          <IconButton
+            onClick={handleNotificationToggle}
+            sx={{
+              color: isNotificationOpen ? "primary.main" : "inherit",
+              "&:hover": {
+                backgroundColor: "rgba(0, 0, 0, 0.04)",
+              },
+            }}
+          >
+            <Badge badgeContent={unreadCount} color="error">
+              <Notifications />
+            </Badge>
+          </IconButton>
+
+          {isNotificationOpen && (
+            <NotificationList
+              notifications={notificationList ?? []}
+              onNotificationListModalStateChange={handleChildModalStateChange}
+            />
+          )}
+        </Box>
+
         <Button
-          onClick={handleClick}
+          onClick={handleUserMenuClick}
           sx={{
             color: "#222222",
             textTransform: "none",
@@ -93,12 +170,13 @@ const PageHeader = ({ title }: PageHeaderProps) => {
           }}
           startIcon={<AccountCircleIcon />}
         >
-          {user?.name || ""}
+          {user?.name || "사용자"}
         </Button>
+
         <Menu
-          anchorEl={anchorEl}
-          open={Boolean(anchorEl)}
-          onClose={handleClose}
+          anchorEl={userMenuAnchorEl}
+          open={Boolean(userMenuAnchorEl)}
+          onClose={handleUserMenuClose}
           anchorOrigin={{
             vertical: "bottom",
             horizontal: "right",
@@ -117,7 +195,7 @@ const PageHeader = ({ title }: PageHeaderProps) => {
           }}
         >
           <Link to="/my" style={{ textDecoration: "none", color: "inherit" }}>
-            <MenuItem onClick={handleClose}>마이페이지</MenuItem>
+            <MenuItem onClick={handleUserMenuClose}>마이페이지</MenuItem>
           </Link>
           <MenuItem onClick={handleLogout} sx={{ color: "#d32f2f" }}>
             로그아웃

@@ -23,6 +23,7 @@
     "@tailwindcss/vite": "^4.0.15",
     "axios": "^1.8.4",
     "dayjs": "^1.11.13",
+    "eventsource": "^4.0.0",
     "react": "^19.0.0",
     "react-calendar": "^5.1.0",
     "react-daum-postcode": "^3.2.0",

@@ -73,9 +73,6 @@ const MessageHistoryPage = () => {
         "/messages"
       );
 
-      console.log("API Response:", response);
-      console.log("GroupList:", response.data?.groupList);
-
       if (
         response.success &&
         response.code === 200 &&

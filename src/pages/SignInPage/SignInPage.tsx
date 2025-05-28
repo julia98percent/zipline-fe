@@ -56,7 +56,6 @@ const SignInPage = () => {
           message: serverMessage,
           type: "error",
         });
-        console.log(error);
       });
   };
 

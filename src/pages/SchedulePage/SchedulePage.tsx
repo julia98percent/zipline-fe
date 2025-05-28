@@ -73,7 +73,6 @@ const SchedulePage = () => {
   const handleDatesSet = (arg: DatesSetArg) => {
     const start = dayjs(arg.start).toISOString();
     const end = dayjs(arg.end).subtract(1, "day").toISOString();
-    console.log(start, end);
     fetchSchedules(start, end);
   };
 

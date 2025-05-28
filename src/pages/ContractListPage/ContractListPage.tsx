@@ -133,7 +133,7 @@ function ContractListPage() {
 
   return (
     <div className={styles.container}>
-      <PageHeader title="계약 목록" userName={user?.name || ""} />
+      <PageHeader title="계약 목록" />
 
       <div className={styles.contents}>
         <div className={styles.controlsContainer}>

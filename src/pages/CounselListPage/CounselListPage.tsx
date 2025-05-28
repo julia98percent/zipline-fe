@@ -16,7 +16,6 @@ import { DatePicker } from "@mui/x-date-pickers/DatePicker";
 import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import PageHeader from "@components/PageHeader/PageHeader";
-import useUserStore from "@stores/useUserStore";
 import { useEffect, useState } from "react";
 import apiClient from "@apis/apiClient";
 import dayjs from "dayjs";
@@ -51,7 +50,6 @@ interface CounselListResponse {
 
 function CounselListPage() {
   const navigate = useNavigate();
-  const { user } = useUserStore();
   const [counsels, setCounsels] = useState<Counsel[]>([]);
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(10);
@@ -142,7 +140,7 @@ function CounselListPage() {
 
   return (
     <Box className={styles.container}>
-      <PageHeader title="상담 내역" userName={user?.name || "-"} />
+      <PageHeader title="상담 목록" />
 
       <Box className={styles.contents}>
         <div className={styles.controlsContainer}>

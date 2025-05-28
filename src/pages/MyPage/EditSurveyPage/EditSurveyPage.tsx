@@ -152,15 +152,15 @@ const EditSurveyPage = () => {
   const handleAddQuestion = () => {
     const newQuestion = {
       ...DEFAULT_QUESTION_TEMPLATE,
-      id: Math.max(...survey.questions.map(q => q.id || 0), 0) + 1
+      id: Math.max(...survey.questions.map((q) => q.id || 0), 0) + 1,
     };
-    
+
     const updatedQuestions = [...survey.questions, newQuestion].sort((a, b) => {
       if (!a.id) return 1;
       if (!b.id) return -1;
       return a.id - b.id;
     });
-    
+
     setSurvey({
       ...survey,
       questions: updatedQuestions,
@@ -244,7 +244,7 @@ const EditSurveyPage = () => {
 
   return (
     <Box>
-      <PageHeader title="설문 수정" userName={user?.name || ""} />
+      <PageHeader title="설문 수정" />
 
       <Box
         sx={{

@@ -40,7 +40,6 @@ import apiClient from "@apis/apiClient";
 import ScheduleDetailModal from "@components/ScheduleDetailModal/ScheduleDetailModal";
 import SurveyDetailModal from "@pages/DashboardPage/SurveyDetailModal";
 import { Schedule } from "../../interfaces/schedule";
-import useUserStore from "@stores/useUserStore";
 import { formatDate } from "@utils/dateUtil";
 import RecentCustomersModal from "./RecentCustomersModal";
 import RecentContractsModal from "./RecentContractsModal";
@@ -162,7 +161,7 @@ const DashboardPage = () => {
   );
   const [counselListByLatest, setCounselListByLatest] = useState<counsel[]>([]);
   const [counselLoading, setCounselLoading] = useState(false);
-  const { user } = useUserStore();
+
   const [toast, setToast] = useState({
     open: false,
     message: "",
@@ -619,7 +618,7 @@ const DashboardPage = () => {
         p: 0,
       }}
     >
-      <PageHeader title="대시보드" userName={user?.name || ""} />
+      <PageHeader title="대시보드" />
 
       <Box sx={{ p: 3, pt: 0 }}>
         {/* 통계 카드 영역 */}

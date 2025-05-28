@@ -74,7 +74,7 @@ function MyPage() {
         minHeight: "100vh",
       }}
     >
-      <PageHeader title="마이페이지" userName={user?.name || "-"} />
+      <PageHeader title="마이페이지" />
 
       <Box sx={{ p: 3 }}>
         {/* 회원 정보 수정 */}

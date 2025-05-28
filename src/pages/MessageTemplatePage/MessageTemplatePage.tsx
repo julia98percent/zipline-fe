@@ -15,7 +15,6 @@ import {
 import DeleteConfirmModal from "@components/DeleteConfirm/DeleteConfirmModal";
 import PageHeader from "@components/PageHeader/PageHeader";
 import apiClient from "@apis/apiClient";
-import useUserStore from "@stores/useUserStore";
 import { showToast } from "@components/Toast/Toast";
 interface Template {
   uid: number;
@@ -42,7 +41,6 @@ const ALLOWED_VARIABLES = ["이름", "생년월일", "관심지역"] as const;
 type AllowedVariable = (typeof ALLOWED_VARIABLES)[number];
 
 const MessageTemplatePage = () => {
-  const { user } = useUserStore();
   const [templateTitle, setTemplateTitle] = useState("");
   const [templateContent, setTemplateContent] = useState("");
   const [selectedTemplate, setSelectedTemplate] = useState<Template | null>(
@@ -312,7 +310,7 @@ const MessageTemplatePage = () => {
         backgroundColor: "#f5f5f5",
       }}
     >
-      <PageHeader title="문자 템플릿" userName={user?.name || "-"} />
+      <PageHeader title="문자 템플릿" />
 
       <Box sx={{ p: 3, display: "flex", gap: "28px" }}>
         {/* 왼쪽 영역: 템플릿 목록 */}

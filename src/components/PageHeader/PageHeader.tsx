@@ -1,11 +1,4 @@
-import {
-  Box,
-  Typography,
-  Button,
-  Menu,
-  MenuItem,
-  IconButton,
-} from "@mui/material";
+import { Box, Typography, Button, Menu, MenuItem } from "@mui/material";
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import useUserStore from "@stores/useUserStore";
@@ -14,14 +7,12 @@ import apiClient from "@apis/apiClient";
 
 interface PageHeaderProps {
   title: string;
-  userName: string;
-  action?: React.ReactNode;
 }
 
-const PageHeader = ({ title, userName, action }: PageHeaderProps) => {
+const PageHeader = ({ title }: PageHeaderProps) => {
   const navigate = useNavigate();
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
-  const { clearUser } = useUserStore();
+  const { user, clearUser } = useUserStore();
 
   const handleClick = (event: React.MouseEvent<HTMLButtonElement>) => {
     setAnchorEl(event.currentTarget);
@@ -91,7 +82,6 @@ const PageHeader = ({ title, userName, action }: PageHeaderProps) => {
       </Box>
 
       <Box sx={{ display: "flex", alignItems: "center", gap: 2 }}>
-        {action}
         <Button
           onClick={handleClick}
           sx={{
@@ -103,7 +93,7 @@ const PageHeader = ({ title, userName, action }: PageHeaderProps) => {
           }}
           startIcon={<AccountCircleIcon />}
         >
-          {userName}
+          {user?.name || ""}
         </Button>
         <Menu
           anchorEl={anchorEl}

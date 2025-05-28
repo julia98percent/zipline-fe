@@ -96,7 +96,6 @@ export interface SearchParams {
 }
 
 function PublicPropertyListPage() {
-  const { user } = useUserStore();
   const [publicPropertyList, setPublicPropertyList] = useState<
     PublicPropertyItem[]
   >([]);

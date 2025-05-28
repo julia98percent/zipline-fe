@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useRef } from "react";
+import { useEffect, useState, useRef } from "react";
 import { Box, Button, Chip, Typography, Tabs, Tab } from "@mui/material";
 import { useParams, useNavigate } from "react-router-dom";
 import apiClient from "@apis/apiClient";
@@ -15,7 +15,6 @@ import {
   PageContainer,
 } from "./styles/AgentPropertyDetailPage.styles";
 import dayjs from "dayjs";
-import { toast } from "react-toastify";
 import DeleteConfirmModal from "@components/DeleteConfirm/DeleteConfirmModal";
 import PageHeader from "@components/PageHeader/PageHeader";
 import useUserStore from "@stores/useUserStore";
@@ -410,7 +409,7 @@ const AgentPropertyDetailPage = () => {
 
   return (
     <PageContainer>
-      <PageHeader title="매물 상세 조회" userName={user?.name || "-"} />
+      <PageHeader title="매물 상세 조회" />
       <DetailPageContainer>
         {editModalOpen && property && (
           <PropertyEditModal

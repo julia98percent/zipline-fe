@@ -27,8 +27,10 @@ export const useNotification = () => {
 
   const handleCloseModal = useCallback(() => {
     setIsSurveyDetailModalOpen(false);
-    setSelectedPreCounsel(null);
-    setError(null);
+    setTimeout(() => {
+      setSelectedPreCounsel(null);
+      setError(null);
+    }, 300);
   }, []);
 
   const resetError = useCallback(() => {

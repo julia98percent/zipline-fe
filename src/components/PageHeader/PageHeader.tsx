@@ -13,7 +13,7 @@ import AccountCircleIcon from "@mui/icons-material/AccountCircle";
 import apiClient from "@apis/apiClient";
 import useSSE from "@hooks/useSSE";
 import { Notifications } from "@mui/icons-material";
-import NotificationList from "./NotificationModal";
+import NotificationList from "./NotificationList";
 import useNotificationStore from "@stores/useNotificationStore";
 
 interface PageHeaderProps {

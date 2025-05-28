@@ -5,8 +5,9 @@ import {
   Menu,
   MenuItem,
   IconButton,
+  Badge,
 } from "@mui/material";
-import { useState, useRef, useEffect } from "react";
+import { useState, useRef, useEffect, useCallback } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import useUserStore from "@stores/useUserStore";
 import AccountCircleIcon from "@mui/icons-material/AccountCircle";
@@ -21,40 +22,58 @@ interface PageHeaderProps {
 }
 
 const PageHeader = ({ title }: PageHeaderProps) => {
-  const { connectionStatus } = useSSE();
+  useSSE();
   const { notificationList } = useNotificationStore();
-  const [isNotiOpen, setIsNotiOpen] = useState(false);
+
+  const [isNotificationOpen, setIsNotificationOpen] = useState(false);
+  const [isChildModalOpen, setIsChildModalOpen] = useState(false);
   const notificationRef = useRef<HTMLDivElement>(null);
 
+  const [userMenuAnchorEl, setUserMenuAnchorEl] = useState<null | HTMLElement>(
+    null
+  );
+
   const navigate = useNavigate();
-  const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
   const { user, clearUser } = useUserStore();
+
+  const unreadCount =
+    notificationList?.filter((notification) => !notification.read).length || 0;
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
+      if (isChildModalOpen) return;
+
       if (
         notificationRef.current &&
         !notificationRef.current.contains(event.target as Node)
       ) {
-        setIsNotiOpen(false);
+        setIsNotificationOpen(false);
       }
     };
 
-    if (isNotiOpen) {
+    if (isNotificationOpen) {
       document.addEventListener("mousedown", handleClickOutside);
     }
 
     return () => {
       document.removeEventListener("mousedown", handleClickOutside);
     };
-  }, [isNotiOpen]);
+  }, [isNotificationOpen, isChildModalOpen]);
 
-  const handleClick = (event: React.MouseEvent<HTMLButtonElement>) => {
-    setAnchorEl(event.currentTarget);
+  const handleNotificationToggle = useCallback(() => {
+    setIsNotificationOpen((prev) => !prev);
+  }, []);
+
+  const handleChildModalStateChange = useCallback((isOpen: boolean) => {
+    setIsChildModalOpen(isOpen);
+  }, []);
+
+  const handleUserMenuClick = (event: React.MouseEvent<HTMLButtonElement>) => {
+    setUserMenuAnchorEl(event.currentTarget);
   };
 
-  const handleClose = () => {
-    setAnchorEl(null);
+  const handleUserMenuClose = () => {
+    setUserMenuAnchorEl(null);
   };
 
   const handleLogout = async () => {
@@ -86,7 +105,7 @@ const PageHeader = ({ title }: PageHeaderProps) => {
       clearUser();
       navigate("/sign-in");
     } finally {
-      handleClose();
+      handleUserMenuClose();
     }
   };
 
@@ -116,18 +135,32 @@ const PageHeader = ({ title }: PageHeaderProps) => {
         </Typography>
       </Box>
 
-      <Box sx={{ display: "flex", alignItems: "center", gap: 2 }}>
+      <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
         <Box ref={notificationRef} sx={{ position: "relative" }}>
-          <IconButton onClick={() => setIsNotiOpen(!isNotiOpen)}>
-            <Notifications />
+          <IconButton
+            onClick={handleNotificationToggle}
+            sx={{
+              color: isNotificationOpen ? "primary.main" : "inherit",
+              "&:hover": {
+                backgroundColor: "rgba(0, 0, 0, 0.04)",
+              },
+            }}
+          >
+            <Badge badgeContent={unreadCount} color="error">
+              <Notifications />
+            </Badge>
           </IconButton>
-          {isNotiOpen && (
-            <NotificationList notifications={notificationList ?? []} />
+
+          {isNotificationOpen && (
+            <NotificationList
+              notifications={notificationList ?? []}
+              onNotificationListModalStateChange={handleChildModalStateChange}
+            />
           )}
         </Box>
 
         <Button
-          onClick={handleClick}
+          onClick={handleUserMenuClick}
           sx={{
             color: "#222222",
             textTransform: "none",
@@ -137,12 +170,13 @@ const PageHeader = ({ title }: PageHeaderProps) => {
           }}
           startIcon={<AccountCircleIcon />}
         >
-          {user?.name || ""}
+          {user?.name || "사용자"}
         </Button>
+
         <Menu
-          anchorEl={anchorEl}
-          open={Boolean(anchorEl)}
-          onClose={handleClose}
+          anchorEl={userMenuAnchorEl}
+          open={Boolean(userMenuAnchorEl)}
+          onClose={handleUserMenuClose}
           anchorOrigin={{
             vertical: "bottom",
             horizontal: "right",
@@ -161,7 +195,7 @@ const PageHeader = ({ title }: PageHeaderProps) => {
           }}
         >
           <Link to="/my" style={{ textDecoration: "none", color: "inherit" }}>
-            <MenuItem onClick={handleClose}>마이페이지</MenuItem>
+            <MenuItem onClick={handleUserMenuClose}>마이페이지</MenuItem>
           </Link>
           <MenuItem onClick={handleLogout} sx={{ color: "#d32f2f" }}>
             로그아웃

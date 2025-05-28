@@ -40,7 +40,7 @@ const PreCounselDetailModal = ({
       }}
     >
       <DialogTitle sx={{ pb: 1, color: "#164F9E", fontWeight: 700 }}>
-        사전 설문 상세
+        사전 상담 상세
       </DialogTitle>
       <DialogContent sx={{ pt: "16px !important" }}>
         {isLoading ? (
@@ -63,7 +63,7 @@ const PreCounselDetailModal = ({
                     variant="body2"
                     sx={{ color: "#666", width: 100 }}
                   >
-                    설문 이름
+                    사전 상담 이름
                   </Typography>
                   <Typography variant="body2" sx={{ fontWeight: 500 }}>
                     {preCounselDetail.title}

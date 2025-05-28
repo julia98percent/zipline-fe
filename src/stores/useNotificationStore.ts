@@ -7,6 +7,7 @@ type NotificationCategory =
   | "SCHEDULE";
 
 export interface Notification {
+  uid: number;
   category: NotificationCategory;
   title: string;
   content: string;
@@ -15,10 +16,14 @@ export interface Notification {
   url: number;
 }
 
-interface NotificationState {
+export interface NotificationState {
   notificationList: Notification[] | null;
   setNotificationList: (notificationList: Notification[]) => void;
   addNotificationList: (notification: Notification) => void;
+  updateNotification: (
+    notificationId: number,
+    updates: Partial<Notification>
+  ) => void;
   clearNotification: () => void;
 }
 
@@ -30,6 +35,18 @@ const useNotificationStore = create<NotificationState>((set) => ({
       notificationList: state.notificationList
         ? [notification, ...state.notificationList]
         : [notification],
+    })),
+  updateNotification: (
+    notificationId: number,
+    updates: Partial<Notification>
+  ) =>
+    set((state) => ({
+      notificationList:
+        state.notificationList?.map((notification) =>
+          notification.uid === notificationId
+            ? { ...notification, ...updates }
+            : notification
+        ) || null,
     })),
   clearNotification: () => set({ notificationList: null }),
 }));

@@ -240,18 +240,18 @@ function PublicPropertyListPage() {
 
   const handleAddressSearchSubmit = () => {
     if (searchAddress.trim()) {
-      setSearchParams(prev => ({
+      setSearchParams((prev) => ({
         ...prev,
         address: searchAddress.trim(),
-        page: 0 // Reset to first page when search changes
+        page: 0, // Reset to first page when search changes
       }));
     } else {
       // 검색어가 비어있으면 주소 검색 필터 제거
-      setSearchParams(prev => {
+      setSearchParams((prev) => {
         const { address, ...rest } = prev;
         return {
           ...rest,
-          page: 0
+          page: 0,
         };
       });
     }
@@ -260,54 +260,75 @@ function PublicPropertyListPage() {
   // Fetch property data with all search parameters
   const fetchPropertyData = useCallback(async () => {
     setLoading(true);
-  
+
     const apiParams = { ...searchParams };
-  
+
     // ❌ 더 이상 address 삭제하지 않음
     // delete apiParams.address;
-  
+
     const queryParams = new URLSearchParams();
-  
+
     queryParams.append("page", apiParams.page.toString());
     queryParams.append("size", apiParams.size.toString());
     queryParams.append("sortFields", JSON.stringify(apiParams.sortFields));
-  
-    if (apiParams.regionCode) queryParams.append("regionCode", apiParams.regionCode);
-    if (apiParams.buildingName) queryParams.append("buildingName", apiParams.buildingName);
-    if (apiParams.buildingType) queryParams.append("buildingType", apiParams.buildingType);
+
+    if (apiParams.regionCode)
+      queryParams.append("regionCode", apiParams.regionCode);
+    if (apiParams.buildingName)
+      queryParams.append("buildingName", apiParams.buildingName);
+    if (apiParams.buildingType)
+      queryParams.append("buildingType", apiParams.buildingType);
     if (apiParams.category) queryParams.append("category", apiParams.category);
     if (apiParams.address) queryParams.append("address", apiParams.address); // ✅ address 추가
-  
+
     // 가격 필터들...
-    if (apiParams.minPrice) queryParams.append("minPrice", apiParams.minPrice.toString());
-    if (apiParams.maxPrice) queryParams.append("maxPrice", apiParams.maxPrice.toString());
-    if (apiParams.minDeposit) queryParams.append("minDeposit", apiParams.minDeposit.toString());
-    if (apiParams.maxDeposit) queryParams.append("maxDeposit", apiParams.maxDeposit.toString());
-    if (apiParams.minMonthlyRent) queryParams.append("minMonthlyRent", apiParams.minMonthlyRent.toString());
-    if (apiParams.maxMonthlyRent) queryParams.append("maxMonthlyRent", apiParams.maxMonthlyRent.toString());
-    if (apiParams.minExclusiveArea) queryParams.append("minExclusiveArea", apiParams.minExclusiveArea.toString());
-    if (apiParams.maxExclusiveArea) queryParams.append("maxExclusiveArea", apiParams.maxExclusiveArea.toString());
-    if (apiParams.minSupplyArea) queryParams.append("minSupplyArea", apiParams.minSupplyArea.toString());
-    if (apiParams.maxSupplyArea) queryParams.append("maxSupplyArea", apiParams.maxSupplyArea.toString());
-  
+    if (apiParams.minPrice)
+      queryParams.append("minPrice", apiParams.minPrice.toString());
+    if (apiParams.maxPrice)
+      queryParams.append("maxPrice", apiParams.maxPrice.toString());
+    if (apiParams.minDeposit)
+      queryParams.append("minDeposit", apiParams.minDeposit.toString());
+    if (apiParams.maxDeposit)
+      queryParams.append("maxDeposit", apiParams.maxDeposit.toString());
+    if (apiParams.minMonthlyRent)
+      queryParams.append("minMonthlyRent", apiParams.minMonthlyRent.toString());
+    if (apiParams.maxMonthlyRent)
+      queryParams.append("maxMonthlyRent", apiParams.maxMonthlyRent.toString());
+    if (apiParams.minExclusiveArea)
+      queryParams.append(
+        "minExclusiveArea",
+        apiParams.minExclusiveArea.toString()
+      );
+    if (apiParams.maxExclusiveArea)
+      queryParams.append(
+        "maxExclusiveArea",
+        apiParams.maxExclusiveArea.toString()
+      );
+    if (apiParams.minSupplyArea)
+      queryParams.append("minSupplyArea", apiParams.minSupplyArea.toString());
+    if (apiParams.maxSupplyArea)
+      queryParams.append("maxSupplyArea", apiParams.maxSupplyArea.toString());
+
     try {
-      const res = await apiClient.get(`/property-articles/search?${queryParams.toString()}`);
+      const res = await apiClient.get(
+        `/property-articles/search?${queryParams.toString()}`
+      );
       const propertyData = res?.data?.content;
       const total = res?.data?.totalElements;
       const pages = res?.data?.totalPages;
-  
+
       let normalizedData = propertyData.map((item: PublicPropertyItem) => ({
         ...item,
         supplyArea: item.supplyArea == null ? 0 : item.supplyArea,
       }));
-  
+
       // ✅ 프론트 필터링 제거됨
       // if (searchAddress.trim()) {
       //   normalizedData = normalizedData.filter((item: PublicPropertyItem) =>
       //     item.address && item.address.includes(searchAddress.trim())
       //   );
       // }
-  
+
       setPublicPropertyList(normalizedData);
       setTotalElements(total);
       setTotalPages(pages);
@@ -329,7 +350,7 @@ function PublicPropertyListPage() {
   if (loading) {
     return (
       <>
-        <PageHeader title="공개 매물 목록" userName={user?.name || "-"} />
+        <PageHeader title="공개 매물 목록" />
         <Box
           sx={{
             display: "flex",
@@ -347,20 +368,41 @@ function PublicPropertyListPage() {
 
   return (
     <>
-      <PageHeader title="공개 매물 목록" userName={user?.name || "-"} />
-      <Box sx={{ padding: "20px", paddingTop: "20px", backgroundColor: "#f5f5f5", minHeight: '100vh' }}>
+      <PageHeader title="공개 매물 목록" />
+      <Box
+        sx={{
+          padding: "20px",
+          paddingTop: "20px",
+          backgroundColor: "#f5f5f5",
+          minHeight: "100vh",
+        }}
+      >
         {/* 상단 필터 바 컨테이너 */}
-        <Paper sx={{ p: 3, mb: "28px", borderRadius: "8px", boxShadow: '0 2px 8px rgba(0,0,0,0.04)' }}>
-          <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2 }}>
+        <Paper
+          sx={{
+            p: 3,
+            mb: "28px",
+            borderRadius: "8px",
+            boxShadow: "0 2px 8px rgba(0,0,0,0.04)",
+          }}
+        >
+          <Box
+            sx={{
+              display: "flex",
+              justifyContent: "space-between",
+              alignItems: "center",
+              mb: 2,
+            }}
+          >
             <Typography variant="h6" fontWeight="bold">
               공개 매물 검색 결과 : {totalElements} 건
             </Typography>
-            <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+            <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
               <Button
                 variant="outlined"
                 size="small"
                 onClick={handleSortReset}
-                sx={{ height: '32px' }}
+                sx={{ height: "32px" }}
               >
                 정렬 초기화
               </Button>
@@ -369,13 +411,13 @@ function PublicPropertyListPage() {
                 color={showFilterModal ? "primary" : "inherit"}
                 variant={showFilterModal ? "contained" : "outlined"}
                 onClick={() => setShowFilterModal(true)}
-                sx={{ height: '32px', ml: 1 }}
+                sx={{ height: "32px", ml: 1 }}
               >
                 상세 필터
               </Button>
             </Box>
           </Box>
-          <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+          <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
             <TextField
               fullWidth
               size="small"
@@ -383,7 +425,7 @@ function PublicPropertyListPage() {
               value={searchAddress}
               onChange={handleAddressSearch}
               onKeyDown={(e) => {
-                if (e.key === 'Enter') {
+                if (e.key === "Enter") {
                   e.preventDefault();
                   handleAddressSearchSubmit();
                 }
@@ -404,7 +446,16 @@ function PublicPropertyListPage() {
           </Box>
         </Paper>
         {/* 단위/주소 스위치: 두 컨테이너 사이로 이동 */}
-        <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, mb: "3px", mt: "5px", ml: "8px" }}>
+        <Box
+          sx={{
+            display: "flex",
+            alignItems: "center",
+            gap: 2,
+            mb: "3px",
+            mt: "5px",
+            ml: "8px",
+          }}
+        >
           <FormControlLabel
             control={
               <IOSSwitch
@@ -415,11 +466,17 @@ function PublicPropertyListPage() {
               />
             }
             label={useMetric ? "제곱미터(m²)" : "평(py)"}
-            sx={{ '& .MuiFormControlLabel-label': { fontSize: '13px' } }}
+            sx={{ "& .MuiFormControlLabel-label": { fontSize: "13px" } }}
           />
         </Box>
         {/* 매물 리스트 컨테이너 */}
-        <Paper sx={{ p: 3, borderRadius: "8px", boxShadow: '0 2px 8px rgba(0,0,0,0.04)' }}>
+        <Paper
+          sx={{
+            p: 3,
+            borderRadius: "8px",
+            boxShadow: "0 2px 8px rgba(0,0,0,0.04)",
+          }}
+        >
           <PublicPropertyTable
             propertyList={publicPropertyList}
             totalElements={totalElements}

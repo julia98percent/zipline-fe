@@ -4,6 +4,8 @@ import { translateNotificationCategory } from "@utils/stringUtil";
 import { formatDateTimeToKorean } from "@utils/dateUtil";
 import PreCounselDetailModal from "@components/PreCounselDetailModal";
 import { useNotification } from "@hooks/useNotification";
+import { readNotification } from "@apis/notificationService";
+import useNotificationStore from "@stores/useNotificationStore";
 
 interface NotificationItemProps {
   notification: Notification;
@@ -14,9 +16,12 @@ function NotificationItem({
   notification,
   onPreCounselClick,
 }: NotificationItemProps) {
+  const { updateNotification } = useNotificationStore();
+
   const handleClick = () => {
     if (notification.category === "NEW_SURVEY") {
       onPreCounselClick(notification.url);
+      readNotification(notification.uid, updateNotification);
     } else {
       console.log("Navigate to:", notification.url);
     }

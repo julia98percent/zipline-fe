@@ -38,7 +38,7 @@ import { useNavigate } from "react-router-dom";
 import PageHeader from "@components/PageHeader/PageHeader";
 import apiClient from "@apis/apiClient";
 import ScheduleDetailModal from "@components/ScheduleDetailModal/ScheduleDetailModal";
-import SurveyDetailModal from "@pages/DashboardPage/SurveyDetailModal";
+import SurveyDetailModal from "@components/PreCounselDetailModal";
 import { Schedule } from "../../interfaces/schedule";
 import { formatDate } from "@utils/dateUtil";
 import RecentCustomersModal from "./RecentCustomersModal";

@@ -5,13 +5,7 @@ import apiClient from "@apis/apiClient";
 import dayjs from "dayjs";
 import { useNavigate } from "react-router-dom";
 import Table from "@components/Table";
-
-interface PreCounsel {
-  name: string;
-  phoneNumber: string;
-  submittedAt: string;
-  surveyResponseUid: number;
-}
+import { PreCounsel } from "@ts/Counsel";
 
 function PreCounselListPage() {
   const navigate = useNavigate();

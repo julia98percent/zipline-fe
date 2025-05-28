@@ -1,4 +1,3 @@
-import { useState } from "react";
 import {
   Box,
   Typography,
@@ -20,42 +19,6 @@ import SettingsIcon from "@mui/icons-material/Settings";
 import CalendarMonthIcon from "@mui/icons-material/CalendarMonth";
 import ForumIcon from "@mui/icons-material/Forum";
 import EmailIcon from "@mui/icons-material/Email";
-
-interface FormData {
-  property: {
-    title: string;
-    type: string;
-    price: string;
-    address: string;
-  };
-  customer: {
-    name: string;
-    phone: string;
-    email: string;
-    type: string;
-  };
-  contract: {
-    customerId: string;
-    propertyId: string;
-    type: string;
-    startDate: string;
-    endDate: string;
-  };
-  schedule: {
-    title: string;
-    date: string;
-    time: string;
-    type: string;
-    description: string;
-  };
-  consultation: {
-    customerName: string;
-    title: string;
-    date: string;
-    time: string;
-    description: string;
-  };
-}
 
 const MENU_INFO = [
   {
@@ -84,11 +47,6 @@ const MENU_INFO = [
 const NavigationBar = () => {
   const location = useLocation();
   const currentPath = location.pathname;
-
-  const handleCreateSubmit = (formData: FormData) => {
-    // TODO: API 연동
-    console.log(formData);
-  };
 
   return (
     <Drawer
@@ -124,47 +82,6 @@ const NavigationBar = () => {
           </Box>
         </Link>
       </Box>
-      {/* <Box sx={{ mt: "2px", mb: 1 }}>
-        <Box>
-          <MuiButton
-            variant="contained"
-            fullWidth
-            onClick={handleCreateClick}
-            startIcon={<AddIcon sx={{ fontSize: 24 }} />}
-            sx={{
-              backgroundColor: "#164F9E",
-              color: "white",
-              boxShadow: "none",
-              borderRadius: 0,
-              height: "48px",
-              justifyContent: "flex-start",
-              pl: 2,
-              fontSize: "16px",
-              "& .MuiButton-startIcon": {
-                margin: 0,
-                marginRight: 2,
-              },
-              "&:hover": {
-                backgroundColor: "#0D3B7A",
-                boxShadow: "none",
-              },
-            }}
-          >
-            새로 만들기
-          </MuiButton>
-          <Typography
-            variant="caption"
-            sx={{
-              color: "#666666",
-              pl: 2,
-              mt: 0.5,
-              fontSize: "12px",
-            }}
-          >
-            매물 · 고객 · 계약 · 일정 · 상담
-          </Typography>
-        </Box>
-      </Box> */}
       <List sx={{ pt: "4px" }}>
         <ListItem disablePadding>
           <Link to="/" style={{ width: "100%", textDecoration: "none" }}>

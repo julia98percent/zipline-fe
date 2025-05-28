@@ -25,6 +25,7 @@ import AgentPropertyDetailPage from "@pages/PrivatePropertyListPage/AgentPropert
 import CounselListPage from "@pages/CounselListPage";
 import ContractDetailPage from "@pages/ContractDetailPage";
 import CounselDetailPage from "@pages/CounselDetailPage";
+import PreCounselListPage from "@pages/PreCounselListPage";
 
 const App = () => {
   return (
@@ -68,16 +69,21 @@ const App = () => {
             path="properties/public"
             element={<PublicPropertyListPage />}
           />
+
           <Route path="messages/templates" element={<MessageTemplatePage />} />
           <Route path="messages/bulk" element={<BulkMessagePage />} />
           <Route path="messages/history" element={<MessageHistoryPage />} />
+
           <Route path="counsels" element={<CounselListPage />} />
           <Route path="/counsels/:counselUid" element={<CounselDetailPage />} />
+          <Route path="counsels/pre" element={<PreCounselListPage />} />
+
           <Route path="/contracts" element={<ContractListPage />} />
           <Route
             path="/contracts/:contractUid"
             element={<ContractDetailPage />}
           />
+
           <Route path="my">
             <Route index element={<MyPage />} />
             <Route path="edit-survey" element={<EditSurveyPage />} />

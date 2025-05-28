@@ -162,7 +162,7 @@ function CustomerInfo({ customerId }: { customerId: string }) {
 
       if (response.data?.data) {
         const { contracts, totalElements } = response.data.data;
-        console.log(response.data);
+
         setContract(contracts);
         setContractTotalCount(totalElements);
       }

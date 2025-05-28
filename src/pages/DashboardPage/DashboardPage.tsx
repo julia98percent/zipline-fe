@@ -502,7 +502,6 @@ const DashboardPage = () => {
 
   // 상담 상세 페이지로 이동하는 핸들러 추가
   const handleCounselClick = (counselId: number) => {
-    console.log(counselId);
     navigate(`/counsels/${counselId}`);
   };
 

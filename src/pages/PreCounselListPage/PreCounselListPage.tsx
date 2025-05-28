@@ -1,25 +1,22 @@
 import { useState, useEffect, useCallback } from "react";
-import {
-  Box,
-  TableContainer,
-  Paper,
-  TableHead,
-  TableCell,
-  TableRow,
-  TableBody,
-  CircularProgress,
-  Table,
-  TablePagination,
-} from "@mui/material";
+import { Box } from "@mui/material";
 import PageHeader from "@components/PageHeader";
 import apiClient from "@apis/apiClient";
 import dayjs from "dayjs";
 import { useNavigate } from "react-router-dom";
+import Table from "@components/Table";
+
+interface PreCounsel {
+  name: string;
+  phoneNumber: string;
+  submittedAt: string;
+  surveyResponseUid: number;
+}
 
 function PreCounselListPage() {
   const navigate = useNavigate();
 
-  const [counsels, setCounsels] = useState([]);
+  const [counsels, setCounsels] = useState<PreCounsel[]>([]);
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(25);
   const [isLoading, setIsLoading] = useState(true);
@@ -36,7 +33,7 @@ function PreCounselListPage() {
     setPage(0);
   };
 
-  const handleRowClick = (counselUid: number) => {
+  const handleRowClick = (counselUid: string) => {
     navigate(`${counselUid}`);
   };
 
@@ -49,7 +46,6 @@ function PreCounselListPage() {
           size: rowsPerPage,
         },
       });
-      console.log(response);
       if (response.data.success) {
         setCounsels(response.data.data.surveyResponses);
         setTotalElements(response.data.data.totalElements);
@@ -68,68 +64,22 @@ function PreCounselListPage() {
   return (
     <Box>
       <PageHeader title="사전 상담 목록" />
-      <Paper
-        sx={{
-          width: "100%",
-          borderRadius: "8px",
-          boxShadow: "0 2px 6px rgba(0, 0, 0, 0.05)",
-        }}
-      >
-        <TableContainer>
-          <Table>
-            <TableHead>
-              <TableRow>
-                <TableCell>이름</TableCell>
-                <TableCell>전화번호</TableCell>
-                <TableCell>상담 요청일</TableCell>
-              </TableRow>
-            </TableHead>
-            <TableBody>
-              {isLoading ? (
-                <TableRow>
-                  <TableCell colSpan={5} align="center" sx={{ py: 3 }}>
-                    <CircularProgress size={24} />
-                  </TableCell>
-                </TableRow>
-              ) : counsels.length === 0 ? (
-                <TableRow>
-                  <TableCell colSpan={5} align="center">
-                    사전 상담 내역이 없습니다.
-                  </TableCell>
-                </TableRow>
-              ) : (
-                counsels.map((counsel) => (
-                  <TableRow
-                    key={counsel.surveyResponseUid}
-                    hover
-                    onClick={() => handleRowClick(counsel.surveyResponseUid)}
-                    sx={{ cursor: "pointer" }}
-                  >
-                    <TableCell>{counsel.name}</TableCell>
-                    <TableCell>{counsel.phoneNumber}</TableCell>
-                    <TableCell>
-                      {dayjs(counsel.submittedAt).format("YYYY-MM-DD")}
-                    </TableCell>
-                  </TableRow>
-                ))
-              )}
-            </TableBody>
-          </Table>
-        </TableContainer>
-        <TablePagination
-          component="div"
-          count={totalElements}
-          page={page}
-          onPageChange={handleChangePage}
-          rowsPerPage={rowsPerPage}
-          onRowsPerPageChange={handleChangeRowsPerPage}
-          rowsPerPageOptions={[10, 25, 50]}
-          labelRowsPerPage="페이지당 행 수"
-          labelDisplayedRows={({ from, to, count }) =>
-            `${count}개 중 ${from}-${to}개`
-          }
-        />
-      </Paper>
+      <Table
+        isLoading={isLoading}
+        headerList={["이름", "전화번호", "상담 요청일"]}
+        bodyList={counsels.map((counsel) => ({
+          name: counsel.name,
+          phoneNumber: counsel.phoneNumber,
+          submittedAt: dayjs(counsel.submittedAt).format("YYYY-MM-DD"),
+          id: `${counsel.surveyResponseUid}`,
+        }))}
+        handleRowClick={handleRowClick}
+        totalElements={totalElements}
+        page={page}
+        handleChangePage={handleChangePage}
+        rowsPerPage={rowsPerPage}
+        handleChangeRowsPerPage={handleChangeRowsPerPage}
+      />
     </Box>
   );
 }

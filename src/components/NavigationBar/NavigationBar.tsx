@@ -50,7 +50,7 @@ const MENU_INFO: MenuItem[] = [
     key: "counsels",
     submenu: [
       { name: "일반 상담", to: "/counsels" },
-      { name: "신규 고객 사전 상담", to: "/counsels/pre" },
+      { name: "사전 상담", to: "/counsels/pre" },
     ],
   },
   {

@@ -38,7 +38,7 @@ import { useNavigate } from "react-router-dom";
 import PageHeader from "@components/PageHeader/PageHeader";
 import apiClient from "@apis/apiClient";
 import ScheduleDetailModal from "@components/ScheduleDetailModal/ScheduleDetailModal";
-import SurveyDetailModal from "@components/PreCounselDetailModal";
+import PreCounselDetailModal from "@components/PreCounselDetailModal";
 import { Schedule } from "../../interfaces/schedule";
 import { formatDate } from "@utils/dateUtil";
 import RecentCustomersModal from "./RecentCustomersModal";
@@ -86,30 +86,6 @@ interface StatisticsResponse {
   code: number;
   message: string;
   data: number;
-}
-
-interface SurveyResponse {
-  id: number;
-  name: string;
-  phoneNumber: string;
-  submittedAt: string;
-  surveyResponseUid: number;
-}
-
-interface SurveyDetail {
-  surveyResponseUid: number;
-  title: string;
-  submittedAt: string;
-  customerUid: number | null;
-  answers: {
-    questionUid: number;
-    questionTitle: string;
-    description: string;
-    questionType: string;
-    answer: string;
-    choices: string[];
-    required: boolean;
-  }[];
 }
 
 const SURVEY_PAGE_SIZE = 10;
@@ -1709,10 +1685,10 @@ const DashboardPage = () => {
         onSave={handleSaveSchedule}
       />
       {/* 설문 상세 모달 */}
-      <SurveyDetailModal
+      <PreCounselDetailModal
         open={isSurveyDetailModalOpen}
         onClose={handleCloseSurveyDetailModal}
-        surveyDetail={selectedSurvey}
+        preCounselDetail={selectedSurvey}
         isLoading={surveyDetailLoading}
       />
       {/* 최근 유입 고객 모달 */}

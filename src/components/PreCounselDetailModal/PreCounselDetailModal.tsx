@@ -12,42 +12,21 @@ import {
   Link,
 } from "@mui/material";
 import { formatDate } from "@utils/dateUtil";
+import { PreCounselDetail } from "@ts/Counsel";
 
-interface SurveyAnswer {
-  questionUid: number;
-  questionTitle: string;
-  description: string;
-  questionType: string;
-  answer: string;
-  fileName?: string;
-  choices: {
-    choiceUid: number;
-    choiceText: string;
-  }[];
-  required: boolean;
-}
-
-interface SurveyDetail {
-  surveyResponseUid: number;
-  title: string;
-  submittedAt: string;
-  customerUid: number | null;
-  answers: SurveyAnswer[];
-}
-
-interface SurveyDetailModalProps {
+interface PreCounselDetailModalProps {
   open: boolean;
   onClose: () => void;
-  surveyDetail: SurveyDetail | null;
+  preCounselDetail: PreCounselDetail | null;
   isLoading: boolean;
 }
 
-const SurveyDetailModal = ({
+const PreCounselDetailModal = ({
   open,
   onClose,
-  surveyDetail,
+  preCounselDetail,
   isLoading,
-}: SurveyDetailModalProps) => {
+}: PreCounselDetailModalProps) => {
   return (
     <Dialog
       open={open}
@@ -60,15 +39,15 @@ const SurveyDetailModal = ({
         },
       }}
     >
-      <DialogTitle sx={{ pb: 1 }}>
-        <h4 className="font-bold text-[#164F9E]">사전 설문 상세</h4>
+      <DialogTitle sx={{ pb: 1, color: "#164F9E", fontWeight: 700 }}>
+        사전 설문 상세
       </DialogTitle>
       <DialogContent sx={{ pt: "16px !important" }}>
         {isLoading ? (
           <Box sx={{ display: "flex", justifyContent: "center", p: 3 }}>
             <CircularProgress />
           </Box>
-        ) : surveyDetail ? (
+        ) : preCounselDetail ? (
           <Box sx={{ display: "flex", flexDirection: "column", gap: 3 }}>
             <Paper
               elevation={0}
@@ -87,7 +66,7 @@ const SurveyDetailModal = ({
                     설문 이름
                   </Typography>
                   <Typography variant="body2" sx={{ fontWeight: 500 }}>
-                    {surveyDetail.title}
+                    {preCounselDetail.title}
                   </Typography>
                 </Box>
                 <Box sx={{ display: "flex", gap: 2 }}>
@@ -98,14 +77,14 @@ const SurveyDetailModal = ({
                     제출일시
                   </Typography>
                   <Typography variant="body2" sx={{ fontWeight: 500 }}>
-                    {formatDate(surveyDetail.submittedAt)}
+                    {formatDate(preCounselDetail.submittedAt)}
                   </Typography>
                 </Box>
               </Box>
             </Paper>
 
             <Box sx={{ display: "flex", flexDirection: "column", gap: 2 }}>
-              {surveyDetail.answers.map((item, index) => (
+              {preCounselDetail.answers.map((item, index) => (
                 <Paper
                   key={item.questionUid}
                   elevation={0}
@@ -221,4 +200,4 @@ const SurveyDetailModal = ({
   );
 };
 
-export default SurveyDetailModal;
+export default PreCounselDetailModal;

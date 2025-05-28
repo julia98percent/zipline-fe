@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback } from "react";
-import SurveyDetailModal from "@components/PreCounselDetailModal";
+import PreCounselDetailModal from "@components/PreCounselDetailModal";
 import PageHeader from "@components/PageHeader";
 import apiClient from "@apis/apiClient";
 import dayjs from "dayjs";
@@ -88,10 +88,10 @@ function PreCounselListPage() {
           handleChangeRowsPerPage={handleChangeRowsPerPage}
         />
       </div>
-      <SurveyDetailModal
+      <PreCounselDetailModal
         open={isSurveyDetailModalOpen}
         onClose={handleCloseSurveyDetailModal}
-        surveyDetail={selectedSurvey}
+        preCounselDetail={selectedSurvey}
         isLoading={surveyDetailLoading}
       />
     </div>

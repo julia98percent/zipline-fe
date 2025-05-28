@@ -32,7 +32,14 @@ const MENU_INFO = [
   { name: "고객", key: "customers", to: "/customers" },
   { name: "계약", key: "contracts", to: "/contracts" },
   { name: "일정", key: "schedules", to: "/schedules" },
-  { name: "상담", key: "counsels", to: "/counsels" },
+  {
+    name: "상담",
+    key: "counsels",
+    submenu: [
+      { name: "일반 상담", to: "/counsels" },
+      { name: "신규 고객 사전 상담", to: "/counsels/pre" },
+    ],
+  },
   {
     name: "문자",
     key: "messages",
@@ -226,7 +233,7 @@ const NavigationBar = () => {
                         <ForumIcon
                           sx={{
                             color:
-                              currentPath.startsWith(submenu[0].to) &&
+                              currentPath.startsWith(submenu[0].to) ||
                               !submenu.some((sub) => currentPath === sub.to)
                                 ? "#164F9E"
                                 : "#222222",

@@ -1,20 +1,43 @@
 import { useState, useEffect, useCallback } from "react";
-
+import SurveyDetailModal from "@components/PreCounselDetailModal";
 import PageHeader from "@components/PageHeader";
 import apiClient from "@apis/apiClient";
 import dayjs from "dayjs";
-import { useNavigate } from "react-router-dom";
 import Table from "@components/Table";
 import { PreCounsel } from "@ts/Counsel";
+import { fetchCounsels } from "@apis/counselService";
 
 function PreCounselListPage() {
-  const navigate = useNavigate();
-
   const [counsels, setCounsels] = useState<PreCounsel[]>([]);
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(25);
   const [isLoading, setIsLoading] = useState(true);
   const [totalElements, setTotalElements] = useState(0);
+  const [isSurveyDetailModalOpen, setIsSurveyDetailModalOpen] = useState(false);
+  const [surveyDetailLoading, setSurveyDetailLoading] = useState(false);
+  const [selectedSurvey, setSelectedSurvey] = useState(null);
+
+  const handleRowClick = async (surveyResponseUid: string) => {
+    setSurveyDetailLoading(true);
+    setIsSurveyDetailModalOpen(true);
+    try {
+      const response = await apiClient.get(
+        `/surveys/responses/${surveyResponseUid}`
+      );
+      if (response.data.success) {
+        setSelectedSurvey(response.data.data);
+      }
+    } catch (error) {
+      console.error("Failed to fetch survey detail:", error);
+    } finally {
+      setSurveyDetailLoading(false);
+    }
+  };
+
+  const handleCloseSurveyDetailModal = () => {
+    setIsSurveyDetailModalOpen(false);
+    setSelectedSurvey(null);
+  };
 
   const handleChangePage = (_: unknown, newPage: number) => {
     setPage(newPage);
@@ -27,33 +50,22 @@ function PreCounselListPage() {
     setPage(0);
   };
 
-  const handleRowClick = (counselUid: string) => {
-    navigate(`${counselUid}`);
-  };
-
-  const fetchCounsels = useCallback(async () => {
+  const fetchData = useCallback(async () => {
     setIsLoading(true);
     try {
-      const response = await apiClient.get("/surveys/responses", {
-        params: {
-          page: page + 1,
-          size: rowsPerPage,
-        },
-      });
-      if (response.data.success) {
-        setCounsels(response.data.data.surveyResponses);
-        setTotalElements(response.data.data.totalElements);
-      }
+      const data = await fetchCounsels(page, rowsPerPage);
+      setCounsels(data.surveyResponses);
+      setTotalElements(data.totalElements);
     } catch (error) {
-      console.error("Failed to fetch counsels:", error);
+      console.error("Error fetching data", error);
     } finally {
       setIsLoading(false);
     }
   }, [page, rowsPerPage]);
 
   useEffect(() => {
-    fetchCounsels();
-  }, [page, rowsPerPage, fetchCounsels]);
+    fetchData();
+  }, [fetchData]);
 
   return (
     <div className="bg-[#f5f5f5]">
@@ -76,6 +88,12 @@ function PreCounselListPage() {
           handleChangeRowsPerPage={handleChangeRowsPerPage}
         />
       </div>
+      <SurveyDetailModal
+        open={isSurveyDetailModalOpen}
+        onClose={handleCloseSurveyDetailModal}
+        surveyDetail={selectedSurvey}
+        isLoading={surveyDetailLoading}
+      />
     </div>
   );
 }

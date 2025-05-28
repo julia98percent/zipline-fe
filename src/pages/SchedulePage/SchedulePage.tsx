@@ -11,7 +11,6 @@ import apiClient from "@apis/apiClient";
 import PageHeader from "@components/PageHeader/PageHeader";
 import ScheduleDetailModal from "@components/ScheduleDetailModal/ScheduleDetailModal";
 import { Schedule } from "../../interfaces/schedule";
-import useUserStore from "@stores/useUserStore";
 import AddScheduleModal from "./AddScheduleModal";
 import { showToast } from "@components/Toast/Toast";
 
@@ -32,8 +31,6 @@ const SchedulePage = () => {
   const [schedules, setSchedules] = useState<Schedule[]>([]);
   const [isUpdating, setIsUpdating] = useState(false);
   const [dayMaxEvents, setDayMaxEvents] = useState(4);
-
-  const { user } = useUserStore();
 
   const fetchSchedules = (startDate: string, endDate: string) => {
     apiClient
@@ -202,7 +199,7 @@ const SchedulePage = () => {
         backgroundColor: "#f5f5f5",
       }}
     >
-      <PageHeader title="일정" userName={user?.name || "-"} />
+      <PageHeader title="일정" />
 
       <Box sx={{ display: "flex", justifyContent: "flex-end", px: 3, mt: 2 }}>
         <Button

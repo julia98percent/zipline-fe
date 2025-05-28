@@ -6,7 +6,6 @@ import { Box, CircularProgress, TextField, Button } from "@mui/material";
 import FilterListIcon from "@mui/icons-material/FilterList";
 import useDebounce from "@hooks/useDebounce";
 import PageHeader from "@components/PageHeader/PageHeader";
-import useUserStore from "@stores/useUserStore";
 import CustomerTable from "./CustomerTable/CustomerTable";
 import { InputAdornment } from "@mui/material";
 import SearchIcon from "@mui/icons-material/Search";
@@ -74,8 +73,6 @@ const CustomerListPage = () => {
   });
 
   const debouncedSearchTerm = useDebounce(searchTerm, 300);
-
-  const { user } = useUserStore();
 
   const fetchCustomerList = (showLoading = true) => {
     if (showLoading) {
@@ -226,7 +223,7 @@ const CustomerListPage = () => {
         boxSizing: "border-box",
       }}
     >
-      <PageHeader title="고객 목록" userName={user?.name || ""} />
+      <PageHeader title="고객 목록" />
 
       <Box
         sx={{

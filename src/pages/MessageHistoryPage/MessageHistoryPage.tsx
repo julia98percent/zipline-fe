@@ -16,7 +16,6 @@ import {
 import RefreshIcon from "@mui/icons-material/Refresh";
 import PageHeader from "@components/PageHeader/PageHeader";
 import apiClient from "@apis/apiClient";
-import useUserStore from "@stores/useUserStore";
 import dayjs from "dayjs";
 
 interface MessageCount {
@@ -66,7 +65,6 @@ const MessageHistoryPage = () => {
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(50);
   const [totalElements, setTotalElements] = useState(0);
-  const { user } = useUserStore();
 
   const fetchMessages = async () => {
     try {
@@ -155,7 +153,7 @@ const MessageHistoryPage = () => {
         minHeight: "100vh",
       }}
     >
-      <PageHeader title="문자 발송 내역" userName={user?.name || "-"} />
+      <PageHeader title="문자 발송 내역" />
 
       <Box sx={{ p: "20px" }}>
         <Box

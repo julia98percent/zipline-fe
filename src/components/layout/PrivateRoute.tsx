@@ -62,9 +62,16 @@ const PrivateRoute = () => {
     );
   }
   return (
-    <Box sx={{ display: 'flex', flexDirection: 'row', width: '100%', height: '100vh' }}>
-      <NavigationBar userName={user.name} />
-      <Box sx={{ width: '100%' }}>
+    <Box
+      sx={{
+        display: "flex",
+        flexDirection: "row",
+        width: "100%",
+        height: "100vh",
+      }}
+    >
+      <NavigationBar />
+      <Box sx={{ width: "100%", backgroundColor: "#f5f5f5", flex: 1 }}>
         <Outlet />
       </Box>
     </Box>

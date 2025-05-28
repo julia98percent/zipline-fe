@@ -16,7 +16,6 @@ import apiClient from "@apis/apiClient";
 import { useParams, useNavigate } from "react-router-dom";
 import CustomerInfo from "./CustomerInfo";
 import PageHeader from "@components/PageHeader/PageHeader";
-import useUserStore from "@stores/useUserStore";
 import { formatPriceWithKorean } from "@utils/numberUtil";
 import EditIcon from "@mui/icons-material/Edit";
 import DeleteIcon from "@mui/icons-material/Delete";
@@ -64,7 +63,6 @@ function CustomerDetailPage() {
     { uid: number; name: string }[]
   >([]);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
-  const { user } = useUserStore();
 
   const MAX_PRICE_LENGTH = 15; // 천조 단위까지 허용 (999조)
 
@@ -299,7 +297,7 @@ function CustomerDetailPage() {
         boxSizing: "border-box",
       }}
     >
-      <PageHeader title="고객 상세" userName={user?.name || ""} />
+      <PageHeader title="고객 상세" />
 
       <Box sx={{ p: 3, pt: 0 }}>
         {/* Action Buttons */}

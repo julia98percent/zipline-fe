@@ -38,9 +38,8 @@ import { useNavigate } from "react-router-dom";
 import PageHeader from "@components/PageHeader/PageHeader";
 import apiClient from "@apis/apiClient";
 import ScheduleDetailModal from "@components/ScheduleDetailModal/ScheduleDetailModal";
-import SurveyDetailModal from "@pages/DashboardPage/SurveyDetailModal";
+import SurveyDetailModal from "@components/PreCounselDetailModal";
 import { Schedule } from "../../interfaces/schedule";
-import useUserStore from "@stores/useUserStore";
 import { formatDate } from "@utils/dateUtil";
 import RecentCustomersModal from "./RecentCustomersModal";
 import RecentContractsModal from "./RecentContractsModal";
@@ -115,19 +114,6 @@ interface SurveyDetail {
 
 const SURVEY_PAGE_SIZE = 10;
 
-const CONTRACT_STATUS_TYPES = [
-  { value: "LISTED", name: "매물 등록", color: "default" },
-  { value: "NEGOTIATING", name: "협상 중", color: "info" },
-  { value: "INTENT_SIGNED", name: "가계약", color: "warning" },
-  { value: "CANCELLED", name: "계약 취소", color: "error" },
-  { value: "CONTRACTED", name: "계약 체결", color: "success" },
-  { value: "IN_PROGRESS", name: "계약 진행 중", color: "primary" },
-  { value: "PAID_COMPLETE", name: "잔금 지급 완료", color: "secondary" },
-  { value: "REGISTERED", name: "등기 완료", color: "success" },
-  { value: "MOVED_IN", name: "입주 완료", color: "success" },
-  { value: "TERMINATED", name: "계약 해지", color: "error" },
-] as const;
-
 const DashboardPage = () => {
   const [selectedDate, setSelectedDate] = useState(new Date());
   const [counselTab, setcounselTab] = useState<"request" | "latest">("request");
@@ -162,7 +148,7 @@ const DashboardPage = () => {
   );
   const [counselListByLatest, setCounselListByLatest] = useState<counsel[]>([]);
   const [counselLoading, setCounselLoading] = useState(false);
-  const { user } = useUserStore();
+
   const [toast, setToast] = useState({
     open: false,
     message: "",
@@ -619,7 +605,7 @@ const DashboardPage = () => {
         p: 0,
       }}
     >
-      <PageHeader title="대시보드" userName={user?.name || ""} />
+      <PageHeader title="대시보드" />
 
       <Box sx={{ p: 3, pt: 0 }}>
         {/* 통계 카드 영역 */}

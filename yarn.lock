@@ -8447,6 +8447,7 @@ __metadata:
     "@fullcalendar/react": "npm:^6.1.17"
     "@mui/icons-material": "npm:^7.0.1"
     "@mui/material": "npm:^7.0.1"
+    "@mui/system": "npm:^7.1.0"
     "@mui/x-date-pickers": "npm:^7.28.2"
     "@tailwindcss/vite": "npm:^4.0.15"
     "@types/node": "npm:^22.15.3"

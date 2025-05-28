@@ -74,7 +74,7 @@ function MyPage() {
         minHeight: "100vh",
       }}
     >
-      <PageHeader title="마이페이지" userName={user?.name || "-"} />
+      <PageHeader title="마이페이지" />
 
       <Box sx={{ p: 3 }}>
         {/* 회원 정보 수정 */}
@@ -147,7 +147,7 @@ function MyPage() {
         </Box>
 
         {/* 문자 발송 설정 */}
-        {/* <Box
+        <Box
           sx={{
             mb: 3,
             border: "1px solid #ddd",
@@ -211,7 +211,7 @@ function MyPage() {
               />
             </Box>
           </Collapse>
-        </Box> */}
+        </Box>
 
         {/* QR 코드 및 URL 섹션 */}
         <Box

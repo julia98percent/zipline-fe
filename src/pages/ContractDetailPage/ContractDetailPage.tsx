@@ -6,9 +6,7 @@ import PageHeader from "@components/PageHeader/PageHeader";
 import ContractEditModal from "@pages/ContractListPage/ContractAddButtonList/ContractEditModal";
 import ContractDetailContent from "./ContractDetailContent";
 import styles from "@pages/ContractListPage/styles/ContractListPage.module.css";
-import { toast } from "react-toastify";
 import DeleteConfirmModal from "@components/DeleteConfirm/DeleteConfirmModal";
-import useUserStore from "@stores/useUserStore";
 import EditIcon from "@mui/icons-material/Edit";
 import DeleteIcon from "@mui/icons-material/Delete";
 import { showToast } from "@components/Toast/Toast";
@@ -20,7 +18,6 @@ const ContractDetailPage = () => {
   const [histories, setHistories] = useState<ContractHistory[]>([]);
   const [loading, setLoading] = useState(true);
   const [editModalOpen, setEditModalOpen] = useState(false);
-  const { user } = useUserStore();
 
   const handleEdit = () => setEditModalOpen(true);
 
@@ -84,7 +81,7 @@ const ContractDetailPage = () => {
 
   return (
     <div className={styles.container}>
-      <PageHeader title="계약 상세 조회" userName={user?.name || "-"} />
+      <PageHeader title="계약 상세 조회" />
 
       <div className={styles.contents}>
         {editModalOpen && (

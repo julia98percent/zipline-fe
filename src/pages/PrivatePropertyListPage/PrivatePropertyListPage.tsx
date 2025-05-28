@@ -3,9 +3,8 @@ import apiClient from "@apis/apiClient";
 import PropertyTable from "./PropertyTable";
 import PropertyFilterModal from "./PropertyFilterModal/PropertyFilterModal";
 import PageHeader from "@components/PageHeader/PageHeader";
-import useUserStore from "@stores/useUserStore";
 import { CircularProgress } from "@mui/material";
-import { AgentPropertyFilterRequest } from "../../types/AgentPropertyFilterRequest";
+import { AgentPropertyFilterRequest } from "@ts/AgentPropertyFilterRequest";
 import {
   PageContainer,
   ContentContainer,
@@ -79,7 +78,7 @@ function PrivatePropertyListPage() {
   const [loading, setLoading] = useState<boolean>(true);
   const [filterModalOpen, setFilterModalOpen] = useState(false);
   const [filter, setFilter] = useState<AgentPropertyFilterRequest>({});
-  const { user } = useUserStore();
+
   const navigate = useNavigate();
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(50);
@@ -256,7 +255,7 @@ function PrivatePropertyListPage() {
   if (loading) {
     return (
       <PageContainer>
-        <PageHeader title="개인 매물 목록" userName={user?.name || "-"} />
+        <PageHeader title="개인 매물 목록" />
         <LoadingContainer>
           <CircularProgress color="primary" />
         </LoadingContainer>
@@ -266,7 +265,7 @@ function PrivatePropertyListPage() {
 
   return (
     <PageContainer sx={{ minWidth: "800px" }}>
-      <PageHeader title="개인 매물 목록" userName={user?.name || "-"} />
+      <PageHeader title="개인 매물 목록" />
 
       <ContentContainer>
         {/* 상단 필터 바 */}

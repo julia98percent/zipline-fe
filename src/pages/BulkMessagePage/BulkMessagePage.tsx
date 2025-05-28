@@ -31,7 +31,6 @@ import AddIcon from "@mui/icons-material/Add";
 import PageHeader from "@components/PageHeader/PageHeader";
 import apiClient from "@apis/apiClient";
 import { SelectChangeEvent } from "@mui/material";
-import useUserStore from "@stores/useUserStore";
 import { showToast } from "@components/Toast/Toast";
 
 interface Customer {
@@ -794,7 +793,6 @@ const CustomerSelectModal = ({
 };
 
 const BulkMessagePage = () => {
-  const { user } = useUserStore();
   const [templates, setTemplates] = useState<Template[]>([]);
   const [selectedTemplate, setSelectedTemplate] = useState<number | "">("");
   const [messageContent, setMessageContent] = useState<string>("");
@@ -937,7 +935,7 @@ const BulkMessagePage = () => {
         backgroundColor: "#f5f5f5",
       }}
     >
-      <PageHeader title="단체 문자 발송" userName={user?.name || "-"} />
+      <PageHeader title="단체 문자 발송" />
 
       <Box sx={{ p: 3, display: "flex", gap: "28px" }}>
         {/* 왼쪽 영역: 문자 템플릿 선택 및 내용 */}

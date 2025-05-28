@@ -17,7 +17,6 @@ import {
   Chip,
 } from "@mui/material";
 import PageHeader from "@components/PageHeader/PageHeader";
-import useUserStore from "@stores/useUserStore";
 import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import apiClient from "@apis/apiClient";
@@ -28,7 +27,6 @@ import SaveIcon from "@mui/icons-material/Save";
 import CloseIcon from "@mui/icons-material/Close";
 import AddIcon from "@mui/icons-material/Add";
 import RemoveCircleOutlineIcon from "@mui/icons-material/RemoveCircleOutline";
-import { toast } from "react-toastify";
 import { AxiosError } from "axios";
 import styles from "./styles/CounselDetailPage.module.css";
 import { showToast } from "@components/Toast/Toast";
@@ -127,7 +125,7 @@ interface ErrorResponse {
 function CounselDetailPage() {
   const { counselUid } = useParams();
   const navigate = useNavigate();
-  const { user } = useUserStore();
+
   const [counselData, setCounselData] = useState<CounselData | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
@@ -307,7 +305,7 @@ function CounselDetailPage() {
 
   return (
     <Box className={styles.container}>
-      <PageHeader title="상담 상세" userName={user?.name || "-"} />
+      <PageHeader title="상담 상세" />
 
       <Box className={styles.contentContainer}>
         <div

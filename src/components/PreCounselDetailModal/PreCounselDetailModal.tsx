@@ -10,7 +10,6 @@ import {
   Paper,
   Divider,
   Link,
-  ListItem,
 } from "@mui/material";
 import { formatDate } from "@utils/dateUtil";
 
@@ -41,8 +40,6 @@ interface SurveyDetailModalProps {
   onClose: () => void;
   surveyDetail: SurveyDetail | null;
   isLoading: boolean;
-  selectedCustomers: { uid: number }[];
-  handleCustomerSelect: (customer: { uid: number }) => void;
 }
 
 const SurveyDetailModal = ({
@@ -50,10 +47,7 @@ const SurveyDetailModal = ({
   onClose,
   surveyDetail,
   isLoading,
-  selectedCustomers,
-  handleCustomerSelect,
 }: SurveyDetailModalProps) => {
-  console.log(surveyDetail);
   return (
     <Dialog
       open={open}
@@ -67,9 +61,7 @@ const SurveyDetailModal = ({
       }}
     >
       <DialogTitle sx={{ pb: 1 }}>
-        <Typography variant="h6" sx={{ fontWeight: "bold", color: "#164F9E" }}>
-          설문 상세 내용
-        </Typography>
+        <h4 className="font-bold text-[#164F9E]">사전 설문 상세</h4>
       </DialogTitle>
       <DialogContent sx={{ pt: "16px !important" }}>
         {isLoading ? (
@@ -205,7 +197,7 @@ const SurveyDetailModal = ({
             variant="body2"
             sx={{ color: "#666", textAlign: "center", py: 3 }}
           >
-            설문 내용을 불러올 수 없습니다.
+            사전 상담 내용을 불러올 수 없습니다.
           </Typography>
         )}
       </DialogContent>
@@ -215,8 +207,10 @@ const SurveyDetailModal = ({
           variant="contained"
           sx={{
             backgroundColor: "#164F9E",
+            boxShadow: "none",
             "&:hover": {
               backgroundColor: "#0D3B7A",
+              boxShadow: "none",
             },
           }}
         >

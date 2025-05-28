@@ -7,7 +7,8 @@
       "@hooks/*": ["./src/hooks/*"],
       "@apis/*": ["./src/apis/*"],
       "@utils/*": ["./src/utils/*"],
-      "@stores/*": ["./src/stores/*"]
+      "@stores/*": ["./src/stores/*"],
+      "@ts/*": ["./src/ts/*"]
     },
     "types": ["vite/client"],
     "target": "ES2020",

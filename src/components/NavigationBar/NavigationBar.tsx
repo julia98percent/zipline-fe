@@ -20,7 +20,20 @@ import CalendarMonthIcon from "@mui/icons-material/CalendarMonth";
 import ForumIcon from "@mui/icons-material/Forum";
 import EmailIcon from "@mui/icons-material/Email";
 
-const MENU_INFO = [
+type ParentMenuName = "매물" | "고객" | "계약" | "일정" | "상담" | "문자";
+interface SubmenuItem {
+  name: string;
+  to: string;
+}
+
+interface MenuItem {
+  name: ParentMenuName;
+  key: string;
+  to?: string;
+  submenu?: SubmenuItem[];
+}
+
+const MENU_INFO: MenuItem[] = [
   {
     name: "매물",
     key: "agent-properties",
@@ -50,6 +63,27 @@ const MENU_INFO = [
     ],
   },
 ];
+
+const getMenuIcon = (name: ParentMenuName, isActive: boolean) => {
+  const iconColor = isActive ? "#164F9E" : "#222222";
+
+  switch (name) {
+    case "매물":
+      return <BusinessIcon sx={{ color: iconColor }} />;
+    case "고객":
+      return <PeopleIcon sx={{ color: iconColor }} />;
+    case "계약":
+      return <SettingsIcon sx={{ color: iconColor }} />;
+    case "일정":
+      return <CalendarMonthIcon sx={{ color: iconColor }} />;
+    case "상담":
+      return <ForumIcon sx={{ color: iconColor }} />;
+    case "문자":
+      return <EmailIcon sx={{ color: iconColor }} />;
+    default:
+      return null;
+  }
+};
 
 const NavigationBar = () => {
   const location = useLocation();
@@ -138,258 +172,129 @@ const NavigationBar = () => {
           </Link>
         </ListItem>
         <Divider />
-        {MENU_INFO.map(({ name, key, to, submenu }) => (
-          <ListItem
-            key={key}
-            disablePadding
-            sx={{
-              borderBottom: "1px solid rgba(0, 0, 0, 0.12)",
-              "&:last-child": {
-                borderBottom: "none",
-              },
-            }}
-          >
-            {submenu ? (
-              <Box sx={{ width: "100%" }}>
+        {MENU_INFO.map(({ name, key, to, submenu }) => {
+          const hasSubmenu = Boolean(submenu);
+          const isActive = hasSubmenu
+            ? submenu?.some((sub) => currentPath === sub.to) ||
+              (currentPath.startsWith(submenu![0].to) &&
+                !submenu?.some((sub) => currentPath === sub.to))
+            : currentPath.startsWith(to!);
+
+          return (
+            <ListItem
+              key={key}
+              disablePadding
+              sx={{
+                borderBottom: "1px solid rgba(0, 0, 0, 0.12)",
+                "&:last-child": {
+                  borderBottom: "none",
+                },
+              }}
+            >
+              {hasSubmenu ? (
+                <Box sx={{ width: "100%" }}>
+                  <Link
+                    to={submenu![0].to}
+                    style={{ width: "100%", textDecoration: "none" }}
+                  >
+                    <ListItemButton
+                      sx={{
+                        borderBottom: "none",
+                        "&:hover": {
+                          backgroundColor: "rgba(0, 0, 0, 0.04)",
+                        },
+                        borderLeft: isActive ? "4px solid #164F9E" : "none",
+                        backgroundColor: isActive
+                          ? "rgba(22, 79, 158, 0.04)"
+                          : "transparent",
+                      }}
+                    >
+                      <ListItemIcon sx={{ minWidth: 40 }}>
+                        {getMenuIcon(name, isActive)}
+                      </ListItemIcon>
+                      <ListItemText
+                        primary={name}
+                        sx={{
+                          color: isActive ? "#164F9E" : "#222222",
+                          fontWeight: isActive ? "bold" : "normal",
+                        }}
+                      />
+                    </ListItemButton>
+                  </Link>
+                  <List sx={{ mt: 0, mb: 0 }}>
+                    {submenu?.map((sub) => (
+                      <Link
+                        to={sub.to}
+                        key={`${sub.to}-submenu`}
+                        style={{ textDecoration: "none" }}
+                      >
+                        <ListItemButton
+                          sx={{
+                            "&:hover": {
+                              backgroundColor: "rgba(0, 0, 0, 0.04)",
+                            },
+                            borderLeft:
+                              currentPath === sub.to
+                                ? "4px solid #164F9E"
+                                : "none",
+                            backgroundColor:
+                              currentPath === sub.to
+                                ? "rgba(22, 79, 158, 0.04)"
+                                : "transparent",
+                            justifyContent: { xs: "center", md: "flex-start" },
+                            px: { xs: 0, md: 2 },
+                            ml: 4,
+                            py: 0.5,
+                            mb: 0.25,
+                          }}
+                        >
+                          <ListItemText
+                            primary={sub.name}
+                            sx={{
+                              color:
+                                currentPath === sub.to ? "#164F9E" : "#222222",
+                              fontWeight:
+                                currentPath === sub.to ? "bold" : "normal",
+                              fontSize: "0.875rem",
+                            }}
+                          />
+                        </ListItemButton>
+                      </Link>
+                    ))}
+                  </List>
+                </Box>
+              ) : (
                 <Link
-                  to={submenu[0].to}
+                  to={to!}
                   style={{ width: "100%", textDecoration: "none" }}
                 >
                   <ListItemButton
                     sx={{
-                      borderBottom: "none",
                       "&:hover": {
                         backgroundColor: "rgba(0, 0, 0, 0.04)",
                       },
-                      borderLeft:
-                        currentPath.startsWith(submenu[0].to) &&
-                        !submenu.some((sub) => currentPath === sub.to)
-                          ? "4px solid #164F9E"
-                          : "none",
-                      backgroundColor:
-                        currentPath.startsWith(submenu[0].to) &&
-                        !submenu.some((sub) => currentPath === sub.to)
-                          ? "rgba(22, 79, 158, 0.04)"
-                          : "transparent",
+                      borderLeft: isActive ? "4px solid #164F9E" : "none",
+                      backgroundColor: isActive
+                        ? "rgba(22, 79, 158, 0.04)"
+                        : "transparent",
                     }}
                   >
                     <ListItemIcon sx={{ minWidth: 40 }}>
-                      {name === "매물" && (
-                        <BusinessIcon
-                          sx={{
-                            color:
-                              currentPath.startsWith(submenu[0].to) ||
-                              submenu.some((sub) => currentPath === sub.to)
-                                ? "#164F9E"
-                                : "#222222",
-                          }}
-                        />
-                      )}
-                      {name === "고객" && (
-                        <PeopleIcon
-                          sx={{
-                            color:
-                              currentPath.startsWith(submenu[0].to) &&
-                              !submenu.some((sub) => currentPath === sub.to)
-                                ? "#164F9E"
-                                : "#222222",
-                          }}
-                        />
-                      )}
-                      {name === "계약" && (
-                        <SettingsIcon
-                          sx={{
-                            color:
-                              currentPath.startsWith(submenu[0].to) &&
-                              !submenu.some((sub) => currentPath === sub.to)
-                                ? "#164F9E"
-                                : "#222222",
-                          }}
-                        />
-                      )}
-                      {name === "일정" && (
-                        <CalendarMonthIcon
-                          sx={{
-                            color:
-                              currentPath.startsWith(submenu[0].to) &&
-                              !submenu.some((sub) => currentPath === sub.to)
-                                ? "#164F9E"
-                                : "#222222",
-                          }}
-                        />
-                      )}
-                      {name === "문자" && (
-                        <EmailIcon
-                          sx={{
-                            color:
-                              currentPath.startsWith(submenu[0].to) ||
-                              submenu.some((sub) => currentPath === sub.to)
-                                ? "#164F9E"
-                                : "#222222",
-                          }}
-                        />
-                      )}
-                      {name === "상담" && (
-                        <ForumIcon
-                          sx={{
-                            color:
-                              currentPath.startsWith(submenu[0].to) ||
-                              !submenu.some((sub) => currentPath === sub.to)
-                                ? "#164F9E"
-                                : "#222222",
-                          }}
-                        />
-                      )}
+                      {getMenuIcon(name, isActive)}
                     </ListItemIcon>
                     <ListItemText
                       primary={name}
                       sx={{
-                        color:
-                          currentPath.startsWith(submenu[0].to) ||
-                          submenu.some((sub) => currentPath === sub.to)
-                            ? "#164F9E"
-                            : "#222222",
-                        fontWeight:
-                          currentPath.startsWith(submenu[0].to) ||
-                          submenu.some((sub) => currentPath === sub.to)
-                            ? "bold"
-                            : "normal",
+                        color: isActive ? "#164F9E" : "#222222",
+                        fontWeight: isActive ? "bold" : "normal",
                       }}
                     />
                   </ListItemButton>
                 </Link>
-                <List sx={{ mt: 0, mb: 0 }}>
-                  {submenu.map((sub) => (
-                    <Link
-                      to={sub.to}
-                      key={`${sub.to}-submenu`}
-                      style={{ textDecoration: "none" }}
-                    >
-                      <ListItemButton
-                        sx={{
-                          "&:hover": {
-                            backgroundColor: "rgba(0, 0, 0, 0.04)",
-                          },
-                          borderLeft:
-                            currentPath === sub.to
-                              ? "4px solid #164F9E"
-                              : "none",
-                          backgroundColor:
-                            currentPath === sub.to
-                              ? "rgba(22, 79, 158, 0.04)"
-                              : "transparent",
-                          justifyContent: { xs: "center", md: "flex-start" },
-                          px: { xs: 0, md: 2 },
-                          ml: 4,
-                          py: 0.5,
-                          mb: 0.25,
-                        }}
-                      >
-                        <ListItemText
-                          primary={sub.name}
-                          sx={{
-                            color:
-                              currentPath === sub.to ? "#164F9E" : "#222222",
-                            fontWeight:
-                              currentPath === sub.to ? "bold" : "normal",
-                            fontSize: "0.875rem",
-                          }}
-                        />
-                      </ListItemButton>
-                    </Link>
-                  ))}
-                </List>
-              </Box>
-            ) : (
-              <Link to={to!} style={{ width: "100%", textDecoration: "none" }}>
-                <ListItemButton
-                  sx={{
-                    "&:hover": {
-                      backgroundColor: "rgba(0, 0, 0, 0.04)",
-                    },
-                    borderLeft: currentPath.startsWith(to!)
-                      ? "4px solid #164F9E"
-                      : "none",
-                    backgroundColor: currentPath.startsWith(to!)
-                      ? "rgba(22, 79, 158, 0.04)"
-                      : "transparent",
-                  }}
-                >
-                  <ListItemIcon sx={{ minWidth: 40 }}>
-                    {name === "매물" && (
-                      <BusinessIcon
-                        sx={{
-                          color:
-                            currentPath.startsWith(to!) ||
-                            to === "/properties/private" ||
-                            to === "/properties/public"
-                              ? "#164F9E"
-                              : "#222222",
-                        }}
-                      />
-                    )}
-                    {name === "고객" && (
-                      <PeopleIcon
-                        sx={{
-                          color: currentPath.startsWith(to!)
-                            ? "#164F9E"
-                            : "#222222",
-                        }}
-                      />
-                    )}
-                    {name === "계약" && (
-                      <SettingsIcon
-                        sx={{
-                          color: currentPath.startsWith(to!)
-                            ? "#164F9E"
-                            : "#222222",
-                        }}
-                      />
-                    )}
-                    {name === "일정" && (
-                      <CalendarMonthIcon
-                        sx={{
-                          color: currentPath.startsWith(to!)
-                            ? "#164F9E"
-                            : "#222222",
-                        }}
-                      />
-                    )}
-                    {name === "문자" && (
-                      <EmailIcon
-                        sx={{
-                          color: currentPath.startsWith(to!)
-                            ? "#164F9E"
-                            : "#222222",
-                        }}
-                      />
-                    )}
-                    {name === "상담" && (
-                      <ForumIcon
-                        sx={{
-                          color: currentPath.startsWith(to!)
-                            ? "#164F9E"
-                            : "#222222",
-                        }}
-                      />
-                    )}
-                  </ListItemIcon>
-                  <ListItemText
-                    primary={name}
-                    sx={{
-                      color: currentPath.startsWith(to!)
-                        ? "#164F9E"
-                        : "#222222",
-                      fontWeight: currentPath.startsWith(to!)
-                        ? "bold"
-                        : "normal",
-                    }}
-                  />
-                </ListItemButton>
-              </Link>
-            )}
-          </ListItem>
-        ))}
+              )}
+            </ListItem>
+          );
+        })}
       </List>
     </Drawer>
   );

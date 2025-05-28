@@ -1,18 +1,53 @@
-import { Box, Typography, Button, Menu, MenuItem } from "@mui/material";
-import { useState } from "react";
+import {
+  Box,
+  Typography,
+  Button,
+  Menu,
+  MenuItem,
+  IconButton,
+} from "@mui/material";
+import { useState, useRef, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import useUserStore from "@stores/useUserStore";
 import AccountCircleIcon from "@mui/icons-material/AccountCircle";
 import apiClient from "@apis/apiClient";
+import useSSE from "@hooks/useSSE";
+import { Notifications } from "@mui/icons-material";
+import NotificationList from "./NotificationModal";
+import useNotificationStore from "@stores/useNotificationStore";
 
 interface PageHeaderProps {
   title: string;
 }
 
 const PageHeader = ({ title }: PageHeaderProps) => {
+  const { connectionStatus } = useSSE();
+  const { notificationList } = useNotificationStore();
+  const [isNotiOpen, setIsNotiOpen] = useState(false);
+  const notificationRef = useRef<HTMLDivElement>(null);
+
   const navigate = useNavigate();
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
   const { user, clearUser } = useUserStore();
+
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (
+        notificationRef.current &&
+        !notificationRef.current.contains(event.target as Node)
+      ) {
+        setIsNotiOpen(false);
+      }
+    };
+
+    if (isNotiOpen) {
+      document.addEventListener("mousedown", handleClickOutside);
+    }
+
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, [isNotiOpen]);
 
   const handleClick = (event: React.MouseEvent<HTMLButtonElement>) => {
     setAnchorEl(event.currentTarget);
@@ -46,7 +81,7 @@ const PageHeader = ({ title }: PageHeaderProps) => {
       sessionStorage.removeItem("_ZA");
       clearUser();
       navigate("/sign-in");
-    } catch (error) {
+    } catch {
       sessionStorage.removeItem("_ZA");
       clearUser();
       navigate("/sign-in");
@@ -82,6 +117,15 @@ const PageHeader = ({ title }: PageHeaderProps) => {
       </Box>
 
       <Box sx={{ display: "flex", alignItems: "center", gap: 2 }}>
+        <Box ref={notificationRef} sx={{ position: "relative" }}>
+          <IconButton onClick={() => setIsNotiOpen(!isNotiOpen)}>
+            <Notifications />
+          </IconButton>
+          {isNotiOpen && (
+            <NotificationList notifications={notificationList ?? []} />
+          )}
+        </Box>
+
         <Button
           onClick={handleClick}
           sx={{

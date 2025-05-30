@@ -8,7 +8,8 @@
       "@apis/*": ["./src/apis/*"],
       "@utils/*": ["./src/utils/*"],
       "@stores/*": ["./src/stores/*"],
-      "@ts/*": ["./src/ts/*"]
+      "@ts/*": ["./src/ts/*"],
+      "@constants/*": ["./src/constants/*"]
     },
     "types": ["vite/client"],
     "target": "ES2020",

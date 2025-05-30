@@ -1,105 +1,44 @@
 import { useState, useEffect } from "react";
-import {
-  Box,
-  Table,
-  TableBody,
-  TableCell,
-  TableContainer,
-  TableHead,
-  TableRow,
-  Paper,
-  Typography,
-  Button,
-  CircularProgress,
-  TablePagination,
-} from "@mui/material";
+import { Box, Paper, Button } from "@mui/material";
 import RefreshIcon from "@mui/icons-material/Refresh";
 import PageHeader from "@components/PageHeader/PageHeader";
-import apiClient from "@apis/apiClient";
 import dayjs from "dayjs";
-
-interface MessageCount {
-  total: number;
-  sentTotal: number;
-  sentFailed: number;
-  sentSuccess: number;
-  sentPending: number;
-  sentReplacement: number;
-  refund: number;
-  registeredFailed: number;
-  registeredSuccess: number;
-}
-
-interface MessageGroup {
-  groupId: string;
-  from: string | null;
-  type: string | null;
-  subject: string | null;
-  dateCreated: string;
-  dateUpdated: string;
-  dateCompleted?: string;
-  statusCode: string | null;
-  status: string;
-  to: string | null;
-  text: string | null;
-  messageId: string | null;
-  count?: MessageCount;
-  messageTypeCount?: Record<string, number> | null;
-}
-
-interface MessageHistoryResponse {
-  success: boolean;
-  code: number;
-  message: string;
-  data: {
-    startKey: string | null;
-    nextKey: string | null;
-    limit: number;
-    groupList: Record<string, MessageGroup>;
-  };
-}
+import MessageDetailModal from "./MessageDetailModal";
+import { translateMessageStatusToKorean } from "@utils/messageUtil";
+import Status from "@components/Status";
+import { MessageGroup } from "@ts/Message";
+import { fetchMessages } from "@apis/messageService";
+import Table from "@components/Table";
 
 const MessageHistoryPage = () => {
   const [messages, setMessages] = useState<MessageGroup[]>([]);
+  const [selectedMessageHistory, setSelectedMessageHistory] =
+    useState<MessageGroup | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(50);
   const [totalElements, setTotalElements] = useState(0);
 
-  const fetchMessages = async () => {
-    try {
-      setIsLoading(true);
-      const { data: response } = await apiClient.get<MessageHistoryResponse>(
-        "/messages"
-      );
-
-      if (
-        response.success &&
-        response.code === 200 &&
-        response.data?.groupList
-      ) {
-        const messageArray = Object.values(response.data.groupList || {});
-        setMessages(messageArray);
-        setTotalElements(messageArray.length);
-      } else {
-        setMessages([]);
-        setTotalElements(0);
-      }
-    } catch (error: unknown) {
-      console.error("Failed to fetch messages:", error);
-      setMessages([]);
-      setTotalElements(0);
-    } finally {
-      setIsLoading(false);
+  const [detailModalOpen, setDetailModalOpen] = useState(false);
+  const handleRowClick = (rowData) => {
+    const originalMessage = messages.find((msg) => msg.groupId === rowData.id);
+    if (originalMessage) {
+      setSelectedMessageHistory(originalMessage);
+      setDetailModalOpen(true);
     }
   };
 
-  useEffect(() => {
-    fetchMessages();
-  }, [page]);
+  const handleModalClose = () => setDetailModalOpen(false);
+  const fetchData = async () => {
+    setIsLoading(true);
+    const messageArray = await fetchMessages();
+    setMessages(messageArray);
+    setTotalElements(messageArray.length);
+    setIsLoading(false);
+  };
 
   const handleRefresh = () => {
-    fetchMessages();
+    fetchData();
   };
 
   const handleChangePage = (_: unknown, newPage: number) => {
@@ -117,30 +56,9 @@ const MessageHistoryPage = () => {
     return dayjs(dateString).format("YYYY-MM-DD HH:mm:ss");
   };
 
-  const getStatusColor = (status: string) => {
-    switch (status) {
-      case "COMPLETE":
-        return {
-          bg: "#E8F5E9",
-          text: "#2E7D32",
-        };
-      case "FAILED":
-        return {
-          bg: "#FFEBEE",
-          text: "#C62828",
-        };
-      default:
-        return {
-          bg: "#FFF3E0",
-          text: "#E65100",
-        };
-    }
-  };
-
-  const displayedMessages = messages.slice(
-    page * rowsPerPage,
-    page * rowsPerPage + rowsPerPage
-  );
+  useEffect(() => {
+    fetchData();
+  }, [page]);
 
   return (
     <Box
@@ -192,94 +110,43 @@ const MessageHistoryPage = () => {
             boxShadow: "none",
           }}
         >
-          <TableContainer>
-            <Table>
-              <TableHead>
-                <TableRow>
-                  <TableCell>발송 요청일</TableCell>
-                  <TableCell>상태</TableCell>
-                  <TableCell>발송 완료일</TableCell>
-                </TableRow>
-              </TableHead>
-              <TableBody>
-                {isLoading ? (
-                  <TableRow>
-                    <TableCell colSpan={3} align="center" sx={{ py: 3 }}>
-                      <CircularProgress size={24} />
-                    </TableCell>
-                  </TableRow>
-                ) : messages.length === 0 ? (
-                  <TableRow>
-                    <TableCell colSpan={3} align="center">
-                      발송 내역이 없습니다.
-                    </TableCell>
-                  </TableRow>
-                ) : (
-                  displayedMessages.map((message) => (
-                    <TableRow key={message.groupId}>
-                      <TableCell>{formatDate(message.dateCreated)}</TableCell>
-                      <TableCell>
-                        <Typography
-                          variant="body2"
-                          sx={{
-                            color: getStatusColor(message.status).text,
-                            backgroundColor: getStatusColor(message.status).bg,
-                            py: 0.5,
-                            px: 1,
-                            borderRadius: 1,
-                            display: "inline-block",
-                          }}
-                        >
-                          {message.status}
-                        </Typography>
-                      </TableCell>
-                      <TableCell>
-                        {message.dateCompleted
-                          ? formatDate(message.dateCompleted)
-                          : formatDate(message.dateUpdated)}
-                      </TableCell>
-                    </TableRow>
-                  ))
-                )}
-              </TableBody>
-            </Table>
-          </TableContainer>
+          <Table
+            isLoading={isLoading}
+            headerList={["발송 요청일", "상태", "발송 완료일"]}
+            bodyList={messages.map((message) => ({
+              id: message.groupId,
+              dateCreated: formatDate(message.dateCreated),
+              status: (
+                <Status
+                  text={translateMessageStatusToKorean(message.status)}
+                  color={
+                    message.status === "COMPLETE"
+                      ? "GREEN"
+                      : message.status === "FAILED"
+                      ? "RED"
+                      : "GRAY"
+                  }
+                />
+              ),
 
-          {messages && messages.length > 0 && (
-            <TablePagination
-              component="div"
-              count={totalElements}
-              page={page}
-              rowsPerPage={rowsPerPage}
-              onPageChange={handleChangePage}
-              onRowsPerPageChange={handleChangeRowsPerPage}
-              rowsPerPageOptions={[10, 25, 50]}
-              labelRowsPerPage="페이지당 행 수"
-              labelDisplayedRows={({ from, to, count }) =>
-                `${count}개 중 ${from}-${to}개`
-              }
-              SelectProps={{
-                sx: {
-                  borderRadius: "20px",
-                  "& .MuiSelect-select": {
-                    borderRadius: "20px",
-                  },
-                },
-                MenuProps: {
-                  PaperProps: {
-                    sx: {
-                      borderRadius: "20px",
-                      "& .MuiMenuItem-root": {
-                        padding: "8px 16px",
-                      },
-                    },
-                  },
-                },
-              }}
-            />
-          )}
+              dateCompleted: message.dateCompleted
+                ? formatDate(message.dateCompleted)
+                : "-",
+            }))}
+            handleRowClick={handleRowClick}
+            totalElements={totalElements}
+            page={page}
+            handleChangePage={handleChangePage}
+            rowsPerPage={rowsPerPage}
+            handleChangeRowsPerPage={handleChangeRowsPerPage}
+          />
         </Paper>
       </Box>
+      <MessageDetailModal
+        open={detailModalOpen}
+        onClose={handleModalClose}
+        messageHistory={selectedMessageHistory}
+      />
     </Box>
   );
 };

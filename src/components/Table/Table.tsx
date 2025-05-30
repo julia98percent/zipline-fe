@@ -16,11 +16,11 @@ interface RowData {
   [key: string]: React.ReactNode;
 }
 
-interface Props {
+interface Props<T extends RowData> {
   isLoading?: boolean;
   headerList: string[];
-  bodyList: RowData[];
-  handleRowClick?: (id: string) => void;
+  bodyList: T[];
+  handleRowClick?: (rowData: T, index: number, event: React.MouseEvent) => void;
   totalElements: number;
   page: number;
   handleChangePage?: (_: unknown, newPage: number) => void;
@@ -32,7 +32,7 @@ interface Props {
   sx?: SxProps;
 }
 
-function Table({
+function Table<T extends RowData>({
   isLoading = false,
   headerList,
   bodyList,
@@ -44,7 +44,7 @@ function Table({
   handleChangeRowsPerPage,
   noDataMessage = "데이터가 없습니다.",
   sx,
-}: Props) {
+}: Props<T>) {
   return (
     <Paper
       sx={{
@@ -71,21 +71,25 @@ function Table({
               </TableRow>
             ) : bodyList.length === 0 ? (
               <TableRow>
-                <TableCell colSpan={5} align="center">
+                <TableCell colSpan={headerList.length} align="center">
                   {noDataMessage}
                 </TableCell>
               </TableRow>
             ) : (
-              bodyList.map(({ id, ...rowData }: RowData, index: number) => (
+              bodyList.map((rowData: T, index: number) => (
                 <TableRow
-                  key={index}
+                  key={rowData.id}
                   hover
-                  onClick={() => handleRowClick?.(id)}
+                  onClick={(event) => {
+                    handleRowClick?.(rowData, index, event);
+                  }}
                   sx={{ cursor: handleRowClick ? "pointer" : "default" }}
                 >
-                  {Object.keys(rowData).map((key) => (
-                    <TableCell key={key}>{rowData[key]}</TableCell>
-                  ))}
+                  {Object.keys(rowData)
+                    .filter((key) => key !== "id")
+                    .map((key) => (
+                      <TableCell key={key}>{rowData[key]}</TableCell>
+                    ))}
                 </TableRow>
               ))
             )}

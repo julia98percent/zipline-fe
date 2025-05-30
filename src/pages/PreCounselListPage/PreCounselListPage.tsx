@@ -17,13 +17,11 @@ function PreCounselListPage() {
   const [surveyDetailLoading, setSurveyDetailLoading] = useState(false);
   const [selectedSurvey, setSelectedSurvey] = useState(null);
 
-  const handleRowClick = async (surveyResponseUid: string) => {
+  const handleRowClick = async (rowData: string) => {
     setSurveyDetailLoading(true);
     setIsSurveyDetailModalOpen(true);
     try {
-      const response = await apiClient.get(
-        `/surveys/responses/${surveyResponseUid}`
-      );
+      const response = await apiClient.get(`/surveys/responses/${rowData.id}`);
       if (response.data.success) {
         setSelectedSurvey(response.data.data);
       }

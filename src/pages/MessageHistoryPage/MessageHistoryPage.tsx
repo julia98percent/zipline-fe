@@ -4,7 +4,7 @@ import RefreshIcon from "@mui/icons-material/Refresh";
 import PageHeader from "@components/PageHeader/PageHeader";
 import dayjs from "dayjs";
 import MessageDetailModal from "./MessageDetailModal";
-import { translateMessageStatusToKorean } from "@utils/stringUtil";
+import { translateMessageStatusToKorean } from "@utils/messageUtil";
 import Status from "@components/Status";
 import { MessageGroup } from "@ts/Message";
 import { fetchMessages } from "@apis/messageService";

@@ -66,40 +66,12 @@ const MessageHistoryPage = () => {
   const [rowsPerPage, setRowsPerPage] = useState(50);
   const [totalElements, setTotalElements] = useState(0);
 
-  const fetchMessages = async () => {
-    try {
-      setIsLoading(true);
-      const { data: response } = await apiClient.get<MessageHistoryResponse>(
-        "/messages"
-      );
-
-      if (
-        response.success &&
-        response.code === 200 &&
-        response.data?.groupList
-      ) {
-        const messageArray = Object.values(response.data.groupList || {});
-        setMessages(messageArray);
-        setTotalElements(messageArray.length);
-      } else {
-        setMessages([]);
-        setTotalElements(0);
-      }
-    } catch (error: unknown) {
-      console.error("Failed to fetch messages:", error);
-      setMessages([]);
-      setTotalElements(0);
-    } finally {
-      setIsLoading(false);
     }
   };
 
-  useEffect(() => {
-    fetchMessages();
-  }, [page]);
 
   const handleRefresh = () => {
-    fetchMessages();
+    fetchData();
   };
 
   const handleChangePage = (_: unknown, newPage: number) => {

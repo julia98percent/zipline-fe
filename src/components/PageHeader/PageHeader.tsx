@@ -12,10 +12,11 @@ import { Link, useNavigate } from "react-router-dom";
 import useUserStore from "@stores/useUserStore";
 import AccountCircleIcon from "@mui/icons-material/AccountCircle";
 import apiClient from "@apis/apiClient";
-import useSSE from "@hooks/useSSE";
+import { useSSE } from "@context/SSEContext";
 import { Notifications } from "@mui/icons-material";
 import NotificationList from "./NotificationList";
 import useNotificationStore from "@stores/useNotificationStore";
+import { clearAllAuthState } from "@utils/authUtil";
 
 interface PageHeaderProps {
   title: string;
@@ -34,7 +35,7 @@ const PageHeader = ({ title }: PageHeaderProps) => {
   );
 
   const navigate = useNavigate();
-  const { user, clearUser } = useUserStore();
+  const { user } = useUserStore();
 
   const unreadCount =
     notificationList?.filter((notification) => !notification.read).length || 0;
@@ -78,34 +79,11 @@ const PageHeader = ({ title }: PageHeaderProps) => {
 
   const handleLogout = async () => {
     try {
-      const accessToken = sessionStorage.getItem("_ZA");
-      const deviceId = localStorage.getItem("deviceId");
-
-      if (!accessToken || !deviceId) {
-        throw new Error("로그아웃 정보가 부족합니다.");
-      }
-
-      await apiClient.post(
-        "/users/logout",
-        {},
-        {
-          headers: {
-            Authorization: `Bearer ${accessToken}`,
-            "X-Device-Id": deviceId,
-          },
-          withCredentials: true,
-        }
-      );
-
-      sessionStorage.removeItem("_ZA");
-      clearUser();
-      navigate("/sign-in");
-    } catch {
-      sessionStorage.removeItem("_ZA");
-      clearUser();
-      navigate("/sign-in");
+      await apiClient.post("/users/logout", {}, { withCredentials: true });
     } finally {
       handleUserMenuClose();
+      clearAllAuthState();
+      navigate("/sign-in");
     }
   };
 

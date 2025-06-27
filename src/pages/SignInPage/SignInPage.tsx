@@ -1,3 +1,4 @@
+import { AxiosError } from "axios";
 import apiClient from "@apis/apiClient";
 import { Link, useNavigate } from "react-router-dom";
 import useInput from "@hooks/useInput";
@@ -6,57 +7,52 @@ import UserIdInput from "./UserIdInput";
 import PasswordInput from "./PasswordInput";
 import Button from "@components/Button";
 import { Box, Typography } from "@mui/material";
-import { toast } from "react-toastify";
 import signInImage from "@assets/sign-up.png";
 import { showToast } from "@components/Toast/Toast";
+import useAuthStore from "@stores/useAuthStore";
 
 const SignInPage = () => {
   const navigate = useNavigate();
+  const { checkAuth } = useAuthStore();
+
   const [userId, handleChangeUserId] = useInput("");
   const [password, handleChangePassword] = useInput("");
 
   const isSignInButtonDisabled = !userId || !password;
 
-  const handleClickSignInButton = () => {
-    let deviceId = localStorage.getItem("deviceId");
-    if (!deviceId) {
-      deviceId = crypto.randomUUID(); // 브라우저에서 UUID 생성
-      localStorage.setItem("deviceId", deviceId);
-    }
-
-    apiClient
-      .post(
+  const handleClickSignInButton = async () => {
+    try {
+      const res = await apiClient.post(
         "/users/login",
         {
           id: userId,
           password,
         },
         {
-          headers: {
-            "X-Device-Id": deviceId,
-          },
           withCredentials: true,
         }
-      )
-      .then((res) => {
-        const accessToken = res?.data?.data?.accessToken;
-        if (res.status === 200 && accessToken) {
-          sessionStorage.setItem("_ZA", accessToken);
-          showToast({
-            message: "로그인에 성공했습니다.",
-            type: "success",
-          });
-          navigate("/");
-        }
-      })
-      .catch((error) => {
-        const serverMessage =
-          error.response?.data?.message || "로그인 중 오류가 발생했습니다.";
+      );
+
+      if (res.status === 200) {
+        await checkAuth();
+
         showToast({
-          message: serverMessage,
-          type: "error",
+          message: "로그인에 성공했습니다.",
+          type: "success",
         });
+
+        navigate("/");
+      }
+    } catch (e) {
+      const error = e as AxiosError<{ message?: string }>;
+      const serverMessage =
+        error.response?.data?.message || "로그인 중 오류가 발생했습니다.";
+
+      showToast({
+        message: serverMessage,
+        type: "error",
       });
+    }
   };
 
   const handleKeyDown = (e: React.KeyboardEvent) => {

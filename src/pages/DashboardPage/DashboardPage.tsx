@@ -130,11 +130,8 @@ const DashboardPage = () => {
     message: "",
     severity: "success" as "success" | "error",
   });
-  const [selectedSurvey, setSelectedSurvey] = useState<SurveyDetail | null>(
-    null
-  );
+  const [selectedSurveyId, setSelectedSurveyId] = useState<number | null>(null);
   const [isSurveyDetailModalOpen, setIsSurveyDetailModalOpen] = useState(false);
-  const [surveyDetailLoading, setSurveyDetailLoading] = useState(false);
   const [isRecentCustomersModalOpen, setIsRecentCustomersModalOpen] =
     useState(false);
   const [recentContractsModalOpen, setRecentContractsModalOpen] =
@@ -481,31 +478,14 @@ const DashboardPage = () => {
     navigate(`/counsels/${counselId}`);
   };
 
-  const handleSurveyClick = async (surveyResponseUid: number) => {
-    setSurveyDetailLoading(true);
+  const handleSurveyClick = (surveyResponseUid: number) => {
+    setSelectedSurveyId(surveyResponseUid);
     setIsSurveyDetailModalOpen(true);
-    try {
-      const response = await apiClient.get(
-        `/surveys/responses/${surveyResponseUid}`
-      );
-      if (response.data.success) {
-        setSelectedSurvey(response.data.data);
-      }
-    } catch (error) {
-      console.error("Failed to fetch survey detail:", error);
-      setToast({
-        open: true,
-        message: "설문 상세 내용을 불러오는데 실패했습니다.",
-        severity: "error",
-      });
-    } finally {
-      setSurveyDetailLoading(false);
-    }
   };
 
   const handleCloseSurveyDetailModal = () => {
     setIsSurveyDetailModalOpen(false);
-    setSelectedSurvey(null);
+    setSelectedSurveyId(null);
   };
 
   // 최근 계약 건수 카드 클릭 핸들러
@@ -1688,8 +1668,7 @@ const DashboardPage = () => {
       <PreCounselDetailModal
         open={isSurveyDetailModalOpen}
         onClose={handleCloseSurveyDetailModal}
-        preCounselDetail={selectedSurvey}
-        isLoading={surveyDetailLoading}
+        surveyResponseUid={selectedSurveyId}
       />
       {/* 최근 유입 고객 모달 */}
       <RecentCustomersModal

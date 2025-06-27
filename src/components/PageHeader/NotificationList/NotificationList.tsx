@@ -1,12 +1,12 @@
-import { useCallback } from "react";
+import { useCallback, useState } from "react";
 import { Box, Typography, List } from "@mui/material";
 import type { Notification } from "@stores/useNotificationStore";
 import PreCounselDetailModal from "@components/PreCounselDetailModal";
-import { useNotification } from "@hooks/useNotification";
 import { readAllNotification } from "@apis/notificationService";
 import useNotificationStore from "@stores/useNotificationStore";
 import Button from "@components/Button";
 import NotificationItem from "./NotificationItem";
+
 interface NotificationListProps {
   notifications: Notification[];
   onNotificationListModalStateChange?: (isOpen: boolean) => void;
@@ -16,15 +16,8 @@ function NotificationList({
   notifications = [],
   onNotificationListModalStateChange,
 }: NotificationListProps) {
-  const {
-    isSurveyDetailModalOpen,
-    isLoading,
-    selectedPreCounsel,
-    error,
-    handlePreCounselClick,
-    handleCloseModal,
-    resetError,
-  } = useNotification();
+  const [isSurveyDetailModalOpen, setIsSurveyDetailModalOpen] = useState(false);
+  const [selectedSurveyId, setSelectedSurveyId] = useState<number | null>(null);
 
   const { updateNotification } = useNotificationStore();
 
@@ -37,19 +30,17 @@ function NotificationList({
 
   const handlePreCounselClickWithStateChange = useCallback(
     async (uid: number) => {
-      await handlePreCounselClick(uid);
+      setSelectedSurveyId(uid);
+      setIsSurveyDetailModalOpen(true);
       handleModalStateChange(true);
     },
-    [handlePreCounselClick, handleModalStateChange]
+    [handleModalStateChange]
   );
 
   const handleCloseModalWithStateChange = () => {
-    handleCloseModal();
+    setIsSurveyDetailModalOpen(false);
+    setSelectedSurveyId(null);
     handleModalStateChange(false);
-  };
-
-  const handleErrorClose = () => {
-    resetError();
   };
 
   const handleReadAllNotifications = () => {
@@ -110,25 +101,12 @@ function NotificationList({
             ))
           )}
         </List>
-
-        {error && (
-          <Box className="p-2 mt-2 bg-red-50 border border-red-200 rounded text-center">
-            <Typography className="text-red-600 text-sm">{error}</Typography>
-            <button
-              onClick={handleErrorClose}
-              className="text-red-500 text-xs underline mt-1"
-            >
-              닫기
-            </button>
-          </Box>
-        )}
       </Box>
 
       <PreCounselDetailModal
         open={isSurveyDetailModalOpen}
         onClose={handleCloseModalWithStateChange}
-        preCounselDetail={selectedPreCounsel}
-        isLoading={isLoading}
+        surveyResponseUid={selectedSurveyId}
       />
     </>
   );

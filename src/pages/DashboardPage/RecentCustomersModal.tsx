@@ -48,12 +48,12 @@ const RecentCustomersModal = ({
         },
       }}
     >
-      <DialogTitle sx={{ pb: 1 }}>
-        <Typography variant="h6" sx={{ fontWeight: "bold", color: "#164F9E" }}>
-          최근 유입 고객
-        </Typography>
+      <DialogTitle
+        sx={{ fontWeight: "bold", color: "#164F9E", fontSize: "1.25rem" }}
+      >
+        최근 유입 고객
       </DialogTitle>
-      <DialogContent sx={{ pt: "16px !important" }}>
+      <DialogContent>
         <TableContainer
           sx={{
             maxHeight: 480,

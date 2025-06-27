@@ -1,60 +1,12 @@
+import { useCallback } from "react";
 import { Box, Typography, List } from "@mui/material";
 import type { Notification } from "@stores/useNotificationStore";
-import { translateNotificationCategory } from "@utils/stringUtil";
-import { formatDateTimeToKorean } from "@utils/dateUtil";
 import PreCounselDetailModal from "@components/PreCounselDetailModal";
 import { useNotification } from "@hooks/useNotification";
-import { readNotification } from "@apis/notificationService";
+import { readAllNotification } from "@apis/notificationService";
 import useNotificationStore from "@stores/useNotificationStore";
-
-interface NotificationItemProps {
-  notification: Notification;
-  onPreCounselClick: (uid: number) => void;
-}
-
-function NotificationItem({
-  notification,
-  onPreCounselClick,
-}: NotificationItemProps) {
-  const { updateNotification } = useNotificationStore();
-
-  const handleClick = () => {
-    if (notification.category === "NEW_SURVEY") {
-      onPreCounselClick(notification.url);
-      readNotification(notification.uid, updateNotification);
-    } else {
-      console.log("Navigate to:", notification.url);
-    }
-  };
-
-  return (
-    <div
-      className={`text-base text-left border-gray-200 p-3 border-b-1 hover:bg-blue-50 cursor-pointer transition-colors duration-200 ${
-        notification.read ? "bg-gray-100" : ""
-      }`}
-      onClick={handleClick}
-    >
-      <div className="flex justify-between items-start flex-col gap-2">
-        <div className="">
-          {!notification.read && (
-            <div className="inline-block w-3 h-3 bg-blue-600 rounded-full mr-1" />
-          )}
-
-          <p className="inline text-neutral-700 leading-relaxed">
-            <span className="text-base font-medium">{`[${translateNotificationCategory(
-              notification.category
-            )}] `}</span>
-            {notification.content}
-          </p>
-        </div>
-        <span className="text-xs text-blue-500">
-          {formatDateTimeToKorean(notification.createdAt)}
-        </span>
-      </div>
-    </div>
-  );
-}
-
+import Button from "@components/Button";
+import NotificationItem from "./NotificationItem";
 interface NotificationListProps {
   notifications: Notification[];
   onNotificationListModalStateChange?: (isOpen: boolean) => void;
@@ -74,14 +26,22 @@ function NotificationList({
     resetError,
   } = useNotification();
 
-  const handleModalStateChange = (isOpen: boolean) => {
-    onNotificationListModalStateChange?.(isOpen);
-  };
+  const { updateNotification } = useNotificationStore();
 
-  const handlePreCounselClickWithStateChange = async (uid: number) => {
-    await handlePreCounselClick(uid);
-    handleModalStateChange(true);
-  };
+  const handleModalStateChange = useCallback(
+    (isOpen: boolean) => {
+      onNotificationListModalStateChange?.(isOpen);
+    },
+    [onNotificationListModalStateChange]
+  );
+
+  const handlePreCounselClickWithStateChange = useCallback(
+    async (uid: number) => {
+      await handlePreCounselClick(uid);
+      handleModalStateChange(true);
+    },
+    [handlePreCounselClick, handleModalStateChange]
+  );
 
   const handleCloseModalWithStateChange = () => {
     handleCloseModal();
@@ -90,6 +50,10 @@ function NotificationList({
 
   const handleErrorClose = () => {
     resetError();
+  };
+
+  const handleReadAllNotifications = () => {
+    readAllNotification(updateNotification);
   };
 
   return (
@@ -112,13 +76,14 @@ function NotificationList({
           flexDirection: "column",
         }}
       >
-        <Typography
-          variant="h6"
-          className="text-gray-900 font-semibold mb-3 pb-2 border-b border-gray-200"
-        >
-          알림
-        </Typography>
-
+        <div className="flex items-center justify-between text-gray-900 font-semibold mb-3 pb-2 border-b border-gray-200">
+          <Typography variant="h6">알림</Typography>
+          <Button
+            text="모두 읽음 표시"
+            className="p-0!"
+            onClick={handleReadAllNotifications}
+          />
+        </div>
         <List
           sx={{
             padding: 0,
@@ -135,9 +100,9 @@ function NotificationList({
               </Typography>
             </Box>
           ) : (
-            notifications.map((notification, index) => (
+            notifications.map((notification) => (
               <NotificationItem
-                key={`${notification.url}-${index}`}
+                key={`${notification.uid}`}
                 notification={notification}
                 onPreCounselClick={handlePreCounselClickWithStateChange}
               />

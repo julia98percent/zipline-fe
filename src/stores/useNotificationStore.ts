@@ -24,6 +24,7 @@ export interface NotificationState {
     notificationId: number,
     updates: Partial<Notification>
   ) => void;
+  deleteNotification: (notificationId: number) => void;
   clearNotification: () => void;
 }
 
@@ -46,6 +47,13 @@ const useNotificationStore = create<NotificationState>((set) => ({
           notification.uid === notificationId
             ? { ...notification, ...updates }
             : notification
+        ) || null,
+    })),
+  deleteNotification: (notificationId: number) =>
+    set((state) => ({
+      notificationList:
+        state.notificationList?.filter(
+          (notification) => notification.uid !== notificationId
         ) || null,
     })),
   clearNotification: () => set({ notificationList: null }),

@@ -68,6 +68,7 @@ function NotificationList({
           borderRadius: "8px",
           padding: "16px",
           zIndex: 50,
+          width: "40vw",
           minWidth: "300px",
           maxWidth: "400px",
           maxHeight: "50vh",

@@ -46,3 +46,18 @@ export const readAllNotification = async (
     console.error("Failed to read all notifications:", error);
   }
 };
+
+export const deleteNotification = async (
+  notificationId: number,
+  deleteNotification: NotificationState["deleteNotification"]
+) => {
+  try {
+    const response = await apiClient.delete(`/notifications/${notificationId}`);
+    const isSuccess = response?.data?.success;
+    if (response?.status === 200 && isSuccess) {
+      deleteNotification(notificationId);
+    }
+  } catch (error) {
+    console.error("Failed to delete notification:", error);
+  }
+};

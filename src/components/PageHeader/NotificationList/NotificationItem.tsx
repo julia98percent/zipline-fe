@@ -42,17 +42,13 @@ function NotificationItem({
 
   return (
     <div
-      className={`text-base text-left border-gray-200 p-3 border-b-1 hover:bg-blue-50 cursor-pointer transition-colors duration-200 ${
-        notification.read ? "bg-gray-100" : ""
+      className={`text-base text-left border-gray-200 px-3 py-4 border-b-1 hover:bg-blue-50 cursor-pointer transition-colors duration-200 ${
+        !notification.read ? "bg-gray-100" : ""
       }`}
       onClick={handleClick}
     >
       <div className="flex justify-between items-start flex-col gap-2">
-        <div className="">
-          {!notification.read && (
-            <div className="inline-block w-3 h-3 bg-blue-600 rounded-full mr-1" />
-          )}
-
+        <div className="flex items-start gap-2">
           <p className="inline text-neutral-700 leading-relaxed">
             <span className="text-base font-medium">{`[${translateNotificationCategory(
               notification.category
@@ -63,10 +59,10 @@ function NotificationItem({
             <ClearIcon className="block fill-neutral-600!" />
           </IconButton>
         </div>
-        <span className="text-xs text-blue-500">
-          {formatDateTimeToKorean(notification.createdAt)}
-        </span>
       </div>
+      <span className="text-xs text-blue-500">
+        {formatDateTimeToKorean(notification.createdAt)}
+      </span>
     </div>
   );
 }

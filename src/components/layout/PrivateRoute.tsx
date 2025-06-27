@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 import { Outlet, Navigate } from "react-router-dom";
 import NavigationBar from "@components/NavigationBar";
 import { fetchNotifications } from "@apis/notificationService";
@@ -6,61 +6,55 @@ import { Box, CircularProgress } from "@mui/material";
 import useUserStore from "@stores/useUserStore";
 import { fetchUserInfo } from "@apis/userService";
 import useNotificationStore from "@stores/useNotificationStore";
-
-const STORAGE_KEY = "_ZA";
+import { clearAllAuthState } from "@utils/authUtil";
+import useAuthStore from "@stores/useAuthStore";
+import { SSEProvider } from "@context/SSEContext";
 
 const PrivateRoute = () => {
-  const { user, setUser, clearUser } = useUserStore();
-  const [isLoading, setIsLoading] = useState(true);
+  const { user, setUser } = useUserStore();
+  const { isSignedIn, checkAuth } = useAuthStore();
+
   const { setNotificationList } = useNotificationStore();
-  const [shouldRedirect, setShouldRedirect] = useState(false);
+  const [isInitializing, setIsInitializing] = useState(false);
 
-  const clearUserSession = () => {
-    sessionStorage.clear();
-    clearUser();
-  };
+  const isReady = isSignedIn && user && !isInitializing;
 
-  const handleAuthError = () => {
-    clearUserSession();
-    setShouldRedirect(true);
-    setIsLoading(false);
-  };
+  const handleAuthFailure = useCallback(() => {
+    clearAllAuthState();
+  }, []);
 
-  const initializeAuth = async () => {
-    const token = sessionStorage.getItem(STORAGE_KEY);
+  const initializeUserData = useCallback(async () => {
+    if (isInitializing) return;
 
-    if (!token) {
-      handleAuthError();
-      return;
-    }
-
-    if (user) {
-      setIsLoading(false);
-      return;
-    }
-
+    setIsInitializing(true);
     try {
       const userFetched = await fetchUserInfo(setUser);
       if (userFetched) {
         await fetchNotifications(setNotificationList);
       }
-    } catch {
-      handleAuthError();
-      return;
+    } catch (error) {
+      console.error("사용자 데이터 초기화 실패:", error);
+      handleAuthFailure();
+    } finally {
+      setIsInitializing(false);
     }
-
-    setIsLoading(false);
-  };
+  }, [isInitializing, setUser, setNotificationList, handleAuthFailure]);
 
   useEffect(() => {
-    initializeAuth();
-  }, [user]); // 의존성 배열 단순화
+    if (isSignedIn === null) {
+      checkAuth();
+    } else if (isSignedIn && !user && !isInitializing) {
+      initializeUserData();
+    } else if (isSignedIn === false) {
+      handleAuthFailure();
+    }
+  }, [isSignedIn, user, isInitializing]);
 
-  if (shouldRedirect) {
-    return <Navigate to="/sign-in" />;
+  if (isSignedIn === false) {
+    return <Navigate to="/sign-in" replace />;
   }
 
-  if (isLoading || !user) {
+  if (!isReady) {
     return (
       <Box
         sx={{
@@ -74,20 +68,23 @@ const PrivateRoute = () => {
       </Box>
     );
   }
+
   return (
-    <Box
-      sx={{
-        display: "flex",
-        flexDirection: "row",
-        width: "100%",
-        height: "100vh",
-      }}
-    >
-      <NavigationBar />
-      <Box sx={{ width: "100%", backgroundColor: "#f5f5f5", flex: 1 }}>
-        <Outlet />
+    <SSEProvider>
+      <Box
+        sx={{
+          display: "flex",
+          flexDirection: "row",
+          width: "100%",
+          height: "100vh",
+        }}
+      >
+        <NavigationBar />
+        <Box sx={{ width: "100%", backgroundColor: "#f5f5f5", flex: 1 }}>
+          <Outlet />
+        </Box>
       </Box>
-    </Box>
+    </SSEProvider>
   );
 };
 

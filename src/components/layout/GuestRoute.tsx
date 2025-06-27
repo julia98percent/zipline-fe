@@ -1,9 +1,9 @@
 import { Outlet, Navigate } from "react-router-dom";
+import useAuthStore from "@stores/useAuthStore";
 
 const GuestRoute = () => {
-  const isSignedIn = Boolean(sessionStorage.getItem("_ZA"));
-
-  if (isSignedIn) return <Navigate to="/" replace />;
+  const { isSignedIn } = useAuthStore();
+  if (isSignedIn === true) return <Navigate to="/" replace />;
 
   return (
     <div>

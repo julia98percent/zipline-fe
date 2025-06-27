@@ -30,3 +30,19 @@ export const readNotification = async (
     console.error("Failed to read notification:", error);
   }
 };
+
+export const readAllNotification = async (
+  updateNotification: NotificationState["updateNotification"]
+) => {
+  try {
+    const response = await apiClient.put(`/notifications/read`);
+    const result = response?.data?.data;
+    if (response?.status === 200 && result) {
+      for (const notification of result) {
+        updateNotification(notification.uid, notification);
+      }
+    }
+  } catch (error) {
+    console.error("Failed to read all notifications:", error);
+  }
+};

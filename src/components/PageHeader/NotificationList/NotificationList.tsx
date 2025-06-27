@@ -1,11 +1,12 @@
+import { useCallback } from "react";
 import { Box, Typography, List } from "@mui/material";
 import type { Notification } from "@stores/useNotificationStore";
-import { translateNotificationCategory } from "@utils/stringUtil";
-import { formatDateTimeToKorean } from "@utils/dateUtil";
 import PreCounselDetailModal from "@components/PreCounselDetailModal";
 import { useNotification } from "@hooks/useNotification";
-import { readNotification } from "@apis/notificationService";
+import { readAllNotification } from "@apis/notificationService";
 import useNotificationStore from "@stores/useNotificationStore";
+import Button from "@components/Button";
+import NotificationItem from "./NotificationItem";
 interface NotificationListProps {
   notifications: Notification[];
   onNotificationListModalStateChange?: (isOpen: boolean) => void;
@@ -25,14 +26,22 @@ function NotificationList({
     resetError,
   } = useNotification();
 
-  const handleModalStateChange = (isOpen: boolean) => {
-    onNotificationListModalStateChange?.(isOpen);
-  };
+  const { updateNotification } = useNotificationStore();
 
-  const handlePreCounselClickWithStateChange = async (uid: number) => {
-    await handlePreCounselClick(uid);
-    handleModalStateChange(true);
-  };
+  const handleModalStateChange = useCallback(
+    (isOpen: boolean) => {
+      onNotificationListModalStateChange?.(isOpen);
+    },
+    [onNotificationListModalStateChange]
+  );
+
+  const handlePreCounselClickWithStateChange = useCallback(
+    async (uid: number) => {
+      await handlePreCounselClick(uid);
+      handleModalStateChange(true);
+    },
+    [handlePreCounselClick, handleModalStateChange]
+  );
 
   const handleCloseModalWithStateChange = () => {
     handleCloseModal();
@@ -41,6 +50,10 @@ function NotificationList({
 
   const handleErrorClose = () => {
     resetError();
+  };
+
+  const handleReadAllNotifications = () => {
+    readAllNotification(updateNotification);
   };
 
   return (
@@ -63,13 +76,14 @@ function NotificationList({
           flexDirection: "column",
         }}
       >
-        <Typography
-          variant="h6"
-          className="text-gray-900 font-semibold mb-3 pb-2 border-b border-gray-200"
-        >
-          알림
-        </Typography>
-
+        <div className="flex items-center justify-between text-gray-900 font-semibold mb-3 pb-2 border-b border-gray-200">
+          <Typography variant="h6">알림</Typography>
+          <Button
+            text="모두 읽음 표시"
+            className="p-0!"
+            onClick={handleReadAllNotifications}
+          />
+        </div>
         <List
           sx={{
             padding: 0,
@@ -86,9 +100,9 @@ function NotificationList({
               </Typography>
             </Box>
           ) : (
-            notifications.map((notification, index) => (
+            notifications.map((notification) => (
               <NotificationItem
-                key={`${notification.url}-${index}`}
+                key={`${notification.uid}`}
                 notification={notification}
                 onPreCounselClick={handlePreCounselClickWithStateChange}
               />

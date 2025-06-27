@@ -19,6 +19,8 @@ interface PreCounselDetailModalProps {
   onClose: () => void;
   preCounselDetail: PreCounselDetail | null;
   isLoading: boolean;
+  onRegisterCustomer: () => void;
+  isRegistering?: boolean;
 }
 
 const PreCounselDetailModal = ({
@@ -26,6 +28,8 @@ const PreCounselDetailModal = ({
   onClose,
   preCounselDetail,
   isLoading,
+  onRegisterCustomer,
+  isRegistering = false,
 }: PreCounselDetailModalProps) => {
   return (
     <Dialog
@@ -180,7 +184,26 @@ const PreCounselDetailModal = ({
           </Typography>
         )}
       </DialogContent>
-      <DialogActions sx={{ p: 2 }}>
+      <DialogActions sx={{ p: 2, gap: 1, justifyContent: "flex-end" }}>
+        <Button
+          onClick={onRegisterCustomer}
+          variant="outlined"
+          disabled={isRegistering || !preCounselDetail}
+          sx={{
+            borderColor: "#164F9E",
+            color: "#164F9E",
+            "&:hover": {
+              borderColor: "#0D3B7A",
+              backgroundColor: "rgba(22, 79, 158, 0.04)",
+            },
+            "&:disabled": {
+              borderColor: "#ccc",
+              color: "#ccc",
+            },
+          }}
+        >
+          {isRegistering ? "등록 중..." : "고객 등록하기"}
+        </Button>
         <Button
           onClick={onClose}
           variant="contained"

@@ -1,7 +1,6 @@
 import { useState, useEffect, useCallback } from "react";
 import PreCounselDetailModal from "@components/PreCounselDetailModal";
 import PageHeader from "@components/PageHeader";
-import apiClient from "@apis/apiClient";
 import dayjs from "dayjs";
 import Table from "@components/Table";
 import { PreCounsel } from "@ts/Counsel";
@@ -14,27 +13,21 @@ function PreCounselListPage() {
   const [isLoading, setIsLoading] = useState(true);
   const [totalElements, setTotalElements] = useState(0);
   const [isSurveyDetailModalOpen, setIsSurveyDetailModalOpen] = useState(false);
-  const [surveyDetailLoading, setSurveyDetailLoading] = useState(false);
-  const [selectedSurvey, setSelectedSurvey] = useState(null);
+  const [selectedSurveyId, setSelectedSurveyId] = useState<number | null>(null);
 
-  const handleRowClick = async (rowData: string) => {
-    setSurveyDetailLoading(true);
+  const handleRowClick = (rowData: {
+    name: string;
+    phoneNumber: string;
+    submittedAt: string;
+    id: string;
+  }) => {
+    setSelectedSurveyId(Number(rowData.id));
     setIsSurveyDetailModalOpen(true);
-    try {
-      const response = await apiClient.get(`/surveys/responses/${rowData.id}`);
-      if (response.data.success) {
-        setSelectedSurvey(response.data.data);
-      }
-    } catch (error) {
-      console.error("Failed to fetch survey detail:", error);
-    } finally {
-      setSurveyDetailLoading(false);
-    }
   };
 
   const handleCloseSurveyDetailModal = () => {
     setIsSurveyDetailModalOpen(false);
-    setSelectedSurvey(null);
+    setSelectedSurveyId(null);
   };
 
   const handleChangePage = (_: unknown, newPage: number) => {
@@ -89,8 +82,7 @@ function PreCounselListPage() {
       <PreCounselDetailModal
         open={isSurveyDetailModalOpen}
         onClose={handleCloseSurveyDetailModal}
-        preCounselDetail={selectedSurvey}
-        isLoading={surveyDetailLoading}
+        surveyResponseUid={selectedSurveyId}
       />
     </div>
   );

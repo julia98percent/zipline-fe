@@ -1,9 +1,14 @@
 import React from "react";
 import { translateNotificationCategory } from "@utils/stringUtil";
 import { formatDateTimeToKorean } from "@utils/dateUtil";
-import { readNotification } from "@apis/notificationService";
+import {
+  deleteNotification,
+  readNotification,
+} from "@apis/notificationService";
 import useNotificationStore from "@stores/useNotificationStore";
 import type { Notification } from "@stores/useNotificationStore";
+import ClearIcon from "@mui/icons-material/Clear";
+import { IconButton } from "@mui/material";
 
 interface NotificationItemProps {
   notification: Notification;
@@ -14,7 +19,8 @@ function NotificationItem({
   notification,
   onPreCounselClick,
 }: NotificationItemProps) {
-  const { updateNotification } = useNotificationStore();
+  const { updateNotification, deleteNotification: deleteNotificationAction } =
+    useNotificationStore();
 
   const handleClick = () => {
     if (notification.category === "NEW_SURVEY") {
@@ -22,6 +28,15 @@ function NotificationItem({
       readNotification(notification.uid, updateNotification);
     } else {
       console.log("Navigate to:", notification.url);
+    }
+  };
+
+  const handleDelete = async (e: React.MouseEvent) => {
+    e.stopPropagation();
+    try {
+      await deleteNotification(notification.uid, deleteNotificationAction);
+    } catch (error) {
+      console.error("Failed to delete notification:", error);
     }
   };
 
@@ -44,6 +59,9 @@ function NotificationItem({
             )}] `}</span>
             {notification.content}
           </p>
+          <IconButton onClick={handleDelete}>
+            <ClearIcon className="block fill-neutral-600!" />
+          </IconButton>
         </div>
         <span className="text-xs text-blue-500">
           {formatDateTimeToKorean(notification.createdAt)}

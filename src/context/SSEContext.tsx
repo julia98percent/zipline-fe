@@ -1,16 +1,33 @@
-import { useEffect, useRef, useCallback, useState } from "react";
+import {
+  createContext,
+  useContext,
+  useEffect,
+  useRef,
+  useState,
+  useCallback,
+} from "react";
 import { EventSource } from "eventsource";
 import useNotificationStore from "@stores/useNotificationStore";
+import { getCsrfToken } from "@apis/apiClient";
 
-const MAX_RECONNECT_ATTEMPTS = 5;
+interface SSEContextValue {
+  isConnected: boolean;
+  reconnect: () => void;
+  disconnect: () => void;
+}
 
-function useSSE() {
-  const eventSourceRef = useRef<EventSource>(null);
-  const reconnectTimeoutRef = useRef<number>(null);
-  const reconnectCount = useRef(0);
+const SSEContext = createContext<SSEContextValue | null>(null);
+
+const MAX_RECONNECT_ATTEMPTS = 3;
+
+export function SSEProvider({ children }: { children: React.ReactNode }) {
+  const eventSourceRef = useRef<EventSource | null>(null);
+  const reconnectTimeoutRef = useRef<number | null>(null);
+  const reconnectCount = useRef<number>(0);
+  const isConnectingRef = useRef<boolean>(false);
+  const csrfTokenRef = useRef<string | null>(null);
 
   const [isConnected, setIsConnected] = useState(false);
-
   const { addNotificationList } = useNotificationStore();
 
   const cleanup = useCallback(() => {
@@ -23,26 +40,27 @@ function useSSE() {
       clearTimeout(reconnectTimeoutRef.current);
       reconnectTimeoutRef.current = null;
     }
+
+    isConnectingRef.current = false;
+    setIsConnected(false);
   }, []);
 
-  const connect = useCallback(() => {
-    const token = sessionStorage.getItem("_ZA");
-
-    if (!token) {
-      return;
-    }
-
+  const connect = useCallback(async () => {
     if (
-      eventSourceRef.current &&
-      eventSourceRef.current.readyState === EventSource.OPEN
+      isConnectingRef.current ||
+      (eventSourceRef.current &&
+        eventSourceRef.current.readyState === EventSource.OPEN)
     ) {
       return;
     }
 
+    isConnectingRef.current = true;
     cleanup();
 
     try {
-      setIsConnected(true);
+      if (!csrfTokenRef.current) {
+        csrfTokenRef.current = await getCsrfToken();
+      }
 
       const eventSource = new EventSource(
         `${import.meta.env.VITE_SERVER_URL}/notifications/stream`,
@@ -53,7 +71,7 @@ function useSSE() {
               credentials: "include",
               headers: {
                 ...init?.headers,
-                Authorization: `Bearer ${token}`,
+                "X-XSRF-TOKEN": `${csrfTokenRef.current}`,
               },
             }),
         }
@@ -62,6 +80,7 @@ function useSSE() {
       eventSource.onopen = () => {
         setIsConnected(true);
         reconnectCount.current = 0;
+        isConnectingRef.current = false;
       };
 
       eventSource.addEventListener("notification", (event) => {
@@ -75,6 +94,7 @@ function useSSE() {
 
       eventSource.onerror = (error) => {
         console.error("SSE 연결 오류:", error);
+        isConnectingRef.current = false;
         setIsConnected(false);
 
         if (eventSource.readyState === EventSource.CLOSED) {
@@ -88,31 +108,42 @@ function useSSE() {
               reconnectCount.current++;
               connect();
             }, delay);
-          } else {
-            setIsConnected(false);
           }
         }
       };
 
       eventSourceRef.current = eventSource;
-    } catch {
+    } catch (error) {
+      console.error("SSE 연결 생성 오류:", error);
+      isConnectingRef.current = false;
       setIsConnected(false);
     }
-  }, [cleanup]);
+  }, [cleanup, addNotificationList]);
+
+  const reconnect = useCallback(() => {
+    reconnectCount.current = 0;
+    csrfTokenRef.current = null;
+    connect();
+  }, [connect]);
 
   useEffect(() => {
     connect();
+    return cleanup;
+  }, []);
 
-    return () => {
-      cleanup();
-    };
-  }, [connect, cleanup]);
-
-  return {
-    connect,
-    disconnect: cleanup,
+  const value = {
     isConnected,
+    reconnect,
+    disconnect: cleanup,
   };
+
+  return <SSEContext.Provider value={value}>{children}</SSEContext.Provider>;
 }
 
-export default useSSE;
+export function useSSE() {
+  const context = useContext(SSEContext);
+  if (!context) {
+    throw new Error("useSSE must be used within SSEProvider");
+  }
+  return context;
+}

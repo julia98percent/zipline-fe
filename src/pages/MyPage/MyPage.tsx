@@ -239,11 +239,13 @@ function MyPage() {
                 backgroundColor: "#f5f5f5",
               }}
             >
-              <QRCode value={`https://zip-line.kr/${user?.url}`} size={80} />
+              <QRCode
+                value={`${import.meta.env.VITE_CLIENT_URL}/${user?.url}`}
+                size={80}
+              />
             </Box>
           )}
 
-          {/* URL + 복사 버튼 */}
           <Box sx={{ flex: 1 }}>
             <Typography variant="subtitle1" fontWeight="bold" sx={{ mb: 1 }}>
               설문 URL
@@ -251,7 +253,11 @@ function MyPage() {
             <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
               <TextField
                 fullWidth
-                value={user?.url ? `https://zip-line.kr/${user?.url}` : ""}
+                value={
+                  user?.url
+                    ? `${import.meta.env.VITE_CLIENT_URL}/${user?.url}`
+                    : ""
+                }
                 size="small"
                 InputProps={{ readOnly: true }}
               />
@@ -260,7 +266,7 @@ function MyPage() {
                 onClick={() => {
                   if (user?.url) {
                     navigator.clipboard.writeText(
-                      `https://zip-line.kr/${user?.url}`
+                      `${import.meta.env.VITE_CLIENT_URL}/${user?.url}`
                     );
                     toast("URL이 복사되었습니다.");
                   } else {

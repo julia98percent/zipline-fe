@@ -14,22 +14,10 @@ import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import apiClient from "@apis/apiClient";
 import Button from "@components/Button";
-import { showToast } from "@components/Toast/Toast";
+import { showToast } from "@components/Toast";
+import { CONTRACT_STATUS_OPTION_LIST } from "@constants/contract";
 
-const CONTRACT_STATUS_OPTIONS = [
-  { value: "LISTED", label: "매물 등록" },
-  { value: "NEGOTIATING", label: "협상 중" },
-  { value: "INTENT_SIGNED", label: "가계약" },
-  { value: "CANCELLED", label: "계약 취소" },
-  { value: "CONTRACTED", label: "계약 체결" },
-  { value: "IN_PROGRESS", label: "계약 진행 중" },
-  { value: "PAID_COMPLETE", label: "잔금 지급 완료" },
-  { value: "REGISTERED", label: "등기 완료" },
-  { value: "MOVED_IN", label: "입주 완료" },
-  { value: "TERMINATED", label: "계약 해지" },
-] as const;
-
-type ContractStatus = (typeof CONTRACT_STATUS_OPTIONS)[number]["value"];
+type ContractStatus = (typeof CONTRACT_STATUS_OPTION_LIST)[number]["value"];
 
 interface Props {
   open: boolean;
@@ -291,7 +279,7 @@ const ContractAddModal = ({ open, handleClose, fetchContractData }: Props) => {
           fullWidth
           sx={{ mb: 2 }}
         >
-          {CONTRACT_STATUS_OPTIONS.map((s) => (
+          {CONTRACT_STATUS_OPTION_LIST.map((s) => (
             <MenuItem key={s.value} value={s.value}>
               {s.label}
             </MenuItem>

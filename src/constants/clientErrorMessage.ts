@@ -1,5 +1,6 @@
 export const USER_ERROR_MESSAGES = {
   INFO_FETCH_FAILED: "사용자 정보를 불러올 수 없습니다.",
+  LOGIN_FAILED: "로그인 중 오류가 발생했습니다.",
 } as const;
 
 export const REGION_ERROR_MESSAGES = {

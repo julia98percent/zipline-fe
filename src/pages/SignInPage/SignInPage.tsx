@@ -1,15 +1,14 @@
 import { AxiosError } from "axios";
-import apiClient from "@apis/apiClient";
 import { Link, useNavigate } from "react-router-dom";
+import { loginUser } from "@apis/userService";
 import useInput from "@hooks/useInput";
-import Header from "./Header";
-import UserIdInput from "./UserIdInput";
-import PasswordInput from "./PasswordInput";
+import { Header, UserIdInput, PasswordInput } from "./components";
 import Button from "@components/Button";
 import { Box, Typography } from "@mui/material";
 import signInImage from "@assets/sign-up.png";
 import { showToast } from "@components/Toast/Toast";
 import useAuthStore from "@stores/useAuthStore";
+import { USER_ERROR_MESSAGES } from "@constants/clientErrorMessage";
 
 const SignInPage = () => {
   const navigate = useNavigate();
@@ -22,16 +21,7 @@ const SignInPage = () => {
 
   const handleClickSignInButton = async () => {
     try {
-      const res = await apiClient.post(
-        "/users/login",
-        {
-          id: userId,
-          password,
-        },
-        {
-          withCredentials: true,
-        }
-      );
+      const res = await loginUser(userId, password);
 
       if (res.status === 200) {
         await checkAuth();
@@ -46,7 +36,7 @@ const SignInPage = () => {
     } catch (e) {
       const error = e as AxiosError<{ message?: string }>;
       const serverMessage =
-        error.response?.data?.message || "로그인 중 오류가 발생했습니다.";
+        error.response?.data?.message || USER_ERROR_MESSAGES.LOGIN_FAILED;
 
       showToast({
         message: serverMessage,

@@ -15,3 +15,21 @@ export const fetchUserInfo = async (): Promise<User> => {
     return handleApiError(error, "fetching user info");
   }
 };
+
+export const loginUser = async (userId: string, password: string) => {
+  try {
+    const response = await apiClient.post(
+      "/users/login",
+      {
+        id: userId,
+        password,
+      },
+      {
+        withCredentials: true,
+      }
+    );
+    return response;
+  } catch (error) {
+    return handleApiError(error, "logging in user");
+  }
+};

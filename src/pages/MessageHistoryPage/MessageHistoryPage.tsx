@@ -6,7 +6,7 @@ import dayjs from "dayjs";
 import MessageDetailModal from "./MessageDetailModal";
 import { translateMessageStatusToKorean } from "@utils/messageUtil";
 import Status from "@components/Status";
-import { MessageGroup } from "@ts/Message";
+import { MessageGroup } from "@ts/message";
 import { fetchMessages } from "@apis/messageService";
 import Table from "@components/Table";
 

@@ -3,7 +3,7 @@ import PreCounselDetailModal from "@components/PreCounselDetailModal";
 import PageHeader from "@components/PageHeader";
 import dayjs from "dayjs";
 import Table from "@components/Table";
-import { PreCounsel } from "@ts/Counsel";
+import { PreCounsel } from "@ts/counsel";
 import { fetchCounsels } from "@apis/counselService";
 
 function PreCounselListPage() {

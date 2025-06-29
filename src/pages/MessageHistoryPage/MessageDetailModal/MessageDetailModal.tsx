@@ -18,7 +18,7 @@ import MessageStatistics from "./MessageStatistics";
 import MessageDateInfo from "./MessageDateInfo";
 import MessageLog from "./MessageLog";
 import MessageDetail from "./MessageDetail/MessageDetail";
-import { MessageHistory } from "@ts/Message";
+import { MessageHistory } from "@ts/message";
 
 interface Props {
   open: boolean;

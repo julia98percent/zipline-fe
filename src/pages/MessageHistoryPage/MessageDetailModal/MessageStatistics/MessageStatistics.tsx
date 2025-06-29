@@ -1,5 +1,5 @@
 import { Stack, Typography, Divider } from "@mui/material";
-import { MessageHistory } from "@ts/Message";
+import { MessageHistory } from "@ts/message";
 
 function MessageStatistics({
   messageHistory,

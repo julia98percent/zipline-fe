@@ -12,7 +12,7 @@ import {
   FormControlLabel,
   Checkbox,
 } from "@mui/material";
-import { Schedule } from "../../interfaces/schedule";
+import { Schedule } from "@ts/schedule";
 import dayjs from "dayjs";
 import apiClient from "@apis/apiClient";
 

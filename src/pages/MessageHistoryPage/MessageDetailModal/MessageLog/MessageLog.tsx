@@ -1,5 +1,5 @@
 import { Box, Typography, Stack } from "@mui/material";
-import { MessageHistory } from "@ts/Message";
+import { MessageHistory } from "@ts/message";
 import { formatDate } from "@utils/dateUtil";
 
 function MessageLog({ messageHistory }: { messageHistory: MessageHistory }) {

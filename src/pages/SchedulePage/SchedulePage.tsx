@@ -10,7 +10,7 @@ import koLocale from "@fullcalendar/core/locales/ko";
 import apiClient from "@apis/apiClient";
 import PageHeader from "@components/PageHeader/PageHeader";
 import ScheduleDetailModal from "@components/ScheduleDetailModal/ScheduleDetailModal";
-import { Schedule } from "../../interfaces/schedule";
+import { Schedule } from "@ts/schedule";
 import AddScheduleModal from "./AddScheduleModal";
 import { showToast } from "@components/Toast/Toast";
 

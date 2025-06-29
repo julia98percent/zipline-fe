@@ -1,5 +1,5 @@
 import { Stack, Typography, Divider } from "@mui/material";
-import { MessageHistory } from "@ts/Message";
+import { MessageHistory } from "@ts/message";
 import { formatDate } from "@utils/dateUtil";
 
 function MessageDateInfo({

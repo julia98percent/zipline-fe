@@ -3,7 +3,6 @@ import { useNavigate } from "react-router-dom";
 import ContractTable from "./ContractTable";
 import ContractFilterModal from "./ContractFilterModal/ContractFilterModal";
 import PageHeader from "@components/PageHeader/PageHeader";
-import useUserStore from "@stores/useUserStore";
 import styles from "./styles/ContractListPage.module.css";
 import Select from "react-select";
 import "./styles/reactSelect.css";
@@ -60,7 +59,6 @@ function ContractListPage() {
 
   const mappedCategory = categoryKeywordMap[searchKeyword] || "";
 
-  const { user } = useUserStore();
   const navigate = useNavigate();
 
   const fetchContractData = useCallback(async () => {
@@ -88,6 +86,7 @@ function ContractListPage() {
       setFilterModalOpen(false);
     }
   }, [
+    mappedCategory,
     searchKeyword,
     selectedPeriod,
     selectedStatus,

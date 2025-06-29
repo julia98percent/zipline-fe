@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Box, Typography, Stack } from "@mui/material";
-import { Message } from "@ts/Message";
+import { Message } from "@ts/message";
 import { getStatusMessage, getErrorMessage } from "@utils/messageUtil";
 import { formatDate } from "@utils/dateUtil";
 import { Button } from "@mui/material";

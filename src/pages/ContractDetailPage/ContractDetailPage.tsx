@@ -15,6 +15,7 @@ import {
   ContractDetail,
   ContractHistory,
 } from "@apis/contractService";
+import { showToast } from "@components/Toast/Toast";
 
 const ContractDetailPage = () => {
   const { contractUid } = useParams<{ contractUid: string }>();

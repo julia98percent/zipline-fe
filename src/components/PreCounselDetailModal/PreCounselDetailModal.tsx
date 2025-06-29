@@ -12,7 +12,7 @@ import {
   Link,
 } from "@mui/material";
 import { formatDate } from "@utils/dateUtil";
-import { PreCounselDetail } from "@ts/Counsel";
+import { PreCounselDetail } from "@ts/counsel";
 
 interface PreCounselDetailModalProps {
   open: boolean;

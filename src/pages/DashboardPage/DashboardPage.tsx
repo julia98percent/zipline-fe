@@ -39,7 +39,7 @@ import PageHeader from "@components/PageHeader/PageHeader";
 import apiClient from "@apis/apiClient";
 import ScheduleDetailModal from "@components/ScheduleDetailModal/ScheduleDetailModal";
 import PreCounselDetailModal from "@components/PreCounselDetailModal";
-import { Schedule } from "../../interfaces/schedule";
+import { Schedule } from "@ts/schedule";
 import { formatDate } from "@utils/dateUtil";
 import RecentCustomersModal from "./RecentCustomersModal";
 import RecentContractsModal from "./RecentContractsModal";

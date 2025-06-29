@@ -4,7 +4,7 @@ import PropertyTable from "./PropertyTable";
 import PropertyFilterModal from "./PropertyFilterModal/PropertyFilterModal";
 import PageHeader from "@components/PageHeader/PageHeader";
 import { CircularProgress } from "@mui/material";
-import { AgentPropertyFilterRequest } from "@ts/AgentPropertyFilterRequest";
+import { AgentPropertyFilterRequest } from "@ts/agentPropertyFilterRequest";
 import {
   PageContainer,
   ContentContainer,

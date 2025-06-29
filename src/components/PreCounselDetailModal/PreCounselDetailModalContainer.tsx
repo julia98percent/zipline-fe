@@ -1,6 +1,6 @@
 import { useState, useEffect, useCallback } from "react";
 import { fetchPreCounselDetail } from "@apis/preCounselService";
-import { PreCounselDetail } from "@ts/Counsel";
+import { PreCounselDetail } from "@ts/counsel";
 import PreCounselDetailModal from "./PreCounselDetailModal";
 import { addCustomer } from "@apis/customerService";
 

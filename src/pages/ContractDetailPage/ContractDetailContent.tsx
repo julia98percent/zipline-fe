@@ -11,65 +11,38 @@ import {
   TableRow,
   Button,
 } from "@mui/material";
+import { CONTRACT_STATUS_OPTION_LIST } from "@constants/contract";
+import {
+  ContractCategory,
+  ContractCategoryType,
+  ContractCategoryColors,
+  ContractDetail,
+  ContractHistory,
+} from "@ts/contract";
 
-const CONTRACT_STATUS_TYPES = [
-  { value: "LISTED", name: "매물 등록", color: "#9e9e9e" },
-  { value: "NEGOTIATING", name: "협상 중", color: "#0288d1" },
-  { value: "INTENT_SIGNED", name: "가계약", color: "#f57c00" },
-  { value: "CANCELLED", name: "계약 취소", color: "#d32f2f" },
-  { value: "CONTRACTED", name: "계약 체결", color: "#388e3c" },
-  { value: "IN_PROGRESS", name: "계약 진행 중", color: "#1976d2" },
-  { value: "PAID_COMPLETE", name: "잔금 지급 완료", color: "#7b1fa2" },
-  { value: "REGISTERED", name: "등기 완료", color: "#388e3c" },
-  { value: "MOVED_IN", name: "입주 완료", color: "#388e3c" },
-  { value: "TERMINATED", name: "계약 해지", color: "#d32f2f" },
-];
-const statusKoreanMap: Record<string, string> = {
-  LISTED: "매물 등록됨",
-  NEGOTIATING: "협상 중",
-  INTENT_SIGNED: "가계약",
-  CANCELLED: "계약 취소",
-  CONTRACTED: "계약 체결",
-  IN_PROGRESS: "계약 진행 중",
-  PAID_COMPLETE: "잔금 지급 완료",
-  REGISTERED: "등기 완료",
-  MOVED_IN: "입주 완료",
-  TERMINATED: "계약 해지",
+const CONTRACT_STATUS_COLORS: Record<string, string> = {
+  LISTED: "#9e9e9e",
+  NEGOTIATING: "#0288d1",
+  INTENT_SIGNED: "#f57c00",
+  CANCELLED: "#d32f2f",
+  CONTRACTED: "#388e3c",
+  IN_PROGRESS: "#1976d2",
+  PAID_COMPLETE: "#7b1fa2",
+  REGISTERED: "#388e3c",
+  MOVED_IN: "#388e3c",
+  TERMINATED: "#d32f2f",
 };
 
-const categoryKoreanMap: Record<string, string> = {
-  SALE: "매매",
-  DEPOSIT: "전세",
-  MONTHLY: "월세",
+const getStatusLabel = (statusValue: string): string => {
+  const statusOption = CONTRACT_STATUS_OPTION_LIST.find(
+    (option) => option.value === statusValue
+  );
+  return statusOption ? statusOption.label : statusValue;
 };
 
-interface ContractDocument {
-  fileName: string;
-  fileUrl: string;
-}
-
-interface ContractDetail {
-  uid: number;
-  category: string;
-  deposit: number;
-  monthlyRent: number;
-  price: number;
-  contractStartDate: string | null;
-  contractEndDate: string | null;
-  expectedContractEndDate: string | null;
-  contractDate: string | null;
-  status: string;
-  lessorOrSellerNames: string[];
-  lesseeOrBuyerNames: string[];
-  documents: ContractDocument[];
-  propertyAddress: string;
-}
-
-interface ContractHistory {
-  prevStatus: string;
-  currentStatus: string;
-  changedAt: string;
-}
+const getStatusColor = (statusValue: string): string => {
+  return CONTRACT_STATUS_COLORS[statusValue] || "#9e9e9e";
+};
 
 interface Props {
   contract: ContractDetail;
@@ -94,18 +67,21 @@ const ContractDetailContent = ({ contract, histories }: Props) => {
             <InfoRow
               label="카테고리"
               value={(() => {
-                if (!contract.category || contract.category === "null")
-                  return "-";
-                const categoryLabel =
-                  categoryKoreanMap[contract.category] ?? contract.category;
-                const categoryColor =
-                  contract.category === "SALE"
-                    ? "#388e3c"
-                    : contract.category === "DEPOSIT"
-                    ? "#1976d2"
-                    : contract.category === "MONTHLY"
-                    ? "#f57c00"
-                    : "#999";
+                if (!contract.category) return "-";
+
+                const isValidCategory = (
+                  category: string
+                ): category is ContractCategoryType => {
+                  return category in ContractCategory;
+                };
+
+                const categoryLabel = isValidCategory(contract.category)
+                  ? ContractCategory[contract.category]
+                  : contract.category;
+
+                const categoryColor = isValidCategory(contract.category)
+                  ? ContractCategoryColors[contract.category]
+                  : "#999";
 
                 return (
                   <Chip
@@ -125,16 +101,13 @@ const ContractDetailContent = ({ contract, histories }: Props) => {
             <InfoRow
               label="상태"
               value={(() => {
-                const statusInfo = CONTRACT_STATUS_TYPES.find(
-                  (item) => item.value === contract.status
-                );
                 return (
                   <Chip
-                    label={statusInfo?.name ?? contract.status}
+                    label={getStatusLabel(contract.status)}
                     variant="outlined"
                     sx={{
-                      color: statusInfo?.color,
-                      borderColor: statusInfo?.color,
+                      color: getStatusColor(contract.status),
+                      borderColor: getStatusColor(contract.status),
                       fontWeight: 500,
                       fontSize: 13,
                       height: 28,
@@ -287,15 +260,11 @@ const ContractDetailContent = ({ contract, histories }: Props) => {
                     <TableRow key={idx}>
                       <TableCell>
                         <Chip
-                          label={statusKoreanMap[h.prevStatus] ?? h.prevStatus}
+                          label={getStatusLabel(h.prevStatus)}
                           variant="outlined"
                           sx={{
-                            color: CONTRACT_STATUS_TYPES.find(
-                              (item) => item.value === h.prevStatus
-                            )?.color,
-                            borderColor: CONTRACT_STATUS_TYPES.find(
-                              (item) => item.value === h.prevStatus
-                            )?.color,
+                            color: getStatusColor(h.prevStatus),
+                            borderColor: getStatusColor(h.prevStatus),
                             fontWeight: 500,
                             fontSize: 13,
                             height: 28,
@@ -304,17 +273,11 @@ const ContractDetailContent = ({ contract, histories }: Props) => {
                       </TableCell>
                       <TableCell>
                         <Chip
-                          label={
-                            statusKoreanMap[h.currentStatus] ?? h.currentStatus
-                          }
+                          label={getStatusLabel(h.currentStatus)}
                           variant="outlined"
                           sx={{
-                            color: CONTRACT_STATUS_TYPES.find(
-                              (item) => item.value === h.currentStatus
-                            )?.color,
-                            borderColor: CONTRACT_STATUS_TYPES.find(
-                              (item) => item.value === h.currentStatus
-                            )?.color,
+                            color: getStatusColor(h.currentStatus),
+                            borderColor: getStatusColor(h.currentStatus),
                             fontWeight: 500,
                             fontSize: 13,
                             height: 28,

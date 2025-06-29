@@ -4,9 +4,9 @@ import { CONTRACT_ERROR_MESSAGES } from "@constants/clientErrorMessage";
 import {
   ContractDetail,
   ContractHistory,
-  ContractListItem,
   ContractListSearchParams,
   ContractListData,
+  Contract,
 } from "@ts/contract";
 import { handleApiResponse, handleApiError } from "@utils/apiUtil";
 
@@ -54,7 +54,7 @@ export const deleteContract = async (contractUid: string): Promise<void> => {
 
 export const searchContracts = async (
   searchParams: ContractListSearchParams
-): Promise<{ contracts: ContractListItem[]; totalElements: number }> => {
+): Promise<{ contracts: Contract[]; totalElements: number }> => {
   try {
     const { data: response } = await apiClient.get<
       ApiResponse<ContractListData>

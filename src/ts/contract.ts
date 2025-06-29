@@ -1,4 +1,4 @@
-interface ContractDocument {
+export interface ContractDocument {
   fileName: string;
   fileUrl: string;
 }
@@ -7,7 +7,7 @@ export interface Contract {
   uid: number;
   lessorOrSellerNames: string[];
   lesseeOrBuyerNames: string[];
-  category: "SALE" | "DEPOSIT" | "MONTHLY" | null;
+  category: ContractCategoryType | null;
   contractDate: string | null;
   contractStartDate: string | null;
   contractEndDate: string | null;
@@ -30,22 +30,6 @@ export interface ContractHistory {
   changedAt: string;
 }
 
-export interface ContractListItem {
-  uid: number;
-  category: string;
-  deposit: number;
-  monthlyRent: number;
-  price: number;
-  contractStartDate: string | null;
-  contractEndDate: string | null;
-  expectedContractEndDate: string | null;
-  contractDate: string | null;
-  status: string;
-  lessorOrSellerNames: string[];
-  lesseeOrBuyerNames: string[];
-  address: string;
-}
-
 export interface ContractListSearchParams {
   category?: string;
   customerName?: string;
@@ -66,8 +50,22 @@ export interface ContractListData {
   hasNext: boolean;
 }
 
-export const ContractCategory: Record<string, string> = {
+export const ContractCategory = {
   SALE: "매매",
   DEPOSIT: "전세",
   MONTHLY: "월세",
 } as const;
+
+export type ContractCategoryType = keyof typeof ContractCategory;
+
+export const ContractCategoryKeys = {
+  SALE: "SALE" as const,
+  DEPOSIT: "DEPOSIT" as const,
+  MONTHLY: "MONTHLY" as const,
+} satisfies Record<ContractCategoryType, ContractCategoryType>;
+
+export const ContractCategoryColors: Record<ContractCategoryType, string> = {
+  SALE: "#388e3c",
+  DEPOSIT: "#1976d2",
+  MONTHLY: "#f57c00",
+};

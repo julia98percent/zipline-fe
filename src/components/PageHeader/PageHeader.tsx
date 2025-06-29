@@ -9,7 +9,7 @@ import {
 } from "@mui/material";
 import { useState, useRef, useEffect, useCallback } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import useUserStore from "@stores/useUserStore";
+import useAuthStore from "@stores/useAuthStore";
 import AccountCircleIcon from "@mui/icons-material/AccountCircle";
 import apiClient from "@apis/apiClient";
 import { useSSE } from "@context/SSEContext";
@@ -35,7 +35,7 @@ const PageHeader = ({ title }: PageHeaderProps) => {
   );
 
   const navigate = useNavigate();
-  const { user } = useUserStore();
+  const { user } = useAuthStore();
 
   const unreadCount =
     notificationList?.filter((notification) => !notification.read).length || 0;

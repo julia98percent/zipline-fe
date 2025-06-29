@@ -16,7 +16,7 @@ import { useCallback, useEffect, useState } from "react";
 import PublicPropertyFilterModal from "./PublicPropertyFilterModal/PublicPropertyFilterModal";
 import PublicPropertyTable from "./PublicPropertyTable";
 import PageHeader from "@components/PageHeader/PageHeader";
-import useUserStore from "@stores/useUserStore";
+import useAuthStore from "@stores/useAuthStore";
 import SearchIcon from "@mui/icons-material/Search";
 import { IOSSwitch } from "@pages/PrivatePropertyListPage/PropertyTable/PropertyTable";
 

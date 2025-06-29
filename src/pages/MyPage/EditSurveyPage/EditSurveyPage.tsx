@@ -17,7 +17,7 @@ import { useNavigate } from "react-router-dom";
 import SingleChoiceAdd from "./SingleChoiceAdd";
 import MultipleChoiceAdd from "./MultipleChoiceAdd";
 import apiClient from "@apis/apiClient";
-import useUserStore from "@stores/useUserStore";
+import useAuthStore from "@stores/useAuthStore";
 import PageHeader from "@components/PageHeader/PageHeader";
 
 type ChoiceType = { text: string };
@@ -68,7 +68,7 @@ const DEFAULT_QUESTION_TEMPLATE: QuestionType = {
 
 const EditSurveyPage = () => {
   const navigate = useNavigate();
-  const { user } = useUserStore();
+  const { user } = useAuthStore();
   const [survey, setSurvey] = useState<SurveyType>({
     title: "",
     questions: [],

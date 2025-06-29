@@ -10,7 +10,7 @@ import {
 import AccountCircleIcon from "@mui/icons-material/AccountCircle";
 import AccessTimeIcon from "@mui/icons-material/AccessTime";
 import Button from "@components/Button";
-import useUserStore from "@stores/useUserStore";
+import useAuthStore from "@stores/useAuthStore";
 import apiClient from "@apis/apiClient";
 import { formatDate } from "@utils/dateUtil";
 import QRCode from "react-qr-code";
@@ -19,7 +19,7 @@ import { formatPhoneNumber } from "@utils/numberUtil";
 import { toast } from "react-toastify";
 
 function MyPage() {
-  const { user } = useUserStore();
+  const { user } = useAuthStore();
   const [editOpen, setEditOpen] = useState(false);
   const [email, setEmail] = useState(user?.email || "");
   const [name, setName] = useState(user?.name || "");

@@ -17,7 +17,7 @@ import {
 import dayjs from "dayjs";
 import DeleteConfirmModal from "@components/DeleteConfirm/DeleteConfirmModal";
 import PageHeader from "@components/PageHeader/PageHeader";
-import useUserStore from "@stores/useUserStore";
+import useAuthStore from "@stores/useAuthStore";
 import PropertyEditModal from "../PropertyAddButtonList/PropertyEditModal/PropertyEditModal";
 import EditIcon from "@mui/icons-material/Edit";
 import DeleteIcon from "@mui/icons-material/Delete";
@@ -245,7 +245,7 @@ const AgentPropertyDetailPage = () => {
   const { propertyUid } = useParams<{ propertyUid: string }>();
   const navigate = useNavigate();
   const [property, setProperty] = useState<AgentPropertyDetail | null>(null);
-  const { user } = useUserStore();
+  const { user } = useAuthStore();
   const [contractInfo, setContractInfo] = useState<ContractInfo | null>(null);
   const [contractHistories, setContractHistories] = useState<
     ContractHistoryItem[]

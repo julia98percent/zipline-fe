@@ -18,6 +18,7 @@ import dayjs from "dayjs";
 import DeleteConfirmModal from "@components/DeleteConfirm/DeleteConfirmModal";
 import PageHeader from "@components/PageHeader/PageHeader";
 import useAuthStore from "@stores/useAuthStore";
+import { CONTRACT_STATUS_TYPES } from "@constants/contract";
 import PropertyEditModal from "../PropertyAddButtonList/PropertyEditModal/PropertyEditModal";
 import EditIcon from "@mui/icons-material/Edit";
 import DeleteIcon from "@mui/icons-material/Delete";
@@ -86,19 +87,6 @@ interface CounselHistory {
   customerName: string;
   customerPhoneNo: string;
 }
-
-const CONTRACT_STATUS_TYPES = [
-  { value: "LISTED", name: "매물 등록", color: "default" },
-  { value: "NEGOTIATING", name: "협상 중", color: "info" },
-  { value: "INTENT_SIGNED", name: "가계약", color: "warning" },
-  { value: "CANCELLED", name: "계약 취소", color: "error" },
-  { value: "CONTRACTED", name: "계약 체결", color: "success" },
-  { value: "IN_PROGRESS", name: "계약 진행 중", color: "primary" },
-  { value: "PAID_COMPLETE", name: "잔금 지급 완료", color: "secondary" },
-  { value: "REGISTERED", name: "등기 완료", color: "success" },
-  { value: "MOVED_IN", name: "입주 완료", color: "success" },
-  { value: "TERMINATED", name: "계약 해지", color: "error" },
-];
 
 const categoryKoreanMap: Record<string, string> = {
   SALE: "매매",

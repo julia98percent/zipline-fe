@@ -15,6 +15,7 @@ import {
 } from "@mui/material";
 import { useNavigate } from "react-router-dom";
 import { Contract } from "@ts/contract";
+import { CONTRACT_STATUS_TYPES } from "@constants/contract";
 
 interface OngoingContractsModalProps {
   open: boolean;
@@ -27,19 +28,6 @@ interface OngoingContractsModalProps {
   onPageChange: (newPage: number) => void;
   onRowsPerPageChange: (newRowsPerPage: number) => void;
 }
-
-const CONTRACT_STATUS_TYPES = [
-  { value: "LISTED", name: "매물 등록", color: "default" },
-  { value: "NEGOTIATING", name: "협상 중", color: "info" },
-  { value: "INTENT_SIGNED", name: "가계약", color: "warning" },
-  { value: "CANCELLED", name: "계약 취소", color: "error" },
-  { value: "CONTRACTED", name: "계약 체결", color: "success" },
-  { value: "IN_PROGRESS", name: "계약 진행 중", color: "primary" },
-  { value: "PAID_COMPLETE", name: "잔금 지급 완료", color: "secondary" },
-  { value: "REGISTERED", name: "등기 완료", color: "success" },
-  { value: "MOVED_IN", name: "입주 완료", color: "success" },
-  { value: "TERMINATED", name: "계약 해지", color: "error" },
-] as const;
 
 const categoryKoreanMap: Record<string, string> = {
   SALE: "매매",

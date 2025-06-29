@@ -1,11 +1,11 @@
-import { useEffect, useState, useCallback } from "react";
+import { useEffect, useCallback, useRef } from "react";
 import { Outlet, Navigate } from "react-router-dom";
 import NavigationBar from "@components/NavigationBar";
 import { fetchNotifications } from "@apis/notificationService";
 import { Box, CircularProgress } from "@mui/material";
 import useUserStore from "@stores/useUserStore";
-import { fetchUserInfo } from "@apis/userService";
 import useNotificationStore from "@stores/useNotificationStore";
+import { fetchUserInfo } from "@apis/userService";
 import { clearAllAuthState } from "@utils/authUtil";
 import useAuthStore from "@stores/useAuthStore";
 import { SSEProvider } from "@context/SSEContext";
@@ -13,48 +13,50 @@ import { SSEProvider } from "@context/SSEContext";
 const PrivateRoute = () => {
   const { user, setUser } = useUserStore();
   const { isSignedIn, checkAuth } = useAuthStore();
-
   const { setNotificationList } = useNotificationStore();
-  const [isInitializing, setIsInitializing] = useState(false);
 
-  const isReady = isSignedIn && user && !isInitializing;
+  const isInitializingRef = useRef(false);
 
   const handleAuthFailure = useCallback(() => {
     clearAllAuthState();
   }, []);
 
   const initializeUserData = useCallback(async () => {
-    if (isInitializing) return;
+    if (isInitializingRef.current) return;
 
-    setIsInitializing(true);
+    isInitializingRef.current = true;
+
     try {
-      const userFetched = await fetchUserInfo(setUser);
-      if (userFetched) {
-        await fetchNotifications(setNotificationList);
-      }
+      const [userData, notifications] = await Promise.all([
+        fetchUserInfo(),
+        fetchNotifications(),
+      ]);
+
+      setUser(userData as Parameters<typeof setUser>[0]);
+      setNotificationList(notifications);
     } catch (error) {
       console.error("사용자 데이터 초기화 실패:", error);
       handleAuthFailure();
     } finally {
-      setIsInitializing(false);
+      isInitializingRef.current = false;
     }
-  }, [isInitializing, setUser, setNotificationList, handleAuthFailure]);
+  }, [setUser, setNotificationList, handleAuthFailure]);
 
   useEffect(() => {
     if (isSignedIn === null) {
       checkAuth();
-    } else if (isSignedIn && !user && !isInitializing) {
+    } else if (isSignedIn && !user && !isInitializingRef.current) {
       initializeUserData();
     } else if (isSignedIn === false) {
       handleAuthFailure();
     }
-  }, [isSignedIn, user, isInitializing]);
+  }, [isSignedIn, user, checkAuth, handleAuthFailure, initializeUserData]);
 
   if (isSignedIn === false) {
     return <Navigate to="/sign-in" replace />;
   }
 
-  if (!isReady) {
+  if (isSignedIn && !user) {
     return (
       <Box
         sx={{

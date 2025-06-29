@@ -1,4 +1,4 @@
-import { ApiResponse } from "./ApiResponse";
+import { ApiResponse } from "./apiResponse";
 
 interface MessageLog {
   message: string;

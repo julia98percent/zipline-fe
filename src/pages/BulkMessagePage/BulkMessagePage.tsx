@@ -31,9 +31,8 @@ import AddIcon from "@mui/icons-material/Add";
 import PageHeader from "@components/PageHeader/PageHeader";
 import apiClient from "@apis/apiClient";
 import { SelectChangeEvent } from "@mui/material";
-import { showToast } from "@components/Toast/Toast";
 
-interface Customer {
+export interface Customer {
   uid: number;
   name: string;
   phoneNo: string;
@@ -47,18 +46,11 @@ interface Customer {
   legalDistrictCode: string;
 }
 
-interface Template {
+export interface Template {
   uid: number;
   name: string;
   content: string;
   category: string;
-}
-
-interface TemplateResponse {
-  success: boolean;
-  code: number;
-  message: string;
-  data: Template[];
 }
 
 interface Label {
@@ -108,6 +100,22 @@ interface RegionState {
   [key: string]: Region[] | number | null;
 }
 
+interface BulkMessagePageProps {
+  templates: Template[];
+  selectedTemplate: number | "";
+  messageContent: string;
+  customers: Customer[];
+  isCustomerModalOpen: boolean;
+  isLoading: boolean;
+  groupedTemplates: Record<string, Template[]>;
+  onTemplateChange: (event: SelectChangeEvent<number | string>) => void;
+  onAddCustomer: () => void;
+  onCustomerSelectConfirm: (selectedCustomers: Customer[]) => void;
+  onRemoveCustomer: (index: number) => void;
+  onSendMessage: () => void;
+  onCloseCustomerModal: () => void;
+}
+
 interface CustomerSelectModalProps {
   open: boolean;
   onClose: () => void;
@@ -147,7 +155,6 @@ const CustomerSelectModal = ({
   });
   const [labelUids, setLabelUids] = useState<number[]>([]);
 
-  // 역할 한글 라벨 및 색상 매핑
   const ROLE_LABELS: Record<string, string> = {
     tenant: "임차인",
     landlord: "임대인",
@@ -403,7 +410,7 @@ const CustomerSelectModal = ({
       ? filteredCustomers
       : selectedCustomers.slice(page * rowsPerPage, (page + 1) * rowsPerPage);
 
-  const handleChangePage = (event: unknown, newPage: number) => {
+  const handleChangePage = (_: unknown, newPage: number) => {
     setPage(newPage);
   };
 
@@ -792,139 +799,26 @@ const CustomerSelectModal = ({
   );
 };
 
-const BulkMessagePage = () => {
-  const [templates, setTemplates] = useState<Template[]>([]);
-  const [selectedTemplate, setSelectedTemplate] = useState<number | "">("");
-  const [messageContent, setMessageContent] = useState<string>("");
-  const [customers, setCustomers] = useState<Customer[]>([]);
-  const [isCustomerModalOpen, setIsCustomerModalOpen] = useState(false);
-  const [isLoading, setIsLoading] = useState(false);
+const BulkMessagePage = ({
+  templates,
+  selectedTemplate,
+  messageContent,
+  customers,
+  isCustomerModalOpen,
+  isLoading,
+  groupedTemplates,
+  onTemplateChange,
+  onAddCustomer,
+  onCustomerSelectConfirm,
+  onRemoveCustomer,
+  onSendMessage,
+  onCloseCustomerModal,
+}: BulkMessagePageProps) => {
   const [toast, setToast] = useState<{
     open: boolean;
     message: string;
     severity: "success" | "error";
   }>({ open: false, message: "", severity: "success" });
-
-  // 변수를 고객 정보로 대체하는 함수
-  const replaceVariablesWithCustomerInfo = (
-    content: string,
-    customer: Customer
-  ) => {
-    // 생일 포맷팅 (YYYYMMDD -> M월 D일)
-    const formatBirthday = (dateStr: string) => {
-      try {
-        const month = parseInt(dateStr.substring(4, 6), 10);
-        const day = parseInt(dateStr.substring(6, 8), 10);
-        return `${month}월 ${day}일`;
-      } catch (error) {
-        console.error("Invalid date format:", error);
-        return "날짜 정보 없음";
-      }
-    };
-
-    const replacements = {
-      "{{이름}}": `${customer.name}`,
-      "{{생년월일}}": customer.birthday
-        ? formatBirthday(customer.birthday)
-        : "생일 정보 없음",
-      "{{관심지역}}": customer.legalDistrictCode
-        ? `$$###{${customer.legalDistrictCode}}`
-        : "",
-    };
-
-    return content.replace(/{{[^}]+}}/g, (match) => {
-      return replacements[match as keyof typeof replacements] || match;
-    });
-  };
-
-  useEffect(() => {
-    const fetchTemplates = async () => {
-      try {
-        setIsLoading(true);
-        const { data: response } = await apiClient.get<TemplateResponse>(
-          "/templates"
-        );
-
-        if (response.success && response.code === 200) {
-          setTemplates(response.data);
-        } else {
-          console.error("Failed to fetch templates:", response.message);
-        }
-      } catch (error) {
-        console.error("Error fetching templates:", error);
-      } finally {
-        setIsLoading(false);
-      }
-    };
-
-    fetchTemplates();
-  }, []);
-
-  const handleTemplateChange = (event: SelectChangeEvent<number | string>) => {
-    const selectedTemplateUid =
-      event.target.value === "" ? "" : Number(event.target.value);
-    setSelectedTemplate(selectedTemplateUid);
-
-    if (!selectedTemplateUid) {
-      setMessageContent("");
-      return;
-    }
-
-    const template = templates.find((t) => t.uid === selectedTemplateUid);
-    if (template) {
-      setMessageContent(template.content);
-    }
-  };
-
-  const handleAddCustomer = () => {
-    setIsCustomerModalOpen(true);
-  };
-
-  const handleCustomerSelectConfirm = (selectedCustomers: Customer[]) => {
-    setCustomers(selectedCustomers);
-  };
-
-  const handleRemoveCustomer = (index: number) => {
-    setCustomers(customers.filter((_, i) => i !== index));
-  };
-
-  const handleSendMessage = async () => {
-    if (!customers.length || !selectedTemplate) return;
-    const from = import.meta.env.VITE_MSG_PHONE_NUMBER;
-    const template = templates.find((t) => t.uid === selectedTemplate);
-    if (!template) return;
-
-    const payload = customers.map((customer) => ({
-      from,
-      to: customer.phoneNo.replace(/\D/g, ""),
-      text: replaceVariablesWithCustomerInfo(template.content, customer),
-    }));
-
-    try {
-      await apiClient.post("/messages", payload);
-      showToast({
-        message: "문자를 발송했습니다.",
-        type: "success",
-      });
-      setCustomers([]);
-      setSelectedTemplate("");
-      setMessageContent("");
-    } catch {
-      showToast({
-        message: "문자 발송에 실패했습니다.",
-        type: "error",
-      });
-    }
-  };
-
-  // Group templates by category
-  const groupedTemplates = templates.reduce((acc, template) => {
-    if (!acc[template.category]) {
-      acc[template.category] = [];
-    }
-    acc[template.category].push(template);
-    return acc;
-  }, {} as Record<string, Template[]>);
 
   return (
     <Box
@@ -953,7 +847,7 @@ const BulkMessagePage = () => {
           <FormControl fullWidth sx={{ mb: 2 }}>
             <Select
               value={selectedTemplate}
-              onChange={handleTemplateChange}
+              onChange={onTemplateChange}
               displayEmpty
               disabled={isLoading}
               renderValue={(selected) => {
@@ -1023,7 +917,7 @@ const BulkMessagePage = () => {
             multiline
             rows={10}
             value={messageContent}
-            onChange={(e) => setMessageContent(e.target.value)}
+            onChange={() => {}}
             sx={{
               "& .MuiOutlinedInput-notchedOutline": {
                 borderRadius: "20px",
@@ -1067,7 +961,7 @@ const BulkMessagePage = () => {
               </Typography>
               <Button
                 variant="contained"
-                onClick={handleAddCustomer}
+                onClick={onAddCustomer}
                 sx={{
                   backgroundColor: "#164F9E",
                   boxShadow: "none",
@@ -1102,7 +996,7 @@ const BulkMessagePage = () => {
                   </Box>
                   <IconButton
                     size="small"
-                    onClick={() => handleRemoveCustomer(index)}
+                    onClick={() => onRemoveCustomer(index)}
                   >
                     <CloseIcon />
                   </IconButton>
@@ -1114,7 +1008,7 @@ const BulkMessagePage = () => {
           <Button
             fullWidth
             variant="contained"
-            onClick={handleSendMessage}
+            onClick={onSendMessage}
             disabled={customers.length === 0 || !selectedTemplate}
             sx={{
               height: "48px",
@@ -1140,8 +1034,8 @@ const BulkMessagePage = () => {
 
       <CustomerSelectModal
         open={isCustomerModalOpen}
-        onClose={() => setIsCustomerModalOpen(false)}
-        onConfirm={handleCustomerSelectConfirm}
+        onClose={onCloseCustomerModal}
+        onConfirm={onCustomerSelectConfirm}
         selectedCustomers={customers}
       />
       <Snackbar

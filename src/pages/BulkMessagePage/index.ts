@@ -1,1 +1,1 @@
-export { default } from "./BulkMessagePage";
+export { default } from "./BulkMessagePageContainer";

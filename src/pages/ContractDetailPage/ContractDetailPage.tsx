@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { CircularProgress, Button, Box } from "@mui/material";
 import PageHeader from "@components/PageHeader/PageHeader";
@@ -12,10 +12,9 @@ import {
   fetchContractDetail,
   fetchContractHistory,
   deleteContract,
-  ContractDetail,
-  ContractHistory,
 } from "@apis/contractService";
 import { showToast } from "@components/Toast/Toast";
+import { ContractDetail, ContractHistory } from "@ts/contract";
 
 const ContractDetailPage = () => {
   const { contractUid } = useParams<{ contractUid: string }>();
@@ -24,13 +23,34 @@ const ContractDetailPage = () => {
   const [histories, setHistories] = useState<ContractHistory[]>([]);
   const [loading, setLoading] = useState(true);
   const [editModalOpen, setEditModalOpen] = useState(false);
+  const [deleteModalOpen, setDeleteModalOpen] = useState(false);
+
+  // 공통 데이터 로딩 함수
+  const loadContractData = useCallback(async () => {
+    if (!contractUid) return;
+
+    setLoading(true);
+    try {
+      const [contractDetail, contractHistory] = await Promise.all([
+        fetchContractDetail(contractUid),
+        fetchContractHistory(contractUid),
+      ]);
+      setContract(contractDetail);
+      setHistories(contractHistory);
+    } catch {
+      showToast({
+        message: "계약 정보를 불러올 수 없습니다.",
+        type: "error",
+      });
+    } finally {
+      setLoading(false);
+    }
+  }, [contractUid]);
 
   const handleEdit = () => setEditModalOpen(true);
 
-  const [deleteModalOpen, setDeleteModalOpen] = useState(false);
-
   const handleDelete = () => {
-    setDeleteModalOpen(true); // 모달 열기
+    setDeleteModalOpen(true);
   };
 
   const confirmDelete = async () => {
@@ -51,6 +71,10 @@ const ContractDetailPage = () => {
       setDeleteModalOpen(false);
     }
   };
+
+  useEffect(() => {
+    loadContractData();
+  }, [loadContractData]);
 
   useEffect(() => {
     if (contractUid) {
@@ -97,18 +121,7 @@ const ContractDetailPage = () => {
           <ContractEditModal
             open={editModalOpen}
             handleClose={() => setEditModalOpen(false)}
-            fetchContractData={async () => {
-              try {
-                const [contractDetail, contractHistory] = await Promise.all([
-                  fetchContractDetail(contractUid!),
-                  fetchContractHistory(contractUid!),
-                ]);
-                setContract(contractDetail);
-                setHistories(contractHistory);
-              } catch (error) {
-                console.error("Error refreshing contract data:", error);
-              }
-            }}
+            fetchContractData={loadContractData}
             contractUid={Number(contractUid)}
             initialData={contract}
           />

@@ -1,13 +1,10 @@
 import { useState, useEffect } from "react";
 import { SelectChangeEvent } from "@mui/material";
-import BulkMessagePage, { Customer } from "./BulkMessagePage";
+import BulkMessagePage from "./BulkMessagePage";
 import { showToast } from "@components/Toast";
-import {
-  fetchTemplates,
-  sendBulkMessages,
-  Template,
-  BulkMessagePayload,
-} from "@apis/messageService";
+import { fetchTemplates, sendBulkMessages } from "@apis/messageService";
+import { Customer } from "@ts/customer";
+import { Template, BulkMessagePayload } from "@ts/message";
 
 const BulkMessagePageContainer = () => {
   const [templates, setTemplates] = useState<Template[]>([]);
@@ -105,6 +102,7 @@ const BulkMessagePageContainer = () => {
 
     try {
       const success = await sendBulkMessages(payload);
+
       if (success) {
         showToast({
           message: "문자를 발송했습니다.",
@@ -119,7 +117,8 @@ const BulkMessagePageContainer = () => {
           type: "error",
         });
       }
-    } catch {
+    } catch (error) {
+      console.error("Bulk message send error:", error);
       showToast({
         message: "문자 발송에 실패했습니다.",
         type: "error",
@@ -131,7 +130,6 @@ const BulkMessagePageContainer = () => {
     setIsCustomerModalOpen(false);
   };
 
-  // Group templates by category
   const groupedTemplates = templates.reduce((acc, template) => {
     if (!acc[template.category]) {
       acc[template.category] = [];

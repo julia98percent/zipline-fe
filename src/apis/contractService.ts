@@ -83,3 +83,70 @@ export const searchContracts = async (
     return handleApiError(error, "searching contracts");
   }
 };
+
+export const fetchDashboardContracts = async (params: {
+  recent?: boolean;
+  progress?: boolean;
+  page?: number;
+  size?: number;
+  sortFields?: string;
+  period?: string;
+}) => {
+  try {
+    const { data: response } = await apiClient.get<
+      ApiResponse<ContractListData>
+    >("/contracts", { params });
+
+    return handleApiResponse(
+      response,
+      CONTRACT_ERROR_MESSAGES.LIST_FETCH_FAILED
+    );
+  } catch (error) {
+    return handleApiError(error, "fetching dashboard contracts");
+  }
+};
+
+export const fetchRecentContractsForDashboard = async (
+  page: number = 0,
+  size: number = 10
+) => {
+  return fetchDashboardContracts({
+    recent: true,
+    page: page + 1,
+    size,
+  });
+};
+
+export const fetchOngoingContractsForDashboard = async (
+  page: number = 0,
+  size: number = 10
+) => {
+  return fetchDashboardContracts({
+    progress: true,
+    page: page + 1,
+    size,
+  });
+};
+
+export const fetchCompletedContractsForDashboard = async (
+  page: number = 0,
+  size: number = 10
+) => {
+  return fetchDashboardContracts({
+    progress: false,
+    page: page + 1,
+    size,
+  });
+};
+
+export const fetchExpiringContractsForDashboard = async (
+  page: number = 0,
+  size: number = 5
+) => {
+  return fetchDashboardContracts({
+    page,
+    size,
+    sortFields: JSON.stringify({ contractEndDate: "DESC" }),
+    period: "6개월 이내",
+  });
+};

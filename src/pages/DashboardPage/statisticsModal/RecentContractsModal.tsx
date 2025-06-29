@@ -258,7 +258,7 @@ const RecentContractsModal = ({
             count={totalCount}
             page={page}
             rowsPerPage={rowsPerPage}
-            onPageChange={(event, newPage) => onPageChange(newPage)}
+            onPageChange={(_, newPage) => onPageChange(newPage)}
             onRowsPerPageChange={(e) =>
               onRowsPerPageChange(parseInt(e.target.value, 10))
             }

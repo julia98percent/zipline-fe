@@ -30,38 +30,12 @@ import CloseIcon from "@mui/icons-material/Close";
 import AddIcon from "@mui/icons-material/Add";
 import PageHeader from "@components/PageHeader/PageHeader";
 import { SelectChangeEvent } from "@mui/material";
-import { fetchLabels, Label, searchCustomers } from "@apis/customerService";
-import { Template } from "@apis/messageService";
-import {
-  Region,
-  fetchSido,
-  fetchSigungu,
-  fetchDong,
-} from "@apis/regionService";
-
-export interface Customer {
-  uid: number;
-  name: string;
-  phoneNo: string;
-  trafficSource: string;
-  labels: { uid: number; name: string }[];
-  tenant: boolean;
-  landlord: boolean;
-  buyer: boolean;
-  seller: boolean;
-  birthday: string; // YYYYMMDD 형식
-  legalDistrictCode: string;
-}
-
-interface RegionState {
-  sido: Region[];
-  sigungu: Region[];
-  dong: Region[];
-  selectedSido: number | null;
-  selectedSigungu: number | null;
-  selectedDong: number | null;
-  [key: string]: Region[] | number | null;
-}
+import { fetchLabels, searchCustomers } from "@apis/customerService";
+import { Label } from "@ts/customer";
+import { Template } from "@ts/message";
+import { Region, RegionState } from "@ts/region";
+import { fetchSido, fetchSigungu, fetchDong } from "@apis/regionService";
+import { Customer } from "@ts/customer";
 
 interface BulkMessagePageProps {
   templates: Template[];

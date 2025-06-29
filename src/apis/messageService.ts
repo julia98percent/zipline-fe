@@ -6,7 +6,7 @@ import {
   MessageDetailListResponse,
 } from "@ts/message";
 import { MESSAGE_ERROR_MESSAGES } from "@constants/clientErrorMessage";
-import { ApiResponse } from "@ts/apiResponse";
+import { ApiResponse, API_STATUS_CODES } from "@ts/apiResponse";
 import { Template, BulkMessagePayload } from "@ts/message";
 import { handleApiResponse, handleApiError } from "@utils/apiUtil";
 
@@ -61,19 +61,21 @@ export const fetchTemplates = async (): Promise<Template[]> => {
 
 export const sendBulkMessages = async (
   payload: BulkMessagePayload[]
-): Promise<void> => {
+): Promise<boolean> => {
   try {
     const { data: response } = await apiClient.post<ApiResponse>(
       "/messages",
       payload
     );
-
-    if (!response.success) {
+    if (response.code !== API_STATUS_CODES.SUCCESS) {
       throw new Error(
         response.message || MESSAGE_ERROR_MESSAGES.BULK_SEND_FAILED
       );
     }
+
+    return true;
   } catch (error) {
-    return handleApiError(error, "sending bulk messages");
+    console.error("Error sending bulk messages:", error);
+    return false;
   }
 };

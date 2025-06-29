@@ -3,19 +3,23 @@ interface ContractDocument {
   fileUrl: string;
 }
 
-export interface ContractDetail {
+export interface Contract {
   uid: number;
-  category: string;
+  lessorOrSellerNames: string[];
+  lesseeOrBuyerNames: string[];
+  category: "SALE" | "DEPOSIT" | "MONTHLY" | null;
+  contractDate: string | null;
+  contractStartDate: string | null;
+  contractEndDate: string | null;
+  status: string;
+  address: string;
+}
+
+export interface ContractDetail extends Contract {
   deposit: number;
   monthlyRent: number;
   price: number;
-  contractStartDate: string | null;
-  contractEndDate: string | null;
   expectedContractEndDate: string | null;
-  contractDate: string | null;
-  status: string;
-  lessorOrSellerNames: string[];
-  lesseeOrBuyerNames: string[];
   documents: ContractDocument[];
   propertyAddress: string;
 }
@@ -54,10 +58,16 @@ export interface ContractListSearchParams {
 }
 
 export interface ContractListData {
-  contracts: ContractListItem[];
+  contracts: Contract[];
   page: number;
   size: number;
   totalElements: number;
   totalPages: number;
   hasNext: boolean;
 }
+
+export const ContractCategory: Record<string, string> = {
+  SALE: "매매",
+  DEPOSIT: "전세",
+  MONTHLY: "월세",
+} as const;

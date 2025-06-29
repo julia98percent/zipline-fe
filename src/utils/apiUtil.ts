@@ -4,7 +4,11 @@ export const handleApiResponse = <T>(
   response: ApiResponse<T>,
   errorMessage: string
 ): T => {
-  if (response.success && response.data) {
+  if (
+    response.success &&
+    response.data !== undefined &&
+    response.data !== null
+  ) {
     return response.data;
   }
   throw new Error(response.message || errorMessage);

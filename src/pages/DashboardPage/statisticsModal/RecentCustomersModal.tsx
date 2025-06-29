@@ -4,7 +4,6 @@ import {
   DialogContent,
   DialogActions,
   Button,
-  Typography,
   Table,
   TableBody,
   TableCell,
@@ -13,19 +12,12 @@ import {
   TableRow,
 } from "@mui/material";
 import { formatDate } from "@utils/dateUtil";
-
-interface SurveyResponse {
-  id: number;
-  name: string;
-  phoneNumber: string;
-  submittedAt: string;
-  surveyResponseUid: number;
-}
+import { PreCounsel } from "@ts/counsel";
 
 interface RecentCustomersModalProps {
   open: boolean;
   onClose: () => void;
-  surveyResponses: SurveyResponse[];
+  surveyResponses: PreCounsel[];
   onSurveyClick: (surveyResponseUid: number) => void;
 }
 
@@ -83,7 +75,7 @@ const RecentCustomersModal = ({
                 Array.isArray(surveyResponses) &&
                 surveyResponses.map((res) => (
                   <TableRow
-                    key={res.id}
+                    key={res.surveyResponseUid}
                     hover
                     onClick={() => onSurveyClick(res.surveyResponseUid)}
                     sx={{

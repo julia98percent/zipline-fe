@@ -14,7 +14,7 @@ import {
   CircularProgress,
 } from "@mui/material";
 import { useNavigate } from "react-router-dom";
-
+import { ContractCategory } from "@ts/contract";
 interface Contract {
   uid: number;
   lessorOrSellerNames: string[];
@@ -51,12 +51,6 @@ const CONTRACT_STATUS_TYPES = [
   { value: "MOVED_IN", name: "입주 완료", color: "success" },
   { value: "TERMINATED", name: "계약 해지", color: "error" },
 ] as const;
-
-const categoryKoreanMap: Record<string, string> = {
-  SALE: "매매",
-  DEPOSIT: "전세",
-  MONTHLY: "월세",
-};
 
 const CompletedContractsModal = ({
   open,
@@ -113,7 +107,7 @@ const CompletedContractsModal = ({
 
   const getCategoryChip = (category: string | null) => {
     if (!category || category === "null") return "-";
-    const label = categoryKoreanMap[category] ?? category;
+    const label = ContractCategory[category] ?? category;
     const colorMap: Record<string, string> = {
       SALE: "#4caf50",
       DEPOSIT: "#2196f3",

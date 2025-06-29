@@ -26,3 +26,23 @@ export interface PreCounselDetail {
   customerUid: number | null;
   answers: PreCounselDetailAnswer[];
 }
+
+export interface Counsel {
+  completed: boolean;
+  counselDate: Date;
+  counselUid: number;
+  customerName: string;
+  dueDate: string;
+  propertyUid: number;
+  title: string;
+  type: string;
+}
+
+export interface PreCounselListData {
+  surveyResponses: PreCounsel[];
+  page: number;
+  size: number;
+  totalElements: number;
+  totalPages: number;
+  hasNext: boolean;
+}

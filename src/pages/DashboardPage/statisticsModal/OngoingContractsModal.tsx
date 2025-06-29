@@ -14,18 +14,7 @@ import {
   CircularProgress,
 } from "@mui/material";
 import { useNavigate } from "react-router-dom";
-
-interface Contract {
-  uid: number;
-  lessorOrSellerNames: string[];
-  lesseeOrBuyerNames: string[];
-  category: "SALE" | "DEPOSIT" | "MONTHLY" | null;
-  contractDate: string | null;
-  contractStartDate: string | null;
-  contractEndDate: string | null;
-  status: string;
-  address: string;
-}
+import { Contract } from "@ts/contract";
 
 interface OngoingContractsModalProps {
   open: boolean;

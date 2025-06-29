@@ -1,15 +1,13 @@
 import { useState, useEffect } from "react";
 import { SelectChangeEvent } from "@mui/material";
-import BulkMessagePage, { Customer, Template } from "./BulkMessagePage";
-import apiClient from "@apis/apiClient";
-import { showToast } from "@components/Toast/Toast";
-
-interface TemplateResponse {
-  success: boolean;
-  code: number;
-  message: string;
-  data: Template[];
-}
+import BulkMessagePage, { Customer } from "./BulkMessagePage";
+import { showToast } from "@components/Toast";
+import {
+  fetchTemplates,
+  sendBulkMessages,
+  Template,
+  BulkMessagePayload,
+} from "@apis/messageService";
 
 const BulkMessagePageContainer = () => {
   const [templates, setTemplates] = useState<Template[]>([]);
@@ -50,26 +48,19 @@ const BulkMessagePageContainer = () => {
   };
 
   useEffect(() => {
-    const fetchTemplates = async () => {
+    const loadTemplates = async () => {
       try {
         setIsLoading(true);
-        const { data: response } = await apiClient.get<TemplateResponse>(
-          "/templates"
-        );
-
-        if (response.success && response.code === 200) {
-          setTemplates(response.data);
-        } else {
-          console.error("Failed to fetch templates:", response.message);
-        }
+        const templatesData = await fetchTemplates();
+        setTemplates(templatesData);
       } catch (error) {
-        console.error("Error fetching templates:", error);
+        console.error("Error loading templates:", error);
       } finally {
         setIsLoading(false);
       }
     };
 
-    fetchTemplates();
+    loadTemplates();
   }, []);
 
   const handleTemplateChange = (event: SelectChangeEvent<number | string>) => {
@@ -106,21 +97,28 @@ const BulkMessagePageContainer = () => {
     const template = templates.find((t) => t.uid === selectedTemplate);
     if (!template) return;
 
-    const payload = customers.map((customer) => ({
+    const payload: BulkMessagePayload[] = customers.map((customer) => ({
       from,
       to: customer.phoneNo.replace(/\D/g, ""),
       text: replaceVariablesWithCustomerInfo(template.content, customer),
     }));
 
     try {
-      await apiClient.post("/messages", payload);
-      showToast({
-        message: "문자를 발송했습니다.",
-        type: "success",
-      });
-      setCustomers([]);
-      setSelectedTemplate("");
-      setMessageContent("");
+      const success = await sendBulkMessages(payload);
+      if (success) {
+        showToast({
+          message: "문자를 발송했습니다.",
+          type: "success",
+        });
+        setCustomers([]);
+        setSelectedTemplate("");
+        setMessageContent("");
+      } else {
+        showToast({
+          message: "문자 발송에 실패했습니다.",
+          type: "error",
+        });
+      }
     } catch {
       showToast({
         message: "문자 발송에 실패했습니다.",

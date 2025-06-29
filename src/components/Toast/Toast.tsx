@@ -20,7 +20,7 @@ export const showToast = ({ message, type }: ToastProps) => {
   });
 };
 
-export const ToastProvider = () => {
+const ToastProvider = () => {
   return (
     <ToastContainer
       autoClose={2000}
@@ -35,3 +35,5 @@ export const ToastProvider = () => {
     />
   );
 };
+
+export default ToastProvider;

@@ -29,8 +29,15 @@ import {
 import CloseIcon from "@mui/icons-material/Close";
 import AddIcon from "@mui/icons-material/Add";
 import PageHeader from "@components/PageHeader/PageHeader";
-import apiClient from "@apis/apiClient";
 import { SelectChangeEvent } from "@mui/material";
+import { fetchLabels, Label, searchCustomers } from "@apis/customerService";
+import { Template } from "@apis/messageService";
+import {
+  Region,
+  fetchSido,
+  fetchSigungu,
+  fetchDong,
+} from "@apis/regionService";
 
 export interface Customer {
   uid: number;
@@ -44,50 +51,6 @@ export interface Customer {
   seller: boolean;
   birthday: string; // YYYYMMDD 형식
   legalDistrictCode: string;
-}
-
-export interface Template {
-  uid: number;
-  name: string;
-  content: string;
-  category: string;
-}
-
-interface Label {
-  uid: number;
-  name: string;
-}
-
-interface LabelResponse {
-  success: boolean;
-  code: number;
-  message: string;
-  data: {
-    labels: Label[];
-  };
-}
-
-interface CustomerListResponse {
-  success: boolean;
-  code: number;
-  message: string;
-  data: {
-    customers: Customer[];
-    page: number;
-    size: number;
-    totalElements: number;
-    totalPages: number;
-    hasNext: boolean;
-  };
-}
-
-interface Region {
-  cortarNo: number;
-  cortarName: string;
-  centerLat: number;
-  centerLon: number;
-  level: number;
-  parentCortarNo: number;
 }
 
 interface RegionState {
@@ -209,76 +172,68 @@ const CustomerSelectModal = ({
   }, [open]);
 
   useEffect(() => {
-    const fetchLabels = async () => {
+    const loadLabels = async () => {
       if (!open) return;
-
       try {
-        const { data: response } = await apiClient.get<LabelResponse>(
-          "/labels"
-        );
-
-        if (response.success && response.code === 200) {
-          setLabels(response.data.labels);
-        } else {
-          console.error("Failed to fetch labels:", response.message);
-        }
+        const labelsData = await fetchLabels();
+        setLabels(labelsData);
       } catch (error) {
         console.error("Error fetching labels:", error);
       }
     };
 
-    fetchLabels();
+    loadLabels();
   }, [open]);
 
   useEffect(() => {
     if (!open) return;
-    const handleOpen = () => {
-      apiClient
-        .get("/region/0")
-        .then((res) => {
-          if (res.data?.data) {
-            setRegion((prev) => ({ ...prev, sido: res.data.data }));
-          }
-        })
-        .catch(console.error);
+    const loadSido = async () => {
+      try {
+        const sidoData = await fetchSido();
+        setRegion((prev) => ({ ...prev, sido: sidoData }));
+      } catch (error) {
+        console.error("Error fetching sido:", error);
+      }
     };
-    handleOpen();
+    loadSido();
   }, [open]);
 
   // 시/도 선택 시 군구 불러오기
   useEffect(() => {
     if (!region.selectedSido) return;
-    apiClient
-      .get(`/region/${region.selectedSido}`)
-      .then((res) => {
-        if (res.data?.data) {
-          setRegion((prev) => ({
-            ...prev,
-            sigungu: res.data.data,
-            selectedSigungu: null,
-            selectedDong: null,
-            dong: [],
-          }));
-        }
-      })
-      .catch(console.error);
+    const loadSigungu = async () => {
+      try {
+        const sigunguData = await fetchSigungu(region.selectedSido!);
+        setRegion((prev) => ({
+          ...prev,
+          sigungu: sigunguData,
+          selectedSigungu: null,
+          selectedDong: null,
+          dong: [],
+        }));
+      } catch (error) {
+        console.error("Error fetching sigungu:", error);
+      }
+    };
+    loadSigungu();
   }, [region.selectedSido]);
 
   // 군구 선택 시 동 불러오기
   useEffect(() => {
     if (!region.selectedSigungu) return;
-    apiClient
-      .get(`/region/${region.selectedSigungu}`)
-      .then((res) => {
-        if (res.data?.data) {
-          setRegion((prev) => ({
-            ...prev,
-            dong: res.data.data,
-            selectedDong: null,
-          }));
-        }
-      })
-      .catch(console.error);
+    const loadDong = async () => {
+      try {
+        const dongData = await fetchDong(region.selectedSigungu!);
+        setRegion((prev) => ({
+          ...prev,
+          dong: dongData,
+          selectedDong: null,
+        }));
+      } catch (error) {
+        console.error("Error fetching dong:", error);
+      }
+    };
+    loadDong();
   }, [region.selectedSigungu]);
 
   const handleRegionChange =
@@ -306,47 +261,65 @@ const CustomerSelectModal = ({
       }
     };
 
+  // 지역 코드 빌드 함수
+  const buildRegionCode = (
+    selectedDong: number | null,
+    selectedSigungu: number | null,
+    selectedSido: number | null
+  ): string | undefined => {
+    if (selectedDong) {
+      return String(selectedDong);
+    } else if (selectedSigungu) {
+      return String(selectedSigungu).slice(0, 5);
+    } else if (selectedSido) {
+      return String(selectedSido).slice(0, 2);
+    }
+    return undefined;
+  };
+
   useEffect(() => {
     if (!open) return;
-    const fetchCustomers = async () => {
+
+    const loadCustomers = async () => {
       setLoading(true);
       try {
+        // 검색 파라미터 빌드
         const params = new URLSearchParams();
         params.append("page", (page + 1).toString());
         params.append("size", rowsPerPage.toString());
-        if (search) params.append("search", search);
 
-        // 지역 코드 처리
-        let regionCode: string | undefined;
-        if (region.selectedDong) {
-          regionCode = String(region.selectedDong);
-        } else if (region.selectedSigungu) {
-          regionCode = String(region.selectedSigungu).slice(0, 5);
-        } else if (region.selectedSido) {
-          regionCode = String(region.selectedSido).slice(0, 2);
+        if (search) {
+          params.append("search", search);
         }
-        if (regionCode) params.append("regionCode", regionCode);
+
+        const regionCode = buildRegionCode(
+          region.selectedDong,
+          region.selectedSigungu,
+          region.selectedSido
+        );
+        if (regionCode) {
+          params.append("regionCode", regionCode);
+        }
 
         Object.entries(roleFilters).forEach(([key, value]) => {
           if (value) params.append(key, "true");
         });
-        labelUids.forEach((uid) => params.append("labelUids", String(uid)));
-        const { data: response } = await apiClient.get<CustomerListResponse>(
-          `/customers?${params.toString()}`
-        );
 
-        if (response.success) {
-          setCustomers(response.data.customers);
-          setTotalCount(response.data.totalElements);
-        }
-      } catch {
+        labelUids.forEach((uid) => params.append("labelUids", String(uid)));
+
+        const { customers, totalCount } = await searchCustomers(params);
+        setCustomers(customers);
+        setTotalCount(totalCount);
+      } catch (error) {
+        console.error("Error loading customers:", error);
         setCustomers([]);
         setTotalCount(0);
       } finally {
         setLoading(false);
       }
     };
-    fetchCustomers();
+
+    loadCustomers();
   }, [
     open,
     page,

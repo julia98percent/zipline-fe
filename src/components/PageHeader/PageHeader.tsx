@@ -16,6 +16,7 @@ import { useSSE } from "@context/SSEContext";
 import { Notifications } from "@mui/icons-material";
 import NotificationList from "./NotificationList";
 import useNotificationStore from "@stores/useNotificationStore";
+import { fetchNotifications } from "@apis/notificationService";
 import { clearAllAuthState } from "@utils/authUtil";
 
 interface PageHeaderProps {
@@ -24,7 +25,7 @@ interface PageHeaderProps {
 
 const PageHeader = ({ title }: PageHeaderProps) => {
   useSSE();
-  const { notificationList } = useNotificationStore();
+  const { notificationList, setNotificationList } = useNotificationStore();
 
   const [isNotificationOpen, setIsNotificationOpen] = useState(false);
   const [isChildModalOpen, setIsChildModalOpen] = useState(false);
@@ -86,6 +87,21 @@ const PageHeader = ({ title }: PageHeaderProps) => {
       navigate("/sign-in");
     }
   };
+
+  useEffect(() => {
+    const loadNotifications = async () => {
+      try {
+        if (!notificationList || notificationList.length === 0) {
+          const notifications = await fetchNotifications();
+          setNotificationList(notifications);
+        }
+      } catch (error) {
+        console.error("알림 데이터 로딩 실패:", error);
+      }
+    };
+
+    loadNotifications();
+  }, [notificationList, setNotificationList]);
 
   return (
     <Box

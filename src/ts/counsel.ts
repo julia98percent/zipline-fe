@@ -1,3 +1,6 @@
+import { Customer } from "./customer";
+import { Property } from "./property";
+
 export interface PreCounsel {
   name: string;
   phoneNumber: string;
@@ -35,7 +38,19 @@ export interface Counsel {
   dueDate: string;
   propertyUid: number;
   title: string;
-  type: string;
+  type: CounselCategoryType;
+}
+
+export interface CounselDetail extends Counsel {
+  counselDetails: CounselDetailItem[];
+  property: Property | null;
+  customer: Customer;
+}
+
+export interface CounselDetailItem {
+  counselDetailUid: number;
+  question: string;
+  answer: string;
 }
 
 export interface PreCounselListData {
@@ -46,3 +61,18 @@ export interface PreCounselListData {
   totalPages: number;
   hasNext: boolean;
 }
+
+export const CounselCategory = {
+  PURCHASE: "매수",
+  SALE: "매도",
+  LEASE: "임대",
+  RENT: "임차",
+  OTHER: "기타",
+} as const;
+
+export type CounselCategoryType =
+  | "PURCHASE"
+  | "SALE"
+  | "LEASE"
+  | "RENT"
+  | "OTHER";

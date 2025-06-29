@@ -21,6 +21,13 @@ export interface Customer {
   seller: boolean;
   birthday: string;
   legalDistrictCode: string;
+  minPrice: number | null;
+  maxPrice: number | null;
+  minDeposit: number | null;
+  maxDeposit: number | null;
+  minRent: number | null;
+  maxRent: number | null;
+  preferredRegion: string;
 }
 
 export interface CustomerListData {

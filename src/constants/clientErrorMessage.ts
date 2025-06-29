@@ -22,7 +22,9 @@ export const NOTIFICATION_ERROR_MESSAGES = {
 
 export const COUNSEL_ERROR_MESSAGES = {
   PRE_COUNSEL_DETAIL_FETCH_FAILED: "사전 상담 상세 정보를 불러올 수 없습니다.",
+  UPDATE_FAILED: "상담 내용 수정 중 오류가 발생했습니다.",
   FETCH_FAILED: "상담 목록을 불러올 수 없습니다.",
+  DELETE_FAILED: "상담 삭제에 실패했습니다.",
 } as const;
 
 export const CUSTOMER_ERROR_MESSAGES = {

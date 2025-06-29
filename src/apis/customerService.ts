@@ -1,91 +1,48 @@
-import { AxiosError } from "axios";
-import { showToast } from "@components/Toast/Toast";
 import apiClient from "@apis/apiClient";
+import { ApiResponse, API_ERROR_MESSAGES } from "@ts/apiResponse";
+import { CUSTOMER_ERROR_MESSAGES } from "@constants/clientErrorMessage";
+import { Customer, CustomerData, CustomerListData, Label } from "@ts/customer";
+import { handleApiResponse, handleApiError } from "@utils/apiUtil";
 
-interface CustomerData {
-  name: string;
-  phoneNo: string;
-  [key: string]: string | number;
-}
-
-export interface Label {
-  uid: number;
-  name: string;
-}
-
-export interface LabelResponse {
-  success: boolean;
-  code: number;
-  message: string;
-  data: {
-    labels: Label[];
-  };
-}
-
-export interface Customer {
-  uid: number;
-  name: string;
-  phoneNo: string;
-  trafficSource: string;
-  labels: { uid: number; name: string }[];
-  tenant: boolean;
-  landlord: boolean;
-  buyer: boolean;
-  seller: boolean;
-  birthday: string;
-  legalDistrictCode: string;
-}
-
-export interface CustomerListResponse {
-  success: boolean;
-  code: number;
-  message: string;
-  data: {
-    customers: Customer[];
-    page: number;
-    size: number;
-    totalElements: number;
-    totalPages: number;
-    hasNext: boolean;
-  };
-}
-
-export const addCustomer = async (customerData: CustomerData) => {
+export const addCustomer = async (
+  customerData: CustomerData
+): Promise<{ success: boolean; message: string }> => {
   try {
-    const response = await apiClient.post("/customers", customerData);
+    const { data: response } = await apiClient.post<ApiResponse>(
+      "/customers",
+      customerData
+    );
 
-    if (response.data.success) {
-      showToast({
-        message: "고객을 등록했습니다.",
-        type: "success",
-      });
-      return true;
+    if (response.success) {
+      return { success: true, message: CUSTOMER_ERROR_MESSAGES.ADD_FAILED };
     }
-    return false;
+    return {
+      success: false,
+      message: response.message || CUSTOMER_ERROR_MESSAGES.ADD_FAILED,
+    };
   } catch (e) {
-    const error = e as AxiosError<{ message?: string }>;
-    showToast({
+    const error = e as API_ERROR_MESSAGES;
+    return {
+      success: false,
       message:
-        error.response?.data?.message || "고객 등록 중 오류가 발생했습니다.",
-      type: "error",
-    });
-    return false;
+        error.response?.data?.message || CUSTOMER_ERROR_MESSAGES.ADD_FAILED,
+    };
   }
 };
 
 export const fetchLabels = async (): Promise<Label[]> => {
   try {
-    const { data: response } = await apiClient.get<LabelResponse>("/labels");
+    const { data: response } = await apiClient.get<
+      ApiResponse<{ labels: Label[] }>
+    >("/labels");
 
-    if (response.success && response.code === 200) {
-      return response.data.labels;
-    } else {
-      console.error("Failed to fetch labels:", response.message);
-      return [];
-    }
+    const data = handleApiResponse(
+      response,
+      CUSTOMER_ERROR_MESSAGES.LABEL_FETCH_FAILED
+    );
+    return data.labels;
   } catch (error) {
-    console.error("Error fetching labels:", error);
-    return [];
+    return handleApiError(error, "fetching labels");
   }
 };
 
@@ -93,21 +50,19 @@ export const searchCustomers = async (
   searchParams: URLSearchParams
 ): Promise<{ customers: Customer[]; totalCount: number }> => {
   try {
-    const { data: response } = await apiClient.get<CustomerListResponse>(
-      `/customers?${searchParams.toString()}`
-    );
+    const { data: response } = await apiClient.get<
+      ApiResponse<CustomerListData>
+    >(`/customers?${searchParams.toString()}`);
 
-    if (response.success) {
-      return {
-        customers: response.data.customers,
-        totalCount: response.data.totalElements,
-      };
-    } else {
-      console.error("Failed to search customers:", response.message);
-      return { customers: [], totalCount: 0 };
-    }
+    const data = handleApiResponse(
+      response,
+      CUSTOMER_ERROR_MESSAGES.SEARCH_FAILED
+    );
+    return {
+      customers: data.customers,
+      totalCount: data.totalElements,
+    };
   } catch (error) {
-    console.error("Error searching customers:", error);
-    return { customers: [], totalCount: 0 };
+    return handleApiError(error, "searching customers");
   }
 };

@@ -1,6 +1,5 @@
 import { useEffect, useState, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
-import apiClient from "@apis/apiClient";
 import ContractTable from "./ContractTable";
 import ContractFilterModal from "./ContractFilterModal/ContractFilterModal";
 import PageHeader from "@components/PageHeader/PageHeader";
@@ -11,28 +10,8 @@ import "./styles/reactSelect.css";
 import ContractAddModal from "./ContractAddButtonList/ContractAddModal/ContractAddModal";
 import { Button } from "@mui/material";
 import AddIcon from "@mui/icons-material/Add";
-
-export interface ContractItem {
-  uid: number;
-  lessorOrSellerNames: string[];
-  lesseeOrBuyerNames: string[];
-  category: "SALE" | "DEPOSIT" | "MONTHLY" | null;
-  contractDate: string | null;
-  contractStartDate: string | null;
-  contractEndDate: string | null;
-  status:
-    | "LISTED"
-    | "NEGOTIATING"
-    | "INTENT_SIGNED"
-    | "CANCELLED"
-    | "CONTRACTED"
-    | "IN_PROGRESS"
-    | "PAID_COMPLETE"
-    | "REGISTERED"
-    | "MOVED_IN"
-    | "TERMINATED";
-  address: string;
-}
+import { searchContracts } from "@apis/contractService";
+import { ContractListItem as ContractItem } from "@ts/contract";
 
 function ContractListPage() {
   const statusOptions = [
@@ -84,35 +63,30 @@ function ContractListPage() {
   const { user } = useUserStore();
   const navigate = useNavigate();
 
-  const fetchContractData = useCallback(() => {
+  const fetchContractData = useCallback(async () => {
     setLoading(true);
-    apiClient
-      .get("/contracts", {
-        params: {
-          category: mappedCategory,
-          customerName: searchKeyword,
-          address: searchKeyword,
-          period: selectedPeriod || "",
-          status: selectedStatus,
-          sort: selectedSort,
-          page: page + 1,
-          size: rowsPerPage,
-        },
-      })
-      .then((res) => {
-        const contractData = res?.data?.data?.contracts;
-        const pageInfo = res?.data?.data;
-        setContractList(contractData || []);
-        setTotalElements(pageInfo?.totalElements || 0);
-      })
-      .catch((error) => {
-        console.error("Failed to fetch contracts:", error);
-        setContractList([]);
-      })
-      .finally(() => {
-        setLoading(false);
-        setFilterModalOpen(false);
+    try {
+      const { contracts, totalElements } = await searchContracts({
+        category: mappedCategory,
+        customerName: searchKeyword,
+        address: searchKeyword,
+        period: selectedPeriod || "",
+        status: selectedStatus,
+        sort: selectedSort,
+        page: page + 1,
+        size: rowsPerPage,
       });
+
+      setContractList(contracts);
+      setTotalElements(totalElements);
+    } catch (error) {
+      console.error("Failed to fetch contracts:", error);
+      setContractList([]);
+      setTotalElements(0);
+    } finally {
+      setLoading(false);
+      setFilterModalOpen(false);
+    }
   }, [
     searchKeyword,
     selectedPeriod,

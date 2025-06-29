@@ -33,11 +33,22 @@ const ContractDetailPage = () => {
   };
 
   const confirmDelete = async () => {
-    const success = await deleteContract(contractUid!);
-    if (success) {
+    try {
+      await deleteContract(contractUid!);
+      showToast({
+        message: "계약을 삭제했습니다.",
+        type: "success",
+      });
       navigate("/contracts");
+    } catch (error) {
+      console.error("Error deleting contract:", error);
+      showToast({
+        message: "계약 삭제 중 오류가 발생했습니다.",
+        type: "error",
+      });
+    } finally {
+      setDeleteModalOpen(false);
     }
-    setDeleteModalOpen(false);
   };
 
   useEffect(() => {

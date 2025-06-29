@@ -1,20 +1,22 @@
 import apiClient from "@apis/apiClient";
-import { PreCounselDetail } from "@ts/Counsel";
+import { PreCounselDetail } from "@ts/counsel";
+import { COUNSEL_ERROR_MESSAGES } from "@constants/clientErrorMessage";
+import { ApiResponse } from "@ts/apiResponse";
+import { handleApiResponse, handleApiError } from "@utils/apiUtil";
 
 export const fetchPreCounselDetail = async (
   surveyResponseUid: number
-): Promise<PreCounselDetail | null> => {
+): Promise<PreCounselDetail> => {
   try {
-    const response = await apiClient.get(
-      `/surveys/responses/${surveyResponseUid}`
-    );
+    const { data: response } = await apiClient.get<
+      ApiResponse<PreCounselDetail>
+    >(`/surveys/responses/${surveyResponseUid}`);
 
-    if (response.data.success) {
-      return response.data.data;
-    }
-    return null;
+    return handleApiResponse(
+      response,
+      COUNSEL_ERROR_MESSAGES.PRE_COUNSEL_DETAIL_FETCH_FAILED
+    );
   } catch (error) {
-    console.error("Failed to fetch survey detail:", error);
-    throw error;
+    return handleApiError(error, "fetching pre-counsel detail");
   }
 };

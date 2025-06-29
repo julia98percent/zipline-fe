@@ -1,15 +1,16 @@
 import apiClient from "@apis/apiClient";
+import { ApiResponse } from "@ts/apiResponse";
+import { USER_ERROR_MESSAGES } from "@constants/clientErrorMessage";
+import { handleApiError, handleApiResponse } from "@utils/apiUtil";
 
-export const fetchUserInfo = async (setUser: any) => {
+export const fetchUserInfo = async (): Promise<unknown> => {
   try {
-    const response = await apiClient.get("/users/info");
-    if (response?.status === 200 && response?.data?.data) {
-      setUser(response.data.data);
-      return true;
-    }
-    return false;
+    const response = await apiClient.get<ApiResponse>("/users/info");
+    return handleApiResponse(
+      response.data,
+      USER_ERROR_MESSAGES.INFO_FETCH_FAILED
+    );
   } catch (error) {
-    console.error("Failed to fetch user info:", error);
-    throw error;
+    return handleApiError(error, "fetching user info");
   }
 };

@@ -1,16 +1,19 @@
 import apiClient from "@apis/apiClient";
+import { COUNSEL_ERROR_MESSAGES } from "@constants/clientErrorMessage";
+import { ApiResponse } from "@ts/apiResponse";
+import { handleApiResponse, handleApiError } from "@utils/apiUtil";
 
 export const fetchCounsels = async (page: number, rowsPerPage: number) => {
   try {
-    const response = await apiClient.get("/surveys/responses", {
-      params: { page: page + 1, size: rowsPerPage },
-    });
+    const { data: response } = await apiClient.get<ApiResponse>(
+      "/surveys/responses",
+      {
+        params: { page: page + 1, size: rowsPerPage },
+      }
+    );
 
-    if (response.data.success) {
-      return response.data.data;
-    }
+    return handleApiResponse(response, COUNSEL_ERROR_MESSAGES.FETCH_FAILED);
   } catch (error) {
-    console.error("Failed to fetch counsels:", error);
-    throw error;
+    return handleApiError(error, "fetching counsels");
   }
 };

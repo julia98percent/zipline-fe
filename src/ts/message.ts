@@ -90,3 +90,16 @@ export type MessageDetailListResponse = ApiResponse<{
   limit: number;
   messageList: Record<string, MessageDetail>;
 }>;
+
+export interface Template {
+  uid: number;
+  name: string;
+  content: string;
+  category: string;
+}
+
+export interface BulkMessagePayload {
+  from: string;
+  to: string;
+  text: string;
+}

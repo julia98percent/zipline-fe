@@ -4,27 +4,11 @@ import {
   MessageGroup,
   MessageHistoryResponse,
   MessageDetailListResponse,
-} from "@ts/Message";
-
-export interface Template {
-  uid: number;
-  name: string;
-  content: string;
-  category: string;
-}
-
-export interface TemplateResponse {
-  success: boolean;
-  code: number;
-  message: string;
-  data: Template[];
-}
-
-export interface BulkMessagePayload {
-  from: string;
-  to: string;
-  text: string;
-}
+} from "@ts/message";
+import { MESSAGE_ERROR_MESSAGES } from "@constants/clientErrorMessage";
+import { ApiResponse } from "@ts/apiResponse";
+import { Template, BulkMessagePayload } from "@ts/message";
+import { handleApiResponse, handleApiError } from "@utils/apiUtil";
 
 export const fetchMessages = async (): Promise<MessageGroup[]> => {
   try {
@@ -32,13 +16,13 @@ export const fetchMessages = async (): Promise<MessageGroup[]> => {
       "/messages"
     );
 
-    if (response.success && response.code === 200 && response.data?.groupList) {
-      return Object.values(response.data.groupList || {});
-    }
-    return [];
-  } catch (error: unknown) {
-    console.error("Failed to fetch messages:", error);
-    return [];
+    const data = handleApiResponse(
+      response,
+      MESSAGE_ERROR_MESSAGES.FETCH_FAILED
+    );
+    return Object.values(data?.groupList || {});
+  } catch (error) {
+    return handleApiError(error, "fetching messages");
   }
 };
 
@@ -49,47 +33,47 @@ export const fetchMessageList = async (
     const { data: response } = await apiClient.get<MessageDetailListResponse>(
       `/messages/${groupId}`
     );
-    console.log(response);
-    if (
-      response.success &&
-      response.code === 200 &&
-      response.data?.messageList
-    ) {
-      return Object.values(response.data.messageList || {});
-    }
-    return [];
-  } catch (error: unknown) {
-    console.error("Failed to fetch message list:", error);
-    return [];
+
+    const data = handleApiResponse(
+      response,
+      MESSAGE_ERROR_MESSAGES.LIST_FETCH_FAILED
+    );
+    return Object.values(data?.messageList || {});
+  } catch (error) {
+    return handleApiError(error, "fetching message list");
   }
 };
 
 export const fetchTemplates = async (): Promise<Template[]> => {
   try {
-    const { data: response } = await apiClient.get<TemplateResponse>(
+    const { data: response } = await apiClient.get<ApiResponse<Template[]>>(
       "/templates"
     );
 
-    if (response.success && response.code === 200) {
-      return response.data;
-    } else {
-      console.error("Failed to fetch templates:", response.message);
-      return [];
-    }
+    return handleApiResponse(
+      response,
+      MESSAGE_ERROR_MESSAGES.TEMPLATE_FETCH_FAILED
+    );
   } catch (error) {
-    console.error("Error fetching templates:", error);
-    return [];
+    return handleApiError(error, "fetching templates");
   }
 };
 
 export const sendBulkMessages = async (
   payload: BulkMessagePayload[]
-): Promise<boolean> => {
+): Promise<void> => {
   try {
-    await apiClient.post("/messages", payload);
-    return true;
+    const { data: response } = await apiClient.post<ApiResponse>(
+      "/messages",
+      payload
+    );
+
+    if (!response.success) {
+      throw new Error(
+        response.message || MESSAGE_ERROR_MESSAGES.BULK_SEND_FAILED
+      );
+    }
   } catch (error) {
-    console.error("Error sending bulk messages:", error);
-    return false;
+    return handleApiError(error, "sending bulk messages");
   }
 };

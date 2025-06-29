@@ -2,7 +2,7 @@ import { useCallback, useState } from "react";
 import { Box, Typography, List } from "@mui/material";
 import type { Notification } from "@stores/useNotificationStore";
 import PreCounselDetailModal from "@components/PreCounselDetailModal";
-import { readAllNotification } from "@apis/notificationService";
+import { readAllNotifications } from "@apis/notificationService";
 import useNotificationStore from "@stores/useNotificationStore";
 import Button from "@components/Button";
 import NotificationItem from "./NotificationItem";
@@ -44,7 +44,7 @@ function NotificationList({
   };
 
   const handleReadAllNotifications = () => {
-    readAllNotification(updateNotification);
+    readAllNotifications();
   };
 
   return (

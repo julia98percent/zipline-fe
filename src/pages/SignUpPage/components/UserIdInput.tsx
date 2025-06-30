@@ -8,6 +8,7 @@ export interface UserIdInputProps {
   error?: boolean;
   helperText?: string;
   onBlur?: () => void;
+  onKeyDown?: (e: React.KeyboardEvent<HTMLInputElement>) => void;
 }
 
 const isValidUserId = (id: string) =>
@@ -19,8 +20,9 @@ const UserIdInput = ({
   error,
   helperText,
   onBlur,
+  onKeyDown,
 }: UserIdInputProps) => {
-  const isError = error || (userId && !isValidUserId(userId));
+  const isError = !!(error || (userId && !isValidUserId(userId)));
   const errorMessage =
     helperText ||
     (userId && !isValidUserId(userId)
@@ -30,11 +32,12 @@ const UserIdInput = ({
   return (
     <div style={{ position: "relative" }}>
       <TextField
-        fullWidth
         required
         label="아이디"
         value={userId}
         onChange={handleChangeUserId}
+        onKeyDown={onKeyDown}
+        fullWidth
         onBlur={onBlur}
         error={isError}
         placeholder="영문과 숫자를 포함해 4~12자로 입력해주세요"

@@ -1,4 +1,4 @@
-import { User } from "@ts/user";
+import { User, SignUpInput } from "@ts/user";
 import apiClient from "@apis/apiClient";
 import { ApiResponse } from "@ts/apiResponse";
 import { USER_ERROR_MESSAGES } from "@constants/clientErrorMessage";
@@ -31,5 +31,40 @@ export const loginUser = async (userId: string, password: string) => {
     return response;
   } catch (error) {
     return handleApiError(error, "logging in user");
+  }
+};
+
+export const signupUser = async ({
+  userId,
+  password,
+  passwordCheck,
+  passwordQuestionUid,
+  questionAnswer,
+  name,
+  phoneNumber,
+  email,
+}: SignUpInput) => {
+  try {
+    const response = await apiClient.post<ApiResponse>(
+      "/users/signup",
+      {
+        id: userId,
+        password,
+        passwordCheck,
+        passwordQuestionUid: Number(passwordQuestionUid),
+        questionAnswer,
+        name,
+        phoneNo: phoneNumber,
+        email,
+      },
+      {
+        withCredentials: true,
+      }
+    );
+    console.log(response);
+    return response;
+  } catch (error) {
+    console.error("Signup error:", error);
+    throw error;
   }
 };

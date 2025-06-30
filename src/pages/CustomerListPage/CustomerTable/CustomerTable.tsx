@@ -22,23 +22,7 @@ import { useState, useEffect } from "react";
 import apiClient from "@apis/apiClient";
 import DeleteConfirmModal from "@components/DeleteConfirm/DeleteConfirmModal";
 import { showToast } from "@components/Toast/Toast";
-
-interface Label {
-  uid: number;
-  name: string;
-}
-
-interface Customer {
-  uid: number;
-  name: string;
-  phoneNo: string;
-  trafficSource: string;
-  labels: Label[];
-  tenant: boolean;
-  landlord: boolean;
-  buyer: boolean;
-  seller: boolean;
-}
+import { Customer, Label } from "@ts/customer";
 
 interface EditingCustomer extends Customer {
   isEditing?: boolean;
@@ -188,6 +172,7 @@ const CustomerTable = ({
       }
 
       const updatedCustomer = {
+        ...editedCustomer,
         uid: editedCustomer.uid,
         name: editedCustomer.name,
         phoneNo: editedCustomer.phoneNo,

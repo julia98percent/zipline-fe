@@ -9,31 +9,7 @@ import PageHeader from "@components/PageHeader/PageHeader";
 import CustomerTable from "./CustomerTable/CustomerTable";
 import { InputAdornment } from "@mui/material";
 import SearchIcon from "@mui/icons-material/Search";
-
-interface Customer {
-  uid: number;
-  name: string;
-  phoneNo: string;
-  labelUids: number[];
-  telProvider: string;
-  legalDistrictCode: string;
-  minRent: number | null;
-  maxRent: number | null;
-  trafficSource: string;
-  landlord: boolean;
-  tenant: boolean;
-  buyer: boolean;
-  seller: boolean;
-  maxPrice: number | null;
-  minPrice: number | null;
-  minDeposit: number | null;
-  maxDeposit: number | null;
-  birthday: string | null;
-  labels: {
-    uid: number;
-    name: string;
-  }[];
-}
+import { Customer } from "@ts/customer";
 
 const CustomerListPage = () => {
   const [loading, setLoading] = useState(true);

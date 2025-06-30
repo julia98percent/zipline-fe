@@ -2,16 +2,15 @@ import apiClient from "@apis/apiClient";
 import { COUNSEL_ERROR_MESSAGES } from "@constants/clientErrorMessage";
 import { ApiResponse } from "@ts/apiResponse";
 import { handleApiResponse, handleApiError } from "@utils/apiUtil";
-import { CounselDetail } from "@ts/counsel";
+import { CounselDetail, PreCounselListData } from "@ts/counsel";
 
 export const fetchCounsels = async (page: number, rowsPerPage: number) => {
   try {
-    const { data: response } = await apiClient.get<ApiResponse>(
-      "/surveys/responses",
-      {
-        params: { page: page + 1, size: rowsPerPage },
-      }
-    );
+    const { data: response } = await apiClient.get<
+      ApiResponse<PreCounselListData>
+    >("/surveys/responses", {
+      params: { page: page + 1, size: rowsPerPage },
+    });
 
     return handleApiResponse(response, COUNSEL_ERROR_MESSAGES.FETCH_FAILED);
   } catch (error) {

@@ -1,299 +1,227 @@
-import React, { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
+import CustomerInfoView from "./CustomerInfoView.tsx";
 import {
-  Box,
-  Tabs,
-  Tab,
-  TableContainer,
-  Paper,
-  CircularProgress,
-} from "@mui/material";
-import apiClient from "@apis/apiClient";
-import PropertyTable from "../Tables/PropertyTable";
-import ContractTable from "../Tables/ContractTable";
-import ConsultationTable from "../Tables/ConsultationTable";
-import { Contract } from "../Tables/ContractTable";
+  fetchCustomerConsultations,
+  fetchCustomerProperties,
+  fetchCustomerContracts,
+} from "@apis/customerService";
+import { Counsel } from "@ts/counsel";
+import { Contract } from "@ts/contract";
+import { Property } from "@ts/property.ts";
 
-interface Consultation {
-  counselUid: number;
-  title: string;
-  type: string;
-  counselDate: string;
-  dueDate: string;
-  propertyUid: number;
-  completed: boolean;
+export enum TabType {
+  CONSULTATION = 0,
+  PROPERTY = 1,
+  CONTRACT = 2,
 }
 
-interface Property {
-  uid: number;
-  customerName: string;
-  address: string;
-  detailAddress: string;
-  legalDistrictCode: string;
-  deposit: number;
-  monthlyRent: number;
-  price: number;
-  type: "SALE" | "DEPOSIT" | "MONTHLY";
-  moveInDate: string;
-  realCategory: string;
-  petsAllowed: boolean;
-  floor: number;
-  hasElevator: boolean;
-  constructionYear: string;
-  parkingCapacity: number;
-  netArea: number;
-  totalArea: number;
-  details: string;
-}
-
-interface PropertyResponse {
-  agentProperty: Property[];
+export interface TabState {
   page: number;
-  size: number;
-  totalElements: number;
-  totalPages: number;
-  hasNext: boolean;
+  rowsPerPage: number;
+  totalCount: number;
+  loading: boolean;
 }
 
-interface ContractResponse {
-  contracts: Contract[];
-  page: number;
-  size: number;
-  totalElements: number;
-  totalPages: number;
-  hasNext: boolean;
+interface CustomerInfoContainerProps {
+  customerId: string;
 }
 
-interface ConsultationResponse {
-  counsels: Consultation[];
-  page: number;
-  size: number;
-  totalElements: number;
-  totalPages: number;
-  hasNext: boolean;
-}
-
-function CustomerInfo({ customerId }: { customerId: string }) {
-  const [currentTab, setCurrentTab] = useState(0);
-  const [counsel, setCounsel] = useState<Consultation[]>([]);
-  const [property, setProperty] = useState<Property[]>([]);
-  const [contract, setContract] = useState<Contract[]>([]);
+const CustomerInfoContainer = ({ customerId }: CustomerInfoContainerProps) => {
+  const [currentTab, setCurrentTab] = useState<TabType>(TabType.CONSULTATION);
   const [loading, setLoading] = useState(false);
 
-  // Consultation 관련 상태
-  const [counselPage, setCounselPage] = useState(0);
-  const [counselRowsPerPage, setCounselRowsPerPage] = useState(10);
-  const [counselTotalCount, setCounselTotalCount] = useState(0);
-  const [counselLoading, setCounselLoading] = useState(false);
+  const [consultationData, setConsultationData] = useState<Counsel[]>([]);
+  const [consultationState, setConsultationState] = useState<TabState>({
+    page: 0,
+    rowsPerPage: 10,
+    totalCount: 0,
+    loading: false,
+  });
 
-  // Property 관련 상태
-  const [propertyPage, setPropertyPage] = useState(0);
-  const [propertyRowsPerPage, setPropertyRowsPerPage] = useState(10);
-  const [propertyTotalCount, setPropertyTotalCount] = useState(0);
-  const [propertyLoading, setPropertyLoading] = useState(false);
+  const [propertyData, setPropertyData] = useState<Property[]>([]);
+  const [propertyState, setPropertyState] = useState<TabState>({
+    page: 0,
+    rowsPerPage: 10,
+    totalCount: 0,
+    loading: false,
+  });
 
-  // Contract 관련 상태
-  const [contractPage, setContractPage] = useState(0);
-  const [contractRowsPerPage, setContractRowsPerPage] = useState(10);
-  const [contractTotalCount, setContractTotalCount] = useState(0);
-  const [contractLoading, setContractLoading] = useState(false);
+  const [contractData, setContractData] = useState<Contract[]>([]);
+  const [contractState, setContractState] = useState<TabState>({
+    page: 0,
+    rowsPerPage: 10,
+    totalCount: 0,
+    loading: false,
+  });
 
-  const fetchCounselData = async () => {
-    setCounselLoading(true);
-    try {
-      const response = await apiClient.get<{ data: ConsultationResponse }>(
-        `/customers/${customerId}/counsels`,
-        {
-          params: {
-            page: counselPage + 1,
-            size: counselRowsPerPage,
-          },
-        }
-      );
-
-      if (response.data?.data) {
-        const { counsels, totalElements } = response.data.data;
-        setCounsel(counsels);
-        setCounselTotalCount(totalElements);
-      }
-    } catch (error) {
-      console.error("Failed to fetch counsels:", error);
-    } finally {
-      setCounselLoading(false);
-    }
-  };
-
-  const fetchPropertyData = async () => {
-    setPropertyLoading(true);
-    try {
-      const response = await apiClient.get<{ data: PropertyResponse }>(
-        `/customers/${customerId}/properties`,
-        {
-          params: {
-            page: propertyPage,
-            size: propertyRowsPerPage,
-          },
-        }
-      );
-
-      if (response.data?.data) {
-        const { agentProperty, totalElements } = response.data.data;
-        setProperty(agentProperty);
-        setPropertyTotalCount(totalElements);
-      }
-    } catch (error) {
-      console.error("Failed to fetch properties:", error);
-    } finally {
-      setPropertyLoading(false);
-    }
-  };
-
-  const fetchContractData = async () => {
-    setContractLoading(true);
-    try {
-      const response = await apiClient.get<{ data: ContractResponse }>(
-        `/customers/${customerId}/contracts`,
-        {
-          params: {
-            page: contractPage,
-            size: contractRowsPerPage,
-          },
-        }
-      );
-
-      if (response.data?.data) {
-        const { contracts, totalElements } = response.data.data;
-
-        setContract(contracts);
-        setContractTotalCount(totalElements);
-      }
-    } catch (error) {
-      console.error("Failed to fetch contracts:", error);
-    } finally {
-      setContractLoading(false);
-    }
-  };
-
-  const fetchData = async (tab: number) => {
+  const fetchConsultationData = useCallback(async () => {
     setLoading(true);
     try {
-      if (tab === 0) {
-        await fetchCounselData();
-      } else if (tab === 1) {
-        await fetchPropertyData();
-      } else if (tab === 2) {
-        await fetchContractData();
-      }
+      const response = await fetchCustomerConsultations(
+        customerId,
+        consultationState.page,
+        consultationState.rowsPerPage
+      );
+
+      setConsultationData(response.counsels);
+      setConsultationState((prev) => ({
+        ...prev,
+        totalCount: response.totalElements,
+      }));
     } catch (error) {
-      console.error(error);
+      console.error("Failed to fetch consultation data:", error);
     } finally {
       setLoading(false);
     }
-  };
+  }, [customerId, consultationState.page, consultationState.rowsPerPage]);
 
-  const handleTabChange = (_: React.ChangeEvent<object>, newValue: number) => {
-    setCurrentTab(newValue);
-    fetchData(newValue);
-  };
+  const fetchPropertyData = useCallback(async () => {
+    setLoading(true);
+    try {
+      const response = await fetchCustomerProperties(
+        customerId,
+        propertyState.page,
+        propertyState.rowsPerPage
+      );
+      console.log(response.agentProperty);
+      setPropertyData(response.agentProperty);
+      setPropertyState((prev) => ({
+        ...prev,
+        totalCount: response.totalElements,
+      }));
+    } catch (error) {
+      console.error("Failed to fetch property data:", error);
+    } finally {
+      setLoading(false);
+    }
+  }, [customerId, propertyState.page, propertyState.rowsPerPage]);
 
-  useEffect(() => {
-    fetchData(0);
+  const fetchContractData = useCallback(async () => {
+    setLoading(true);
+    try {
+      const response = await fetchCustomerContracts(
+        customerId,
+        contractState.page,
+        contractState.rowsPerPage
+      );
+
+      setContractData(response.contracts);
+      setContractState((prev) => ({
+        ...prev,
+        totalCount: response.totalElements,
+      }));
+    } catch (error) {
+      console.error("Failed to fetch contract data:", error);
+    } finally {
+      setLoading(false);
+    }
+  }, [customerId, contractState.page, contractState.rowsPerPage]);
+
+  const handleTabChange = useCallback((newTab: TabType) => {
+    setCurrentTab(newTab);
   }, []);
 
   useEffect(() => {
-    if (currentTab === 0) {
-      fetchCounselData();
-    }
-  }, [counselPage, counselRowsPerPage]);
+    setCurrentTab(TabType.CONSULTATION);
+  }, [customerId]);
+
+  const handleConsultationPageChange = useCallback((newPage: number) => {
+    setConsultationState((prev) => ({ ...prev, page: newPage }));
+  }, []);
+
+  const handleConsultationRowsPerPageChange = useCallback(
+    (newRowsPerPage: number) => {
+      setConsultationState((prev) => ({
+        ...prev,
+        page: 0,
+        rowsPerPage: newRowsPerPage,
+      }));
+    },
+    []
+  );
+
+  const handlePropertyPageChange = useCallback((newPage: number) => {
+    setPropertyState((prev) => ({ ...prev, page: newPage }));
+  }, []);
+
+  const handlePropertyRowsPerPageChange = useCallback(
+    (newRowsPerPage: number) => {
+      setPropertyState((prev) => ({
+        ...prev,
+        page: 0,
+        rowsPerPage: newRowsPerPage,
+      }));
+    },
+    []
+  );
+
+  const handleContractPageChange = useCallback((newPage: number) => {
+    setContractState((prev) => ({ ...prev, page: newPage }));
+  }, []);
+
+  const handleContractRowsPerPageChange = useCallback(
+    (newRowsPerPage: number) => {
+      setContractState((prev) => ({
+        ...prev,
+        page: 0,
+        rowsPerPage: newRowsPerPage,
+      }));
+    },
+    []
+  );
 
   useEffect(() => {
-    if (currentTab === 1) {
+    if (currentTab === TabType.CONSULTATION) {
+      fetchConsultationData();
+    }
+  }, [
+    currentTab,
+    consultationState.page,
+    consultationState.rowsPerPage,
+    fetchConsultationData,
+  ]);
+
+  useEffect(() => {
+    if (currentTab === TabType.PROPERTY) {
       fetchPropertyData();
     }
-  }, [propertyPage, propertyRowsPerPage]);
+  }, [
+    currentTab,
+    propertyState.page,
+    propertyState.rowsPerPage,
+    fetchPropertyData,
+  ]);
 
   useEffect(() => {
-    if (currentTab === 2) {
+    if (currentTab === TabType.CONTRACT) {
       fetchContractData();
     }
-  }, [contractPage, contractRowsPerPage]);
+  }, [
+    currentTab,
+    contractState.page,
+    contractState.rowsPerPage,
+    fetchContractData,
+  ]);
 
   return (
-    <Box sx={{ mt: 0 }}>
-      <Tabs
-        value={currentTab}
-        onChange={handleTabChange}
-        textColor="primary"
-        indicatorColor="primary"
-        centered
-      >
-        <Tab label="상담 내역" />
-        <Tab label="매물" />
-        <Tab label="계약" />
-      </Tabs>
-
-      {loading ? (
-        <Box
-          sx={{
-            display: "flex",
-            justifyContent: "center",
-            alignItems: "center",
-            height: "200px",
-          }}
-        >
-          <CircularProgress color="primary" />
-        </Box>
-      ) : (
-        <TableContainer
-          component={Paper}
-          elevation={0}
-          sx={{ mt: 2, boxShadow: "none" }}
-        >
-          {currentTab === 0 && (
-            <ConsultationTable
-              counselList={counsel}
-              totalCount={counselTotalCount}
-              page={counselPage}
-              rowsPerPage={counselRowsPerPage}
-              onPageChange={setCounselPage}
-              onRowsPerPageChange={(newRowsPerPage) => {
-                setCounselRowsPerPage(newRowsPerPage);
-                setCounselPage(1);
-              }}
-              loading={counselLoading}
-            />
-          )}
-          {currentTab === 1 && (
-            <PropertyTable
-              properties={property}
-              totalCount={propertyTotalCount}
-              page={propertyPage}
-              rowsPerPage={propertyRowsPerPage}
-              onPageChange={setPropertyPage}
-              onRowsPerPageChange={(newRowsPerPage) => {
-                setPropertyRowsPerPage(newRowsPerPage);
-                setPropertyPage(1);
-              }}
-              loading={propertyLoading}
-            />
-          )}
-          {currentTab === 2 && (
-            <ContractTable
-              contractList={contract}
-              totalCount={contractTotalCount}
-              page={contractPage}
-              rowsPerPage={contractRowsPerPage}
-              onPageChange={setContractPage}
-              onRowsPerPageChange={(newRowsPerPage) => {
-                setContractRowsPerPage(newRowsPerPage);
-                setContractPage(1);
-              }}
-              loading={contractLoading}
-            />
-          )}
-        </TableContainer>
-      )}
-    </Box>
+    <CustomerInfoView
+      currentTab={currentTab}
+      loading={loading}
+      consultationData={consultationData}
+      propertyData={propertyData}
+      contractData={contractData}
+      consultationState={consultationState}
+      propertyState={propertyState}
+      contractState={contractState}
+      onTabChange={handleTabChange}
+      onConsultationPageChange={handleConsultationPageChange}
+      onConsultationRowsPerPageChange={handleConsultationRowsPerPageChange}
+      onPropertyPageChange={handlePropertyPageChange}
+      onPropertyRowsPerPageChange={handlePropertyRowsPerPageChange}
+      onContractPageChange={handleContractPageChange}
+      onContractRowsPerPageChange={handleContractRowsPerPageChange}
+    />
   );
-}
+};
 
-export default CustomerInfo;
+export default CustomerInfoContainer;

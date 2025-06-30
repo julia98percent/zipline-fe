@@ -17,18 +17,29 @@ export type PropertyCategoryType =
   | "OFFICETEL"
   | "COMMERCIAL";
 
-export interface Property {
+export type PropertyType = "SALE" | "DEPOSIT" | "MONTHLY";
+
+export interface PropertyBase {
   address: string;
-  type: string;
+  type: PropertyType;
   price: number | null;
   deposit: number | null;
   monthlyRent: number | null;
-  exclusiveArea: number;
-  supplyArea: number;
+  netArea: number;
+  totalArea: number;
   floor: number;
   constructionYear: string;
   hasElevator: boolean;
   parkingCapacity: number;
-  hasPet: boolean;
-  description?: string;
+  petsAllowed: boolean;
+  details?: string;
+}
+
+export interface Property extends PropertyBase {
+  customerName: string;
+  detailAddress: string;
+  legalDistrictCode: string;
+  moveInDate: string;
+  realCategory: PropertyCategoryType;
+  uid: string;
 }

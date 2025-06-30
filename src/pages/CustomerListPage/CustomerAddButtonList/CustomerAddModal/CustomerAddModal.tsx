@@ -24,7 +24,6 @@ import apiClient from "@apis/apiClient";
 import AddIcon from "@mui/icons-material/Add";
 
 import { showToast } from "@components/Toast/Toast";
-import { toast } from "react-toastify";
 
 const phoneRegex = /^\d{3}-\d{3,4}-\d{4}$/;
 
@@ -37,7 +36,7 @@ interface CustomerAddModalProps {
 interface CustomerFormData {
   name: string;
   phoneNo: string;
-  birthDay: string;
+  birthday: string;
   telProvider: string;
   legalDistrictCode: string;
   trafficSource: string;
@@ -81,7 +80,7 @@ interface Label {
 const initialFormData: CustomerFormData = {
   name: "",
   phoneNo: "",
-  birthDay: "",
+  birthday: "",
   telProvider: "SKT",
   legalDistrictCode: "",
   trafficSource: "",
@@ -182,7 +181,7 @@ function CustomerAddModal({
         });
         return;
       }
-      if (formData.birthDay && !/^\d{8}$/.test(formData.birthDay)) {
+      if (formData.birthday && !/^\d{8}$/.test(formData.birthday)) {
         showToast({
           message: "생년월일을 올바르게 입력해주세요. ex)19910501",
           type: "error",
@@ -203,7 +202,7 @@ function CustomerAddModal({
       const customerData = {
         name: formData.name,
         phoneNo: formData.phoneNo,
-        birthDay: formData.birthDay,
+        birthday: formData.birthday,
         telProvider: formData.telProvider,
         legalDistrictCode: String(selectedRegion || ""),
         trafficSource: formData.trafficSource,
@@ -406,8 +405,8 @@ function CustomerAddModal({
               생년월일
             </Typography>
             <TextField
-              name="birthDay"
-              value={formData.birthDay}
+              name="birthday"
+              value={formData.birthday}
               onChange={handleChange}
               fullWidth
               placeholder="YYYYMMDD"

@@ -9,17 +9,15 @@ export interface Label {
   name: string;
 }
 
-export interface Customer {
-  uid: number;
+export interface CustomerBase {
   name: string;
   phoneNo: string;
   trafficSource: string;
-  labels: { uid: number; name: string }[];
   tenant: boolean;
   landlord: boolean;
   buyer: boolean;
   seller: boolean;
-  birthday: string;
+  birthday: string | null;
   legalDistrictCode: string;
   minPrice: number | null;
   maxPrice: number | null;
@@ -27,7 +25,17 @@ export interface Customer {
   maxDeposit: number | null;
   minRent: number | null;
   maxRent: number | null;
+  telProvider: string;
+}
+
+export interface Customer extends CustomerBase {
+  uid: number;
   preferredRegion: string;
+  labels: Label[];
+}
+
+export interface CustomerUpdateData extends CustomerBase {
+  labelUids: number[];
 }
 
 export interface CustomerListData {

@@ -19,7 +19,7 @@ import DeleteConfirmModal from "@components/DeleteConfirm/DeleteConfirmModal";
 import PageHeader from "@components/PageHeader/PageHeader";
 import useAuthStore from "@stores/useAuthStore";
 import { CONTRACT_STATUS_TYPES } from "@constants/contract";
-import PropertyEditModal from "../PropertyAddButtonList/PropertyEditModal/PropertyEditModal";
+import PropertyEditModal from "../AgentPropertyListPage/PropertyAddButtonList/PropertyEditModal/PropertyEditModal";
 import EditIcon from "@mui/icons-material/Edit";
 import DeleteIcon from "@mui/icons-material/Delete";
 import { showToast } from "@components/Toast/Toast";

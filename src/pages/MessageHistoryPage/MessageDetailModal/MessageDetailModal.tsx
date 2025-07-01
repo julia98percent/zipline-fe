@@ -13,11 +13,12 @@ import { Clear } from "@mui/icons-material";
 import { translateMessageStatusToKorean } from "@utils/messageUtil";
 import { fetchMessageList } from "@apis/messageService";
 import { useEffect, useState } from "react";
-
-import MessageStatistics from "./MessageStatistics";
-import MessageDateInfo from "./MessageDateInfo";
-import MessageLog from "./MessageLog";
-import MessageDetail from "./MessageDetail/MessageDetail";
+import {
+  MessageStatistics,
+  MessageDateInfo,
+  MessageLog,
+  MessageDetail,
+} from "./components";
 import { MessageHistory } from "@ts/message";
 
 interface Props {

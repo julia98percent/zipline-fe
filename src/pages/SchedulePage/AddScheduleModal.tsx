@@ -8,9 +8,6 @@ import {
   Box,
   TextField,
   FormControl,
-  InputLabel,
-  Select,
-  MenuItem,
   FormControlLabel,
   Checkbox,
   CircularProgress,
@@ -21,10 +18,11 @@ import { DatePicker } from "@mui/x-date-pickers/DatePicker";
 import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import dayjs from "dayjs";
-import apiClient from "@apis/apiClient";
+import { fetchCustomerList } from "@apis/customerService";
+import { Customer } from "@ts/customer";
 
 interface ScheduleFormData {
-  customerId: string;
+  customerId: number | null;
   title: string;
   startDate: string;
   startTime: string;
@@ -49,14 +47,9 @@ interface AddScheduleModalProps {
   onSubmit: (formData: ScheduleSubmitData) => void;
 }
 
-interface Customer {
-  uid: string;
-  name: string;
-}
-
 function AddScheduleModal({ open, onClose, onSubmit }: AddScheduleModalProps) {
   const initialFormData: ScheduleFormData = {
-    customerId: "",
+    customerId: null,
     title: "",
     startDate: "",
     startTime: "",
@@ -97,17 +90,13 @@ function AddScheduleModal({ open, onClose, onSubmit }: AddScheduleModalProps) {
     const fetchCustomers = async () => {
       setLoading(true);
       try {
-        const response = await apiClient.get("/customers", {
-          params: {
-            page: 1,
-            size: 100,
-            sort: "name,asc",
-          },
+        const customers = await fetchCustomerList({
+          page: 0,
+          size: 100,
+          sortFields: { name: "ASC" },
         });
 
-        if (response?.data?.data?.customers) {
-          setCustomers(response.data.data.customers);
-        }
+        setCustomers(customers);
       } catch (error) {
         console.error("Failed to fetch customers:", error);
       } finally {
@@ -120,13 +109,12 @@ function AddScheduleModal({ open, onClose, onSubmit }: AddScheduleModalProps) {
 
   const handleFormChange = (
     field: keyof ScheduleFormData,
-    value: string | boolean
+    value: string | boolean | number | null
   ) => {
     setFormData((prev) => ({
       ...prev,
       [field]: value,
     }));
-    // 입력이 변경될 때마다 에러 메시지 초기화
     setErrorMessage("");
   };
 
@@ -137,7 +125,6 @@ function AddScheduleModal({ open, onClose, onSubmit }: AddScheduleModalProps) {
   };
 
   const handleSubmit = async () => {
-    // 필수 필드 검증
     if (!formData.customerId) {
       setErrorMessage("고객을 선택해주세요.");
       return;
@@ -158,7 +145,6 @@ function AddScheduleModal({ open, onClose, onSubmit }: AddScheduleModalProps) {
       return;
     }
 
-    // 시작 시간이 종료 시간보다 늦은 경우 체크
     if (formData.includeTime && formData.endTime) {
       const startDateTime = new Date(
         `${formData.startDate}T${formData.startTime}`
@@ -173,7 +159,6 @@ function AddScheduleModal({ open, onClose, onSubmit }: AddScheduleModalProps) {
       }
     }
 
-    // 날짜와 시간을 ISO 문자열로 변환
     const formatDateTime = (date: string, time: string) => {
       const dateTime = new Date(date);
       if (formData.includeTime && time) {
@@ -195,9 +180,7 @@ function AddScheduleModal({ open, onClose, onSubmit }: AddScheduleModalProps) {
       endDateTime: formatDateTime(endDate, endTime),
       title: formData.title.trim(),
       description: formData.description.trim(),
-      customerUid: formData.customerId
-        ? parseInt(formData.customerId, 10)
-        : null,
+      customerUid: formData.customerId,
     };
 
     try {
@@ -241,7 +224,7 @@ function AddScheduleModal({ open, onClose, onSubmit }: AddScheduleModalProps) {
                   customers.find((c) => c.uid === formData.customerId) || null
                 }
                 onChange={(_, newValue) => {
-                  handleFormChange("customerId", newValue?.uid || "");
+                  handleFormChange("customerId", newValue?.uid || null);
                 }}
                 loading={loading}
                 renderInput={(params) => (

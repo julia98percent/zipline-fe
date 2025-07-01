@@ -16,10 +16,10 @@ import {
 import dayjs from "dayjs";
 import ScheduleDetailModal from "@components/ScheduleDetailModal/ScheduleDetailModal";
 import PreCounselDetailModal from "@components/PreCounselDetailModal";
-import RecentCustomersModal from "./statisticsModal/RecentCustomersModal";
-import RecentContractsModal from "./statisticsModal/RecentContractsModal";
-import OngoingContractsModal from "./statisticsModal/OngoingContractsModal";
-import CompletedContractsModal from "./statisticsModal/CompletedContractsModal";
+import RecentCustomersModal from "../components/statisticsModal/RecentCustomersModal";
+import RecentContractsModal from "../components/statisticsModal/RecentContractsModal";
+import OngoingContractsModal from "../components/statisticsModal/OngoingContractsModal";
+import CompletedContractsModal from "../components/statisticsModal/CompletedContractsModal";
 import { Schedule } from "@ts/schedule";
 import { Contract } from "@ts/contract";
 import { PreCounsel } from "@ts/counsel";

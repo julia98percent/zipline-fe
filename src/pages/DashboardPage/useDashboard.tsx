@@ -6,6 +6,7 @@ import isSameOrBefore from "dayjs/plugin/isSameOrBefore";
 import { Schedule } from "@ts/schedule";
 import { Contract } from "@ts/contract";
 import { Counsel, PreCounsel } from "@ts/counsel";
+import { showToast } from "@components/Toast";
 import {
   fetchDashboardStatistics,
   fetchSchedulesByDateRange,
@@ -81,12 +82,6 @@ interface DashboardData {
   completedContractsLoading: boolean;
   completedContractsTotalCount: number;
 
-  toast: {
-    open: boolean;
-    message: string;
-    severity: "success" | "error";
-  };
-
   // Computed values
   currentCounselList: Counsel[];
   currentContractList: Contract[];
@@ -158,12 +153,6 @@ export const useDashboard = (): DashboardData => {
   );
   const [counselListByLatest, setCounselListByLatest] = useState<Counsel[]>([]);
   const [counselLoading, setCounselLoading] = useState(false);
-
-  const [toast, setToast] = useState({
-    open: false,
-    message: "",
-    severity: "success" as "success" | "error",
-  });
 
   const [selectedSurveyId, setSelectedSurveyId] = useState<number | null>(null);
   const [isSurveyDetailModalOpen, setIsSurveyDetailModalOpen] = useState(false);
@@ -344,17 +333,15 @@ export const useDashboard = (): DashboardData => {
       );
       setIsDetailModalOpen(false);
       setSelectedSchedule(null);
-      setToast({
-        open: true,
+      showToast({
         message: "일정이 성공적으로 수정되었습니다.",
-        severity: "success",
+        type: "success",
       });
     } catch (error) {
       console.error("Failed to update schedule:", error);
-      setToast({
-        open: true,
+      showToast({
         message: "일정 수정에 실패했습니다.",
-        severity: "error",
+        type: "error",
       });
     }
   }, []);
@@ -587,8 +574,6 @@ export const useDashboard = (): DashboardData => {
     setCompletedContractsRowsPerPage,
     completedContractsLoading,
     completedContractsTotalCount,
-
-    toast,
 
     currentCounselList,
     currentContractList,

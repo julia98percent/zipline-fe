@@ -2,12 +2,14 @@ import { Box } from "@mui/material";
 import "./DashboardPage.css";
 import PageHeader from "@components/PageHeader/PageHeader";
 import { useDashboard } from "./useDashboard";
-import StatisticsCards from "./StatisticsCards";
-import WeeklyScheduleCalendar from "./WeeklyScheduleCalendar";
-import CounselList from "./CounselList";
-import ContractList from "./ContractList";
-import SurveyList from "./SurveyList";
-import DashboardModals from "./DashboardModals";
+import StatisticsCards from "./components/StatisticsCards";
+import WeeklyScheduleCalendar from "./components/WeeklyScheduleCalendar";
+import {
+  CounselList,
+  ContractList,
+  SurveyList,
+  DashboardModals,
+} from "./components";
 
 const DashboardPage = () => {
   const dashboardData = useDashboard();

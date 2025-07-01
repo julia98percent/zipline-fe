@@ -1,9 +1,9 @@
 import { CircularProgress, Button, Box } from "@mui/material";
 import PageHeader from "@components/PageHeader/PageHeader";
-import ContractEditModal from "./ContractEditModal";
-import ContractDetailContent from "./ContractDetailContent";
+import ContractEditModal from "./components/ContractEditModal";
+import ContractDetailContent from "./components/ContractDetailContent";
 import styles from "@pages/ContractListPage/styles/ContractListPage.module.css";
-import DeleteConfirmModal from "@components/DeleteConfirm/DeleteConfirmModal";
+import DeleteConfirmModal from "@components/DeleteConfirm";
 import EditIcon from "@mui/icons-material/Edit";
 import DeleteIcon from "@mui/icons-material/Delete";
 import { ContractDetail, ContractHistory } from "@ts/contract";

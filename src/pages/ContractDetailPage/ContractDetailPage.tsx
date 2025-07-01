@@ -5,7 +5,7 @@ import {
   fetchContractHistory,
   deleteContract,
 } from "@apis/contractService";
-import { showToast } from "@components/Toast/Toast";
+import { showToast } from "@components/Toast";
 import { ContractDetail, ContractHistory } from "@ts/contract";
 import ContractDetailPageView from "./ContractDetailPageView";
 

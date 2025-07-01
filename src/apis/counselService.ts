@@ -3,6 +3,74 @@ import { COUNSEL_ERROR_MESSAGES } from "@constants/clientErrorMessage";
 import { ApiResponse } from "@ts/apiResponse";
 import { handleApiResponse, handleApiError } from "@utils/apiUtil";
 import { CounselDetail, PreCounselListData } from "@ts/counsel";
+import { Counsel } from "@ts/counsel";
+
+interface CounselListResponse {
+  success: boolean;
+  code: number;
+  message: string;
+  data: {
+    page: number;
+    size: number;
+    totalElements: number;
+    totalPages: number;
+    hasNext: boolean;
+    counsels: Counsel[];
+  };
+}
+
+interface CounselListParams {
+  page: number;
+  size: number;
+  search?: string;
+  startDate?: string;
+  endDate?: string;
+  type?: string;
+  completed?: boolean;
+}
+
+interface CreateCounselRequest {
+  title: string;
+  counselDate: string;
+  type: string;
+  dueDate?: string;
+  propertyUid?: string;
+  counselDetails: Array<{
+    question: string;
+    answer: string;
+  }>;
+}
+
+export const fetchCounselList = async (params: CounselListParams) => {
+  try {
+    const { data: response } = await apiClient.get<CounselListResponse>(
+      "/counsels",
+      {
+        params: {
+          page: params.page + 1,
+          size: params.size,
+          search: params.search || undefined,
+          startDate: params.startDate || undefined,
+          endDate: params.endDate || undefined,
+          type: params.type || undefined,
+          completed: params.completed,
+        },
+      }
+    );
+
+    if (response.success) {
+      return {
+        counsels: response.data.counsels,
+        totalElements: response.data.totalElements,
+      };
+    } else {
+      throw new Error(response.message);
+    }
+  } catch (error) {
+    console.error("Failed to fetch counsels:", error);
+    throw error;
+  }
+};
 
 export const fetchCounsels = async (page: number, rowsPerPage: number) => {
   try {
@@ -45,7 +113,7 @@ export const fetchCounselDetail = async (counselUid: string) => {
     const { data: response } = await apiClient.get<ApiResponse<CounselDetail>>(
       `/counsels/${counselUid}`
     );
-    console.log(response);
+
     return handleApiResponse(response, COUNSEL_ERROR_MESSAGES.FETCH_FAILED);
   } catch (error) {
     return handleApiError(error, `fetching counsel detail ${counselUid}`);
@@ -87,5 +155,66 @@ export const deleteCounsel = async (counselUid: string) => {
     return handleApiResponse(response, COUNSEL_ERROR_MESSAGES.DELETE_FAILED);
   } catch (error) {
     return handleApiError(error, `deleting counsel ${counselUid}`);
+  }
+};
+
+export const fetchCustomersForCounsel = async () => {
+  try {
+    const { data: response } = await apiClient.get("/customers", {
+      params: {
+        page: 0,
+        size: 100,
+      },
+    });
+
+    if (response.success) {
+      return response.data?.customers || [];
+    } else {
+      throw new Error(response.message);
+    }
+  } catch (error) {
+    console.error("Failed to fetch customers:", error);
+    throw error;
+  }
+};
+
+export const fetchPropertiesForCounsel = async () => {
+  try {
+    const { data: response } = await apiClient.get("/properties", {
+      params: {
+        page: 0,
+        size: 100,
+      },
+    });
+
+    if (response.success) {
+      return response.data?.agentProperty || [];
+    } else {
+      throw new Error(response.message);
+    }
+  } catch (error) {
+    console.error("Failed to fetch properties:", error);
+    throw error;
+  }
+};
+
+export const createCounsel = async (
+  customerId: string,
+  counselData: CreateCounselRequest
+) => {
+  try {
+    const { data: response } = await apiClient.post(
+      `/customers/${customerId}/counsels`,
+      counselData
+    );
+
+    if (response.success) {
+      return response;
+    } else {
+      throw new Error(response.message);
+    }
+  } catch (error) {
+    console.error("Failed to create counsel:", error);
+    throw error;
   }
 };

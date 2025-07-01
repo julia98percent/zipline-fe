@@ -13,9 +13,10 @@ import { handleApiResponse, handleApiError } from "@utils/apiUtil";
 import { Contract } from "@ts/contract";
 import { Counsel } from "@ts/counsel";
 import { Property } from "@ts/property";
+import { PageRequestParams } from "@ts/apiResponse";
 
-export const addCustomer = async (
-  customerData: CustomerData
+export const createCustomer = async (
+  customerData: CustomerData | CustomerUpdateData
 ): Promise<{ success: boolean; message: string }> => {
   try {
     const { data: response } = await apiClient.post<ApiResponse>(
@@ -24,7 +25,7 @@ export const addCustomer = async (
     );
 
     if (response.success) {
-      return { success: true, message: CUSTOMER_ERROR_MESSAGES.ADD_FAILED };
+      return { success: true, message: "고객이 성공적으로 생성되었습니다." };
     }
     return {
       success: false,
@@ -40,6 +41,37 @@ export const addCustomer = async (
   }
 };
 
+export const fetchCustomerList = async (
+  params?: PageRequestParams
+): Promise<Customer[]> => {
+  try {
+    const requestParams: Record<string, string | number> = {
+      page: params?.page ?? 0,
+      size: params?.size ?? 100,
+    };
+
+    // sortFields 객체를 개별 파라미터로 변환
+    const sortFields = params?.sortFields ?? { name: "ASC" };
+    Object.entries(sortFields).forEach(([key, value]) => {
+      requestParams[key] = value;
+    });
+
+    const { data: response } = await apiClient.get<
+      ApiResponse<{ customers: Customer[] }>
+    >("/customers", {
+      params: requestParams,
+    });
+
+    const data = handleApiResponse(
+      response,
+      CUSTOMER_ERROR_MESSAGES.FETCH_FAILED
+    );
+    return data.customers;
+  } catch (error) {
+    return handleApiError(error, "fetching customers");
+  }
+};
+
 export const fetchLabels = async (): Promise<Label[]> => {
   try {
     const { data: response } = await apiClient.get<
@@ -52,7 +84,8 @@ export const fetchLabels = async (): Promise<Label[]> => {
     );
     return data.labels;
   } catch (error) {
-    return handleApiError(error, "fetching labels");
+    console.error("Error fetching labels:", error);
+    throw error;
   }
 };
 
@@ -92,7 +125,7 @@ export const fetchCustomerDetail = async (
 };
 
 export const updateCustomer = async (
-  customerId: string,
+  customerId: string | number,
   customerData: CustomerBase
 ): Promise<void> => {
   try {
@@ -106,7 +139,9 @@ export const updateCustomer = async (
   }
 };
 
-export const deleteCustomer = async (customerId: string): Promise<void> => {
+export const deleteCustomer = async (
+  customerId: string | number
+): Promise<void> => {
   try {
     const { data: response } = await apiClient.delete<ApiResponse>(
       `/customers/${customerId}`
@@ -217,5 +252,39 @@ export const fetchCustomerContracts = async (
     throw new Error("No data received");
   } catch (error) {
     return handleApiError(error, "fetching customer contracts");
+  }
+};
+
+// 라벨 생성
+export const createLabel = async (name: string): Promise<void> => {
+  try {
+    const { data: response } = await apiClient.post<ApiResponse>("/labels", {
+      name,
+    });
+
+    if (!response.success) {
+      throw new Error(response.message || "라벨 생성에 실패했습니다.");
+    }
+  } catch (error) {
+    return handleApiError(error, "creating label");
+  }
+};
+
+// 고객 일괄 업로드
+export const uploadCustomersBulk = async (file: File): Promise<void> => {
+  try {
+    const formData = new FormData();
+    formData.append("file", file);
+
+    const { data: response } = await apiClient.post<ApiResponse>(
+      "/customers/bulk",
+      formData
+    );
+
+    if (!response.success) {
+      throw new Error(response.message || "파일 업로드에 실패했습니다.");
+    }
+  } catch (error) {
+    throw handleApiError(error, "uploading customers bulk");
   }
 };

@@ -150,3 +150,75 @@ export const fetchExpiringContractsForDashboard = async (
     period: "6개월 이내",
   });
 };
+
+export interface ContractRequest {
+  category: string | null;
+  contractDate: string | null;
+  contractStartDate: string | null;
+  contractEndDate: string | null;
+  expectedContractEndDate: string | null;
+  deposit: number;
+  monthlyRent: number;
+  price: number;
+  lessorOrSellerUids: number[];
+  lesseeOrBuyerUids: number[];
+  propertyUid: number | null;
+  status: string;
+}
+
+export interface AgentPropertyResponse {
+  uid: number;
+  address: string;
+}
+
+export interface CustomerResponse {
+  uid: number;
+  name: string;
+}
+
+export const updateContract = async (
+  contractUid: number,
+  formData: FormData
+): Promise<void> => {
+  try {
+    await apiClient.patch(`/contracts/${contractUid}`, formData, {
+      headers: { "Content-Type": "multipart/form-data" },
+    });
+  } catch (error) {
+    return handleApiError(error, "updating contract");
+  }
+};
+
+export const fetchProperties = async (): Promise<AgentPropertyResponse[]> => {
+  try {
+    const { data: response } = await apiClient.get("/properties");
+    return response.data.agentProperty.map((p: AgentPropertyResponse) => ({
+      uid: p.uid,
+      address: p.address,
+    }));
+  } catch (error) {
+    return handleApiError(error, "fetching properties");
+  }
+};
+
+export const fetchCustomers = async (): Promise<CustomerResponse[]> => {
+  try {
+    const { data: response } = await apiClient.get("/customers");
+    return response.data.customers.map((c: CustomerResponse) => ({
+      uid: Number(c.uid),
+      name: c.name,
+    }));
+  } catch (error) {
+    return handleApiError(error, "fetching customers");
+  }
+};
+
+export const createContract = async (formData: FormData): Promise<void> => {
+  try {
+    await apiClient.post("/contracts", formData, {
+      headers: { "Content-Type": "multipart/form-data" },
+    });
+  } catch (error) {
+    return handleApiError(error, "creating contract");
+  }
+};

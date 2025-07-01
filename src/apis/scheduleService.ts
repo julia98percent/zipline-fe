@@ -2,13 +2,8 @@ import apiClient from "@apis/apiClient";
 import { ApiResponse } from "@ts/apiResponse";
 import { Schedule } from "@ts/schedule";
 import { handleApiResponse, handleApiError } from "@utils/apiUtil";
+import { SCHEDULE_ERROR_MESSAGES } from "@constants/clientErrorMessage";
 
-const SCHEDULE_ERROR_MESSAGES = {
-  FETCH_FAILED: "스케줄을 가져오는데 실패했습니다.",
-  UPDATE_FAILED: "스케줄 업데이트에 실패했습니다.",
-};
-
-// 날짜 범위로 스케줄 조회
 export const fetchSchedulesByDateRange = async (params: {
   startDate: string;
   endDate: string;
@@ -24,24 +19,25 @@ export const fetchSchedulesByDateRange = async (params: {
   }
 };
 
-// 스케줄 업데이트
 export const updateSchedule = async (
   scheduleUid: number,
   updatedSchedule: Partial<Schedule>
-): Promise<void> => {
+) => {
   try {
-    const { data: response } = await apiClient.patch<ApiResponse<void>>(
+    const { data: response } = await apiClient.patch(
       `/schedules/${scheduleUid}`,
       updatedSchedule
     );
 
-    return handleApiResponse(response, SCHEDULE_ERROR_MESSAGES.UPDATE_FAILED);
+    return handleApiResponse<ApiResponse<string | null>>(
+      response.data,
+      SCHEDULE_ERROR_MESSAGES.UPDATE_FAILED
+    );
   } catch (error) {
-    return handleApiError(error, "updating schedule");
+    return handleApiError(error, "failing to update schedule");
   }
 };
 
-// 모든 스케줄 조회 (페이지네이션)
 export const fetchAllSchedules = async (params: {
   page?: number;
   size?: number;
@@ -71,5 +67,42 @@ export const fetchAllSchedules = async (params: {
     return handleApiResponse(response, SCHEDULE_ERROR_MESSAGES.FETCH_FAILED);
   } catch (error) {
     return handleApiError(error, "fetching all schedules");
+  }
+};
+
+export interface ScheduleCreateData {
+  startDateTime: string;
+  endDateTime: string;
+  title: string;
+  description: string;
+  customerUid: number | null;
+}
+
+export const createSchedule = async (
+  scheduleData: ScheduleCreateData
+): Promise<{
+  success: boolean;
+  message: string;
+}> => {
+  try {
+    const { data: response } = await apiClient.post<ApiResponse<void>>(
+      "/schedules",
+      scheduleData
+    );
+
+    if (response.success) {
+      return { success: true, message: "일정을 등록했습니다." };
+    }
+
+    return {
+      success: false,
+      message: response.message || SCHEDULE_ERROR_MESSAGES.ADD_FAILED,
+    };
+  } catch (error) {
+    console.error("Failed to create schedule:", error);
+    return {
+      success: false,
+      message: SCHEDULE_ERROR_MESSAGES.ADD_FAILED,
+    };
   }
 };

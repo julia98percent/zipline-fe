@@ -1,6 +1,6 @@
 import apiClient from "@apis/apiClient";
 import { Notification } from "@stores/useNotificationStore";
-import { API_STATUS_CODES } from "@ts/ApiResponse";
+import { API_STATUS_CODES } from "@ts/apiResponse";
 import { NOTIFICATION_ERROR_MESSAGES } from "@constants/clientErrorMessage";
 import { handleApiResponse, handleApiError } from "@utils/apiUtil";
 

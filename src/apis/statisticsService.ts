@@ -57,7 +57,6 @@ export const fetchCompletedContractsCount = async (): Promise<number> => {
 
     return handleApiResponse(response, STATISTICS_ERROR_MESSAGES.FETCH_FAILED);
   } catch (error) {
-    console.log(error);
     return handleApiError(error, "fetching completed contracts count");
   }
 };

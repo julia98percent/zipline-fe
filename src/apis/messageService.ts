@@ -7,7 +7,7 @@ import {
 } from "@ts/message";
 import { MESSAGE_ERROR_MESSAGES } from "@constants/clientErrorMessage";
 import { ApiResponse, API_STATUS_CODES } from "@ts/apiResponse";
-import { Template, BulkMessagePayload } from "@ts/message";
+import { MessageTemplate, BulkMessagePayload } from "@ts/message";
 import { handleApiResponse, handleApiError } from "@utils/apiUtil";
 
 export const fetchMessages = async (): Promise<MessageGroup[]> => {
@@ -44,11 +44,11 @@ export const fetchMessageList = async (
   }
 };
 
-export const fetchTemplates = async (): Promise<Template[]> => {
+export const fetchMessageTemplates = async (): Promise<MessageTemplate[]> => {
   try {
-    const { data: response } = await apiClient.get<ApiResponse<Template[]>>(
-      "/templates"
-    );
+    const { data: response } = await apiClient.get<
+      ApiResponse<MessageTemplate[]>
+    >("/templates");
 
     return handleApiResponse(
       response,
@@ -77,5 +77,65 @@ export const sendBulkMessages = async (
   } catch (error) {
     console.error("Error sending bulk messages:", error);
     return false;
+  }
+};
+
+interface TemplateRequest {
+  name: string;
+  content: string;
+  category: "GENERAL" | "BIRTHDAY" | "EXPIRED_NOTI";
+}
+
+export const createMessageTemplate = async (
+  templateData: TemplateRequest
+): Promise<void> => {
+  try {
+    const { data: response } = await apiClient.post<ApiResponse>(
+      "/templates",
+      templateData
+    );
+
+    if (!response.success) {
+      throw new Error(response.message || "Failed to create template");
+    }
+  } catch (error) {
+    console.error("Error creating template:", error);
+    throw error;
+  }
+};
+
+export const updateMessageTemplate = async (
+  templateId: number,
+  templateData: TemplateRequest
+): Promise<void> => {
+  try {
+    const { data: response } = await apiClient.patch<ApiResponse>(
+      `/templates/${templateId}`,
+      templateData
+    );
+
+    if (!response.success) {
+      throw new Error(response.message || "Failed to update template");
+    }
+  } catch (error) {
+    console.error("Error updating template:", error);
+    throw error;
+  }
+};
+
+export const deleteMessageTemplate = async (
+  templateId: number
+): Promise<void> => {
+  try {
+    const { data: response } = await apiClient.delete<ApiResponse>(
+      `/templates/${templateId}`
+    );
+
+    if (!response.success) {
+      throw new Error(response.message || "Failed to delete template");
+    }
+  } catch (error) {
+    console.error("Error deleting template:", error);
+    throw error;
   }
 };

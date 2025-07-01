@@ -61,10 +61,38 @@ export const signupUser = async ({
         withCredentials: true,
       }
     );
-    console.log(response);
+
     return response;
   } catch (error) {
     console.error("Signup error:", error);
     throw error;
+  }
+};
+
+export interface UpdateUserInfoRequest {
+  name?: string;
+  email?: string;
+  phoneNo?: string;
+  noticeMonth?: number;
+  noticeTime?: string;
+  url?: string;
+}
+
+export const updateUserInfo = async (
+  data: UpdateUserInfoRequest
+): Promise<void> => {
+  try {
+    const response = await apiClient.patch("/users/info", data);
+    return response.data;
+  } catch (error) {
+    return handleApiError(error, "updating user info");
+  }
+};
+
+export const logoutUser = async (): Promise<void> => {
+  try {
+    await apiClient.post("/users/logout", {}, { withCredentials: true });
+  } catch (error) {
+    return handleApiError(error, "logging out user");
   }
 };

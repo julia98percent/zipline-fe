@@ -1,7 +1,7 @@
 import apiClient from "@apis/apiClient";
 import {
   MessageDetail,
-  MessageGroup,
+  MessageHistory,
   MessageHistoryResponse,
   MessageDetailListResponse,
 } from "@ts/message";
@@ -10,7 +10,7 @@ import { ApiResponse, API_STATUS_CODES } from "@ts/apiResponse";
 import { MessageTemplate, BulkMessagePayload } from "@ts/message";
 import { handleApiResponse, handleApiError } from "@utils/apiUtil";
 
-export const fetchMessages = async (): Promise<MessageGroup[]> => {
+export const fetchMessages = async (): Promise<MessageHistory[]> => {
   try {
     const { data: response } = await apiClient.get<MessageHistoryResponse>(
       "/messages"

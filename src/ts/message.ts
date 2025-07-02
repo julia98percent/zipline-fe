@@ -17,23 +17,6 @@ export interface MessageCount {
   registeredSuccess: number;
 }
 
-export interface MessageGroup {
-  groupId: string;
-  from: string | null;
-  type: string | null;
-  subject: string | null;
-  dateCreated: string;
-  dateUpdated: string;
-  dateCompleted?: string;
-  statusCode: string | null;
-  status: string;
-  to: string | null;
-  text: string | null;
-  messageId: string | null;
-  count?: MessageCount;
-  messageTypeCount?: Record<string, number> | null;
-}
-
 export interface MessageHistory {
   groupId: string;
   status: string;
@@ -44,6 +27,7 @@ export interface MessageHistory {
   };
   dateSent: string;
   dateCompleted: string;
+  dateCreated: string;
   log: Array<{
     message: string;
     createAt: string;
@@ -68,7 +52,7 @@ export interface MessageDetail {
   dateCreated: string;
   dateUpdated: string;
   dateReceived?: string;
-  statusCode: string | null;
+  statusCode: string;
   status: string;
   to: string;
   messageId: string;
@@ -81,7 +65,7 @@ export type MessageHistoryResponse = ApiResponse<{
   startKey: string | null;
   nextKey: string | null;
   limit: number;
-  groupList: Record<string, MessageGroup>;
+  groupList: Record<string, MessageHistory>;
 }>;
 
 export type MessageDetailListResponse = ApiResponse<{
@@ -91,11 +75,19 @@ export type MessageDetailListResponse = ApiResponse<{
   messageList: Record<string, MessageDetail>;
 }>;
 
-export interface Template {
+export type MessageTemplateCategory = "GENERAL" | "BIRTHDAY" | "EXPIRED_NOTI";
+export interface MessageTemplate {
   uid: number;
   name: string;
+  category: MessageTemplateCategory;
   content: string;
-  category: string;
+}
+
+export interface MessageTemplateList {
+  id: number;
+  name: string;
+  category: MessageTemplate["category"];
+  templates: MessageTemplate[];
 }
 
 export interface BulkMessagePayload {
@@ -103,3 +95,5 @@ export interface BulkMessagePayload {
   to: string;
   text: string;
 }
+
+export type AllowedVariable = "이름" | "생년월일" | "관심지역";

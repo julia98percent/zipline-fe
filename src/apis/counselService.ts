@@ -2,23 +2,13 @@ import apiClient from "@apis/apiClient";
 import { COUNSEL_ERROR_MESSAGES } from "@constants/clientErrorMessage";
 import { ApiResponse } from "@ts/apiResponse";
 import { handleApiResponse, handleApiError } from "@utils/apiUtil";
-import { CounselDetail, PreCounselListData } from "@ts/counsel";
-import { Counsel } from "@ts/counsel";
+import {
+  CounselDetail,
+  PreCounselListData,
+  ConsultationResponse,
+} from "@ts/counsel";
 
-interface CounselListResponse {
-  success: boolean;
-  code: number;
-  message: string;
-  data: {
-    page: number;
-    size: number;
-    totalElements: number;
-    totalPages: number;
-    hasNext: boolean;
-    counsels: Counsel[];
-  };
-}
-
+type CounselListResponse = ApiResponse<ConsultationResponse>;
 interface CounselListParams {
   page: number;
   size: number;
@@ -58,7 +48,7 @@ export const fetchCounselList = async (params: CounselListParams) => {
       }
     );
 
-    if (response.success) {
+    if (response.success && response.data) {
       return {
         counsels: response.data.counsels,
         totalElements: response.data.totalElements,
@@ -86,7 +76,6 @@ export const fetchCounsels = async (page: number, rowsPerPage: number) => {
   }
 };
 
-// Dashboard related counsel functions
 export const fetchDashboardCounsels = async (params: {
   sortType: "DUE_DATE" | "LATEST";
   page?: number;
@@ -122,17 +111,7 @@ export const fetchCounselDetail = async (counselUid: string) => {
 
 export const updateCounsel = async (
   counselUid: string,
-  updateData: {
-    title: string;
-    type: string;
-    counselDate: string;
-    dueDate: string;
-    completed: boolean;
-    counselDetails: Array<{
-      question: string;
-      answer: string;
-    }>;
-  }
+  updateData: CounselDetail
 ) => {
   try {
     const { data: response } = await apiClient.put<ApiResponse>(

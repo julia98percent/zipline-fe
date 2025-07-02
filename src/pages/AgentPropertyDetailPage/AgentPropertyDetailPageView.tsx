@@ -38,7 +38,7 @@ interface AgentPropertyDetailPageViewProps {
   tab: number;
   editModalOpen: boolean;
   deleteModalOpen: boolean;
-  propertyUid: string;
+  propertyUid: number;
   onTabChange: (value: number) => void;
   onEdit: () => void;
   onDelete: () => void;

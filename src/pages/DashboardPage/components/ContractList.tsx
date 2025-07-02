@@ -5,16 +5,11 @@ import {
   Typography,
   Tabs,
   Tab,
-  TableContainer,
-  Table,
-  TableHead,
-  TableRow,
-  TableCell,
-  TableBody,
   CircularProgress,
 } from "@mui/material";
 import { formatDate } from "@utils/dateUtil";
 import { Contract } from "@ts/contract";
+import Table, { ColumnConfig } from "@components/Table";
 
 interface ContractListProps {
   contractTab: "expiring" | "recent";
@@ -32,6 +27,35 @@ const ContractList = ({
   contractLoading,
   handleContractTabChange,
 }: ContractListProps) => {
+  // 컬럼 설정
+  const columns: ColumnConfig<Contract>[] = [
+    {
+      key: "lessorOrSellerNames",
+      label: "임대인/매도인",
+      align: "left",
+      render: (_, contract) => contract.lessorOrSellerNames?.join(", ") || "-",
+    },
+    {
+      key: "lesseeOrBuyerNames",
+      label: "임차인/매수인",
+      align: "left",
+      render: (_, contract) => contract.lesseeOrBuyerNames?.join(", ") || "-",
+    },
+    {
+      key: "contractEndDate",
+      label: "종료일",
+      align: "left",
+      render: (_, contract) =>
+        contract.contractEndDate ? formatDate(contract.contractEndDate) : "-",
+    },
+  ];
+
+  // 테이블 데이터 변환 (uid를 id로 매핑)
+  const tableData = currentContractList.map((contract) => ({
+    id: contract.uid,
+    ...contract,
+  }));
+
   return (
     <Card
       sx={{
@@ -90,57 +114,26 @@ const ContractList = ({
             <CircularProgress />
           </Box>
         ) : (
-          <TableContainer>
-            <Table size="small">
-              <TableHead>
-                <TableRow>
-                  <TableCell sx={{ fontSize: "13px", fontWeight: 600 }}>
-                    임대인/매도인
-                  </TableCell>
-                  <TableCell sx={{ fontSize: "13px", fontWeight: 600 }}>
-                    임차인/매수인
-                  </TableCell>
-                  <TableCell sx={{ fontSize: "13px", fontWeight: 600 }}>
-                    종료일
-                  </TableCell>
-                </TableRow>
-              </TableHead>
-              <TableBody>
-                {currentContractList.length === 0 ? (
-                  <TableRow>
-                    <TableCell colSpan={3} align="center">
-                      계약이 없습니다.
-                    </TableCell>
-                  </TableRow>
-                ) : (
-                  currentContractList.map((contract) => (
-                    <TableRow
-                      key={contract.uid}
-                      hover
-                      sx={{
-                        cursor: "pointer",
-                        "&:hover": {
-                          backgroundColor: "rgba(22, 79, 158, 0.04)",
-                        },
-                      }}
-                    >
-                      <TableCell sx={{ fontSize: "12px" }}>
-                        {contract.lessorOrSellerNames?.join(", ") || "-"}
-                      </TableCell>
-                      <TableCell sx={{ fontSize: "12px" }}>
-                        {contract.lesseeOrBuyerNames?.join(", ") || "-"}
-                      </TableCell>
-                      <TableCell sx={{ fontSize: "12px" }}>
-                        {contract.contractEndDate
-                          ? formatDate(contract.contractEndDate)
-                          : "-"}
-                      </TableCell>
-                    </TableRow>
-                  ))
-                )}
-              </TableBody>
-            </Table>
-          </TableContainer>
+          <Table
+            columns={columns}
+            bodyList={tableData}
+            pagination={false}
+            noDataMessage="계약이 없습니다"
+            sx={{
+              "& .MuiTableCell-head": {
+                fontSize: "13px",
+                fontWeight: 600,
+                padding: "8px 16px",
+              },
+              "& .MuiTableCell-body": {
+                fontSize: "12px",
+                padding: "8px 16px",
+              },
+              "& .MuiTableRow-root:hover": {
+                backgroundColor: "rgba(22, 79, 158, 0.04)",
+              },
+            }}
+          />
         )}
       </Box>
     </Card>

@@ -16,7 +16,7 @@ import {
 import PageHeader from "@components/PageHeader";
 import SingleChoiceAdd from "./SingleChoiceAdd";
 import MultipleChoiceAdd from "./MultipleChoiceAdd";
-import { SurveyType, QuestionType } from "@apis/surveyService";
+import { SurveyType, QuestionType } from "@apis/preCounselService";
 
 const QUESTION_TYPE = [
   { value: "SUBJECTIVE", label: "주관식" },

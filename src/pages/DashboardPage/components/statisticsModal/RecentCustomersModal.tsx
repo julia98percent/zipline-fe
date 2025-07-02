@@ -4,29 +4,84 @@ import {
   DialogContent,
   DialogActions,
   Button,
-  Table,
-  TableBody,
-  TableCell,
-  TableContainer,
-  TableHead,
-  TableRow,
 } from "@mui/material";
+import { useState, useEffect, useCallback } from "react";
 import { formatDate } from "@utils/dateUtil";
 import { PreCounsel } from "@ts/counsel";
+import { fetchSubmittedSurveyResponses } from "@apis/preCounselService";
+import Table, { ColumnConfig } from "@components/Table";
 
 interface RecentCustomersModalProps {
   open: boolean;
   onClose: () => void;
-  surveyResponses: PreCounsel[];
   onSurveyClick: (surveyResponseUid: number) => void;
 }
 
 const RecentCustomersModal = ({
   open,
   onClose,
-  surveyResponses,
   onSurveyClick,
 }: RecentCustomersModalProps) => {
+  const [surveyResponses, setSurveyResponses] = useState<PreCounsel[]>([]);
+  const [loading, setLoading] = useState(false);
+
+  const fetchData = useCallback(async () => {
+    if (!open) return;
+
+    setLoading(true);
+    try {
+      const responses = await fetchSubmittedSurveyResponses(0, 10);
+      setSurveyResponses(
+        responses.surveyResponses.map((response) => ({
+          uid: response.surveyResponseUid,
+          name: response.name,
+          phoneNo: response.phoneNumber,
+          phoneNumber: response.phoneNumber,
+          createdAt: response.submittedAt,
+          submittedAt: response.submittedAt,
+          surveyResponseUid: response.surveyResponseUid,
+        }))
+      );
+    } catch (error) {
+      console.error("Failed to fetch survey responses:", error);
+      setSurveyResponses([]);
+    } finally {
+      setLoading(false);
+    }
+  }, [open]);
+
+  useEffect(() => {
+    fetchData();
+  }, [fetchData]);
+
+  // 컬럼 설정
+  const columns: ColumnConfig<PreCounsel>[] = [
+    {
+      key: "name",
+      label: "고객명",
+      align: "left",
+      render: (_, survey) => survey.name,
+    },
+    {
+      key: "phoneNumber",
+      label: "연락처",
+      align: "left",
+      render: (_, survey) => survey.phoneNumber,
+    },
+    {
+      key: "submittedAt",
+      label: "제출일",
+      align: "left",
+      render: (_, survey) => formatDate(survey.submittedAt),
+    },
+  ];
+
+  // 테이블 데이터 변환 (uid를 id로 매핑)
+  const tableData = surveyResponses.map((survey) => ({
+    id: survey.surveyResponseUid,
+    ...survey,
+  }));
+
   return (
     <Dialog
       open={open}
@@ -46,54 +101,14 @@ const RecentCustomersModal = ({
         최근 유입 고객
       </DialogTitle>
       <DialogContent>
-        <TableContainer
-          sx={{
-            maxHeight: 480,
-            overflow: "auto",
-            backgroundColor: "white",
-            borderRadius: "8px",
-            boxShadow: "0 2px 6px rgba(0, 0, 0, 0.02)",
-          }}
-        >
-          <Table stickyHeader>
-            <TableHead>
-              <TableRow>
-                <TableCell>고객명</TableCell>
-                <TableCell>연락처</TableCell>
-                <TableCell>제출일</TableCell>
-              </TableRow>
-            </TableHead>
-            <TableBody>
-              {Array.isArray(surveyResponses) &&
-              surveyResponses.length === 0 ? (
-                <TableRow>
-                  <TableCell colSpan={3} align="center">
-                    신규 설문이 없습니다.
-                  </TableCell>
-                </TableRow>
-              ) : (
-                Array.isArray(surveyResponses) &&
-                surveyResponses.map((res) => (
-                  <TableRow
-                    key={res.surveyResponseUid}
-                    hover
-                    onClick={() => onSurveyClick(res.surveyResponseUid)}
-                    sx={{
-                      cursor: "pointer",
-                      "&:hover": {
-                        backgroundColor: "rgba(22, 79, 158, 0.04)",
-                      },
-                    }}
-                  >
-                    <TableCell>{res.name}</TableCell>
-                    <TableCell>{res.phoneNumber}</TableCell>
-                    <TableCell>{formatDate(res.submittedAt)}</TableCell>
-                  </TableRow>
-                ))
-              )}
-            </TableBody>
-          </Table>
-        </TableContainer>
+        <Table
+          columns={columns}
+          bodyList={tableData}
+          handleRowClick={(survey) => onSurveyClick(survey.surveyResponseUid)}
+          pagination={false}
+          isLoading={loading}
+          noDataMessage="신규 설문이 없습니다"
+        />
       </DialogContent>
       <DialogActions sx={{ p: 2 }}>
         <Button

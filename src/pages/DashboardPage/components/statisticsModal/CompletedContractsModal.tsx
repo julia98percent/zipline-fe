@@ -1,58 +1,60 @@
-import {
-  Modal,
-  Box,
-  Typography,
-  Table,
-  TableBody,
-  TableCell,
-  TableContainer,
-  TableHead,
-  TableRow,
-  Paper,
-  Chip,
-  TablePagination,
-  CircularProgress,
-} from "@mui/material";
+import { Modal, Box, Typography, Chip } from "@mui/material";
+import { useState, useEffect, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
-import { ContractCategory } from "@ts/contract";
+import { ContractCategory, Contract } from "@ts/contract";
 import { CONTRACT_STATUS_TYPES } from "@constants/contract";
-
-interface Contract {
-  uid: number;
-  lessorOrSellerNames: string[];
-  lesseeOrBuyerNames: string[];
-  category: "SALE" | "DEPOSIT" | "MONTHLY" | null;
-  contractDate: string | null;
-  contractStartDate: string | null;
-  contractEndDate: string | null;
-  status: string;
-  address: string;
-}
+import { fetchCompletedContractsForDashboard } from "@apis/contractService";
+import Table, { ColumnConfig } from "@components/Table";
 
 interface CompletedContractsModalProps {
   open: boolean;
   onClose: () => void;
-  contracts: Contract[];
-  loading: boolean;
-  totalCount: number;
-  page: number;
-  rowsPerPage: number;
-  onPageChange: (newPage: number) => void;
-  onRowsPerPageChange: (newRowsPerPage: number) => void;
 }
 
 const CompletedContractsModal = ({
   open,
   onClose,
-  contracts = [],
-  loading,
-  totalCount,
-  page,
-  rowsPerPage,
-  onPageChange,
-  onRowsPerPageChange,
 }: CompletedContractsModalProps) => {
+  const [contracts, setContracts] = useState<Contract[]>([]);
+  const [loading, setLoading] = useState(false);
+  const [totalCount, setTotalCount] = useState(0);
+  const [page, setPage] = useState(0);
+  const [rowsPerPage, setRowsPerPage] = useState(10);
+
   const navigate = useNavigate();
+
+  const fetchData = useCallback(async () => {
+    if (!open) return;
+
+    setLoading(true);
+    try {
+      const response = await fetchCompletedContractsForDashboard(
+        page,
+        rowsPerPage
+      );
+      setContracts(response.contracts);
+      setTotalCount(response.totalElements);
+    } catch (error) {
+      console.error("Failed to fetch completed contracts:", error);
+      setContracts([]);
+      setTotalCount(0);
+    } finally {
+      setLoading(false);
+    }
+  }, [open, page, rowsPerPage]);
+
+  useEffect(() => {
+    fetchData();
+  }, [fetchData]);
+
+  const handlePageChange = (newPage: number) => {
+    setPage(newPage);
+  };
+
+  const handleRowsPerPageChange = (newRowsPerPage: number) => {
+    setRowsPerPage(newRowsPerPage);
+    setPage(0);
+  };
 
   const getColor = (color: string) => {
     switch (color) {
@@ -96,7 +98,8 @@ const CompletedContractsModal = ({
 
   const getCategoryChip = (category: string | null) => {
     if (!category || category === "null") return "-";
-    const label = ContractCategory[category] ?? category;
+    const label =
+      ContractCategory[category as keyof typeof ContractCategory] ?? category;
     const colorMap: Record<string, string> = {
       SALE: "#4caf50",
       DEPOSIT: "#2196f3",
@@ -130,6 +133,64 @@ const CompletedContractsModal = ({
     navigate(`/contracts/${contractUid}`);
   };
 
+  // 컬럼 설정
+  const columns: ColumnConfig<Contract>[] = [
+    {
+      key: "lessorOrSellerNames",
+      label: "임대/매도인",
+      align: "center",
+      render: (_, contract) => contract.lessorOrSellerNames?.join(", ") || "-",
+    },
+    {
+      key: "lesseeOrBuyerNames",
+      label: "임차/매수인",
+      align: "center",
+      render: (_, contract) => contract.lesseeOrBuyerNames?.join(", ") || "-",
+    },
+    {
+      key: "address",
+      label: "주소",
+      align: "center",
+      render: (_, contract) => contract.address,
+    },
+    {
+      key: "category",
+      label: "계약 카테고리",
+      align: "center",
+      render: (_, contract) => getCategoryChip(contract.category),
+    },
+    {
+      key: "contractDate",
+      label: "계약일",
+      align: "center",
+      render: (_, contract) => formatDate(contract.contractDate),
+    },
+    {
+      key: "contractStartDate",
+      label: "계약 시작일",
+      align: "center",
+      render: (_, contract) => formatDate(contract.contractStartDate),
+    },
+    {
+      key: "contractEndDate",
+      label: "계약 종료일",
+      align: "center",
+      render: (_, contract) => formatDate(contract.contractEndDate),
+    },
+    {
+      key: "status",
+      label: "상태",
+      align: "center",
+      render: (_, contract) => getStatusChip(contract.status),
+    },
+  ];
+
+  // 테이블 데이터 변환 (uid를 id로 매핑)
+  const tableData = contracts.map((contract) => ({
+    id: contract.uid,
+    ...contract,
+  }));
+
   return (
     <Modal
       open={open}
@@ -161,96 +222,22 @@ const CompletedContractsModal = ({
         >
           완료된 계약 목록
         </Typography>
-
-        <Box sx={{ width: "100%" }}>
-          <Paper
-            sx={{
-              width: "100%",
-              overflow: "hidden",
-              borderRadius: "8px",
-              boxShadow: "0 2px 6px rgba(0, 0, 0, 0.02)",
-            }}
-          >
-            <TableContainer>
-              <Table sx={{ minWidth: 650 }}>
-                <TableHead>
-                  <TableRow>
-                    <TableCell align="center">임대/매도인</TableCell>
-                    <TableCell align="center">임차/매수인</TableCell>
-                    <TableCell align="center">주소</TableCell>
-                    <TableCell align="center">계약 카테고리</TableCell>
-                    <TableCell align="center">계약일</TableCell>
-                    <TableCell align="center">계약 시작일</TableCell>
-                    <TableCell align="center">계약 종료일</TableCell>
-                    <TableCell align="center">상태</TableCell>
-                  </TableRow>
-                </TableHead>
-                <TableBody>
-                  {loading ? (
-                    <TableRow>
-                      <TableCell colSpan={8} align="center" sx={{ py: 8 }}>
-                        <CircularProgress size={24} />
-                      </TableCell>
-                    </TableRow>
-                  ) : contracts.length === 0 ? (
-                    <TableRow>
-                      <TableCell colSpan={8} align="center" sx={{ py: 3 }}>
-                        완료된 계약이 없습니다.
-                      </TableCell>
-                    </TableRow>
-                  ) : (
-                    contracts.map((contract) => (
-                      <TableRow
-                        key={contract.uid}
-                        hover
-                        sx={{ cursor: "pointer" }}
-                        onClick={() => handleRowClick(contract.uid)}
-                      >
-                        <TableCell align="center">
-                          {contract.lessorOrSellerNames?.join(", ") || "-"}
-                        </TableCell>
-                        <TableCell align="center">
-                          {contract.lesseeOrBuyerNames?.join(", ") || "-"}
-                        </TableCell>
-                        <TableCell align="center">{contract.address}</TableCell>
-                        <TableCell align="center">
-                          {getCategoryChip(contract.category)}
-                        </TableCell>
-                        <TableCell align="center">
-                          {formatDate(contract.contractDate)}
-                        </TableCell>
-                        <TableCell align="center">
-                          {formatDate(contract.contractStartDate)}
-                        </TableCell>
-                        <TableCell align="center">
-                          {formatDate(contract.contractEndDate)}
-                        </TableCell>
-                        <TableCell align="center">
-                          {getStatusChip(contract.status)}
-                        </TableCell>
-                      </TableRow>
-                    ))
-                  )}
-                </TableBody>
-              </Table>
-            </TableContainer>
-            <TablePagination
-              component="div"
-              count={totalCount}
-              page={page}
-              rowsPerPage={rowsPerPage}
-              onPageChange={(_, newPage) => onPageChange(newPage)}
-              onRowsPerPageChange={(e) =>
-                onRowsPerPageChange(parseInt(e.target.value, 10))
-              }
-              rowsPerPageOptions={[10, 25, 50]}
-              labelRowsPerPage="페이지당 행 수"
-              labelDisplayedRows={({ from, to, count }) =>
-                `${count}개 중 ${from}-${to}개`
-              }
-            />
-          </Paper>
-        </Box>
+        <Table
+          columns={columns}
+          bodyList={tableData}
+          handleRowClick={(contract) => handleRowClick(contract.uid)}
+          pagination={true}
+          totalElements={totalCount}
+          page={page}
+          handleChangePage={(_, newPage) => handlePageChange(newPage)}
+          rowsPerPage={rowsPerPage}
+          handleChangeRowsPerPage={(e) =>
+            handleRowsPerPageChange(parseInt(e.target.value, 10))
+          }
+          rowsPerPageOptions={[10, 25, 50]}
+          isLoading={loading}
+          noDataMessage="완료된 계약이 없습니다"
+        />
       </Box>
     </Modal>
   );

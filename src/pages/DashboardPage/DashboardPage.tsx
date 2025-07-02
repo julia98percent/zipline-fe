@@ -157,7 +157,6 @@ const DashboardPage = () => {
         handleCloseSurveyDetailModal={
           dashboardData.handleCloseSurveyDetailModal
         }
-        surveyResponses={dashboardData.surveyResponses}
         handleSurveyClick={dashboardData.handleSurveyClick}
         moreModalOpen={dashboardData.moreModalOpen}
         setMoreModalOpen={dashboardData.setMoreModalOpen}
@@ -169,42 +168,10 @@ const DashboardPage = () => {
         }
         recentContractsModalOpen={dashboardData.recentContractsModalOpen}
         setRecentContractsModalOpen={dashboardData.setRecentContractsModalOpen}
-        recentContracts={dashboardData.recentContracts}
-        recentContractsLoading={dashboardData.recentContractsLoading}
-        recentContractsCount={dashboardData.recentContractsCount}
-        recentContractsPage={dashboardData.recentContractsPage}
-        setRecentContractsPage={dashboardData.setRecentContractsPage}
-        recentContractsRowsPerPage={dashboardData.recentContractsRowsPerPage}
-        setRecentContractsRowsPerPage={
-          dashboardData.setRecentContractsRowsPerPage
-        }
-        fetchRecentContracts={dashboardData.fetchRecentContracts}
         ongoingContractsOpen={dashboardData.ongoingContractsOpen}
         setOngoingContractsOpen={dashboardData.setOngoingContractsOpen}
-        ongoingContractsList={dashboardData.ongoingContractsList}
-        ongoingContractsLoading={dashboardData.ongoingContractsLoading}
-        ongoingContractsTotalCount={dashboardData.ongoingContractsTotalCount}
-        ongoingContractsPage={dashboardData.ongoingContractsPage}
-        setOngoingContractsPage={dashboardData.setOngoingContractsPage}
-        ongoingContractsRowsPerPage={dashboardData.ongoingContractsRowsPerPage}
-        setOngoingContractsRowsPerPage={
-          dashboardData.setOngoingContractsRowsPerPage
-        }
         completedContractsOpen={dashboardData.completedContractsOpen}
         setCompletedContractsOpen={dashboardData.setCompletedContractsOpen}
-        completedContractsList={dashboardData.completedContractsList}
-        completedContractsLoading={dashboardData.completedContractsLoading}
-        completedContractsTotalCount={
-          dashboardData.completedContractsTotalCount
-        }
-        completedContractsPage={dashboardData.completedContractsPage}
-        setCompletedContractsPage={dashboardData.setCompletedContractsPage}
-        completedContractsRowsPerPage={
-          dashboardData.completedContractsRowsPerPage
-        }
-        setCompletedContractsRowsPerPage={
-          dashboardData.setCompletedContractsRowsPerPage
-        }
       />
     </Box>
   );

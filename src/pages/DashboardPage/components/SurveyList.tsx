@@ -1,17 +1,8 @@
 import React from "react";
-import {
-  Box,
-  Card,
-  Typography,
-  TableContainer,
-  Table,
-  TableHead,
-  TableRow,
-  TableCell,
-  TableBody,
-} from "@mui/material";
+import { Box, Card, Typography } from "@mui/material";
 import { formatDate } from "@utils/dateUtil";
 import { PreCounsel } from "@ts/counsel";
+import Table, { ColumnConfig } from "@components/Table";
 
 interface SurveyListProps {
   surveyResponses: PreCounsel[];
@@ -22,6 +13,36 @@ const SurveyList: React.FC<SurveyListProps> = ({
   surveyResponses,
   handleSurveyClick,
 }) => {
+  // 컬럼 설정
+  const columns: ColumnConfig<PreCounsel>[] = [
+    {
+      key: "name",
+      label: "이름",
+      align: "left",
+      render: (_, survey) => survey.name,
+    },
+    {
+      key: "phoneNumber",
+      label: "연락처",
+      align: "left",
+      render: (_, survey) => survey.phoneNumber,
+    },
+    {
+      key: "submittedAt",
+      label: "작성일",
+      align: "left",
+      render: (_, survey) => formatDate(survey.submittedAt),
+    },
+  ];
+
+  // 테이블 데이터 변환 (surveyResponseUid를 id로 매핑)
+  const tableData = Array.isArray(surveyResponses)
+    ? surveyResponses.map((survey) => ({
+        id: survey.surveyResponseUid,
+        ...survey,
+      }))
+    : [];
+
   return (
     <Card
       sx={{
@@ -50,56 +71,29 @@ const SurveyList: React.FC<SurveyListProps> = ({
         </Typography>
       </Box>
       <Box sx={{ flex: 1, overflow: "auto" }}>
-        <TableContainer>
-          <Table size="small">
-            <TableHead>
-              <TableRow>
-                <TableCell sx={{ fontSize: "13px", fontWeight: 600 }}>
-                  이름
-                </TableCell>
-                <TableCell sx={{ fontSize: "13px", fontWeight: 600 }}>
-                  연락처
-                </TableCell>
-                <TableCell sx={{ fontSize: "13px", fontWeight: 600 }}>
-                  작성일
-                </TableCell>
-              </TableRow>
-            </TableHead>
-            <TableBody>
-              {Array.isArray(surveyResponses) &&
-              surveyResponses.length === 0 ? (
-                <TableRow>
-                  <TableCell colSpan={3} align="center">
-                    신규 설문이 없습니다.
-                  </TableCell>
-                </TableRow>
-              ) : (
-                Array.isArray(surveyResponses) &&
-                surveyResponses.map((res) => (
-                  <TableRow
-                    key={res.surveyResponseUid}
-                    hover
-                    onClick={() => handleSurveyClick(res.surveyResponseUid)}
-                    sx={{
-                      cursor: "pointer",
-                      "&:hover": {
-                        backgroundColor: "rgba(22, 79, 158, 0.04)",
-                      },
-                    }}
-                  >
-                    <TableCell sx={{ fontSize: "12px" }}>{res.name}</TableCell>
-                    <TableCell sx={{ fontSize: "12px" }}>
-                      {res.phoneNumber}
-                    </TableCell>
-                    <TableCell sx={{ fontSize: "12px" }}>
-                      {formatDate(res.submittedAt)}
-                    </TableCell>
-                  </TableRow>
-                ))
-              )}
-            </TableBody>
-          </Table>
-        </TableContainer>
+        <Table
+          columns={columns}
+          bodyList={tableData}
+          handleRowClick={(survey) =>
+            handleSurveyClick(survey.surveyResponseUid)
+          }
+          pagination={false}
+          noDataMessage="신규 설문이 없습니다"
+          sx={{
+            "& .MuiTableCell-head": {
+              fontSize: "13px",
+              fontWeight: 600,
+              padding: "8px 16px",
+            },
+            "& .MuiTableCell-body": {
+              fontSize: "12px",
+              padding: "8px 16px",
+            },
+            "& .MuiTableRow-root:hover": {
+              backgroundColor: "rgba(22, 79, 158, 0.04)",
+            },
+          }}
+        />
       </Box>
     </Card>
   );

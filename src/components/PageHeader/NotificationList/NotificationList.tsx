@@ -3,7 +3,6 @@ import { Box, Typography, List } from "@mui/material";
 import type { Notification } from "@stores/useNotificationStore";
 import PreCounselDetailModal from "@components/PreCounselDetailModal";
 import { readAllNotifications } from "@apis/notificationService";
-import useNotificationStore from "@stores/useNotificationStore";
 import Button from "@components/Button";
 import NotificationItem from "./NotificationItem";
 
@@ -18,8 +17,6 @@ function NotificationList({
 }: NotificationListProps) {
   const [isSurveyDetailModalOpen, setIsSurveyDetailModalOpen] = useState(false);
   const [selectedSurveyId, setSelectedSurveyId] = useState<number | null>(null);
-
-  const { updateNotification } = useNotificationStore();
 
   const handleModalStateChange = useCallback(
     (isOpen: boolean) => {

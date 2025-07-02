@@ -6,7 +6,7 @@ import GuestRoute from "./components/layout/GuestRoute";
 import SignUpPage from "@pages/SignUpPage";
 import SignInPage from "@pages/SignInPage";
 import CustomerListPage from "@pages/CustomerListPage";
-import PrivatePropertyListPage from "@pages/AgentPropertyListPage";
+import AgentPropertyListPage from "@pages/AgentPropertyListPage";
 import MyPage from "@pages/MyPage";
 import EditSurveyPage from "@pages/MyPage/EditSurveyPage";
 import SubmitSurveyPage from "@pages/SubmitSurveyPage";
@@ -59,7 +59,7 @@ const App = () => {
 
           <Route
             path="properties/private"
-            element={<PrivatePropertyListPage />}
+            element={<AgentPropertyListPage />}
           />
           <Route
             path="/properties/:propertyUid"

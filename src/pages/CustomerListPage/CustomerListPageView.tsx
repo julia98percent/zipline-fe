@@ -23,6 +23,7 @@ interface Filters {
   telProvider: string;
   legalDistrictCode: string;
   trafficSource: string;
+  noRole: boolean;
 }
 
 interface CustomerListPageViewProps {
@@ -38,7 +39,7 @@ interface CustomerListPageViewProps {
   onFilterModalOpen: () => void;
   onFilterModalClose: () => void;
   onFiltersChange: (filters: Filters) => void;
-  onFilterApply: () => void;
+  onFilterApply: (filters: Filters) => void;
   onPageChange: (page: number) => void;
   onRowsPerPageChange: (rowsPerPage: number) => void;
   onCustomerUpdate: (customer: Customer) => void;

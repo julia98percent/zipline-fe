@@ -12,43 +12,49 @@ import {
 import { Clear } from "@mui/icons-material";
 import { translateMessageStatusToKorean } from "@utils/messageUtil";
 import { fetchMessageList } from "@apis/messageService";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 import {
   MessageStatistics,
   MessageDateInfo,
   MessageLog,
   MessageDetail,
 } from "./components";
-import { MessageHistory } from "@ts/message";
+import {
+  MessageHistory,
+  MessageDetail as MessageDetailType,
+} from "@ts/message";
 
 interface Props {
   open: boolean;
   onClose: () => void;
-  messageHistory: MessageHistory;
+  messageHistory: MessageHistory | null;
 }
 
 function MessageDetailModal({ open, onClose, messageHistory }: Props) {
-  const [messageList, setMessageList] = useState<any[]>([]);
+  const [messageList, setMessageList] = useState<MessageDetailType[]>([]);
   const [loading, setLoading] = useState<boolean>(false);
 
-  const fetchData = async () => {
-    try {
-      setLoading(true);
-      const response = await fetchMessageList(messageHistory.groupId);
-
-      setMessageList(response);
-      setLoading(false);
-    } catch (error) {
-      console.error("Failed to fetch message list:", error);
-      return [];
+  const fetchData = useCallback(async () => {
+    if (messageHistory) {
+      try {
+        setLoading(true);
+        const response = await fetchMessageList(messageHistory.groupId);
+        console.log("Fetched message list:", response);
+        setMessageList(response);
+        setLoading(false);
+      } catch (error) {
+        console.error("Failed to fetch message list:", error);
+        setMessageList([]);
+        setLoading(false);
+      }
     }
-  };
+  }, [messageHistory]);
 
   useEffect(() => {
     if (messageHistory?.groupId) {
       fetchData();
     }
-  }, [messageHistory?.groupId]);
+  }, [messageHistory?.groupId, fetchData]);
 
   if (!messageHistory) {
     return null;

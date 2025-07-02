@@ -1,3 +1,4 @@
+import { PaginatedResponse } from "./apiResponse";
 export const PropertyCategory = {
   ONE_ROOM: "원룸",
   TWO_ROOM: "투룸",
@@ -42,4 +43,84 @@ export interface Property extends PropertyBase {
   moveInDate: string;
   realCategory: PropertyCategoryType;
   uid: string;
+  longitude: number;
+  latitude: number;
 }
+
+export interface AgentPropertyFilterParams {
+  legalDistrictCode?: string;
+  type?: PropertyType;
+  category?: PropertyCategoryType;
+  minDeposit?: number;
+  maxDeposit?: number;
+  minMonthlyRent?: number;
+  maxMonthlyRent?: number;
+  minPrice?: number;
+  maxPrice?: number;
+  minMoveInDate?: string;
+  maxMoveInDate?: string;
+  petsAllowed?: boolean;
+  minFloor?: number;
+  maxFloor?: number;
+  hasElevator?: boolean;
+  minConstructionYear?: number;
+  maxConstructionYear?: number;
+  minParkingCapacity?: number;
+  maxParkingCapacity?: number;
+  minNetArea?: number;
+  maxNetArea?: number;
+  minTotalArea?: number;
+  maxTotalArea?: number;
+}
+
+export interface PublicPropertyItem {
+  id: number;
+  articleId: string;
+  regionCode: string;
+  category: string;
+  buildingName: string;
+  description: string;
+  buildingType: string;
+  price: number;
+  deposit: number;
+  monthlyRent: number;
+  longitude: number;
+  latitude: number;
+  supplyArea: number;
+  exclusiveArea: number;
+  platform: string;
+  platformUrl: string;
+  createdAt: string;
+  updatedAt: string;
+  address: string;
+}
+
+export interface PublicPropertySearchParams {
+  page: number;
+  size: number;
+  sortFields: {
+    [key: string]: string;
+  };
+  regionCode?: string;
+  buildingName?: string;
+  buildingType?: string;
+  category?: string;
+  address?: string;
+  minPrice?: number;
+  maxPrice?: number;
+  minDeposit?: number;
+  maxDeposit?: number;
+  minMonthlyRent?: number;
+  maxMonthlyRent?: number;
+  minExclusiveArea?: number;
+  maxExclusiveArea?: number;
+  minSupplyArea?: number;
+  maxSupplyArea?: number;
+}
+
+export type PublicPropertySearchResponse = PaginatedResponse<
+  "content",
+  PublicPropertyItem[]
+>;
+
+export type PropertyResponse = PaginatedResponse<"agentProperty", Property[]>;

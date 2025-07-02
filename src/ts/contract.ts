@@ -1,3 +1,5 @@
+import { PaginatedResponse } from "./apiResponse";
+import { CONTRACT_STATUS_OPTION_LIST } from "@constants/contract";
 export interface ContractDocument {
   fileName: string;
   fileUrl: string;
@@ -41,14 +43,7 @@ export interface ContractListSearchParams {
   size: number;
 }
 
-export interface ContractListData {
-  contracts: Contract[];
-  page: number;
-  size: number;
-  totalElements: number;
-  totalPages: number;
-  hasNext: boolean;
-}
+export type ContractListData = PaginatedResponse<"contracts", Contract[]>;
 
 export const ContractCategory = {
   SALE: "매매",
@@ -69,3 +64,23 @@ export const ContractCategoryColors: Record<ContractCategoryType, string> = {
   DEPOSIT: "#1976d2",
   MONTHLY: "#f57c00",
 };
+
+export type ContractResponse = PaginatedResponse<"contracts", Contract[]>;
+
+export interface FormErrors {
+  category?: string;
+  status?: string;
+  propertyUid?: string;
+  contractDate?: string;
+  contractStartDate?: string;
+  contractEndDate?: string;
+  expectedContractEndDate?: string;
+  deposit?: string;
+  monthlyRent?: string;
+  price?: string;
+  lessorUids?: string;
+  lesseeUids?: string;
+}
+
+export type ContractStatus =
+  (typeof CONTRACT_STATUS_OPTION_LIST)[number]["value"];

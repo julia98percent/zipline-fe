@@ -1,7 +1,7 @@
 import { ChangeEvent } from "react";
-import { TextField, Tooltip } from "@mui/material";
+import { Tooltip } from "@mui/material";
 import ErrorOutlineIcon from "@mui/icons-material/ErrorOutline";
-import TextFieldComponent from "@components/TextField";
+import TextField from "@components/TextField";
 
 export interface PasswordInputProps {
   password: string;
@@ -48,7 +48,7 @@ const PasswordInput = ({
   return (
     <>
       <div style={{ position: "relative" }}>
-        <TextFieldComponent
+        <TextField
           fullWidth
           required
           type="password"
@@ -69,7 +69,7 @@ const PasswordInput = ({
         />
       </div>
       <div style={{ position: "relative" }}>
-        <TextFieldComponent
+        <TextField
           fullWidth
           required
           type="password"

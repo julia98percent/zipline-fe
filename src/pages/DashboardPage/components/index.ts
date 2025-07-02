@@ -4,3 +4,7 @@ export { default as SurveyList } from "./SurveyList";
 export { default as StatisticsCards } from "./StatisticsCards";
 export { default as WeeklyScheduleCalendar } from "./WeeklyScheduleCalendar";
 export { default as DashboardModals } from "./DashboardModals";
+export { default as CompletedContractsModal } from "./statisticsModal/CompletedContractsModal";
+export { default as OngoingContractsModal } from "./statisticsModal/OngoingContractsModal";
+export { default as RecentCustomersModal } from "./statisticsModal/RecentCustomersModal";
+export { default as RecentContractsModal } from "./statisticsModal/RecentContractsModal";

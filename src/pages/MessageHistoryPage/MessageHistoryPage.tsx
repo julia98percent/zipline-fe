@@ -6,21 +6,29 @@ import dayjs from "dayjs";
 import MessageDetailModal from "./MessageDetailModal";
 import { translateMessageStatusToKorean } from "@utils/messageUtil";
 import Status from "@components/Status";
-import { MessageGroup } from "@ts/message";
+import { MessageHistory } from "@ts/message";
 import { fetchMessages } from "@apis/messageService";
 import Table from "@components/Table";
 
+interface TableRowData {
+  id: string;
+  dateCreated: string;
+  status: React.ReactElement;
+  dateCompleted: string;
+}
+
 const MessageHistoryPage = () => {
-  const [messages, setMessages] = useState<MessageGroup[]>([]);
+  const [messages, setMessages] = useState<MessageHistory[]>([]);
   const [selectedMessageHistory, setSelectedMessageHistory] =
-    useState<MessageGroup | null>(null);
+    useState<MessageHistory | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(50);
   const [totalElements, setTotalElements] = useState(0);
 
   const [detailModalOpen, setDetailModalOpen] = useState(false);
-  const handleRowClick = (rowData) => {
+
+  const handleRowClick = (rowData: TableRowData) => {
     const originalMessage = messages.find((msg) => msg.groupId === rowData.id);
     if (originalMessage) {
       setSelectedMessageHistory(originalMessage);
@@ -59,7 +67,7 @@ const MessageHistoryPage = () => {
   useEffect(() => {
     fetchData();
   }, [page]);
-
+  console.log(selectedMessageHistory);
   return (
     <Box
       sx={{

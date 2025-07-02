@@ -16,7 +16,8 @@ import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
 import { Dayjs } from "dayjs";
 import { DesktopDatePicker } from "@mui/x-date-pickers";
 import DaumPost from "@components/DaumPost";
-import { Customer } from "@apis/propertyService";
+import { Customer } from "@ts/customer";
+import { PropertyType } from "@ts/property";
 
 interface PropertyAddModalViewProps {
   open: boolean;
@@ -40,8 +41,8 @@ interface PropertyAddModalViewProps {
   onCreateContractChange: (checked: boolean) => void;
 
   // Property type
-  type: string;
-  onTypeChange: (type: string) => void;
+  type: PropertyType;
+  onTypeChange: (type: PropertyType) => void;
   realCategory: string;
   onRealCategoryChange: (category: string) => void;
 
@@ -206,7 +207,7 @@ const PropertyAddModalView = ({
         <RadioGroup
           row
           value={type}
-          onChange={(event) => onTypeChange(event.target.value)}
+          onChange={(event) => onTypeChange(event.target.value as PropertyType)}
         >
           <FormControlLabel value="SALE" control={<Radio />} label="매매" />
           <FormControlLabel value="DEPOSIT" control={<Radio />} label="전세" />

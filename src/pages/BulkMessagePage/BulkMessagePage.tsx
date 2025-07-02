@@ -2,12 +2,12 @@ import { useState, useEffect } from "react";
 import { SelectChangeEvent } from "@mui/material";
 import BulkMessagePage from "./BulkMessagePageView";
 import { showToast } from "@components/Toast";
-import { fetchTemplates, sendBulkMessages } from "@apis/messageService";
+import { fetchMessageTemplates, sendBulkMessages } from "@apis/messageService";
 import { Customer } from "@ts/customer";
-import { Template, BulkMessagePayload } from "@ts/message";
+import { MessageTemplate, BulkMessagePayload } from "@ts/message";
 
 const BulkMessagePageContainer = () => {
-  const [templates, setTemplates] = useState<Template[]>([]);
+  const [templates, setTemplates] = useState<MessageTemplate[]>([]);
   const [selectedTemplate, setSelectedTemplate] = useState<number | "">("");
   const [messageContent, setMessageContent] = useState<string>("");
   const [customers, setCustomers] = useState<Customer[]>([]);
@@ -48,7 +48,7 @@ const BulkMessagePageContainer = () => {
     const loadTemplates = async () => {
       try {
         setIsLoading(true);
-        const templatesData = await fetchTemplates();
+        const templatesData = await fetchMessageTemplates();
         setTemplates(templatesData);
       } catch (error) {
         console.error("Error loading templates:", error);
@@ -111,11 +111,6 @@ const BulkMessagePageContainer = () => {
         setCustomers([]);
         setSelectedTemplate("");
         setMessageContent("");
-      } else {
-        showToast({
-          message: "문자 발송에 실패했습니다.",
-          type: "error",
-        });
       }
     } catch (error) {
       console.error("Bulk message send error:", error);
@@ -136,7 +131,7 @@ const BulkMessagePageContainer = () => {
     }
     acc[template.category].push(template);
     return acc;
-  }, {} as Record<string, Template[]>);
+  }, {} as Record<string, MessageTemplate[]>);
 
   return (
     <BulkMessagePage

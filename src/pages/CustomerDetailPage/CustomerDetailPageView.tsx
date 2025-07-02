@@ -2,7 +2,7 @@ import { Box, CircularProgress, Paper } from "@mui/material";
 import PageHeader from "@components/PageHeader/PageHeader";
 import DeleteConfirmModal from "@components/DeleteConfirm/DeleteConfirmModal";
 import { Customer } from "@ts/customer";
-import CustomerInfo from "./CustomerInfo/CustomerInfo";
+import CustomerInfo from "./components/CustomerInfo/CustomerInfo";
 import {
   CustomerActionButtons,
   CustomerBasicInfo,

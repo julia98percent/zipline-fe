@@ -11,3 +11,21 @@ export const API_STATUS_CODES = {
 } as const;
 
 export type API_ERROR_MESSAGES = AxiosError<{ message?: string }>;
+
+export interface PageRequestParams {
+  page?: number;
+  size?: number;
+  sortFields?: Record<string, "ASC" | "DESC">;
+}
+
+export interface PaginationBase {
+  page: number;
+  size: number;
+  totalElements: number;
+  totalPages: number;
+  hasNext: boolean;
+}
+
+export type PaginatedResponse<K extends string, T> = {
+  [P in K]: T;
+} & PaginationBase;

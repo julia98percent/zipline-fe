@@ -1,5 +1,4 @@
 import { useEffect, useState, useCallback } from "react";
-import { Dayjs } from "dayjs";
 import dayjs from "dayjs";
 import { ContractDetail, ContractDocument } from "@ts/contract";
 import {
@@ -7,13 +6,15 @@ import {
   updateContract,
   fetchProperties,
   fetchCustomers,
-  ContractUpdateRequest,
+  ContractRequest,
   AgentPropertyResponse,
   CustomerResponse,
 } from "@apis/contractService";
 import { showToast } from "@components/Toast";
 import { CONTRACT_STATUS_OPTION_LIST } from "@constants/contract";
-import ContractEditModalView from "./ContractEditModalView";
+import ContractEditModalView, {
+  ContractFormData,
+} from "./ContractEditModalView";
 
 type ContractStatus = (typeof CONTRACT_STATUS_OPTION_LIST)[number]["value"];
 
@@ -23,21 +24,6 @@ interface Props {
   fetchContractData: () => void;
   contractUid: number;
   initialData: ContractDetail;
-}
-
-interface ContractFormData {
-  category: string | null;
-  contractDate: Dayjs | null;
-  contractStartDate: Dayjs | null;
-  contractEndDate: Dayjs | null;
-  expectedContractEndDate: Dayjs | null;
-  deposit: string;
-  monthlyRent: string;
-  price: string;
-  lessorUids: number[];
-  lesseeUids: number[];
-  propertyUid: number | null;
-  status: ContractStatus | "";
 }
 
 interface FormErrors {
@@ -55,26 +41,28 @@ interface FormErrors {
   status?: string;
 }
 
+const INITIAL_DATA: ContractFormData = {
+  category: null,
+  contractDate: null,
+  contractStartDate: null,
+  contractEndDate: null,
+  expectedContractEndDate: null,
+  deposit: "",
+  monthlyRent: "",
+  price: "",
+  lessorUids: [],
+  lesseeUids: [],
+  propertyUid: null,
+  status: "",
+};
+
 const ContractEditModal = ({
   open,
   handleClose,
   fetchContractData,
   contractUid,
 }: Props) => {
-  const [formData, setFormData] = useState<ContractFormData>({
-    category: null,
-    contractDate: null,
-    contractStartDate: null,
-    contractEndDate: null,
-    expectedContractEndDate: null,
-    deposit: "",
-    monthlyRent: "",
-    price: "",
-    lessorUids: [],
-    lesseeUids: [],
-    propertyUid: null,
-    status: "",
-  });
+  const [formData, setFormData] = useState<ContractFormData>(INITIAL_DATA);
 
   const [newFiles, setNewFiles] = useState<File[]>([]);
   const [existingDocuments, setExistingDocuments] = useState<
@@ -251,7 +239,7 @@ const ContractEditModal = ({
   const handleSubmit = async () => {
     if (!validateInputs()) return;
 
-    const requestPayload: ContractUpdateRequest = {
+    const requestPayload: ContractRequest = {
       category: formData.category,
       contractDate: formData.contractDate?.format("YYYY-MM-DD") ?? null,
       contractStartDate:

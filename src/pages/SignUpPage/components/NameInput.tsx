@@ -1,7 +1,7 @@
 import { ChangeEvent } from "react";
-import { TextField, Tooltip } from "@mui/material";
+import { Tooltip } from "@mui/material";
 import ErrorOutlineIcon from "@mui/icons-material/ErrorOutline";
-import TextFieldComponent from "@components/TextField";
+import TextField from "@components/TextField";
 
 export interface NameInputProps {
   name: string;
@@ -33,7 +33,7 @@ const NameInput = ({
 
   return (
     <div style={{ position: "relative" }}>
-      <TextFieldComponent
+      <TextField
         fullWidth
         required
         label="이름"

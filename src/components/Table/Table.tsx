@@ -14,11 +14,12 @@ import {
 
 export interface ColumnConfig<T = unknown> {
   key: string;
-  label: string;
+  label: string | React.ReactNode;
   align?: TableCellProps["align"];
   width?: string | number;
   minWidth?: string | number;
   render?: (value: unknown, row: T, index: number) => React.ReactNode;
+  visible?: boolean;
 }
 
 export interface RowData {
@@ -66,10 +67,15 @@ function Table<T extends RowData>({
   maxHeight,
 }: Props<T>) {
   // columns가 제공되면 우선 사용, 없으면 headerList 사용 (레거시 지원)
-  const finalColumns: ColumnConfig<T>[] =
+  const allColumns: ColumnConfig<T>[] =
     columns ||
     headerList?.map((header) => ({ key: header, label: header })) ||
     [];
+
+  // visible 속성이 false인 컬럼은 제외
+  const finalColumns: ColumnConfig<T>[] = allColumns.filter(
+    (column) => column.visible !== false
+  );
 
   const renderCell = (
     column: ColumnConfig<T>,

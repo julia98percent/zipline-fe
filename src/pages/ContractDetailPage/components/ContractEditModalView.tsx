@@ -18,7 +18,7 @@ import { AgentPropertyResponse, CustomerResponse } from "@apis/contractService";
 
 type ContractStatus = (typeof CONTRACT_STATUS_OPTION_LIST)[number]["value"];
 
-interface ContractFormData {
+export interface ContractFormData {
   category: string | null;
   contractDate: Dayjs | null;
   contractStartDate: Dayjs | null;

@@ -1,5 +1,9 @@
 import apiClient from "@apis/apiClient";
-import { ApiResponse, API_ERROR_MESSAGES } from "@ts/apiResponse";
+import {
+  ApiResponse,
+  API_ERROR_MESSAGES,
+  PageRequestParams,
+} from "@ts/apiResponse";
 import { CUSTOMER_ERROR_MESSAGES } from "@constants/clientErrorMessage";
 import {
   Customer,
@@ -10,10 +14,9 @@ import {
   CustomerBase,
 } from "@ts/customer";
 import { handleApiResponse, handleApiError } from "@utils/apiUtil";
-import { Contract } from "@ts/contract";
-import { Counsel } from "@ts/counsel";
-import { Property } from "@ts/property";
-import { PageRequestParams } from "@ts/apiResponse";
+import { ContractResponse } from "@ts/contract";
+import { ConsultationResponse } from "@ts/counsel";
+import { PropertyResponse } from "@ts/property";
 
 export const createCustomer = async (
   customerData: CustomerData | CustomerUpdateData
@@ -50,7 +53,6 @@ export const fetchCustomerList = async (
       size: params?.size ?? 100,
     };
 
-    // sortFields 객체를 개별 파라미터로 변환
     const sortFields = params?.sortFields ?? { name: "ASC" };
     Object.entries(sortFields).forEach(([key, value]) => {
       requestParams[key] = value;
@@ -152,34 +154,6 @@ export const deleteCustomer = async (
     return handleApiError(error, "deleting customer");
   }
 };
-
-// Customer consultation, property, contract related functions
-export interface ConsultationResponse {
-  counsels: Counsel[];
-  page: number;
-  size: number;
-  totalElements: number;
-  totalPages: number;
-  hasNext: boolean;
-}
-
-export interface PropertyResponse {
-  agentProperty: Property[];
-  page: number;
-  size: number;
-  totalElements: number;
-  totalPages: number;
-  hasNext: boolean;
-}
-
-export interface ContractResponse {
-  contracts: Contract[];
-  page: number;
-  size: number;
-  totalElements: number;
-  totalPages: number;
-  hasNext: boolean;
-}
 
 export const fetchCustomerConsultations = async (
   customerId: string,

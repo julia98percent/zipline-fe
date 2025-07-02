@@ -1,56 +1,60 @@
-import {
-  Modal,
-  Box,
-  Typography,
-  Table,
-  TableBody,
-  TableCell,
-  TableContainer,
-  TableHead,
-  TableRow,
-  Paper,
-  Chip,
-  TablePagination,
-} from "@mui/material";
+import { Modal, Box, Typography, Chip } from "@mui/material";
+import { useState, useEffect, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
 import { CONTRACT_STATUS_TYPES } from "@constants/contract";
-
-interface Contract {
-  uid: number;
-  lessorOrSellerNames: string[];
-  lesseeOrBuyerNames: string[];
-  category: "SALE" | "DEPOSIT" | "MONTHLY" | null;
-  contractDate: string | null;
-  contractStartDate: string | null;
-  contractEndDate: string | null;
-  status: string;
-  address?: string;
-}
+import { fetchRecentContractsForDashboard } from "@apis/contractService";
+import { Contract } from "@ts/contract";
+import Table, { ColumnConfig } from "@components/Table";
 
 interface RecentContractsModalProps {
   open: boolean;
   onClose: () => void;
-  contracts: Contract[];
-  loading: boolean;
-  totalCount: number;
-  page: number;
-  rowsPerPage: number;
-  onPageChange: (newPage: number) => void;
-  onRowsPerPageChange: (newRowsPerPage: number) => void;
 }
 
-const RecentContractsModal = ({
-  open,
-  onClose,
-  contracts,
-  loading,
-  totalCount,
-  page,
-  rowsPerPage,
-  onPageChange,
-  onRowsPerPageChange,
-}: RecentContractsModalProps) => {
+const RecentContractsModal = ({ open, onClose }: RecentContractsModalProps) => {
   const navigate = useNavigate();
+
+  const [contracts, setContracts] = useState<Contract[]>([]);
+  const [loading, setLoading] = useState(false);
+  const [totalCount, setTotalCount] = useState(0);
+  const [page, setPage] = useState(0);
+  const [rowsPerPage, setRowsPerPage] = useState(10);
+
+  const fetchData = useCallback(
+    async (pageNum: number) => {
+      try {
+        setLoading(true);
+        const result = await fetchRecentContractsForDashboard(
+          pageNum,
+          rowsPerPage
+        );
+        setContracts(result.contracts);
+        setTotalCount(result.totalElements);
+      } catch (error) {
+        console.error("Failed to fetch recent contracts:", error);
+        setContracts([]);
+        setTotalCount(0);
+      } finally {
+        setLoading(false);
+      }
+    },
+    [rowsPerPage]
+  );
+
+  useEffect(() => {
+    if (open) {
+      fetchData(page);
+    }
+  }, [open, page, fetchData]);
+
+  const handlePageChange = (newPage: number) => {
+    setPage(newPage);
+  };
+
+  const handleRowsPerPageChange = (newRowsPerPage: number) => {
+    setRowsPerPage(newRowsPerPage);
+    setPage(0);
+  };
 
   const getColor = (color: string) => {
     switch (color) {
@@ -70,6 +74,129 @@ const RecentContractsModal = ({
         return "#999";
     }
   };
+
+  // 컬럼 설정
+  const columns: ColumnConfig<Contract>[] = [
+    {
+      key: "lessorOrSellerNames",
+      label: "임대/매도인",
+      align: "center",
+      render: (_, contract) => {
+        return Array.isArray(contract.lessorOrSellerNames)
+          ? contract.lessorOrSellerNames.length === 0
+            ? "-"
+            : contract.lessorOrSellerNames.length === 1
+            ? contract.lessorOrSellerNames[0]
+            : `${contract.lessorOrSellerNames[0]} 외 ${
+                contract.lessorOrSellerNames.length - 1
+              }명`
+          : "-";
+      },
+    },
+    {
+      key: "lesseeOrBuyerNames",
+      label: "임차/매수인",
+      align: "center",
+      render: (_, contract) => {
+        return Array.isArray(contract.lesseeOrBuyerNames)
+          ? contract.lesseeOrBuyerNames.length === 0
+            ? "-"
+            : contract.lesseeOrBuyerNames.length === 1
+            ? contract.lesseeOrBuyerNames[0]
+            : `${contract.lesseeOrBuyerNames[0]} 외 ${
+                contract.lesseeOrBuyerNames.length - 1
+              }명`
+          : "-";
+      },
+    },
+    {
+      key: "address",
+      label: "주소",
+      align: "center",
+      render: (_, contract) => contract.address ?? "-",
+    },
+    {
+      key: "category",
+      label: "계약 카테고리",
+      align: "center",
+      render: (_, contract) => {
+        const categoryKoreanMap: Record<string, string> = {
+          SALE: "매매",
+          DEPOSIT: "전세",
+          MONTHLY: "월세",
+        };
+        const colorMap: Record<string, string> = {
+          SALE: "#4caf50",
+          DEPOSIT: "#2196f3",
+          MONTHLY: "#ff9800",
+        };
+        if (!contract.category || !categoryKoreanMap[contract.category])
+          return "-";
+        return (
+          <Chip
+            label={categoryKoreanMap[contract.category]}
+            variant="outlined"
+            sx={{
+              color: colorMap[contract.category],
+              borderColor: colorMap[contract.category],
+              fontWeight: 500,
+              height: 26,
+              fontSize: 13,
+            }}
+          />
+        );
+      },
+    },
+    {
+      key: "contractDate",
+      label: "계약일",
+      align: "center",
+      render: (_, contract) => contract.contractDate ?? "-",
+    },
+    {
+      key: "contractStartDate",
+      label: "계약 시작일",
+      align: "center",
+      render: (_, contract) => contract.contractStartDate ?? "-",
+    },
+    {
+      key: "contractEndDate",
+      label: "계약 종료일",
+      align: "center",
+      render: (_, contract) => contract.contractEndDate ?? "-",
+    },
+    {
+      key: "status",
+      label: "상태",
+      align: "center",
+      render: (_, contract) => {
+        const statusInfo = CONTRACT_STATUS_TYPES.find(
+          (item) => item.value === contract.status
+        );
+        return statusInfo ? (
+          <Chip
+            label={statusInfo.name}
+            variant="outlined"
+            sx={{
+              color: getColor(statusInfo.color),
+              borderColor: getColor(statusInfo.color),
+              fontWeight: 500,
+              height: 28,
+              fontSize: 13,
+            }}
+          />
+        ) : (
+          contract.status
+        );
+      },
+    },
+  ];
+
+  // 테이블 데이터 변환 (uid를 id로 매핑)
+  const tableData = contracts.map((contract) => ({
+    id: contract.uid,
+    ...contract,
+  }));
 
   return (
     <Modal
@@ -102,164 +229,25 @@ const RecentContractsModal = ({
         >
           최근 계약 목록
         </Typography>
-        <Paper
-          sx={{
-            borderRadius: "8px",
-            boxShadow: "0 2px 6px rgba(0, 0, 0, 0.02)",
-            overflow: "hidden",
+        <Table
+          columns={columns}
+          bodyList={tableData}
+          handleRowClick={(contract) => {
+            navigate(`/contracts/${contract.uid}`);
+            onClose();
           }}
-        >
-          <TableContainer>
-            <Table sx={{ minWidth: 650 }}>
-              <TableHead>
-                <TableRow>
-                  <TableCell align="center">임대/매도인</TableCell>
-                  <TableCell align="center">임차/매수인</TableCell>
-                  <TableCell align="center">주소</TableCell>
-                  <TableCell align="center">계약 카테고리</TableCell>
-                  <TableCell align="center">계약일</TableCell>
-                  <TableCell align="center">계약 시작일</TableCell>
-                  <TableCell align="center">계약 종료일</TableCell>
-                  <TableCell align="center">상태</TableCell>
-                </TableRow>
-              </TableHead>
-              <TableBody>
-                {loading ? (
-                  <TableRow>
-                    <TableCell colSpan={8} align="center">
-                      불러오는 중...
-                    </TableCell>
-                  </TableRow>
-                ) : contracts.length === 0 ? (
-                  <TableRow>
-                    <TableCell colSpan={8} align="center">
-                      계약 데이터가 없습니다
-                    </TableCell>
-                  </TableRow>
-                ) : (
-                  contracts.map((contract) => (
-                    <TableRow
-                      key={contract.uid}
-                      hover
-                      sx={{ cursor: "pointer" }}
-                      onClick={() => {
-                        navigate(`/contracts/${contract.uid}`);
-                        onClose();
-                      }}
-                    >
-                      <TableCell align="center">
-                        {Array.isArray(contract.lessorOrSellerNames)
-                          ? contract.lessorOrSellerNames.length === 0
-                            ? "-"
-                            : contract.lessorOrSellerNames.length === 1
-                            ? contract.lessorOrSellerNames[0]
-                            : `${contract.lessorOrSellerNames[0]} 외 ${
-                                contract.lessorOrSellerNames.length - 1
-                              }명`
-                          : "-"}
-                      </TableCell>
-                      <TableCell align="center">
-                        {Array.isArray(contract.lesseeOrBuyerNames)
-                          ? contract.lesseeOrBuyerNames.length === 0
-                            ? "-"
-                            : contract.lesseeOrBuyerNames.length === 1
-                            ? contract.lesseeOrBuyerNames[0]
-                            : `${contract.lesseeOrBuyerNames[0]} 외 ${
-                                contract.lesseeOrBuyerNames.length - 1
-                              }명`
-                          : "-"}
-                      </TableCell>
-                      <TableCell align="center">
-                        {contract.address ?? "-"}
-                      </TableCell>
-                      <TableCell align="center">
-                        {(() => {
-                          const categoryKoreanMap: Record<string, string> = {
-                            SALE: "매매",
-                            DEPOSIT: "전세",
-                            MONTHLY: "월세",
-                          };
-                          const colorMap: Record<string, string> = {
-                            SALE: "#4caf50",
-                            DEPOSIT: "#2196f3",
-                            MONTHLY: "#ff9800",
-                          };
-                          if (
-                            !contract.category ||
-                            !categoryKoreanMap[contract.category]
-                          )
-                            return "-";
-                          return (
-                            <Chip
-                              label={categoryKoreanMap[contract.category]}
-                              variant="outlined"
-                              sx={{
-                                color: colorMap[contract.category],
-                                borderColor: colorMap[contract.category],
-                                fontWeight: 500,
-                                height: 26,
-                                fontSize: 13,
-                              }}
-                            />
-                          );
-                        })()}
-                      </TableCell>
-                      <TableCell align="center">
-                        {contract.contractDate ?? "-"}
-                      </TableCell>
-                      <TableCell align="center">
-                        {contract.contractStartDate ?? "-"}
-                      </TableCell>
-                      <TableCell align="center">
-                        {contract.contractEndDate ?? "-"}
-                      </TableCell>
-                      <TableCell align="center">
-                        {(() => {
-                          const statusInfo = CONTRACT_STATUS_TYPES.find(
-                            (item) => item.value === contract.status
-                          );
-                          return statusInfo ? (
-                            <Chip
-                              label={statusInfo.name}
-                              variant="outlined"
-                              sx={{
-                                color: getColor(statusInfo.color),
-                                borderColor: getColor(statusInfo.color),
-                                fontWeight: 500,
-                                height: 28,
-                                fontSize: 13,
-                              }}
-                            />
-                          ) : (
-                            contract.status
-                          );
-                        })()}
-                      </TableCell>
-                    </TableRow>
-                  ))
-                )}
-              </TableBody>
-            </Table>
-          </TableContainer>
-          <TablePagination
-            component="div"
-            count={totalCount}
-            page={page}
-            rowsPerPage={rowsPerPage}
-            onPageChange={(_, newPage) => onPageChange(newPage)}
-            onRowsPerPageChange={(e) =>
-              onRowsPerPageChange(parseInt(e.target.value, 10))
-            }
-            rowsPerPageOptions={[10, 25, 50]}
-            labelRowsPerPage="페이지당 행 수"
-            labelDisplayedRows={({ from, to, count }) =>
-              `${count}개 중 ${from}-${to}개`
-            }
-            sx={{
-              borderTop: "1px solid rgba(224, 224, 224, 1)",
-            }}
-          />
-        </Paper>
+          pagination={true}
+          totalElements={totalCount}
+          page={page}
+          handleChangePage={(_, newPage) => handlePageChange(newPage)}
+          rowsPerPage={rowsPerPage}
+          handleChangeRowsPerPage={(e) =>
+            handleRowsPerPageChange(parseInt(e.target.value, 10))
+          }
+          rowsPerPageOptions={[10, 25, 50]}
+          isLoading={loading}
+          noDataMessage="계약 데이터가 없습니다"
+        />
       </Box>
     </Modal>
   );

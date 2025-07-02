@@ -8,7 +8,7 @@ import {
 } from "@mui/material";
 import DeleteIcon from "@mui/icons-material/Delete";
 import Button from "@components/Button";
-import { QuestionType } from "@apis/surveyService";
+import { QuestionType } from "@apis/preCounselService";
 
 interface Props {
   question: QuestionType;

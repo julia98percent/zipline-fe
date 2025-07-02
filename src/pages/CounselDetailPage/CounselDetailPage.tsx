@@ -29,7 +29,6 @@ function CounselDetailPage() {
       try {
         const result = await fetchCounselDetail(counselUid!);
         if (result) {
-          console.log(result);
           setCounselData(result);
           setEditedData(result);
         }

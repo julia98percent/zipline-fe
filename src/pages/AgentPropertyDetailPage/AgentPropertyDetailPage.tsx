@@ -15,7 +15,7 @@ import { showToast } from "@components/Toast/Toast";
 import AgentPropertyDetailPageView from "./AgentPropertyDetailPageView";
 
 function AgentPropertyDetailPage() {
-  const { propertyUid } = useParams<{ propertyUid: string }>();
+  const { propertyUid } = useParams();
   const navigate = useNavigate();
   const [property, setProperty] = useState<AgentPropertyDetail | null>(null);
   const [contractInfo, setContractInfo] = useState<ContractInfo | null>(null);

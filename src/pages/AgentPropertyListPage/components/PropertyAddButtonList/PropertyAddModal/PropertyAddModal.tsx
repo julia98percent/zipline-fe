@@ -1,12 +1,10 @@
 import { useEffect, useState } from "react";
 import { Dayjs } from "dayjs";
 import axios from "axios";
-import {
-  fetchCustomers,
-  createProperty,
-  Customer,
-  PropertyAddData,
-} from "@apis/propertyService";
+import { createProperty, PropertyAddData } from "@apis/propertyService";
+import { fetchCustomerList } from "@apis/customerService";
+import { Customer } from "@ts/customer";
+import { PropertyType } from "@ts/property";
 import { showToast } from "@components/Toast/Toast";
 import { useNumericInput, useRawNumericInput } from "@hooks/useNumericInput";
 import useInput from "@hooks/useInput";
@@ -54,7 +52,7 @@ const PropertyAddModal = ({
 
   // Other form fields
   const [details, handleChangeDetails] = useInput(null);
-  const [type, setType] = useState("SALE");
+  const [type, setType] = useState<PropertyType>("SALE");
   const [longitude, setLongitude] = useState<number | null>(null);
   const [latitude, setLatitude] = useState<number | null>(null);
   const [moveInDate, setMoveInDate] = useState<Dayjs | null>(null);
@@ -125,7 +123,7 @@ const PropertyAddModal = ({
       deposit: parseNumber(deposit),
       monthlyRent: parseNumber(monthlyRent),
       price: parseNumber(price),
-      type: type as "SALE" | "DEPOSIT" | "MONTHLY",
+      type: type,
       longitude,
       latitude,
       moveInDate: moveInDate?.format("YYYY-MM-DD") || null,
@@ -213,7 +211,7 @@ const PropertyAddModal = ({
   useEffect(() => {
     const loadCustomers = async () => {
       try {
-        const customers = await fetchCustomers();
+        const customers = await fetchCustomerList();
         setCustomerOptions(customers);
       } catch (error) {
         console.error("Error fetching customers:", error);

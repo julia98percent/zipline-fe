@@ -1,12 +1,12 @@
 import { useState } from "react";
 import { Box, Typography, Stack } from "@mui/material";
-import { Message } from "@ts/message";
+import { MessageDetail as MessageDetailType } from "@ts/message";
 import { getStatusMessage, getErrorMessage } from "@utils/messageUtil";
 import { formatDate } from "@utils/dateUtil";
 import { Button } from "@mui/material";
 import { NavigateBefore, NavigateNext } from "@mui/icons-material";
 
-function MessageDetail({ messageList }: { messageList: Message[] }) {
+function MessageDetail({ messageList }: { messageList: MessageDetailType[] }) {
   const [currentIndex, setCurrentIndex] = useState<number>(0);
 
   const handlePrevious = () => {

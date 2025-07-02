@@ -5,17 +5,12 @@ import {
   Typography,
   Tabs,
   Tab,
-  TableContainer,
-  Table,
-  TableHead,
-  TableRow,
-  TableCell,
-  TableBody,
   Chip,
   CircularProgress,
 } from "@mui/material";
 import { formatDate } from "@utils/dateUtil";
 import { Counsel } from "@ts/counsel";
+import Table, { ColumnConfig } from "@components/Table";
 
 interface CounselListProps {
   counselTab: "request" | "latest";
@@ -35,6 +30,52 @@ const CounselList: React.FC<CounselListProps> = ({
   handleCounselTabChange,
   handleCounselClick,
 }) => {
+  // 컬럼 설정
+  const columns: ColumnConfig<Counsel>[] = [
+    {
+      key: "customerName",
+      label: "고객명",
+      align: "left",
+      render: (_, counsel) => counsel.customerName,
+    },
+    {
+      key: "title",
+      label: "제목",
+      align: "left",
+      render: (_, counsel) => (
+        <Box
+          sx={{
+            display: "flex",
+            alignItems: "center",
+            gap: 1,
+          }}
+        >
+          {counsel.title}
+          {counsel.completed && (
+            <Chip
+              label="완료"
+              size="small"
+              color="success"
+              sx={{ fontSize: "10px", height: "18px" }}
+            />
+          )}
+        </Box>
+      ),
+    },
+    {
+      key: "dueDate",
+      label: "마감일",
+      align: "left",
+      render: (_, counsel) => formatDate(counsel.dueDate),
+    },
+  ];
+
+  // 테이블 데이터 변환 (counselUid를 id로 매핑)
+  const tableData = currentCounselList.map((counsel) => ({
+    id: counsel.counselUid,
+    ...counsel,
+  }));
+
   return (
     <Card
       sx={{
@@ -93,72 +134,27 @@ const CounselList: React.FC<CounselListProps> = ({
             <CircularProgress />
           </Box>
         ) : (
-          <TableContainer>
-            <Table size="small">
-              <TableHead>
-                <TableRow>
-                  <TableCell sx={{ fontSize: "13px", fontWeight: 600 }}>
-                    고객명
-                  </TableCell>
-                  <TableCell sx={{ fontSize: "13px", fontWeight: 600 }}>
-                    제목
-                  </TableCell>
-                  <TableCell sx={{ fontSize: "13px", fontWeight: 600 }}>
-                    마감일
-                  </TableCell>
-                </TableRow>
-              </TableHead>
-              <TableBody>
-                {currentCounselList.length === 0 ? (
-                  <TableRow>
-                    <TableCell colSpan={3} align="center">
-                      상담이 없습니다.
-                    </TableCell>
-                  </TableRow>
-                ) : (
-                  currentCounselList.map((counsel) => (
-                    <TableRow
-                      key={counsel.counselUid}
-                      hover
-                      onClick={() => handleCounselClick(counsel.counselUid)}
-                      sx={{
-                        cursor: "pointer",
-                        "&:hover": {
-                          backgroundColor: "rgba(22, 79, 158, 0.04)",
-                        },
-                      }}
-                    >
-                      <TableCell sx={{ fontSize: "12px" }}>
-                        {counsel.customerName}
-                      </TableCell>
-                      <TableCell sx={{ fontSize: "12px" }}>
-                        <Box
-                          sx={{
-                            display: "flex",
-                            alignItems: "center",
-                            gap: 1,
-                          }}
-                        >
-                          {counsel.title}
-                          {counsel.completed && (
-                            <Chip
-                              label="완료"
-                              size="small"
-                              color="success"
-                              sx={{ fontSize: "10px", height: "18px" }}
-                            />
-                          )}
-                        </Box>
-                      </TableCell>
-                      <TableCell sx={{ fontSize: "12px" }}>
-                        {formatDate(counsel.dueDate)}
-                      </TableCell>
-                    </TableRow>
-                  ))
-                )}
-              </TableBody>
-            </Table>
-          </TableContainer>
+          <Table
+            columns={columns}
+            bodyList={tableData}
+            handleRowClick={(counsel) => handleCounselClick(counsel.counselUid)}
+            pagination={false}
+            noDataMessage="상담이 없습니다"
+            sx={{
+              "& .MuiTableCell-head": {
+                fontSize: "13px",
+                fontWeight: 600,
+                padding: "8px 16px",
+              },
+              "& .MuiTableCell-body": {
+                fontSize: "12px",
+                padding: "8px 16px",
+              },
+              "& .MuiTableRow-root:hover": {
+                backgroundColor: "rgba(22, 79, 158, 0.04)",
+              },
+            }}
+          />
         )}
       </Box>
     </Card>

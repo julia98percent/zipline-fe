@@ -1,60 +1,44 @@
-import { Modal, Box, Typography, FormControlLabel, Checkbox, Button, TextField, Select, MenuItem, FormControl, InputLabel, Chip, InputAdornment } from "@mui/material";
-import { useState, useEffect } from "react";
-import apiClient from "@apis/apiClient";
-
-interface Region {
-  cortarNo: number;
-  cortarName: string;
-  centerLat: number;
-  centerLon: number;
-  level: number;
-  parentCortarNo: number;
-}
-
-interface Label {
-  uid: number;
-  name: string;
-}
-
-interface RegionState {
-  sido: Region[];
-  sigungu: Region[];
-  dong: Region[];
-  selectedSido: number | null;
-  selectedSigungu: number | null;
-  selectedDong: number | null;
-  [key: string]: Region[] | number | null;
-}
-
-interface FilterState {
-  tenant: boolean;
-  landlord: boolean;
-  buyer: boolean;
-  seller: boolean;
-  noRole: boolean;
-  minPrice: string;
-  maxPrice: string;
-  minDeposit: string;
-  maxDeposit: string;
-  minRent: string;
-  maxRent: string;
-  labelUids: number[];
-  [key: string]: boolean | string | number[];
-}
+import { Modal, Box, Typography, Button } from "@mui/material";
+import { useState, useEffect, useCallback } from "react";
+import { fetchLabels } from "@apis/customerService";
+import { fetchSido, fetchSigungu, fetchDong } from "@apis/regionService";
+import { RegionState } from "@ts/region";
+import { CustomerFilter, Label } from "@ts/customer";
+import RoleFilters from "./RoleFilters";
+import RegionFilters from "./RegionFilters";
+import PriceFilters from "./PriceFilters";
+import LabelFilters from "./LabelFilters";
 
 interface CustomerFilterModalProps {
   open: boolean;
   onClose: () => void;
-  filters: any;
-  setFilters: (filters: any) => void;
-  onApply: (filters: any) => void;
+  filters: CustomerFilter;
+  setFilters: (filters: CustomerFilter) => void;
+  onApply: (filters: CustomerFilter) => void;
 }
 
-const CustomerFilterModal = ({ open, onClose, filters, setFilters, onApply }: CustomerFilterModalProps) => {
-  const [filtersTemp, setFiltersTemp] = useState<FilterState>({
-    ...filters,
+const CustomerFilterModal = ({
+  open,
+  onClose,
+  filters,
+  onApply,
+}: CustomerFilterModalProps) => {
+  const [filtersTemp, setFiltersTemp] = useState<CustomerFilter>({
+    tenant: false,
+    landlord: false,
+    buyer: false,
+    seller: false,
     noRole: false,
+    minPrice: null,
+    maxPrice: null,
+    minRent: null,
+    maxRent: null,
+    minDeposit: null,
+    maxDeposit: null,
     labelUids: [],
+    telProvider: "",
+    legalDistrictCode: "",
+    trafficSource: "",
   });
   const [region, setRegion] = useState<RegionState>({
     sido: [],
@@ -67,149 +51,80 @@ const CustomerFilterModal = ({ open, onClose, filters, setFilters, onApply }: Cu
   const [labels, setLabels] = useState<Label[]>([]);
   const [selectedLabels, setSelectedLabels] = useState<Label[]>([]);
 
-  
-  const fetchLabels = async () => {
+  const fetchLabelsData = useCallback(async () => {
     try {
-      const response = await apiClient.get("/labels");
-      if (response.data?.data?.labels) {
-        setLabels(response.data.data.labels);
-      }
+      const labelsData = await fetchLabels();
+      setLabels(labelsData);
     } catch (error) {
       console.error("라벨 목록 불러오기 실패:", error);
     }
-  };
+  }, []);
+
+  const loadSidoData = useCallback(async () => {
+    try {
+      const sidoData = await fetchSido();
+      setRegion((prev) => ({
+        ...prev,
+        sido: sidoData,
+      }));
+    } catch (error) {
+      console.error("시도 데이터 로드 실패:", error);
+    }
+  }, []);
+
+  const loadSigunguData = useCallback(async (sidoCortarNo: number) => {
+    try {
+      const sigunguData = await fetchSigungu(sidoCortarNo);
+      setRegion((prev) => ({
+        ...prev,
+        sigungu: sigunguData,
+        dong: [], // 시군구가 변경되면 동 데이터 초기화
+        selectedDong: null,
+      }));
+    } catch (error) {
+      console.error("시군구 데이터 로드 실패:", error);
+    }
+  }, []);
+
+  const loadDongData = useCallback(async (sigunguCortarNo: number) => {
+    try {
+      const dongData = await fetchDong(sigunguCortarNo);
+      setRegion((prev) => ({
+        ...prev,
+        dong: dongData,
+      }));
+    } catch (error) {
+      console.error("동 데이터 로드 실패:", error);
+    }
+  }, []);
+
+  const handleOpen = useCallback(() => {
+    loadSidoData();
+  }, [loadSidoData]);
 
   useEffect(() => {
     if (open) {
-      fetchLabels();
-      setFiltersTemp(filters);
+      fetchLabelsData();
+      setFiltersTemp({ ...filters });
       handleOpen();
-
-      // 기존에 선택된 라벨들 복원
-      if (filters.labelUids?.length > 0) {
-        const selectedLabelsData = labels.filter(label =>
-          filters.labelUids.includes(label.uid)
-        );
-        setSelectedLabels(selectedLabelsData);
-      }
     }
-  }, [open, filters]);
+  }, [open, filters, fetchLabelsData, handleOpen]);
 
-  // 라벨 선택 처리
-  const handleLabelSelect = (label: Label) => {
-    const isSelected = selectedLabels.some(l => l.uid === label.uid);
-    let newSelectedLabels: Label[];
-
-    if (isSelected) {
-      newSelectedLabels = selectedLabels.filter(l => l.uid !== label.uid);
-    } else {
-      newSelectedLabels = [...selectedLabels, label];
-    }
-
-    setSelectedLabels(newSelectedLabels);
-    setFiltersTemp(prev => ({
-      ...prev,
-      labelUids: newSelectedLabels.map(l => l.uid)
-    }));
-  };
-
-  const handleOpen = () => {
-    apiClient.get("/region/0")
-      .then((res) => {
-        if (res.data?.data) {
-          setRegion(prev => ({ ...prev, sido: res.data.data }));
-        }
-      })
-      .catch(console.error);
-  };
-
-  // 시/도 선택 시 군구 불러오기
   useEffect(() => {
-    if (!region.selectedSido) return;
-    apiClient.get(`/region/${region.selectedSido}`)
-      .then((res) => {
-        if (res.data?.data) {
-          setRegion(prev => ({
-            ...prev,
-            sigungu: res.data.data,
-            selectedSigungu: null,
-            selectedDong: null,
-            dong: [],
-          }));
-        }
-      })
-      .catch(console.error);
-  }, [region.selectedSido]);
-
-  // 군구 선택 시 동 불러오기
-  useEffect(() => {
-    if (!region.selectedSigungu) return;
-    apiClient.get(`/region/${region.selectedSigungu}`)
-      .then((res) => {
-        if (res.data?.data) {
-          setRegion(prev => ({
-            ...prev,
-            dong: res.data.data,
-            selectedDong: null,
-          }));
-        }
-      })
-      .catch(console.error);
-  }, [region.selectedSigungu]);
-
-  const handleChange = (name: string) => (event: any) => {
-    const value = event.target.type === "checkbox" ? event.target.checked : event.target.value;
-
-    if (name === 'noRole') {
-      if (value) {
-        setFiltersTemp((prev: FilterState) => ({
-          ...prev,
-          noRole: true,
-          tenant: false,
-          landlord: false,
-          buyer: false,
-          seller: false
-        }));
-      } else {
-        setFiltersTemp((prev: FilterState) => ({
-          ...prev,
-          noRole: false
-        }));
-      }
-    } else if (['tenant', 'landlord', 'buyer', 'seller'].includes(name)) {
-      if (value) {
-        setFiltersTemp((prev: FilterState) => ({
-          ...prev,
-          [name]: value,
-          noRole: false
-        }));
-      } else {
-        setFiltersTemp((prev: FilterState) => ({
-          ...prev,
-          [name]: value
-        }));
-      }
-    } else {
-      setFiltersTemp((prev: FilterState) => ({
-        ...prev,
-        [name]: value
-      }));
+    if (open && filters.labelUids?.length > 0 && labels.length > 0) {
+      const selectedLabelsData = labels.filter((label) =>
+        filters.labelUids.includes(label.uid)
+      );
+      setSelectedLabels(selectedLabelsData);
     }
-  };
-
-  const handleRegionChange = (type: 'sido' | 'sigungu' | 'dong') => (event: any) => {
-    const value = event.target.value;
-    setRegion(prev => ({
-      ...prev,
-      [`selected${type.charAt(0).toUpperCase() + type.slice(1)}`]: value
-    }));
-  };
+  }, [open, filters.labelUids, labels]);
 
   const handleApply = () => {
-    // 쉼표가 포함된 문자열에서 숫자만 추출
-    const parsePrice = (price: string) => {
-      if (!price) return undefined;
-      return Number(price.replace(/[^0-9]/g, ''));
+    const parsePrice = (price: string | number | null) => {
+      if (!price) return null;
+      const priceStr = typeof price === "string" ? price : String(price);
+      const parsed = Number(priceStr.replace(/[^0-9]/g, ""));
+      return parsed || null;
     };
 
     let regionCode: string | undefined;
@@ -221,40 +136,31 @@ const CustomerFilterModal = ({ open, onClose, filters, setFilters, onApply }: Cu
       regionCode = String(region.selectedSido).slice(0, 2);
     }
 
-    const filterData = {
-      ...filtersTemp,
-      minPrice: parsePrice(filtersTemp.minPrice as string),
-      maxPrice: parsePrice(filtersTemp.maxPrice as string),
-      minDeposit: parsePrice(filtersTemp.minDeposit as string),
-      maxDeposit: parsePrice(filtersTemp.maxDeposit as string),
-      minRent: parsePrice(filtersTemp.minRent as string),
-      maxRent: parsePrice(filtersTemp.maxRent as string),
-      regionCode,
-      labelUids: selectedLabels.length > 0 ? selectedLabels.map(label => label.uid) : undefined,
+    // INITIAL_FILTERS 구조를 기본으로 하되 변경된 값만 덮어쓰기
+    const finalFilterData = {
+      tenant: filtersTemp.noRole ? false : filtersTemp.tenant,
+      landlord: filtersTemp.noRole ? false : filtersTemp.landlord,
+      buyer: filtersTemp.noRole ? false : filtersTemp.buyer,
+      seller: filtersTemp.noRole ? false : filtersTemp.seller,
+      minPrice: parsePrice(filtersTemp.minPrice),
+      maxPrice: parsePrice(filtersTemp.maxPrice),
+      minRent: parsePrice(filtersTemp.minRent),
+      maxRent: parsePrice(filtersTemp.maxRent),
+      minDeposit: parsePrice(filtersTemp.minDeposit),
+      maxDeposit: parsePrice(filtersTemp.maxDeposit),
+      labelUids: selectedLabels.map((label) => label.uid),
+      telProvider: filtersTemp.telProvider || "",
+      legalDistrictCode: regionCode || "",
+      trafficSource: filtersTemp.trafficSource || "",
+      noRole: filtersTemp.noRole,
     };
 
-    // undefined 값을 가진 필드는 제거하되, '없음' 선택 시에는 모든 역할을 명시적으로 false로 설정
-    const finalFilterData = Object.fromEntries(
-      Object.entries(filterData)
-        .filter(([key, value]) => {
-          if (filtersTemp.noRole && ["tenant", "landlord", "buyer", "seller"].includes(key)) {
-            return true;  // 역할 관련 키는 모두 포함
-          }
-          return value !== undefined;  // 나머지는 undefined가 아닌 경우만 포함
-        })
-        .map(([key, value]) => {
-          if (filtersTemp.noRole && ["tenant", "landlord", "buyer", "seller"].includes(key)) {
-            return [key, false];  // 역할 관련 키는 모두 false로 설정
-          }
-          return [key, value];
-        })
-    );
+    console.log("CustomerFilterModal - finalFilterData:", finalFilterData);
 
     onApply(finalFilterData);
     onClose();
   };
 
-  // 필터 초기화 함수
   const handleReset = () => {
     setFiltersTemp({
       tenant: false,
@@ -262,13 +168,16 @@ const CustomerFilterModal = ({ open, onClose, filters, setFilters, onApply }: Cu
       buyer: false,
       seller: false,
       noRole: false,
-      minPrice: "",
-      maxPrice: "",
-      minDeposit: "",
-      maxDeposit: "",
-      minRent: "",
-      maxRent: "",
+      minPrice: null,
+      maxPrice: null,
+      minDeposit: null,
+      maxDeposit: null,
+      minRent: null,
+      maxRent: null,
       labelUids: [],
+      telProvider: "",
+      legalDistrictCode: "",
+      trafficSource: "",
     });
     setSelectedLabels([]);
     setRegion({
@@ -289,157 +198,55 @@ const CustomerFilterModal = ({ open, onClose, filters, setFilters, onApply }: Cu
           top: "50%",
           left: "50%",
           transform: "translate(-50%, -50%)",
-          width: 400,
+          width: "80%",
+          maxWidth: 800,
+          maxHeight: "90%",
           bgcolor: "background.paper",
           boxShadow: 24,
           p: 4,
           borderRadius: 2,
-          maxHeight: '90vh',
-          overflowY: 'auto',
+          overflow: "auto",
         }}
       >
-        <Typography variant="h6" component="h2" gutterBottom>
+        <Typography variant="h5" sx={{ mb: 3, fontWeight: 600 }}>
           고객 필터
         </Typography>
 
-        {/* 역할 필터 */}
-        <Box sx={{ mt: 2 }}>
-          <Typography variant="subtitle1" gutterBottom>
-            고객 역할
-          </Typography>
-          <FormControlLabel
-            control={
-              <Checkbox
-                checked={filtersTemp.noRole}
-                onChange={handleChange('noRole')}
-              />
-            }
-            label="없음"
-          />
-          {["tenant", "landlord", "buyer", "seller"].map(role => (
-            <FormControlLabel
-              key={role}
-              control={
-                <Checkbox
-                  checked={filtersTemp[role]}
-                  onChange={handleChange(role)}
-                  disabled={filtersTemp.noRole}
-                />
-              }
-              label={role === "tenant" ? "임차인" : role === "landlord" ? "임대인" : role === "buyer" ? "매수인" : "매도인"}
-            />
-          ))}
-        </Box>
+        <RoleFilters
+          filtersTemp={filtersTemp}
+          setFiltersTemp={setFiltersTemp}
+        />
 
-        {/* 지역 필터 */}
-        <Box sx={{ mt: 3 }}>
-          <Typography variant="subtitle1" gutterBottom>지역</Typography>
-          <Box sx={{ display: "flex", flexDirection: "column", gap: 2 }}>
-            {["sido", "sigungu", "dong"].map((type) => (
-              <FormControl fullWidth key={type}>
-                <InputLabel>{type === "sido" ? "시/도" : type === "sigungu" ? "시/군/구" : "읍/면/동"}</InputLabel>
-                <Select
-                  value={region[`selected${type.charAt(0).toUpperCase() + type.slice(1)}`] || ''}
-                  onChange={handleRegionChange(type as any)}
-                  label={type === "sido" ? "시/도" : type === "sigungu" ? "시/군/구" : "읍/면/동"}
-                  disabled={type !== "sido" && !region[`selected${type === "dong" ? "Sigungu" : "Sido"}`]}
-                >
-                  {region[type].map((item: any) => (
-                    <MenuItem key={item.cortarNo} value={item.cortarNo}>
-                      {item.cortarName}
-                    </MenuItem>
-                  ))}
-                </Select>
-              </FormControl>
-            ))}
-          </Box>
-        </Box>
+        <LabelFilters
+          setFiltersTemp={setFiltersTemp}
+          labels={labels}
+          selectedLabels={selectedLabels}
+          setSelectedLabels={setSelectedLabels}
+        />
 
-        {/* 금액 필터 */}
-        {["매매가", "보증금", "월세"].map((label, idx) => (
-          <Box key={label} sx={{ mt: 3 }}>
-            <Typography variant="subtitle1" gutterBottom>희망 {label}</Typography>
-            <Box sx={{ display: "flex", gap: 2 }}>
-              <TextField
-                label="최소"
-                type="text"
-                pattern="[0-9]*"
-                inputMode="numeric"
-                value={filtersTemp[`min${["Price", "Deposit", "Rent"][idx]}`]}
-                onChange={(e) => {
-                  const value = e.target.value.replace(/[^0-9]/g, '');
-                  const formattedValue = value ? new Intl.NumberFormat('ko-KR').format(Number(value)) : '';
-                  handleChange(`min${["Price", "Deposit", "Rent"][idx]}`)(
-                    { target: { value: formattedValue, type: "text" } }
-                  );
-                }}
-                fullWidth
-                InputProps={{
-                  endAdornment: <InputAdornment position="end">원</InputAdornment>,
-                }}
-              />
-              <TextField
-                label="최대"
-                type="text"
-                pattern="[0-9]*"
-                inputMode="numeric"
-                value={filtersTemp[`max${["Price", "Deposit", "Rent"][idx]}`]}
-                onChange={(e) => {
-                  const value = e.target.value.replace(/[^0-9]/g, '');
-                  const formattedValue = value ? new Intl.NumberFormat('ko-KR').format(Number(value)) : '';
-                  handleChange(`max${["Price", "Deposit", "Rent"][idx]}`)(
-                    { target: { value: formattedValue, type: "text" } }
-                  );
-                }}
-                fullWidth
-                InputProps={{
-                  endAdornment: <InputAdornment position="end">원</InputAdornment>,
-                }}
-              />
-            </Box>
-          </Box>
-        ))}
+        <RegionFilters 
+          region={region} 
+          setRegion={setRegion}
+          onSidoChange={loadSigunguData}
+          onSigunguChange={loadDongData}
+        />
 
-        {/* 라벨 필터 */}
-        <Box sx={{ mt: 3 }}>
-          <Typography variant="subtitle1" gutterBottom>
-            라벨
-          </Typography>
-          <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 1 }}>
-            {labels.map((label) => (
-              <Chip
-                key={label.uid}
-                label={label.name}
-                onClick={() => handleLabelSelect(label)}
-                onDelete={
-                  selectedLabels.some(l => l.uid === label.uid)
-                    ? () => handleLabelSelect(label)
-                    : undefined
-                }
-                sx={{
-                  backgroundColor: selectedLabels.some(l => l.uid === label.uid)
-                    ? '#6366F1'
-                    : 'transparent',
-                  color: selectedLabels.some(l => l.uid === label.uid)
-                    ? 'white'
-                    : 'inherit',
-                  border: '1px solid #6366F1',
-                  '&:hover': {
-                    backgroundColor: selectedLabels.some(l => l.uid === label.uid)
-                      ? '#5457E5'
-                      : 'rgba(99, 102, 241, 0.1)',
-                  },
-                }}
-              />
-            ))}
-          </Box>
-        </Box>
+        <PriceFilters
+          filtersTemp={filtersTemp}
+          setFiltersTemp={setFiltersTemp}
+        />
 
-        {/* 버튼 영역 */}
-        <Box sx={{ mt: 4, display: "flex", justifyContent: "flex-end", gap: 2 }}>
-          <Button onClick={handleReset} variant="outlined">초기화</Button>
-          <Button onClick={handleApply} variant="contained" sx={{ backgroundColor: "#164F9E" }}>
-            적용하기
+        <Box
+          sx={{ display: "flex", gap: 2, justifyContent: "flex-end", mt: 4 }}
+        >
+          <Button variant="outlined" onClick={handleReset}>
+            초기화
+          </Button>
+          <Button variant="outlined" onClick={onClose}>
+            취소
+          </Button>
+          <Button variant="contained" onClick={handleApply}>
+            적용
           </Button>
         </Box>
       </Box>

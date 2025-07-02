@@ -1,3 +1,4 @@
+import { FilterSectionProps } from "@ts/customer";
 export interface Region {
   cortarNo: number;
   cortarName: string;
@@ -15,4 +16,11 @@ export interface RegionState {
   selectedSigungu: number | null;
   selectedDong: number | null;
   [key: string]: Region[] | number | null;
+}
+
+export interface RegionFiltersProps extends FilterSectionProps {
+  region: RegionState;
+  setRegion: (
+    region: RegionState | ((prev: RegionState) => RegionState)
+  ) => void;
 }

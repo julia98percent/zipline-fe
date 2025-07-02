@@ -5,15 +5,9 @@ import {
   DialogContent,
   DialogActions,
   Button,
-  TableContainer,
-  Table,
-  TableHead,
-  TableRow,
-  TableCell,
-  TableBody,
-  Paper,
 } from "@mui/material";
 import dayjs from "dayjs";
+import Table, { ColumnConfig } from "@components/Table";
 import ScheduleDetailModal from "@components/ScheduleDetailModal/ScheduleDetailModal";
 import PreCounselDetailModal from "@components/PreCounselDetailModal";
 import RecentCustomersModal from "../components/statisticsModal/RecentCustomersModal";
@@ -21,8 +15,6 @@ import RecentContractsModal from "../components/statisticsModal/RecentContractsM
 import OngoingContractsModal from "../components/statisticsModal/OngoingContractsModal";
 import CompletedContractsModal from "../components/statisticsModal/CompletedContractsModal";
 import { Schedule } from "@ts/schedule";
-import { Contract } from "@ts/contract";
-import { PreCounsel } from "@ts/counsel";
 
 interface DashboardModalsProps {
   // 일정 모달
@@ -36,7 +28,6 @@ interface DashboardModalsProps {
   selectedSurveyId: number | null;
   isSurveyDetailModalOpen: boolean;
   handleCloseSurveyDetailModal: () => void;
-  surveyResponses: PreCounsel[];
   handleSurveyClick: (surveyResponseUid: number) => void;
 
   // 일정 더보기 모달
@@ -52,38 +43,14 @@ interface DashboardModalsProps {
   // 최근 계약 모달
   recentContractsModalOpen: boolean;
   setRecentContractsModalOpen: React.Dispatch<React.SetStateAction<boolean>>;
-  recentContracts: Contract[];
-  recentContractsLoading: boolean;
-  recentContractsCount: number;
-  recentContractsPage: number;
-  setRecentContractsPage: React.Dispatch<React.SetStateAction<number>>;
-  recentContractsRowsPerPage: number;
-  setRecentContractsRowsPerPage: React.Dispatch<React.SetStateAction<number>>;
-  fetchRecentContracts: (page: number) => Promise<void>;
 
   // 진행중 계약 모달
   ongoingContractsOpen: boolean;
   setOngoingContractsOpen: React.Dispatch<React.SetStateAction<boolean>>;
-  ongoingContractsList: Contract[];
-  ongoingContractsLoading: boolean;
-  ongoingContractsTotalCount: number;
-  ongoingContractsPage: number;
-  setOngoingContractsPage: React.Dispatch<React.SetStateAction<number>>;
-  ongoingContractsRowsPerPage: number;
-  setOngoingContractsRowsPerPage: React.Dispatch<React.SetStateAction<number>>;
 
   // 완료 계약 모달
   completedContractsOpen: boolean;
   setCompletedContractsOpen: React.Dispatch<React.SetStateAction<boolean>>;
-  completedContractsList: Contract[];
-  completedContractsLoading: boolean;
-  completedContractsTotalCount: number;
-  completedContractsPage: number;
-  setCompletedContractsPage: React.Dispatch<React.SetStateAction<number>>;
-  completedContractsRowsPerPage: number;
-  setCompletedContractsRowsPerPage: React.Dispatch<
-    React.SetStateAction<number>
-  >;
 }
 
 const DashboardModals: React.FC<DashboardModalsProps> = ({
@@ -95,7 +62,6 @@ const DashboardModals: React.FC<DashboardModalsProps> = ({
   selectedSurveyId,
   isSurveyDetailModalOpen,
   handleCloseSurveyDetailModal,
-  surveyResponses,
   handleSurveyClick,
   moreModalOpen,
   setMoreModalOpen,
@@ -105,33 +71,39 @@ const DashboardModals: React.FC<DashboardModalsProps> = ({
   setIsRecentCustomersModalOpen,
   recentContractsModalOpen,
   setRecentContractsModalOpen,
-  recentContracts,
-  recentContractsLoading,
-  recentContractsCount,
-  recentContractsPage,
-  setRecentContractsPage,
-  recentContractsRowsPerPage,
-  setRecentContractsRowsPerPage,
-  fetchRecentContracts,
   ongoingContractsOpen,
   setOngoingContractsOpen,
-  ongoingContractsList,
-  ongoingContractsLoading,
-  ongoingContractsTotalCount,
-  ongoingContractsPage,
-  setOngoingContractsPage,
-  ongoingContractsRowsPerPage,
-  setOngoingContractsRowsPerPage,
   completedContractsOpen,
   setCompletedContractsOpen,
-  completedContractsList,
-  completedContractsLoading,
-  completedContractsTotalCount,
-  completedContractsPage,
-  setCompletedContractsPage,
-  completedContractsRowsPerPage,
-  setCompletedContractsRowsPerPage,
 }) => {
+  // 일정 테이블을 위한 컬럼 설정
+  const scheduleColumns: ColumnConfig<Schedule>[] = [
+    {
+      key: "time",
+      label: "시간",
+      align: "left",
+      render: (_, schedule) => dayjs(schedule.startDate).format("HH:mm"),
+    },
+    {
+      key: "title",
+      label: "제목",
+      align: "left",
+      render: (_, schedule) => schedule.title,
+    },
+    {
+      key: "customerName",
+      label: "고객명",
+      align: "left",
+      render: (_, schedule) => schedule.customerName || "-",
+    },
+  ];
+
+  // 테이블 데이터 변환 (uid를 id로 매핑)
+  const scheduleTableData = selectedDaySchedules.map((schedule) => ({
+    id: schedule.uid,
+    ...schedule,
+  }));
+
   return (
     <>
       {/* 일정 상세 모달 */}
@@ -161,33 +133,13 @@ const DashboardModals: React.FC<DashboardModalsProps> = ({
           {selectedDayStr} 일정 ({selectedDaySchedules.length}개)
         </DialogTitle>
         <DialogContent>
-          <TableContainer component={Paper}>
-            <Table>
-              <TableHead>
-                <TableRow>
-                  <TableCell>시간</TableCell>
-                  <TableCell>제목</TableCell>
-                  <TableCell>고객명</TableCell>
-                </TableRow>
-              </TableHead>
-              <TableBody>
-                {selectedDaySchedules.map((schedule) => (
-                  <TableRow
-                    key={schedule.uid}
-                    hover
-                    onClick={() => handleScheduleClick(schedule)}
-                    sx={{ cursor: "pointer" }}
-                  >
-                    <TableCell>
-                      {dayjs(schedule.startDate).format("HH:mm")}
-                    </TableCell>
-                    <TableCell>{schedule.title}</TableCell>
-                    <TableCell>{schedule.customerName || "-"}</TableCell>
-                  </TableRow>
-                ))}
-              </TableBody>
-            </Table>
-          </TableContainer>
+          <Table
+            columns={scheduleColumns}
+            bodyList={scheduleTableData}
+            handleRowClick={(schedule) => handleScheduleClick(schedule)}
+            pagination={false}
+            noDataMessage="일정이 없습니다"
+          />
         </DialogContent>
         <DialogActions>
           <Button onClick={() => setMoreModalOpen(false)}>닫기</Button>
@@ -197,73 +149,22 @@ const DashboardModals: React.FC<DashboardModalsProps> = ({
       <RecentCustomersModal
         open={isRecentCustomersModalOpen}
         onClose={() => setIsRecentCustomersModalOpen(false)}
-        surveyResponses={surveyResponses}
         onSurveyClick={handleSurveyClick}
       />
       {/* Recent Contracts Modal */}
       <RecentContractsModal
         open={recentContractsModalOpen}
-        onClose={() => {
-          setRecentContractsModalOpen(false);
-          setRecentContractsPage(0);
-          setRecentContractsRowsPerPage(10);
-        }}
-        contracts={recentContracts}
-        loading={recentContractsLoading}
-        totalCount={recentContractsCount}
-        page={recentContractsPage}
-        rowsPerPage={recentContractsRowsPerPage}
-        onPageChange={(newPage) => {
-          setRecentContractsPage(newPage);
-          fetchRecentContracts(newPage);
-        }}
-        onRowsPerPageChange={(newRowsPerPage) => {
-          setRecentContractsRowsPerPage(newRowsPerPage);
-          setRecentContractsPage(0);
-          fetchRecentContracts(0);
-        }}
+        onClose={() => setRecentContractsModalOpen(false)}
       />
       {/* Ongoing Contracts Modal */}
       <OngoingContractsModal
         open={ongoingContractsOpen}
-        onClose={() => {
-          setOngoingContractsOpen(false);
-          setOngoingContractsPage(0);
-          setOngoingContractsRowsPerPage(10);
-        }}
-        contracts={ongoingContractsList}
-        loading={ongoingContractsLoading}
-        totalCount={ongoingContractsTotalCount}
-        page={ongoingContractsPage}
-        rowsPerPage={ongoingContractsRowsPerPage}
-        onPageChange={(newPage) => {
-          setOngoingContractsPage(newPage);
-        }}
-        onRowsPerPageChange={(newRowsPerPage) => {
-          setOngoingContractsRowsPerPage(newRowsPerPage);
-          setOngoingContractsPage(0);
-        }}
+        onClose={() => setOngoingContractsOpen(false)}
       />
       {/* Completed Contracts Modal */}
       <CompletedContractsModal
         open={completedContractsOpen}
-        onClose={() => {
-          setCompletedContractsOpen(false);
-          setCompletedContractsPage(0);
-          setCompletedContractsRowsPerPage(10);
-        }}
-        contracts={completedContractsList}
-        loading={completedContractsLoading}
-        totalCount={completedContractsTotalCount}
-        page={completedContractsPage}
-        rowsPerPage={completedContractsRowsPerPage}
-        onPageChange={(newPage) => {
-          setCompletedContractsPage(newPage);
-        }}
-        onRowsPerPageChange={(newRowsPerPage) => {
-          setCompletedContractsRowsPerPage(newRowsPerPage);
-          setCompletedContractsPage(0);
-        }}
+        onClose={() => setCompletedContractsOpen(false)}
       />
     </>
   );

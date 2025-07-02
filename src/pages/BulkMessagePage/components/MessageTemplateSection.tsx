@@ -10,14 +10,14 @@ import {
   ListSubheader,
 } from "@mui/material";
 import { SelectChangeEvent } from "@mui/material";
-import { Template } from "@ts/message";
+import { MessageTemplate } from "@ts/message";
 
 interface MessageTemplateSectionProps {
-  templates: Template[];
+  templates: MessageTemplate[];
   selectedTemplate: number | "";
   messageContent: string;
   isLoading: boolean;
-  groupedTemplates: Record<string, Template[]>;
+  groupedTemplates: Record<string, MessageTemplate[]>;
   onTemplateChange: (event: SelectChangeEvent<number | string>) => void;
 }
 

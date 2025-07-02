@@ -1,21 +1,15 @@
 import { useEffect, useState } from "react";
-import {
-  Modal,
-  Box,
-  Typography,
-  MenuItem,
-  TextField,
-  Button as MuiButton,
-  Autocomplete,
-} from "@mui/material";
 import { Dayjs } from "dayjs";
-import { DesktopDatePicker } from "@mui/x-date-pickers";
-import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
-import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
-import apiClient from "@apis/apiClient";
-import Button from "@components/Button";
 import { showToast } from "@components/Toast";
 import { CONTRACT_STATUS_OPTION_LIST } from "@constants/contract";
+import {
+  createContract,
+  fetchProperties,
+  fetchCustomers,
+  AgentPropertyResponse,
+  CustomerResponse,
+} from "@apis/contractService";
+import ContractAddModalView from "./ContractAddModalView";
 
 type ContractStatus = (typeof CONTRACT_STATUS_OPTION_LIST)[number]["value"];
 
@@ -44,33 +38,13 @@ const ContractAddModal = ({ open, handleClose, fetchContractData }: Props) => {
   const [propertyUid, setPropertyUid] = useState<number | null>(null);
   const [status, setStatus] = useState<ContractStatus>("IN_PROGRESS");
 
-  const [customerOptions, setCustomerOptions] = useState<
-    { uid: number; name: string }[]
-  >([]);
+  const [customerOptions, setCustomerOptions] = useState<CustomerResponse[]>(
+    []
+  );
   const [propertyOptions, setPropertyOptions] = useState<
-    { uid: number; address: string }[]
+    AgentPropertyResponse[]
   >([]);
   const [files, setFiles] = useState<File[]>([]);
-
-  useEffect(() => {
-    apiClient.get("/customers").then((res) => {
-      setCustomerOptions(res.data.data.customers);
-    });
-    apiClient
-      .get("/properties")
-      .then((res) => {
-        setPropertyOptions(res.data.data.agentProperty);
-      })
-      .catch((err) => {
-        console.error("매물 목록 불러오기 실패", err);
-      });
-  }, []);
-
-  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    if (e.target.files) {
-      setFiles(Array.from(e.target.files));
-    }
-  };
   const [errors, setErrors] = useState<{
     category?: string;
     contractDate?: string;
@@ -86,12 +60,37 @@ const ContractAddModal = ({ open, handleClose, fetchContractData }: Props) => {
     status?: string;
   }>({});
 
+  useEffect(() => {
+    const fetchInitialData = async () => {
+      try {
+        const [customers, properties] = await Promise.all([
+          fetchCustomers(),
+          fetchProperties(),
+        ]);
+        setCustomerOptions(customers);
+        setPropertyOptions(properties);
+      } catch (error) {
+        console.error("초기 데이터 로딩 실패", error);
+      }
+    };
+
+    fetchInitialData();
+  }, []);
+
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (e.target.files) {
+      setFiles(Array.from(e.target.files));
+    }
+  };
+
   const isValidInteger = (value: string) => {
     if (value === "") return true;
     return /^\d+$/.test(value);
   };
+
   const validateInputs = () => {
     const newErrors: typeof errors = {};
+
     if (
       contractDate &&
       contractStartDate &&
@@ -140,7 +139,7 @@ const ContractAddModal = ({ open, handleClose, fetchContractData }: Props) => {
     return Object.keys(newErrors).length === 0;
   };
 
-  const handleSubmit = () => {
+  const handleSubmit = async () => {
     if (!validateInputs()) return;
 
     const requestPayload = {
@@ -171,50 +170,49 @@ const ContractAddModal = ({ open, handleClose, fetchContractData }: Props) => {
     );
     files.forEach((file) => formData.append("files", file));
 
-    apiClient
-      .post("/contracts", formData, {
-        headers: { "Content-Type": "multipart/form-data" },
-      })
-      .then(() => {
+    try {
+      await createContract(formData);
+      showToast({
+        message: "계약을 등록했습니다.",
+        type: "success",
+      });
+      fetchContractData();
+      handleModalClose();
+    } catch (err) {
+      console.error("계약 등록 실패", err);
+
+      // Type assertion for axios error response
+      const axiosError = err as { response?: { data?: { message?: string } } };
+      const message = axiosError?.response?.data?.message;
+
+      if (!message) {
         showToast({
-          message: "계약을 등록했습니다.",
-          type: "success",
-        });
-        fetchContractData();
-        handleModalClose();
-      })
-      .catch((err) => {
-        console.error("계약 등록 실패", err);
-        const message = err?.response?.data?.message;
-
-        if (!message) {
-          showToast({
-            message: "계약 등록에 실패했습니다.",
-            type: "error",
-          });
-          return;
-        }
-
-        if (message.includes("이미 등록된 계약입니다")) {
-          showToast({
-            message: "이미 등록된 계약입니다.",
-            type: "error",
-          });
-          return;
-        }
-
-        if (message.includes("해당 매물은 이미 계약 중입니다")) {
-          showToast({
-            message: "해당 매물은 이미 진행 중인 계약이 있습니다.",
-            type: "error",
-          });
-          return;
-        }
-        showToast({
-          message,
+          message: "계약 등록에 실패했습니다.",
           type: "error",
         });
+        return;
+      }
+
+      if (message.includes("이미 등록된 계약입니다")) {
+        showToast({
+          message: "이미 등록된 계약입니다.",
+          type: "error",
+        });
+        return;
+      }
+
+      if (message.includes("해당 매물은 이미 계약 중입니다")) {
+        showToast({
+          message: "해당 매물은 이미 진행 중인 계약이 있습니다.",
+          type: "error",
+        });
+        return;
+      }
+      showToast({
+        message,
+        type: "error",
       });
+    }
   };
 
   const handleModalClose = () => {
@@ -231,243 +229,45 @@ const ContractAddModal = ({ open, handleClose, fetchContractData }: Props) => {
     setPropertyUid(null);
     setStatus("IN_PROGRESS");
     setFiles([]);
+    setErrors({});
     handleClose();
   };
 
   return (
-    <Modal open={open} onClose={handleModalClose}>
-      <Box
-        sx={{
-          position: "absolute",
-          top: "50%",
-          left: "50%",
-          transform: "translate(-50%, -50%)",
-          width: "40vw",
-          bgcolor: "white",
-          p: 4,
-          borderRadius: 2,
-          maxHeight: "90vh",
-          overflowY: "auto",
-        }}
-      >
-        <Typography variant="h6" sx={{ mb: 2 }}>
-          계약 등록
-        </Typography>
-
-        <TextField
-          select
-          label="계약 카테고리"
-          value={category ?? ""}
-          onChange={(e) => setCategory(e.target.value)}
-          error={!!errors.category}
-          helperText={errors.category}
-          fullWidth
-          sx={{ mb: 2 }}
-        >
-          <MenuItem value="SALE">매매</MenuItem>
-          <MenuItem value="DEPOSIT">전세</MenuItem>
-          <MenuItem value="MONTHLY">월세</MenuItem>
-        </TextField>
-
-        <TextField
-          select
-          label="계약 상태 *"
-          value={status}
-          onChange={(e) => setStatus(e.target.value as ContractStatus)}
-          error={!!errors.status}
-          helperText={errors.status}
-          fullWidth
-          sx={{ mb: 2 }}
-        >
-          {CONTRACT_STATUS_OPTION_LIST.map((s) => (
-            <MenuItem key={s.value} value={s.value}>
-              {s.label}
-            </MenuItem>
-          ))}
-        </TextField>
-
-        <Autocomplete
-          multiple
-          options={customerOptions}
-          value={customerOptions.filter((customer) =>
-            lessorUids.includes(customer.uid)
-          )}
-          onChange={(_, newValue) => {
-            setLessorUids(newValue.map((option) => option.uid));
-          }}
-          getOptionLabel={(option) => option.name}
-          renderInput={(params) => (
-            <TextField
-              {...params}
-              label="임대/매도자 선택 *"
-              error={!!errors.lessorUids}
-              helperText={errors.lessorUids}
-              fullWidth
-            />
-          )}
-          sx={{ mb: 2 }}
-        />
-        <Autocomplete
-          multiple
-          options={customerOptions}
-          value={customerOptions.filter((customer) =>
-            lesseeUids.includes(customer.uid)
-          )}
-          onChange={(_, newValue) => {
-            setLesseeUids(newValue.map((option) => option.uid));
-          }}
-          getOptionLabel={(option) => option.name}
-          renderInput={(params) => (
-            <TextField
-              {...params}
-              label="임차/매수자 선택"
-              error={!!errors.lesseeUids}
-              helperText={errors.lesseeUids}
-              fullWidth
-            />
-          )}
-          sx={{ mb: 2 }}
-        />
-
-        <TextField
-          select
-          label="매물 선택 *"
-          value={propertyUid ?? ""}
-          onChange={(e) => setPropertyUid(Number(e.target.value))}
-          error={!!errors.propertyUid}
-          helperText={errors.propertyUid}
-          fullWidth
-          sx={{ mb: 2 }}
-        >
-          {propertyOptions.length > 0 ? (
-            propertyOptions.map((p) => (
-              <MenuItem key={p.uid} value={p.uid}>
-                {p.address}
-              </MenuItem>
-            ))
-          ) : (
-            <MenuItem disabled value="">
-              등록된 매물이 없습니다
-            </MenuItem>
-          )}
-        </TextField>
-
-        <LocalizationProvider dateAdapter={AdapterDayjs}>
-          <DesktopDatePicker
-            label="계약일"
-            value={contractDate}
-            onChange={setContractDate}
-            format="YYYY. MM. DD"
-            slotProps={{
-              textField: {
-                fullWidth: true,
-                error: !!errors.contractDate,
-                helperText: errors.contractDate,
-              },
-            }}
-          />
-          <Box sx={{ display: "flex", gap: 2, my: 2 }}>
-            <DesktopDatePicker
-              label="시작일"
-              value={contractStartDate}
-              onChange={setContractStartDate}
-              format="YYYY. MM. DD"
-              slotProps={{
-                textField: {
-                  fullWidth: true,
-                  error: !!errors.contractStartDate,
-                  helperText: errors.contractStartDate,
-                },
-              }}
-            />
-            <DesktopDatePicker
-              label="종료일"
-              value={contractEndDate}
-              onChange={setContractEndDate}
-              format="YYYY. MM. DD"
-              slotProps={{
-                textField: {
-                  fullWidth: true,
-                  error: !!errors.contractEndDate,
-                  helperText: errors.contractEndDate,
-                },
-              }}
-            />
-          </Box>
-          <DesktopDatePicker
-            label="예상 종료일"
-            value={expectedContractEndDate}
-            onChange={setExpectedContractEndDate}
-            format="YYYY. MM. DD"
-            slotProps={{ textField: { fullWidth: true } }}
-          />
-        </LocalizationProvider>
-
-        <TextField
-          label="보증금 (숫자)"
-          value={deposit}
-          onChange={(e) => setDeposit(e.target.value)}
-          error={!!errors.deposit}
-          helperText={errors.deposit}
-          type="number"
-          fullWidth
-          sx={{ mt: 2 }}
-        />
-        <TextField
-          label="월세 (숫자)"
-          value={monthlyRent}
-          onChange={(e) => setMonthlyRent(e.target.value)}
-          error={!!errors.monthlyRent}
-          helperText={errors.monthlyRent}
-          type="number"
-          fullWidth
-          sx={{ mt: 2 }}
-        />
-        <TextField
-          label="매매가 (숫자)"
-          value={price}
-          onChange={(e) => setPrice(e.target.value)}
-          error={!!errors.price}
-          helperText={errors.price}
-          type="number"
-          fullWidth
-          sx={{ mt: 2 }}
-        />
-
-        <MuiButton
-          variant="outlined"
-          component="label"
-          sx={{ my: 2 }}
-          fullWidth
-        >
-          파일 업로드
-          <input type="file" hidden multiple onChange={handleFileChange} />
-        </MuiButton>
-
-        {files.length > 0 && (
-          <Box sx={{ mb: 2 }}>
-            <Typography variant="body2">업로드된 파일:</Typography>
-            <ul>
-              {files.map((file, idx) => (
-                <li key={idx}>{file.name}</li>
-              ))}
-            </ul>
-          </Box>
-        )}
-
-        <Button
-          text="등록"
-          disabled={false}
-          onClick={handleSubmit}
-          sx={{
-            mt: 2,
-            color: "white !important",
-            backgroundColor: "#164F9E",
-            "&:disabled": { backgroundColor: "lightgray", color: "white" },
-          }}
-        />
-      </Box>
-    </Modal>
+    <ContractAddModalView
+      open={open}
+      handleModalClose={handleModalClose}
+      category={category}
+      setCategory={setCategory}
+      contractDate={contractDate}
+      setContractDate={setContractDate}
+      contractStartDate={contractStartDate}
+      setContractStartDate={setContractStartDate}
+      contractEndDate={contractEndDate}
+      setContractEndDate={setContractEndDate}
+      expectedContractEndDate={expectedContractEndDate}
+      setExpectedContractEndDate={setExpectedContractEndDate}
+      deposit={deposit}
+      setDeposit={setDeposit}
+      monthlyRent={monthlyRent}
+      setMonthlyRent={setMonthlyRent}
+      price={price}
+      setPrice={setPrice}
+      lessorUids={lessorUids}
+      setLessorUids={setLessorUids}
+      lesseeUids={lesseeUids}
+      setLesseeUids={setLesseeUids}
+      propertyUid={propertyUid}
+      setPropertyUid={setPropertyUid}
+      status={status}
+      setStatus={setStatus}
+      customerOptions={customerOptions}
+      propertyOptions={propertyOptions}
+      files={files}
+      handleFileChange={handleFileChange}
+      errors={errors}
+      handleSubmit={handleSubmit}
+    />
   );
 };
 

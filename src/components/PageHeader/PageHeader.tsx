@@ -11,12 +11,12 @@ import { useState, useRef, useEffect, useCallback } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import useAuthStore from "@stores/useAuthStore";
 import AccountCircleIcon from "@mui/icons-material/AccountCircle";
-import apiClient from "@apis/apiClient";
 import { useSSE } from "@context/SSEContext";
 import { Notifications } from "@mui/icons-material";
 import NotificationList from "./NotificationList";
 import useNotificationStore from "@stores/useNotificationStore";
 import { fetchNotifications } from "@apis/notificationService";
+import { logoutUser } from "@apis/userService";
 import { clearAllAuthState } from "@utils/authUtil";
 
 interface PageHeaderProps {
@@ -80,7 +80,7 @@ const PageHeader = ({ title }: PageHeaderProps) => {
 
   const handleLogout = async () => {
     try {
-      await apiClient.post("/users/logout", {}, { withCredentials: true });
+      await logoutUser();
     } finally {
       handleUserMenuClose();
       clearAllAuthState();

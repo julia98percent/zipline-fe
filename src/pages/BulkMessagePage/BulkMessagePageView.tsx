@@ -2,7 +2,7 @@ import { useState } from "react";
 import { Box, Snackbar, Alert } from "@mui/material";
 import PageHeader from "@components/PageHeader/PageHeader";
 import { SelectChangeEvent } from "@mui/material";
-import { Template } from "@ts/message";
+import { MessageTemplate } from "@ts/message";
 import { Customer } from "@ts/customer";
 import {
   MessageTemplateSection,
@@ -11,13 +11,13 @@ import {
 } from "./components";
 
 interface BulkMessagePageProps {
-  templates: Template[];
-  selectedTemplate: number | "";
+  templates: MessageTemplate[];
   messageContent: string;
   customers: Customer[];
   isCustomerModalOpen: boolean;
   isLoading: boolean;
-  groupedTemplates: Record<string, Template[]>;
+  selectedTemplate: number | "";
+  groupedTemplates: Record<string, MessageTemplate[]>;
   onTemplateChange: (event: SelectChangeEvent<number | string>) => void;
   onAddCustomer: () => void;
   onCustomerSelectConfirm: (selectedCustomers: Customer[]) => void;

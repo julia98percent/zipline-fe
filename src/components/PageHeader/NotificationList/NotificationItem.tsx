@@ -5,7 +5,6 @@ import {
   deleteNotification,
   readNotification,
 } from "@apis/notificationService";
-import useNotificationStore from "@stores/useNotificationStore";
 import type { Notification } from "@stores/useNotificationStore";
 import ClearIcon from "@mui/icons-material/Clear";
 import { IconButton } from "@mui/material";
@@ -19,13 +18,10 @@ function NotificationItem({
   notification,
   onPreCounselClick,
 }: NotificationItemProps) {
-  const { updateNotification, deleteNotification: deleteNotificationAction } =
-    useNotificationStore();
-
   const handleClick = () => {
     if (notification.category === "NEW_SURVEY") {
       onPreCounselClick(notification.url);
-      readNotification(notification.uid, updateNotification);
+      readNotification(notification.uid);
     } else {
       console.log("Navigate to:", notification.url);
     }
@@ -34,7 +30,7 @@ function NotificationItem({
   const handleDelete = async (e: React.MouseEvent) => {
     e.stopPropagation();
     try {
-      await deleteNotification(notification.uid, deleteNotificationAction);
+      await deleteNotification(notification.uid);
     } catch (error) {
       console.error("Failed to delete notification:", error);
     }

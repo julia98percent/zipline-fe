@@ -7,17 +7,14 @@ import { Schedule } from "@ts/schedule";
 import { Contract } from "@ts/contract";
 import { Counsel, PreCounsel } from "@ts/counsel";
 import { showToast } from "@components/Toast";
+import { fetchDashboardStatistics } from "@apis/statisticsService";
 import {
-  fetchDashboardStatistics,
   fetchSchedulesByDateRange,
-  fetchSurveyResponses as fetchSurveyResponsesAPI,
-  fetchCounselsByType,
-  fetchRecentContracts as fetchRecentContractsAPI,
-  fetchOngoingContracts as fetchOngoingContractsAPI,
-  fetchCompletedContracts as fetchCompletedContractsAPI,
-  fetchExpiringContracts,
   updateSchedule,
-} from "@apis/dashboardService";
+} from "@apis/scheduleService";
+import { fetchSubmittedSurveyResponses as fetchSurveyResponsesAPI } from "@apis/preCounselService";
+import { fetchDashboardCounsels } from "@apis/counselService";
+import { fetchExpiringContractsForDashboard } from "@apis/contractService";
 
 dayjs.extend(isSameOrAfter);
 dayjs.extend(isSameOrBefore);
@@ -31,8 +28,6 @@ interface DashboardData {
   contractTab: "expiring" | "recent";
   recentCustomers: number;
   recentContractsCount: number;
-  recentContracts: Contract[];
-  recentContractsList: Contract[];
   ongoingContracts: number;
   completedContracts: number;
   isLoading: boolean;
@@ -56,31 +51,10 @@ interface DashboardData {
   setIsRecentCustomersModalOpen: React.Dispatch<React.SetStateAction<boolean>>;
   recentContractsModalOpen: boolean;
   setRecentContractsModalOpen: React.Dispatch<React.SetStateAction<boolean>>;
-  recentContractsLoading: boolean;
-  recentContractsPage: number;
-  setRecentContractsPage: React.Dispatch<React.SetStateAction<number>>;
-  recentContractsRowsPerPage: number;
-  setRecentContractsRowsPerPage: React.Dispatch<React.SetStateAction<number>>;
   ongoingContractsOpen: boolean;
   setOngoingContractsOpen: React.Dispatch<React.SetStateAction<boolean>>;
-  ongoingContractsList: Contract[];
-  ongoingContractsPage: number;
-  setOngoingContractsPage: React.Dispatch<React.SetStateAction<number>>;
-  ongoingContractsRowsPerPage: number;
-  setOngoingContractsRowsPerPage: React.Dispatch<React.SetStateAction<number>>;
-  ongoingContractsLoading: boolean;
-  ongoingContractsTotalCount: number;
   completedContractsOpen: boolean;
   setCompletedContractsOpen: React.Dispatch<React.SetStateAction<boolean>>;
-  completedContractsList: Contract[];
-  completedContractsPage: number;
-  setCompletedContractsPage: React.Dispatch<React.SetStateAction<number>>;
-  completedContractsRowsPerPage: number;
-  setCompletedContractsRowsPerPage: React.Dispatch<
-    React.SetStateAction<number>
-  >;
-  completedContractsLoading: boolean;
-  completedContractsTotalCount: number;
 
   // Computed values
   currentCounselList: Counsel[];
@@ -106,9 +80,6 @@ interface DashboardData {
   handleRecentContractsClick: () => void;
   handleCounselClick: (counselId: number) => void;
   handleViewAllSchedules: () => void;
-  fetchRecentContracts: (page: number) => Promise<void>;
-  fetchOngoingContracts: () => Promise<void>;
-  fetchCompletedContracts: () => Promise<void>;
 
   // Utility functions
   getWeekDates: () => dayjs.Dayjs[];
@@ -128,10 +99,6 @@ export const useDashboard = (): DashboardData => {
   );
   const [recentCustomers, setRecentCustomers] = useState<number>(0);
   const [recentContractsCount, setRecentContractsCount] = useState<number>(0);
-  const [recentContracts, setRecentContracts] = useState<Contract[]>([]);
-  const [recentContractsList, setRecentContractsList] = useState<Contract[]>(
-    []
-  );
   const [ongoingContracts, setOngoingContracts] = useState<number>(0);
   const [completedContracts, setCompletedContracts] = useState<number>(0);
   const [isLoading, setIsLoading] = useState<boolean>(true);
@@ -160,40 +127,27 @@ export const useDashboard = (): DashboardData => {
     useState(false);
   const [recentContractsModalOpen, setRecentContractsModalOpen] =
     useState(false);
-  const [recentContractsLoading, setRecentContractsLoading] = useState(false);
-  const [recentContractsPage, setRecentContractsPage] = useState(0);
-  const [recentContractsRowsPerPage, setRecentContractsRowsPerPage] =
-    useState(10);
   const [ongoingContractsOpen, setOngoingContractsOpen] = useState(false);
-  const [ongoingContractsList, setOngoingContractsList] = useState<Contract[]>(
-    []
-  );
-  const [ongoingContractsPage, setOngoingContractsPage] = useState(0);
-  const [ongoingContractsRowsPerPage, setOngoingContractsRowsPerPage] =
-    useState(10);
-  const [ongoingContractsLoading, setOngoingContractsLoading] = useState(false);
-  const [ongoingContractsTotalCount, setOngoingContractsTotalCount] =
-    useState(0);
   const [completedContractsOpen, setCompletedContractsOpen] = useState(false);
-  const [completedContractsList, setCompletedContractsList] = useState<
-    Contract[]
-  >([]);
-  const [completedContractsPage, setCompletedContractsPage] = useState(0);
-  const [completedContractsRowsPerPage, setCompletedContractsRowsPerPage] =
-    useState(10);
-  const [completedContractsLoading, setCompletedContractsLoading] =
-    useState(false);
-  const [completedContractsTotalCount, setCompletedContractsTotalCount] =
-    useState(0);
 
   // API functions
   const fetchSurveyResponses = useCallback(async (): Promise<void> => {
     try {
-      const surveyResponses = await fetchSurveyResponsesAPI({
-        page: 0,
-        size: SURVEY_PAGE_SIZE,
-      });
-      setSurveyResponses(surveyResponses);
+      const surveyResponses = await fetchSurveyResponsesAPI(
+        0,
+        SURVEY_PAGE_SIZE
+      );
+      setSurveyResponses(
+        surveyResponses.surveyResponses.map((response) => ({
+          uid: response.surveyResponseUid,
+          name: response.name,
+          phoneNo: response.phoneNumber,
+          phoneNumber: response.phoneNumber,
+          createdAt: response.submittedAt,
+          submittedAt: response.submittedAt,
+          surveyResponseUid: response.surveyResponseUid,
+        }))
+      );
     } catch (error) {
       console.error("Failed to fetch survey responses:", error);
       setSurveyResponses([]);
@@ -204,12 +158,12 @@ export const useDashboard = (): DashboardData => {
     setCounselLoading(true);
     try {
       const [dueDateCounsels, latestCounsels] = await Promise.all([
-        fetchCounselsByType({ sortType: "DUE_DATE", page: 0, size: 5 }),
-        fetchCounselsByType({ sortType: "LATEST", page: 0, size: 5 }),
+        fetchDashboardCounsels({ sortType: "DUE_DATE", page: 0, size: 5 }),
+        fetchDashboardCounsels({ sortType: "LATEST", page: 0, size: 5 }),
       ]);
 
-      setCounselListByDueDate(dueDateCounsels);
-      setCounselListByLatest(latestCounsels);
+      setCounselListByDueDate((dueDateCounsels as any)?.counsels || []);
+      setCounselListByLatest((latestCounsels as any)?.counsels || []);
     } catch (error) {
       console.error("Error fetching counsel lists:", error);
       setCounselListByDueDate([]);
@@ -218,60 +172,6 @@ export const useDashboard = (): DashboardData => {
       setCounselLoading(false);
     }
   }, []);
-
-  const fetchRecentContracts = useCallback(
-    async (page: number) => {
-      setRecentContractsLoading(true);
-      try {
-        const result = await fetchRecentContractsAPI(
-          page,
-          recentContractsRowsPerPage
-        );
-
-        setRecentContracts(result.contracts);
-        setRecentContractsCount(result.totalElements);
-      } catch (error) {
-        console.error("Failed to fetch recent contracts:", error);
-        setRecentContracts([]);
-        setRecentContractsCount(0);
-      } finally {
-        setRecentContractsLoading(false);
-      }
-    },
-    [recentContractsRowsPerPage]
-  );
-
-  const fetchOngoingContracts = useCallback(async () => {
-    try {
-      setOngoingContractsLoading(true);
-      const result = await fetchOngoingContractsAPI(
-        ongoingContractsPage,
-        ongoingContractsRowsPerPage
-      );
-      setOngoingContractsList(result.contracts);
-      setOngoingContractsTotalCount(result.totalElements);
-    } catch (error) {
-      console.error("Failed to fetch ongoing contracts:", error);
-    } finally {
-      setOngoingContractsLoading(false);
-    }
-  }, [ongoingContractsPage, ongoingContractsRowsPerPage]);
-
-  const fetchCompletedContracts = useCallback(async () => {
-    try {
-      setCompletedContractsLoading(true);
-      const result = await fetchCompletedContractsAPI(
-        completedContractsPage,
-        completedContractsRowsPerPage
-      );
-      setCompletedContractsList(result.contracts);
-      setCompletedContractsTotalCount(result.totalElements);
-    } catch (error) {
-      console.error("Failed to fetch completed contracts:", error);
-    } finally {
-      setCompletedContractsLoading(false);
-    }
-  }, [completedContractsPage, completedContractsRowsPerPage]);
 
   // Event handlers
   const handlePrevWeek = useCallback(() => {
@@ -359,9 +259,8 @@ export const useDashboard = (): DashboardData => {
   const handleRecentContractsClick = useCallback(() => {
     if (recentContractsCount > 0) {
       setRecentContractsModalOpen(true);
-      fetchRecentContracts(0);
     }
-  }, [recentContractsCount, fetchRecentContracts]);
+  }, [recentContractsCount]);
 
   const handleCounselClick = useCallback(
     (counselId: number) => {
@@ -422,8 +321,8 @@ export const useDashboard = (): DashboardData => {
   }, [counselTab, counselListByDueDate, counselListByLatest]);
 
   const currentContractList = useMemo(() => {
-    return contractTab === "expiring" ? expiringContracts : recentContractsList;
-  }, [contractTab, expiringContracts, recentContractsList]);
+    return contractTab === "expiring" ? expiringContracts : expiringContracts;
+  }, [contractTab, expiringContracts]);
 
   // Initial statistics data fetching (독립적으로 한번만 실행)
   useEffect(() => {
@@ -436,10 +335,6 @@ export const useDashboard = (): DashboardData => {
         setRecentContractsCount(statisticsData.recentContractsCount);
         setOngoingContracts(statisticsData.ongoingContracts);
         setCompletedContracts(statisticsData.completedContracts);
-
-        const recentContractsResult = await fetchRecentContractsAPI(0, 10);
-        setRecentContracts(recentContractsResult.contracts);
-        setRecentContractsCount(recentContractsResult.totalElements);
       } catch (error) {
         console.error("Failed to fetch statistics data:", error);
       } finally {
@@ -485,39 +380,20 @@ export const useDashboard = (): DashboardData => {
     const fetchAllContracts = async () => {
       setContractLoading(true);
       try {
-        const [expiringContracts, recentContracts] = await Promise.all([
-          fetchExpiringContracts(0, 5),
-          fetchRecentContractsAPI(0, 5),
-        ]);
-
-        setExpiringContracts(expiringContracts);
-        setRecentContractsList(recentContracts.contracts);
-        setRecentContractsCount(recentContracts.totalElements);
+        const expiringContracts = await fetchExpiringContractsForDashboard(
+          0,
+          5
+        );
+        setExpiringContracts(expiringContracts.contracts || []);
       } catch (error) {
         console.error("Failed to fetch contracts:", error);
         setExpiringContracts([]);
-        setRecentContractsList([]);
-        setRecentContractsCount(0);
       } finally {
         setContractLoading(false);
       }
     };
     fetchAllContracts();
   }, []);
-
-  // Fetch ongoing contracts when modal opens
-  useEffect(() => {
-    if (ongoingContractsOpen) {
-      fetchOngoingContracts();
-    }
-  }, [ongoingContractsOpen, fetchOngoingContracts]);
-
-  // Fetch completed contracts when modal opens
-  useEffect(() => {
-    if (completedContractsOpen) {
-      fetchCompletedContracts();
-    }
-  }, [completedContractsOpen, fetchCompletedContracts]);
 
   return {
     // State values
@@ -527,8 +403,6 @@ export const useDashboard = (): DashboardData => {
     contractTab,
     recentCustomers,
     recentContractsCount,
-    recentContracts,
-    recentContractsList,
     ongoingContracts,
     completedContracts,
     isLoading,
@@ -551,29 +425,10 @@ export const useDashboard = (): DashboardData => {
     setIsRecentCustomersModalOpen,
     recentContractsModalOpen,
     setRecentContractsModalOpen,
-    recentContractsLoading,
-    recentContractsPage,
-    setRecentContractsPage,
-    recentContractsRowsPerPage,
-    setRecentContractsRowsPerPage,
     ongoingContractsOpen,
     setOngoingContractsOpen,
-    ongoingContractsList,
-    ongoingContractsPage,
-    setOngoingContractsPage,
-    ongoingContractsRowsPerPage,
-    setOngoingContractsRowsPerPage,
-    ongoingContractsLoading,
-    ongoingContractsTotalCount,
     completedContractsOpen,
     setCompletedContractsOpen,
-    completedContractsList,
-    completedContractsPage,
-    setCompletedContractsPage,
-    completedContractsRowsPerPage,
-    setCompletedContractsRowsPerPage,
-    completedContractsLoading,
-    completedContractsTotalCount,
 
     currentCounselList,
     currentContractList,
@@ -591,9 +446,6 @@ export const useDashboard = (): DashboardData => {
     handleRecentContractsClick,
     handleCounselClick,
     handleViewAllSchedules,
-    fetchRecentContracts,
-    fetchOngoingContracts,
-    fetchCompletedContracts,
 
     // Utility functions
     getWeekDates,

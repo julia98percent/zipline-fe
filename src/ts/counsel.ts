@@ -1,6 +1,6 @@
 import { Customer } from "./customer";
 import { Property } from "./property";
-
+import { PaginatedResponse } from "./apiResponse";
 export interface PreCounsel {
   name: string;
   phoneNumber: string;
@@ -53,14 +53,10 @@ export interface CounselDetailItem {
   answer: string;
 }
 
-export interface PreCounselListData {
-  surveyResponses: PreCounsel[];
-  page: number;
-  size: number;
-  totalElements: number;
-  totalPages: number;
-  hasNext: boolean;
-}
+export type PreCounselListData = PaginatedResponse<
+  "surveyResponses",
+  PreCounsel[]
+>;
 
 export const CounselCategory = {
   PURCHASE: "매수",
@@ -76,3 +72,25 @@ export type CounselCategoryType =
   | "LEASE"
   | "RENT"
   | "OTHER";
+
+export type ConsultationResponse = PaginatedResponse<"counsels", Counsel[]>;
+
+export type QuestionType =
+  | "SUBJECTIVE"
+  | "SINGLE_CHOICE"
+  | "MULTIPLE_CHOICE"
+  | "FILE_UPLOAD";
+
+export interface PreCounselChoice {
+  id: number;
+  text: string;
+}
+
+export interface PreCounselQuestion {
+  id: number;
+  title: string;
+  description: string;
+  type: QuestionType;
+  choices: PreCounselChoice[] | [];
+  required: boolean;
+}

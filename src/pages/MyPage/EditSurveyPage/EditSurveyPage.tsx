@@ -1,14 +1,21 @@
 import { useEffect, useState, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
-import { surveyService, SurveyType, QuestionType } from "@apis/surveyService";
+import {
+  getSurvey,
+  updateSurvey,
+  SurveyType,
+  QuestionType,
+} from "@apis/preCounselService";
 import useAuthStore from "@stores/useAuthStore";
 import EditSurveyPageView from "./EditSurveyPageView";
 
 const DEFAULT_QUESTION_TEMPLATE: QuestionType = {
+  id: 0,
   title: "",
   description: "",
   type: "SUBJECTIVE",
   required: false,
+  choices: [],
 };
 
 const EditSurveyPage = () => {
@@ -25,7 +32,7 @@ const EditSurveyPage = () => {
 
     setLoading(true);
     try {
-      const surveyData = await surveyService.getSurvey(String(user.url));
+      const surveyData = await getSurvey(String(user.url));
       if (surveyData) {
         setSurvey(surveyData);
       }
@@ -77,7 +84,7 @@ const EditSurveyPage = () => {
       ...updatedQuestions[questionIndex],
       choices: [
         ...(updatedQuestions[questionIndex].choices || []),
-        { text: "" },
+        { id: Date.now(), text: "" },
       ],
     };
     setSurvey({ ...survey, questions: updatedQuestions });
@@ -125,7 +132,7 @@ const EditSurveyPage = () => {
 
   const requestUpdateSurvey = async () => {
     try {
-      await surveyService.updateSurvey(survey);
+      await updateSurvey(survey);
       alert("설문을 변경했습니다!");
       navigate("/my", { replace: true });
       setTimeout(() => {

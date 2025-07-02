@@ -2,9 +2,12 @@ import apiClient from "@apis/apiClient";
 import { ApiResponse } from "@ts/apiResponse";
 import { ContractCategoryType } from "@ts/contract";
 import {
+  PropertyType,
+  PropertyCategoryType,
   PublicPropertyItem,
   PublicPropertySearchParams,
   PublicPropertySearchResponse,
+  PropertyResponse,
 } from "@ts/property";
 
 export interface AgentPropertyDetail {
@@ -15,20 +18,13 @@ export interface AgentPropertyDetail {
   deposit: number;
   monthlyRent: number;
   price: number;
-  type: "SALE" | "DEPOSIT" | "MONTHLY";
+  type: PropertyType;
   longitude: number;
   latitude: number;
   startDate: string;
   endDate: string;
   moveInDate: string;
-  realCategory:
-    | "ONE_ROOM"
-    | "TWO_ROOM"
-    | "APARTMENT"
-    | "VILLA"
-    | "HOUSE"
-    | "OFFICETEL"
-    | "COMMERCIAL";
+  realCategory: PropertyCategoryType;
   petsAllowed: boolean;
   floor: number;
   hasElevator: boolean;
@@ -78,7 +74,7 @@ export interface PropertyAddData {
   deposit: number | null;
   monthlyRent: number | null;
   price: number | null;
-  type: "SALE" | "DEPOSIT" | "MONTHLY";
+  type: PropertyType;
   longitude: number | null;
   latitude: number | null;
   moveInDate: string | null;
@@ -102,7 +98,7 @@ export interface PropertyUpdateData {
   deposit: number | null;
   monthlyRent: number | null;
   price: number | null;
-  type: "SALE" | "DEPOSIT" | "MONTHLY";
+  type: PropertyType;
   longitude: number | null;
   latitude: number | null;
   moveInDate: string | null;
@@ -117,8 +113,41 @@ export interface PropertyUpdateData {
   details: string;
 }
 
+export interface AgentPropertySearchParams {
+  page: number;
+  size: number;
+  sortFields: {
+    [key: string]: string;
+  };
+  customerName?: string;
+  address?: string;
+  legalDistrictCode?: string;
+  type?: PropertyType;
+  category?: PropertyCategoryType;
+  minDeposit?: number;
+  maxDeposit?: number;
+  minMonthlyRent?: number;
+  maxMonthlyRent?: number;
+  minPrice?: number;
+  maxPrice?: number;
+  minMoveInDate?: string;
+  maxMoveInDate?: string;
+  petsAllowed?: boolean;
+  minFloor?: number;
+  maxFloor?: number;
+  hasElevator?: boolean;
+  minConstructionYear?: number;
+  maxConstructionYear?: number;
+  minParkingCapacity?: number;
+  maxParkingCapacity?: number;
+  minNetArea?: number;
+  maxNetArea?: number;
+  minTotalArea?: number;
+  maxTotalArea?: number;
+}
+
 export const fetchPropertyDetail = async (
-  propertyUid: string
+  propertyUid: number
 ): Promise<AgentPropertyDetail> => {
   try {
     const { data: response } = await apiClient.get<
@@ -137,7 +166,7 @@ export const fetchPropertyDetail = async (
 };
 
 export const fetchPropertyContract = async (
-  propertyUid: string
+  propertyUid: number
 ): Promise<ContractInfo | null> => {
   try {
     const { data: response } = await apiClient.get<ApiResponse<ContractInfo>>(
@@ -156,7 +185,7 @@ export const fetchPropertyContract = async (
 };
 
 export const fetchPropertyContractHistory = async (
-  propertyUid: string
+  propertyUid: number
 ): Promise<ContractHistoryItem[]> => {
   try {
     const { data: response } = await apiClient.get<
@@ -175,7 +204,7 @@ export const fetchPropertyContractHistory = async (
 };
 
 export const fetchPropertyCounselHistory = async (
-  propertyUid: string
+  propertyUid: number
 ): Promise<CounselHistory[]> => {
   try {
     const { data: response } = await apiClient.get<
@@ -193,7 +222,7 @@ export const fetchPropertyCounselHistory = async (
   }
 };
 
-export const deleteProperty = async (propertyUid: string): Promise<void> => {
+export const deleteProperty = async (propertyUid: number): Promise<void> => {
   try {
     const { data: response } = await apiClient.delete<ApiResponse>(
       `/properties/${propertyUid}`
@@ -253,7 +282,14 @@ export const searchPublicProperties = async (
 
     queryParams.append("page", searchParams.page.toString());
     queryParams.append("size", searchParams.size.toString());
-    queryParams.append("sortFields", JSON.stringify(searchParams.sortFields));
+
+    // sortFields가 존재하고 비어있지 않을 때만 추가
+    if (
+      searchParams.sortFields &&
+      Object.keys(searchParams.sortFields).length > 0
+    ) {
+      queryParams.append("sortFields", JSON.stringify(searchParams.sortFields));
+    }
 
     if (searchParams.regionCode)
       queryParams.append("regionCode", searchParams.regionCode);
@@ -320,6 +356,103 @@ export const searchPublicProperties = async (
     };
   } catch (error) {
     console.error("Error searching public properties:", error);
+    throw error;
+  }
+};
+
+export const searchAgentProperties = async (
+  searchParams: AgentPropertySearchParams
+): Promise<PropertyResponse> => {
+  try {
+    const queryParams = new URLSearchParams();
+
+    queryParams.append("page", searchParams.page.toString());
+    queryParams.append("size", searchParams.size.toString());
+
+    // sortFields가 존재하고 비어있지 않을 때만 추가
+    if (
+      searchParams.sortFields &&
+      Object.keys(searchParams.sortFields).length > 0
+    ) {
+      queryParams.append("sortFields", JSON.stringify(searchParams.sortFields));
+    }
+
+    if (searchParams.customerName)
+      queryParams.append("customerName", searchParams.customerName);
+    if (searchParams.address)
+      queryParams.append("address", searchParams.address);
+    if (searchParams.legalDistrictCode)
+      queryParams.append("legalDistrictCode", searchParams.legalDistrictCode);
+    if (searchParams.type) queryParams.append("type", searchParams.type);
+    if (searchParams.category)
+      queryParams.append("category", searchParams.category);
+
+    if (searchParams.minPrice)
+      queryParams.append("minPrice", searchParams.minPrice.toString());
+    if (searchParams.maxPrice)
+      queryParams.append("maxPrice", searchParams.maxPrice.toString());
+    if (searchParams.minDeposit)
+      queryParams.append("minDeposit", searchParams.minDeposit.toString());
+    if (searchParams.maxDeposit)
+      queryParams.append("maxDeposit", searchParams.maxDeposit.toString());
+    if (searchParams.minMonthlyRent)
+      queryParams.append(
+        "minMonthlyRent",
+        searchParams.minMonthlyRent.toString()
+      );
+    if (searchParams.maxMonthlyRent)
+      queryParams.append(
+        "maxMonthlyRent",
+        searchParams.maxMonthlyRent.toString()
+      );
+    if (searchParams.minNetArea)
+      queryParams.append("minNetArea", searchParams.minNetArea.toString());
+    if (searchParams.maxNetArea)
+      queryParams.append("maxNetArea", searchParams.maxNetArea.toString());
+    if (searchParams.minTotalArea)
+      queryParams.append("minTotalArea", searchParams.minTotalArea.toString());
+    if (searchParams.maxTotalArea)
+      queryParams.append("maxTotalArea", searchParams.maxTotalArea.toString());
+    if (searchParams.minFloor)
+      queryParams.append("minFloor", searchParams.minFloor.toString());
+    if (searchParams.maxFloor)
+      queryParams.append("maxFloor", searchParams.maxFloor.toString());
+    if (searchParams.minConstructionYear)
+      queryParams.append(
+        "minConstructionYear",
+        searchParams.minConstructionYear.toString()
+      );
+    if (searchParams.maxConstructionYear)
+      queryParams.append(
+        "maxConstructionYear",
+        searchParams.maxConstructionYear.toString()
+      );
+    if (searchParams.minParkingCapacity)
+      queryParams.append(
+        "minParkingCapacity",
+        searchParams.minParkingCapacity.toString()
+      );
+    if (searchParams.maxParkingCapacity)
+      queryParams.append(
+        "maxParkingCapacity",
+        searchParams.maxParkingCapacity.toString()
+      );
+    if (searchParams.minMoveInDate)
+      queryParams.append("minMoveInDate", searchParams.minMoveInDate);
+    if (searchParams.maxMoveInDate)
+      queryParams.append("maxMoveInDate", searchParams.maxMoveInDate);
+    if (searchParams.petsAllowed !== undefined)
+      queryParams.append("petsAllowed", searchParams.petsAllowed.toString());
+    if (searchParams.hasElevator !== undefined)
+      queryParams.append("hasElevator", searchParams.hasElevator.toString());
+
+    const { data } = await apiClient.get(
+      `/properties?${queryParams.toString()}`
+    );
+
+    return data;
+  } catch (error) {
+    console.error("Error searching agent properties:", error);
     throw error;
   }
 };

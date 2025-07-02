@@ -28,9 +28,9 @@ const typeColors: Record<
   AgentPropertyDetail["type"],
   "default" | "primary" | "secondary" | "success" | "error" | "warning" | "info"
 > = {
-  SALE: "primary",
-  DEPOSIT: "success",
-  MONTHLY: "warning",
+  SALE: "error",
+  DEPOSIT: "warning",
+  MONTHLY: "success",
 };
 
 const PropertyInfoSection = ({ property }: PropertyInfoSectionProps) => {

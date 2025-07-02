@@ -36,7 +36,6 @@ interface AgentPropertyTableProps {
   rowsPerPage: number;
   onPageChange: (newPage: number) => void;
   onRowsPerPageChange: (newSize: number) => void;
-  useMetric: boolean;
   onRowClick?: (property: Property) => void;
 }
 
@@ -47,17 +46,8 @@ const AgentPropertyTable = ({
   rowsPerPage,
   onPageChange,
   onRowsPerPageChange,
-  useMetric,
   onRowClick,
 }: AgentPropertyTableProps) => {
-  const formatArea = (area: number) => {
-    if (useMetric) {
-      return `${area.toFixed(1)}m²`;
-    } else {
-      return `${(area / 3.3058).toFixed(1)}평`;
-    }
-  };
-
   const getPropertyTypeText = (type: string) => {
     switch (type) {
       case "SALE":
@@ -92,9 +82,35 @@ const AgentPropertyTable = ({
   // 컬럼 정의
   const columns: ColumnConfig<PropertyRowData>[] = [
     {
-      key: "customerName",
-      label: "고객명",
+      key: "realCategory",
+      label: "매물 유형",
       width: "120px",
+      render: (_, row) => (
+        <Chip
+          label={PropertyCategory[row.realCategory]}
+          size="small"
+          color="primary"
+          variant="outlined"
+        />
+      ),
+    },
+    {
+      key: "type",
+      label: "거래 유형",
+      width: "120px",
+      render: (_, row) => (
+        <Chip
+          label={getPropertyTypeText(row.type)}
+          size="small"
+          color={
+            row.type === "SALE"
+              ? "error"
+              : row.type === "DEPOSIT"
+              ? "warning"
+              : "success"
+          }
+        />
+      ),
     },
     {
       key: "address",
@@ -112,35 +128,10 @@ const AgentPropertyTable = ({
       ),
     },
     {
-      key: "realCategory",
-      label: "종류",
-      width: "100px",
-      render: (_, row) => (
-        <Chip
-          label={PropertyCategory[row.realCategory]}
-          size="small"
-          color="primary"
-          variant="outlined"
-        />
-      ),
-    },
-    {
-      key: "type",
-      label: "거래유형",
-      width: "100px",
-      render: (_, row) => (
-        <Chip
-          label={getPropertyTypeText(row.type)}
-          size="small"
-          color={
-            row.type === "SALE"
-              ? "error"
-              : row.type === "DEPOSIT"
-              ? "warning"
-              : "success"
-          }
-        />
-      ),
+      key: "netArea",
+      label: "전용 면적",
+      width: "120px",
+      render: (_, row) => `${row.netArea.toFixed(1)}m²`,
     },
     {
       key: "price",
@@ -153,16 +144,29 @@ const AgentPropertyTable = ({
       ),
     },
     {
-      key: "netArea",
-      label: "전용면적",
-      width: "100px",
-      render: (_, row) => formatArea(row.netArea),
-    },
-    {
-      key: "moveInDate",
-      label: "입주가능일",
-      width: "120px",
-      render: (_, row) => (row.moveInDate ? formatDate(row.moveInDate) : "-"),
+      key: "details",
+      label: "기타",
+      width: "200px",
+      render: (_, row) => (
+        <div>
+          {row.moveInDate && (
+            <Typography variant="caption" color="text.secondary">
+              입주: {formatDate(row.moveInDate)}
+            </Typography>
+          )}
+          {row.details ? (
+            <Typography variant="body2" sx={{ mt: 0.5 }}>
+              {row.details.length > 20
+                ? row.details.slice(0, 20) + "..."
+                : row.details}
+            </Typography>
+          ) : (
+            <Typography variant="body2" sx={{ mt: 0.5 }} color="text.secondary">
+              -
+            </Typography>
+          )}
+        </div>
+      ),
     },
   ];
 

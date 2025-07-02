@@ -22,19 +22,29 @@ export const fetchSchedulesByDateRange = async (params: {
 export const updateSchedule = async (
   scheduleUid: number,
   updatedSchedule: Partial<Schedule>
-) => {
+): Promise<{ success: boolean; message?: string }> => {
   try {
-    const { data: response } = await apiClient.patch(
-      `/schedules/${scheduleUid}`,
-      updatedSchedule
-    );
+    const { data: response } = await apiClient.patch<
+      ApiResponse<string | null>
+    >(`/schedules/${scheduleUid}`, updatedSchedule);
 
-    return handleApiResponse<ApiResponse<string | null>>(
-      response.data,
-      SCHEDULE_ERROR_MESSAGES.UPDATE_FAILED
-    );
+    if (response.success) {
+      return { success: true };
+    } else {
+      return {
+        success: false,
+        message: response.message || SCHEDULE_ERROR_MESSAGES.UPDATE_FAILED,
+      };
+    }
   } catch (error) {
-    return handleApiError(error, "failing to update schedule");
+    const apiError = error as { response?: { data?: { message?: string } } };
+    console.error("Schedule update error:", error);
+    return {
+      success: false,
+      message:
+        apiError.response?.data?.message ||
+        SCHEDULE_ERROR_MESSAGES.UPDATE_FAILED,
+    };
   }
 };
 

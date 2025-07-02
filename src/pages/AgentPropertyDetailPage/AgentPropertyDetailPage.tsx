@@ -113,7 +113,7 @@ function AgentPropertyDetailPage() {
         message: "매물을 삭제했습니다.",
         type: "success",
       });
-      navigate("/properties/private");
+      navigate("/properties/agent");
     } catch (error) {
       console.error("매물 삭제 실패", error);
       showToast({

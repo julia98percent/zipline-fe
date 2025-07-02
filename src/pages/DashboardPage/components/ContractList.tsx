@@ -6,10 +6,12 @@ import {
   Tabs,
   Tab,
   CircularProgress,
+  Tooltip,
 } from "@mui/material";
 import { formatDate } from "@utils/dateUtil";
 import { Contract } from "@ts/contract";
 import Table, { ColumnConfig } from "@components/Table";
+import HelpOutlineIcon from "@mui/icons-material/HelpOutline";
 
 interface ContractListProps {
   contractTab: "expiring" | "recent";
@@ -97,8 +99,21 @@ const ContractList = ({
             },
           }}
         >
-          <Tab label="만료 예정" value="expiring" sx={{ fontSize: "13px" }} />
-          <Tab label="최신 계약" value="recent" sx={{ fontSize: "13px" }} />
+          <Tab
+            label={
+              <div className="flex items-center gap-1">
+                <p>만료 예정 계약</p>
+                <Tooltip title="6개월 이내 만료 예정인 계약이 표시됩니다.">
+                  <HelpOutlineIcon
+                    sx={{ fontSize: 16, color: "text.secondary" }}
+                  />
+                </Tooltip>
+              </div>
+            }
+            value="expiring"
+            sx={{ fontSize: "13px" }}
+          />
+          <Tab label="최근 계약" value="recent" sx={{ fontSize: "13px" }} />
         </Tabs>
       </Box>
       <Box sx={{ flex: 1, overflow: "auto" }}>

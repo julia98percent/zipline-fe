@@ -3,6 +3,7 @@ import { fetchPreCounselDetail } from "@apis/preCounselService";
 import { PreCounselDetail } from "@ts/counsel";
 import PreCounselDetailModalView from "./PreCounselDetailModalView";
 import { createCustomer } from "@apis/customerService";
+import { showToast } from "@components/Toast/Toast";
 
 interface PreCounselDetailModalContainerProps {
   open: boolean;
@@ -48,14 +49,29 @@ const PreCounselDetailModalContainer = ({
 
     setIsRegistering(true);
     try {
-      const success = await createCustomer({
+      const result = await createCustomer({
         name: preCounselDetail.answers[0].answer,
         phoneNo: preCounselDetail.answers[1].answer,
       });
 
-      if (success) {
+      if (result.success) {
+        showToast({
+          message: result.message,
+          type: "success",
+        });
         onClose();
+      } else {
+        showToast({
+          message: result.message,
+          type: "error",
+        });
       }
+    } catch (error) {
+      console.error("Failed to register customer:", error);
+      showToast({
+        message: "고객 등록에 실패했습니다.",
+        type: "error",
+      });
     } finally {
       setIsRegistering(false);
     }

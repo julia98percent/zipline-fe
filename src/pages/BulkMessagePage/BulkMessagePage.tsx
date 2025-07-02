@@ -101,17 +101,15 @@ const BulkMessagePageContainer = () => {
     }));
 
     try {
-      const success = await sendBulkMessages(payload);
+      await sendBulkMessages(payload);
 
-      if (success) {
-        showToast({
-          message: "문자를 발송했습니다.",
-          type: "success",
-        });
-        setCustomers([]);
-        setSelectedTemplate("");
-        setMessageContent("");
-      }
+      showToast({
+        message: "문자를 발송했습니다.",
+        type: "success",
+      });
+      setCustomers([]);
+      setSelectedTemplate("");
+      setMessageContent("");
     } catch (error) {
       console.error("Bulk message send error:", error);
       showToast({

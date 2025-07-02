@@ -8,7 +8,6 @@ interface Props {
   totalPages: number;
   page: number;
   rowsPerPage: number;
-  category?: string;
   onPageChange: (newPage: number) => void;
   onRowsPerPageChange: (newSize: number) => void;
   onSort: (field: string) => void;
@@ -22,7 +21,6 @@ const PublicPropertyTable = ({
   totalPages,
   page,
   rowsPerPage,
-  category,
   onPageChange,
   onRowsPerPageChange,
   onSort,
@@ -66,7 +64,6 @@ const PublicPropertyTable = ({
       totalPages={totalPages}
       page={page}
       rowsPerPage={rowsPerPage}
-      category={category}
       onSort={onSort}
       sortFields={sortFields}
       useMetric={useMetric}

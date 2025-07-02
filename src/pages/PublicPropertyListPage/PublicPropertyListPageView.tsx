@@ -128,7 +128,7 @@ const PublicPropertyListPageView = ({
                 onClick={onSortReset}
                 sx={{ height: "32px" }}
               >
-                정렬 초기화
+                필터 초기화
               </Button>
               <Button
                 startIcon={<FilterListIcon />}
@@ -210,7 +210,6 @@ const PublicPropertyListPageView = ({
             onRowsPerPageChange={onRowsPerPageChange}
             onSort={onSort}
             sortFields={searchParams.sortFields}
-            category={searchParams.category}
             useMetric={useMetric}
           />
         </Paper>

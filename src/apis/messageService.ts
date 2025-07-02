@@ -6,8 +6,12 @@ import {
   MessageDetailListResponse,
 } from "@ts/message";
 import { MESSAGE_ERROR_MESSAGES } from "@constants/clientErrorMessage";
-import { ApiResponse, API_STATUS_CODES } from "@ts/apiResponse";
-import { MessageTemplate, BulkMessagePayload } from "@ts/message";
+import { ApiResponse } from "@ts/apiResponse";
+import {
+  MessageTemplate,
+  BulkMessagePayload,
+  BulkMessageSendResponse,
+} from "@ts/message";
 import { handleApiResponse, handleApiError } from "@utils/apiUtil";
 
 export const fetchMessages = async (): Promise<MessageHistory[]> => {
@@ -20,6 +24,7 @@ export const fetchMessages = async (): Promise<MessageHistory[]> => {
       response,
       MESSAGE_ERROR_MESSAGES.FETCH_FAILED
     );
+
     return Object.values(data?.groupList || {});
   } catch (error) {
     return handleApiError(error, "fetching messages");
@@ -63,20 +68,29 @@ export const sendBulkMessages = async (
   payload: BulkMessagePayload[]
 ): Promise<boolean> => {
   try {
-    const { data: response } = await apiClient.post<ApiResponse>(
+    const { data: response } = await apiClient.post<BulkMessageSendResponse>(
       "/messages",
       payload
     );
-    if (response.code !== API_STATUS_CODES.SUCCESS) {
-      throw new Error(
-        response.message || MESSAGE_ERROR_MESSAGES.BULK_SEND_FAILED
-      );
+
+    if (response && typeof response === "object") {
+      if (response.failedMessageList && response.failedMessageList.length > 0) {
+        console.error(
+          "Some messages failed to send:",
+          response.failedMessageList
+        );
+        throw new Error("일부 메시지 전송에 실패했습니다.");
+      }
+
+      if (response.groupInfo) {
+        return true;
+      }
     }
 
-    return true;
+    throw new Error("메시지 전송 응답이 올바르지 않습니다.");
   } catch (error) {
     console.error("Error sending bulk messages:", error);
-    return false;
+    throw error;
   }
 };
 

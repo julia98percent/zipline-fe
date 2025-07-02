@@ -38,8 +38,6 @@ const CustomerListPage = () => {
           pageSize: rowsPerPage,
         };
 
-        console.log("Current filters:", filters); // 디버그용
-
         if (searchTerm) {
           params.searchTerm = searchTerm;
         }
@@ -57,7 +55,6 @@ const CustomerListPage = () => {
         if (filters.labelUids && filters.labelUids.length > 0)
           params.labelUids = filters.labelUids.join(",");
         if (filters.noRole) {
-          console.log("Adding noRole=true to params"); // 디버그용
           params.noRole = true;
         }
         if (filters.telProvider) params.telProvider = filters.telProvider;
@@ -65,7 +62,6 @@ const CustomerListPage = () => {
           params.legalDistrictCode = filters.legalDistrictCode;
         if (filters.trafficSource) params.trafficSource = filters.trafficSource;
 
-        console.log("Final params:", params); // 디버그용
         return params;
       };
 
@@ -101,7 +97,6 @@ const CustomerListPage = () => {
   };
 
   const handleFilterApply = (appliedFilters: CustomerFilter) => {
-    console.log("handleFilterApply - received filters:", appliedFilters); // 디버그용
     setFilters(appliedFilters);
     setFilterModalOpen(false);
     fetchCustomerList(true);

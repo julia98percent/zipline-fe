@@ -72,7 +72,7 @@ function PropertyEditModal({
   const [realCategory, setRealCategory] = useState("APARTMENT");
   const [petsAllowed, setPetsAllowed] = useState(false);
   const [hasElevator, setHasElevator] = useState(false);
-  console.log(initialData);
+
   useEffect(() => {
     if (open && initialData) {
       if (initialData.customerUid != null)

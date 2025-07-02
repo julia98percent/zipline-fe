@@ -39,11 +39,10 @@ function MessageDetailModal({ open, onClose, messageHistory }: Props) {
       try {
         setLoading(true);
         const response = await fetchMessageList(messageHistory.groupId);
-        console.log("Fetched message list:", response);
+
         setMessageList(response);
         setLoading(false);
-      } catch (error) {
-        console.error("Failed to fetch message list:", error);
+      } catch {
         setMessageList([]);
         setLoading(false);
       }

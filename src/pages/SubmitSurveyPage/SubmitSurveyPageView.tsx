@@ -40,7 +40,6 @@ const SubmitSurveyPageView = ({
   onFileRemove,
   onSubmit,
 }: SubmitSurveyPageViewProps) => {
-  console.log(surveyQuestions);
   if (loading) {
     return (
       <Box

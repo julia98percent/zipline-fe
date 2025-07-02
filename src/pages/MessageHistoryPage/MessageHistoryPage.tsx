@@ -8,7 +8,7 @@ import { translateMessageStatusToKorean } from "@utils/messageUtil";
 import Status from "@components/Status";
 import { MessageHistory } from "@ts/message";
 import { fetchMessages } from "@apis/messageService";
-import Table from "@components/Table";
+import Table, { ColumnConfig } from "@components/Table";
 
 interface TableRowData {
   id: string;
@@ -39,7 +39,9 @@ const MessageHistoryPage = () => {
   const handleModalClose = () => setDetailModalOpen(false);
   const fetchData = async () => {
     setIsLoading(true);
+
     const messageArray = await fetchMessages();
+
     setMessages(messageArray);
     setTotalElements(messageArray.length);
     setIsLoading(false);
@@ -64,10 +66,25 @@ const MessageHistoryPage = () => {
     return dayjs(dateString).format("YYYY-MM-DD HH:mm:ss");
   };
 
+  const columns: ColumnConfig<TableRowData>[] = [
+    {
+      key: "dateCreated",
+      label: "발송 요청일",
+    },
+    {
+      key: "status",
+      label: "상태",
+    },
+    {
+      key: "dateCompleted",
+      label: "발송 완료일",
+    },
+  ];
+
   useEffect(() => {
     fetchData();
   }, [page]);
-  console.log(selectedMessageHistory);
+
   return (
     <Box
       sx={{
@@ -120,7 +137,7 @@ const MessageHistoryPage = () => {
         >
           <Table
             isLoading={isLoading}
-            headerList={["발송 요청일", "상태", "발송 완료일"]}
+            columns={columns}
             bodyList={messages.map((message) => ({
               id: message.groupId,
               dateCreated: formatDate(message.dateCreated),

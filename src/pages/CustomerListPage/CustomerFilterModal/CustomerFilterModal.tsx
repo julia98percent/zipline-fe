@@ -155,8 +155,6 @@ const CustomerFilterModal = ({
       noRole: filtersTemp.noRole,
     };
 
-    console.log("CustomerFilterModal - finalFilterData:", finalFilterData);
-
     onApply(finalFilterData);
     onClose();
   };
@@ -224,8 +222,8 @@ const CustomerFilterModal = ({
           setSelectedLabels={setSelectedLabels}
         />
 
-        <RegionFilters 
-          region={region} 
+        <RegionFilters
+          region={region}
           setRegion={setRegion}
           onSidoChange={loadSigunguData}
           onSigunguChange={loadDongData}

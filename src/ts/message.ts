@@ -97,3 +97,21 @@ export interface BulkMessagePayload {
 }
 
 export type AllowedVariable = "이름" | "생년월일" | "관심지역";
+
+// Bulk message send response types
+export interface BulkMessageGroupInfo {
+  groupId: string;
+  status?: string;
+  [key: string]: unknown;
+}
+
+export interface BulkMessageFailedItem {
+  to: string;
+  reason?: string;
+  [key: string]: unknown;
+}
+
+export interface BulkMessageSendResponse {
+  groupInfo: BulkMessageGroupInfo;
+  failedMessageList: BulkMessageFailedItem[];
+}

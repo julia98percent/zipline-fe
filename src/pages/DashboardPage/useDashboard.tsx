@@ -221,22 +221,29 @@ export const useDashboard = (): DashboardData => {
 
   const handleSaveSchedule = useCallback(async (updatedSchedule: Schedule) => {
     try {
-      const { customerName, ...scheduleForApi } = updatedSchedule;
+      const { uid, customerName, ...scheduleForApi } = updatedSchedule;
       void customerName;
 
-      await updateSchedule(updatedSchedule.uid, scheduleForApi);
+      const result = await updateSchedule(uid, scheduleForApi);
 
-      setSchedules((prev) =>
-        prev.map((schedule) =>
-          schedule.uid === updatedSchedule.uid ? updatedSchedule : schedule
-        )
-      );
-      setIsDetailModalOpen(false);
-      setSelectedSchedule(null);
-      showToast({
-        message: "일정이 성공적으로 수정되었습니다.",
-        type: "success",
-      });
+      if (result.success) {
+        setSchedules((prev) =>
+          prev.map((schedule) =>
+            schedule.uid === updatedSchedule.uid ? updatedSchedule : schedule
+          )
+        );
+        setIsDetailModalOpen(false);
+        setSelectedSchedule(null);
+        showToast({
+          message: "일정이 성공적으로 수정되었습니다.",
+          type: "success",
+        });
+      } else {
+        showToast({
+          message: result.message || "일정 수정에 실패했습니다.",
+          type: "error",
+        });
+      }
     } catch (error) {
       console.error("Failed to update schedule:", error);
       showToast({

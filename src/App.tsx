@@ -57,10 +57,7 @@ const App = () => {
             element={<CustomerDetailPage />}
           />
 
-          <Route
-            path="properties/private"
-            element={<AgentPropertyListPage />}
-          />
+          <Route path="properties/agent" element={<AgentPropertyListPage />} />
           <Route
             path="/properties/:propertyUid"
             element={<AgentPropertyDetailPage />}

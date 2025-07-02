@@ -172,14 +172,6 @@ const ScheduleDetailModalView = ({
               />
             )}
           </Box>
-
-          {editingSchedule?.uid && (
-            <Box sx={{ mt: 2, p: 2, bgcolor: "grey.100", borderRadius: 1 }}>
-              <Typography variant="caption" color="text.secondary">
-                생성일: {new Date(editingSchedule.uid).toLocaleDateString()}
-              </Typography>
-            </Box>
-          )}
         </Box>
       </DialogContent>
       <DialogActions>

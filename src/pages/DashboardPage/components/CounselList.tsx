@@ -7,10 +7,12 @@ import {
   Tab,
   Chip,
   CircularProgress,
+  Tooltip,
 } from "@mui/material";
 import { formatDate } from "@utils/dateUtil";
 import { Counsel } from "@ts/counsel";
 import Table, { ColumnConfig } from "@components/Table";
+import HelpOutlineIcon from "@mui/icons-material/HelpOutline";
 
 interface CounselListProps {
   counselTab: "request" | "latest";
@@ -117,7 +119,21 @@ const CounselList: React.FC<CounselListProps> = ({
             },
           }}
         >
-          <Tab label="마감일 순" value="request" sx={{ fontSize: "13px" }} />
+          <Tab
+            label={
+              <div className="flex items-center gap-1">
+                <p>의뢰일 임박 순</p>
+                <Tooltip title="2주 이내 의뢰 마감 예정인 상담이 표시됩니다.">
+                  <HelpOutlineIcon
+                    sx={{ fontSize: 16, color: "text.secondary" }}
+                  />
+                </Tooltip>
+              </div>
+            }
+            value="request"
+            sx={{ fontSize: "13px" }}
+          />
+
           <Tab label="최신 순" value="latest" sx={{ fontSize: "13px" }} />
         </Tabs>
       </Box>

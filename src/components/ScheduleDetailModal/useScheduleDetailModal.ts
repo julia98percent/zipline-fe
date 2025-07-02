@@ -212,15 +212,17 @@ export const useScheduleDetailModal = ({
       ? dayjs(`${endDate}T${endTime}`)
       : dayjs(endDate);
 
-    const updatedSchedule: Schedule = {
-      ...editingSchedule,
+    const { uid, ...scheduleWithoutUid } = editingSchedule;
+
+    const updatedSchedule: Omit<Schedule, "uid"> = {
+      ...scheduleWithoutUid,
       startDate: startDateTime.toISOString(),
       endDate: endDateTime.toISOString(),
       customerUid: selectedCustomer?.uid || null,
       customerName: selectedCustomer?.name || null,
     };
 
-    onSave(updatedSchedule);
+    onSave({ uid, ...updatedSchedule } as Schedule);
   }, [
     editingSchedule,
     validateForm,

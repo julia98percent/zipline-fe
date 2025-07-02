@@ -1,5 +1,5 @@
 import apiClient from "@apis/apiClient";
-import { ApiResponse } from "@ts/apiResponse";
+import { ApiResponse, PaginatedResponse } from "@ts/apiResponse";
 import { ContractCategoryType } from "@ts/contract";
 import {
   PropertyType,
@@ -7,7 +7,7 @@ import {
   PublicPropertyItem,
   PublicPropertySearchParams,
   PublicPropertySearchResponse,
-  PropertyResponse,
+  Property,
 } from "@ts/property";
 
 export interface AgentPropertyDetail {
@@ -362,7 +362,7 @@ export const searchPublicProperties = async (
 
 export const searchAgentProperties = async (
   searchParams: AgentPropertySearchParams
-): Promise<PropertyResponse> => {
+): Promise<ApiResponse<PaginatedResponse<"agentProperty", Property[]>>> => {
   try {
     const queryParams = new URLSearchParams();
 

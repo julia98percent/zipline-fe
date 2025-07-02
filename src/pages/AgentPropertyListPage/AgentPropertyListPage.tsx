@@ -41,6 +41,7 @@ function AgentPropertyListPage() {
     DEFAULT_SEARCH_PARAMS
   );
   const [showFilterModal, setShowFilterModal] = useState(false);
+  const [showAddPropertyModal, setShowAddPropertyModal] = useState(false);
 
   // 지역 관련 상태
   const [regions, setRegions] = useState<Region[]>([]);
@@ -56,17 +57,9 @@ function AgentPropertyListPage() {
       try {
         setLoading(true);
         const response = await searchAgentProperties(params);
-        console.log("API Response:", response); // 디버깅용 로그
 
-        // API 응답 구조에 맞춰 데이터 추출
-        const apiResponse = response as unknown as {
-          data: {
-            agentProperty: Property[];
-            totalElements: number;
-          };
-        };
-        const propertyData = apiResponse.data?.agentProperty || [];
-        const totalElements = apiResponse.data?.totalElements || 0;
+        const propertyData = response.data?.agentProperty || [];
+        const totalElements = response.data?.totalElements || 0;
 
         setAgentPropertyList(propertyData);
         setTotalElements(totalElements);
@@ -273,6 +266,20 @@ function AgentPropertyListPage() {
     fetchProperties(searchParams);
   }, [fetchProperties, searchParams]);
 
+  const handleAddProperty = useCallback(() => {
+    setShowAddPropertyModal(true);
+  }, []);
+
+  const handleCloseAddPropertyModal = useCallback(() => {
+    setShowAddPropertyModal(false);
+  }, []);
+
+  const handleSaveProperty = useCallback(() => {
+    // 매물 저장 후 목록 새로고침
+    fetchProperties(searchParams);
+    setShowAddPropertyModal(false);
+  }, [fetchProperties, searchParams]);
+
   // 초기 데이터 로드
   useEffect(() => {
     fetchProperties(DEFAULT_SEARCH_PARAMS);
@@ -305,6 +312,10 @@ function AgentPropertyListPage() {
       onFilterModalToggle={handleFilterModalToggle}
       onFilterModalClose={handleFilterModalClose}
       onRefresh={handleRefresh}
+      onAddProperty={handleAddProperty}
+      showAddPropertyModal={showAddPropertyModal}
+      onCloseAddPropertyModal={handleCloseAddPropertyModal}
+      onSaveProperty={handleSaveProperty}
     />
   );
 }

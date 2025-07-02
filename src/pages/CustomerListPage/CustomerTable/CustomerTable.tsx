@@ -5,7 +5,10 @@ import DeleteConfirmModal from "@components/DeleteConfirm/DeleteConfirmModal";
 import Table, { ColumnConfig } from "@components/Table/Table";
 import { showToast } from "@components/Toast/Toast";
 import { Customer, Label } from "@ts/customer";
-import { deleteCustomer } from "@apis/customerService";
+import {
+  deleteCustomer,
+  fetchLabels as fetchCustomerLabels,
+} from "@apis/customerService";
 import { CUSTOMER_TABLE_COLUMNS } from "./constants";
 import {
   renderNameColumn,
@@ -54,15 +57,15 @@ const CustomerTable = ({
 
   // 라벨 목록 가져오기
   useEffect(() => {
-    const fetchLabels = async () => {
+    const fetchLabelsData = async () => {
       try {
-        const labels = await fetchLabels();
+        const labels = await fetchCustomerLabels();
         setAvailableLabels(labels);
       } catch (error) {
         console.error("Failed to fetch labels:", error);
       }
     };
-    fetchLabels();
+    fetchLabelsData();
   }, []);
 
   const handleRowClick = (customer: Customer) => {

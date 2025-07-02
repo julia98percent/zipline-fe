@@ -45,6 +45,7 @@ function PreCounselListPage() {
     setIsLoading(true);
     try {
       const data = await fetchCounsels(page, rowsPerPage);
+
       setCounsels(data.surveyResponses);
       setTotalElements(data.totalElements);
     } catch (error) {
@@ -64,7 +65,11 @@ function PreCounselListPage() {
       <div className="w-full p-5">
         <Table
           isLoading={isLoading}
-          headerList={["이름", "전화번호", "상담 요청일"]}
+          columns={[
+            { key: "name", label: "이름" },
+            { key: "phoneNumber", label: "전화번호" },
+            { key: "submittedAt", label: "상담 요청일" },
+          ]}
           bodyList={counsels.map((counsel) => ({
             name: counsel.name,
             phoneNumber: counsel.phoneNumber,

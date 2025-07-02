@@ -24,13 +24,16 @@ const RecentCustomersModal = ({
 }: RecentCustomersModalProps) => {
   const [surveyResponses, setSurveyResponses] = useState<PreCounsel[]>([]);
   const [loading, setLoading] = useState(false);
+  const [page, setPage] = useState(0);
+  const [rowsPerPage, setRowsPerPage] = useState(10);
+  const [totalCount, setTotalCount] = useState(0);
 
   const fetchData = useCallback(async () => {
     if (!open) return;
 
     setLoading(true);
     try {
-      const responses = await fetchSubmittedSurveyResponses(0, 10);
+      const responses = await fetchSubmittedSurveyResponses(page, rowsPerPage);
       setSurveyResponses(
         responses.surveyResponses.map((response) => ({
           uid: response.surveyResponseUid,
@@ -42,19 +45,34 @@ const RecentCustomersModal = ({
           surveyResponseUid: response.surveyResponseUid,
         }))
       );
+      setTotalCount(responses.totalItems);
     } catch (error) {
       console.error("Failed to fetch survey responses:", error);
       setSurveyResponses([]);
+      setTotalCount(0);
     } finally {
       setLoading(false);
     }
-  }, [open]);
+  }, [open, page, rowsPerPage]);
 
   useEffect(() => {
     fetchData();
   }, [fetchData]);
 
-  // 컬럼 설정
+  const handlePageChange = (newPage: number) => {
+    setPage(newPage);
+  };
+
+  const handleRowsPerPageChange = (newRowsPerPage: number) => {
+    setRowsPerPage(newRowsPerPage);
+    setPage(0);
+  };
+
+  const handleClose = () => {
+    setPage(0);
+    onClose();
+  };
+
   const columns: ColumnConfig<PreCounsel>[] = [
     {
       key: "name",
@@ -76,7 +94,6 @@ const RecentCustomersModal = ({
     },
   ];
 
-  // 테이블 데이터 변환 (uid를 id로 매핑)
   const tableData = surveyResponses.map((survey) => ({
     id: survey.surveyResponseUid,
     ...survey,
@@ -85,7 +102,7 @@ const RecentCustomersModal = ({
   return (
     <Dialog
       open={open}
-      onClose={onClose}
+      onClose={handleClose}
       maxWidth="md"
       fullWidth
       PaperProps={{
@@ -105,14 +122,21 @@ const RecentCustomersModal = ({
           columns={columns}
           bodyList={tableData}
           handleRowClick={(survey) => onSurveyClick(survey.surveyResponseUid)}
-          pagination={false}
+          pagination={true}
+          page={page}
+          rowsPerPage={rowsPerPage}
+          totalElements={totalCount}
+          handleChangePage={(_, newPage) => handlePageChange(newPage)}
+          handleChangeRowsPerPage={(event) =>
+            handleRowsPerPageChange(parseInt(event.target.value, 10))
+          }
           isLoading={loading}
           noDataMessage="신규 설문이 없습니다"
         />
       </DialogContent>
       <DialogActions sx={{ p: 2 }}>
         <Button
-          onClick={onClose}
+          onClick={handleClose}
           variant="contained"
           sx={{
             backgroundColor: "#164F9E",

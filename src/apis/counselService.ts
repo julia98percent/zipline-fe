@@ -70,8 +70,14 @@ export const fetchCounsels = async (page: number, rowsPerPage: number) => {
       params: { page: page + 1, size: rowsPerPage },
     });
 
-    return handleApiResponse(response, COUNSEL_ERROR_MESSAGES.FETCH_FAILED);
+    const result = handleApiResponse(
+      response,
+      COUNSEL_ERROR_MESSAGES.FETCH_FAILED
+    );
+
+    return result;
   } catch (error) {
+    console.error("Error in fetchCounsels:", error);
     return handleApiError(error, "fetching counsels");
   }
 };

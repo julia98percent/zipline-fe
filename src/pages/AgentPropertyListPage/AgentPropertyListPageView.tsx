@@ -4,6 +4,7 @@ import { Box } from "@mui/material";
 import { useNavigate } from "react-router-dom";
 import PageHeader from "@components/PageHeader/PageHeader";
 import { AgentPropertyTable, AgentPropertyFilterModal } from "./components";
+import PropertyAddModal from "./components/PropertyAddButtonList/PropertyAddModal/PropertyAddModal";
 import { Property } from "@ts/property";
 import { Region } from "@ts/region";
 import { AgentPropertySearchParams } from "@apis/propertyService";
@@ -60,6 +61,10 @@ interface AgentPropertyListPageViewProps {
   onFilterModalToggle: () => void;
   onFilterModalClose: () => void;
   onRefresh: () => void;
+  onAddProperty?: () => void;
+  showAddPropertyModal: boolean;
+  onCloseAddPropertyModal: () => void;
+  onSaveProperty: () => void;
 }
 
 const AgentPropertyListPageView = ({
@@ -87,6 +92,10 @@ const AgentPropertyListPageView = ({
   onFilterModalToggle,
   onFilterModalClose,
   onRefresh,
+  onAddProperty,
+  showAddPropertyModal,
+  onCloseAddPropertyModal,
+  onSaveProperty,
 }: AgentPropertyListPageViewProps) => {
   const navigate = useNavigate();
 
@@ -240,6 +249,26 @@ const AgentPropertyListPageView = ({
               </FilterButtonWrapper>
             </LeftButtonGroup>
             <RightButtonGroup>
+              {onAddProperty && (
+                <FilterButton
+                  variant="contained"
+                  onClick={onAddProperty}
+                  sx={{
+                    backgroundColor: "#164F9E",
+                    color: "white",
+                    minWidth: "40px",
+                    padding: "5px",
+                    borderRadius: "20px",
+                    width: "100px",
+                    marginRight: "10px",
+                    "&:hover": {
+                      backgroundColor: "#123d7a",
+                    },
+                  }}
+                >
+                  매물 추가
+                </FilterButton>
+              )}
               <FilterButton
                 variant="outlined"
                 onClick={onRefresh}
@@ -288,6 +317,13 @@ const AgentPropertyListPageView = ({
           onSidoChange={onSidoChange}
           onGuChange={onGuChange}
           onDongChange={onDongChange}
+        />
+
+        {/* 매물 추가 모달 */}
+        <PropertyAddModal
+          open={showAddPropertyModal}
+          handleClose={onCloseAddPropertyModal}
+          fetchPropertyData={onSaveProperty}
         />
       </ContentContainer>
     </PageContainer>

@@ -16,8 +16,15 @@ const PropertyDetailSection = ({ property }: PropertyDetailSectionProps) => {
     value: number | null | undefined,
     suffix: string = ""
   ) => {
-    if (value === null || value === undefined) return "-";
+    if (value === null || value === undefined || isNaN(value)) return "-";
     return `${value}${suffix}`;
+  };
+
+  const formatConstructionYear = (year: string | null | undefined) => {
+    if (!year || year.trim() === "") return "-";
+    const numYear = Number(year);
+    if (isNaN(numYear) || numYear <= 0) return "-";
+    return `${numYear}년`;
   };
 
   return (
@@ -52,7 +59,7 @@ const PropertyDetailSection = ({ property }: PropertyDetailSectionProps) => {
           <InfoItem>
             <InfoLabel>건축년도</InfoLabel>
             <InfoValue>
-              {formatValue(Number(property.constructionYear), "년")}
+              {formatConstructionYear(property.constructionYear)}
             </InfoValue>
           </InfoItem>
         </Box>

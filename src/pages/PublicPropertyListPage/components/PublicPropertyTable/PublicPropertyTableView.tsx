@@ -13,7 +13,6 @@ interface Props {
   totalPages: number;
   page: number;
   rowsPerPage: number;
-  category?: string;
   onSort: (field: string) => void;
   sortFields: { [key: string]: string };
   useMetric: boolean;
@@ -30,7 +29,6 @@ const PublicPropertyTableView = ({
   totalPages,
   page,
   rowsPerPage,
-  category,
   onSort,
   sortFields,
   useMetric,
@@ -40,34 +38,6 @@ const PublicPropertyTableView = ({
   onPageChange,
   onRowsPerPageChange,
 }: Props) => {
-  const isPriceSorted = !!sortFields.price;
-  const isDepositSorted = !!sortFields.deposit;
-  const isMonthlyRentSorted = !!sortFields.monthlyRent;
-
-  // Determine column visibility based on sort first, then category
-  let showPriceHeader = false;
-  let showDepositHeader = false;
-  let showMonthlyRentHeader = false;
-
-  if (isPriceSorted) {
-    showPriceHeader = true;
-    showDepositHeader = false;
-    showMonthlyRentHeader = false;
-  } else if (isDepositSorted) {
-    showPriceHeader = false;
-    showDepositHeader = true;
-    showMonthlyRentHeader = false;
-  } else if (isMonthlyRentSorted) {
-    showPriceHeader = false;
-    showDepositHeader = true;
-    showMonthlyRentHeader = true;
-  } else {
-    showPriceHeader = !category || category === "SALE";
-    showDepositHeader =
-      !category || category === "MONTHLY" || category === "DEPOSIT";
-    showMonthlyRentHeader = !category || category === "MONTHLY";
-  }
-
   // 컬럼 설정
   const columns: ColumnConfig<PublicPropertyItem>[] = [
     {
@@ -79,11 +49,11 @@ const PublicPropertyTableView = ({
       ),
     },
     {
-      key: "buildingType",
+      key: "category",
       label: "매물 유형",
       align: "center",
       render: (_, property) => (
-        <PropertyCellRenderer.Category category={property.buildingType} />
+        <PropertyCellRenderer.Category category={property.category} />
       ),
     },
     {
@@ -98,13 +68,17 @@ const PublicPropertyTableView = ({
       key: "address",
       label: "주소",
       align: "center",
-      render: (_, property) => property.address,
+      render: (_, property) => (
+        <PropertyCellRenderer.Address address={property.address} />
+      ),
     },
     {
       key: "description",
       label: "설명",
       align: "center",
-      render: (_, property) => property.description,
+      render: (_, property) => (
+        <PropertyCellRenderer.Description description={property.description} />
+      ),
     },
     {
       key: "price",
@@ -117,7 +91,6 @@ const PublicPropertyTableView = ({
         />
       ),
       align: "center",
-      visible: showPriceHeader,
       render: (_, property) => (
         <PropertyCellRenderer.Price price={property.price} />
       ),
@@ -133,7 +106,6 @@ const PublicPropertyTableView = ({
         />
       ),
       align: "center",
-      visible: showDepositHeader,
       render: (_, property) => (
         <PropertyCellRenderer.Price price={property.deposit} />
       ),
@@ -149,7 +121,6 @@ const PublicPropertyTableView = ({
         />
       ),
       align: "center",
-      visible: showMonthlyRentHeader,
       render: (_, property) => (
         <PropertyCellRenderer.MonthlyRent monthlyRent={property.monthlyRent} />
       ),

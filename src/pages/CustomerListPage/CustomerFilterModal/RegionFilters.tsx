@@ -15,7 +15,9 @@ interface Region {
 
 interface Props {
   region: RegionState;
-  setRegion: (region: RegionState | ((prev: RegionState) => RegionState)) => void;
+  setRegion: (
+    region: RegionState | ((prev: RegionState) => RegionState)
+  ) => void;
   onSidoChange?: (sidoCortarNo: number) => void;
   onSigunguChange?: (sigunguCortarNo: number) => void;
 }

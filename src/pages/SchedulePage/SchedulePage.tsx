@@ -43,7 +43,7 @@ const SchedulePage = () => {
   );
   const [schedules, setSchedules] = useState<Schedule[]>([]);
   const [isUpdating, setIsUpdating] = useState(false);
-  const [dayMaxEvents, setDayMaxEvents] = useState(4);
+  const [dayMaxEvents, setDayMaxEvents] = useState(6);
 
   const fetchSchedules = async (startDate: string, endDate: string) => {
     try {

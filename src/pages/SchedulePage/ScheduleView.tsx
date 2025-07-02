@@ -189,14 +189,15 @@ const ScheduleView = ({ state, handlers }: ScheduleViewProps) => {
             textAlign: "center",
           },
           "& .fc-view-harness": {
-            minHeight: "600px !important",
+            minHeight: "700px !important",
           },
           "& .fc-daygrid-day": {
             position: "relative",
+            minHeight: "120px !important",
             "&::before": {
               content: '""',
               display: "block",
-              paddingTop: "80%",
+              paddingTop: "100%",
             },
           },
           "& .fc-day-other": {
@@ -228,6 +229,7 @@ const ScheduleView = ({ state, handlers }: ScheduleViewProps) => {
           "& .fc-daygrid-day-bottom": {
             padding: "0",
             flex: "0 0 auto",
+            marginTop: "2px",
           },
           "& .fc .fc-button": {
             padding: "4px 8px",
@@ -261,10 +263,11 @@ const ScheduleView = ({ state, handlers }: ScheduleViewProps) => {
             fontSize: "1.1rem",
           },
           "& .fc .fc-event": {
-            padding: "1px 2px",
-            fontSize: "0.9rem",
-            minHeight: "20px",
-            marginBottom: "0",
+            padding: "0px 2px",
+            fontSize: "0.85rem",
+            minHeight: "18px",
+            marginBottom: "1px",
+            lineHeight: "1.2",
           },
           "& .fc .fc-daygrid-more-link": {
             fontSize: "0.9rem",
@@ -354,7 +357,10 @@ const ScheduleView = ({ state, handlers }: ScheduleViewProps) => {
           dayCellDidMount={(arg) => {
             const cell = arg.el;
             const width = cell.offsetWidth;
-            cell.style.height = `${width}px`;
+            // 최소 높이를 120px로 설정하고, 너비에 따라 동적으로 조정
+            const minHeight = 120;
+            const calculatedHeight = Math.max(minHeight, width * 0.9);
+            cell.style.height = `${calculatedHeight}px`;
           }}
         />
       </Paper>

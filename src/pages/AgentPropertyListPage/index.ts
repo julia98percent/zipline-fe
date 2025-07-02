@@ -1,1 +1,1 @@
-export { default } from "./PrivatePropertyListPage";
+export { default } from "./AgentPropertyListPage";

@@ -11,7 +11,7 @@ import {
   CircularProgress,
 } from "@mui/material";
 import { useDropzone } from "react-dropzone";
-import apiClient from "@apis/apiClient";
+import { uploadPropertiesBulk } from "@apis/propertyService";
 import { Link } from "react-router-dom";
 import { AxiosError } from "axios";
 import { showToast } from "@components/Toast/Toast";
@@ -59,12 +59,9 @@ function BulkUploadModal({ open, handleClose, fetchPropertyData }: Props) {
   const handleUpload = async () => {
     if (!file || isLoading) return;
 
-    const formData = new FormData();
-    formData.append("file", file);
-
     try {
       setIsLoading(true);
-      await apiClient.post("/properties/bulk", formData);
+      await uploadPropertiesBulk(file);
       showToast({
         message: "매물 정보를 업로드 했습니다.",
         type: "success",

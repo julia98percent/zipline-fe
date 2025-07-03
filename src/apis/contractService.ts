@@ -162,7 +162,7 @@ export interface ContractRequest {
   price: number;
   lessorOrSellerUids: number[];
   lesseeOrBuyerUids: number[];
-  propertyUid: number | null;
+  propertyUid: string | null;
   status: string;
 }
 

@@ -29,9 +29,10 @@ const PasswordInput = ({
   onBlur,
   onKeyDown,
 }: PasswordInputProps) => {
-  const isPasswordError = error || (password && !isValidPassword(password));
+  const isPasswordError =
+    error || Boolean(password && !isValidPassword(password));
   const isPasswordCheckError =
-    error || (passwordCheck && password !== passwordCheck);
+    error || Boolean(passwordCheck && password !== passwordCheck);
 
   const passwordErrorMessage =
     helperText ||

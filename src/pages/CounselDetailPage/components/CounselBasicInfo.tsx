@@ -98,7 +98,7 @@ const CounselBasicInfo = ({
             />
           ) : (
             <span className={styles.infoValue}>
-              {dayjs(data.dueDate).format("YYYY-MM-DD")}
+              {data.dueDate ? dayjs(data.dueDate).format("YYYY-MM-DD") : "-"}
             </span>
           )}
         </div>

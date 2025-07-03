@@ -48,7 +48,7 @@ function AgentPropertyDetailPage() {
     if (!propertyUid) return;
 
     try {
-      const contractData = await fetchPropertyContract(propertyUid);
+      const contractData = await fetchPropertyContract(Number(propertyUid));
       setContractInfo(contractData);
     } catch (error) {
       console.error(error);
@@ -60,7 +60,9 @@ function AgentPropertyDetailPage() {
     if (!propertyUid) return;
 
     try {
-      const historyData = await fetchPropertyContractHistory(propertyUid);
+      const historyData = await fetchPropertyContractHistory(
+        Number(propertyUid)
+      );
       setContractHistories(historyData);
     } catch (error) {
       console.error("계약 히스토리 불러오기 실패", error);
@@ -75,7 +77,9 @@ function AgentPropertyDetailPage() {
     if (!propertyUid) return;
 
     try {
-      const counselData = await fetchPropertyCounselHistory(propertyUid);
+      const counselData = await fetchPropertyCounselHistory(
+        Number(propertyUid)
+      );
       setCounselHistories(counselData);
     } catch (error) {
       console.error("상담 히스토리 불러오기 실패", error);
@@ -108,7 +112,7 @@ function AgentPropertyDetailPage() {
     if (!propertyUid) return;
 
     try {
-      await deleteProperty(propertyUid);
+      await deleteProperty(Number(propertyUid));
       showToast({
         message: "매물을 삭제했습니다.",
         type: "success",
@@ -136,7 +140,7 @@ function AgentPropertyDetailPage() {
       tab={tab}
       editModalOpen={editModalOpen}
       deleteModalOpen={deleteModalOpen}
-      propertyUid={propertyUid || ""}
+      propertyUid={propertyUid || null}
       onTabChange={setTab}
       onEdit={handleEdit}
       onDelete={handleDelete}

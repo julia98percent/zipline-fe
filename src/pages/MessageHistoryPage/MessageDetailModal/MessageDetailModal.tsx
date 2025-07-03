@@ -43,7 +43,6 @@ function MessageDetailModal({ open, onClose, messageHistory }: Props) {
         setMessageList(response);
         setLoading(false);
       } catch {
-        setMessageList([]);
         setLoading(false);
       }
     }

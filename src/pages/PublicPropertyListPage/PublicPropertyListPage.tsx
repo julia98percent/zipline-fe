@@ -18,10 +18,10 @@ const INITIAL_SEARCH_PARAMS: PublicPropertySearchParams = {
   maxDeposit: undefined,
   minMonthlyRent: undefined,
   maxMonthlyRent: undefined,
-  minExclusiveArea: undefined,
-  maxExclusiveArea: undefined,
-  minSupplyArea: undefined,
-  maxSupplyArea: undefined,
+  minNetArea: undefined,
+  maxNetArea: undefined,
+  minTotalArea: undefined,
+  maxTotalArea: undefined,
 };
 const PublicPropertyListPage = () => {
   const [publicPropertyList, setPublicPropertyList] = useState<

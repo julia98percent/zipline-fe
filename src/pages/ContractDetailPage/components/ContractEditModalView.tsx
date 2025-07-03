@@ -29,7 +29,7 @@ export interface ContractFormData {
   price: string;
   lessorUids: number[];
   lesseeUids: number[];
-  propertyUid: number | null;
+  propertyUid: string | null;
   status: ContractStatus | "";
 }
 

@@ -26,8 +26,7 @@ interface CreateCounselRequest {
   dueDate?: string;
   propertyUid?: string;
   counselDetails: Array<{
-    question: string;
-    answer: string;
+    content: string;
   }>;
 }
 
@@ -70,14 +69,8 @@ export const fetchCounsels = async (page: number, rowsPerPage: number) => {
       params: { page: page + 1, size: rowsPerPage },
     });
 
-    const result = handleApiResponse(
-      response,
-      COUNSEL_ERROR_MESSAGES.FETCH_FAILED
-    );
-
-    return result;
+    return handleApiResponse(response, COUNSEL_ERROR_MESSAGES.FETCH_FAILED);
   } catch (error) {
-    console.error("Error in fetchCounsels:", error);
     return handleApiError(error, "fetching counsels");
   }
 };

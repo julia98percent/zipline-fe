@@ -1,25 +1,9 @@
 import { Typography } from "@mui/material";
 import styles from "../styles/CounselDetailPage.module.css";
-import { PropertyCategoryType } from "@ts/property";
-
-interface PropertyInfo {
-  address: string;
-  type: string;
-  price: number | null;
-  deposit: number | null;
-  monthlyRent: number | null;
-  exclusiveArea: number;
-  supplyArea: number;
-  floor: number;
-  constructionYear: string;
-  hasElevator: boolean;
-  parkingCapacity: number;
-  hasPet: boolean;
-  description?: string;
-}
+import { Property, PropertyCategoryType } from "@ts/property";
 
 interface CounselPropertyInfoProps {
-  property: PropertyInfo;
+  property: Property;
   PROPERTY_CATEGORIES: Record<PropertyCategoryType, string>;
 }
 
@@ -50,7 +34,7 @@ const CounselPropertyInfo = ({
             </span>
           </div>
         )}
-        {property.deposit && (
+        {property.deposit !== null && (
           <div className={styles.infoItem}>
             <span className={styles.infoLabel}>보증금</span>
             <span className={styles.infoValue}>
@@ -58,7 +42,7 @@ const CounselPropertyInfo = ({
             </span>
           </div>
         )}
-        {property.monthlyRent && (
+        {property.monthlyRent !== null && (
           <div className={styles.infoItem}>
             <span className={styles.infoLabel}>월세</span>
             <span className={styles.infoValue}>
@@ -68,11 +52,11 @@ const CounselPropertyInfo = ({
         )}
         <div className={styles.infoItem}>
           <span className={styles.infoLabel}>전용면적</span>
-          <span className={styles.infoValue}>{property.exclusiveArea}㎡</span>
+          <span className={styles.infoValue}>{property.netArea}㎡</span>
         </div>
         <div className={styles.infoItem}>
           <span className={styles.infoLabel}>공급면적</span>
-          <span className={styles.infoValue}>{property.supplyArea}㎡</span>
+          <span className={styles.infoValue}>{property.totalArea}㎡</span>
         </div>
         <div className={styles.infoItem}>
           <span className={styles.infoLabel}>층수</span>

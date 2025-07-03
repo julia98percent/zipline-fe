@@ -47,8 +47,8 @@ export interface SearchParams {
   maxDeposit?: number;
   minMonthlyRent?: number;
   maxMonthlyRent?: number;
-  minExclusiveArea?: number;
-  maxExclusiveArea?: number;
-  minSupplyArea?: number;
-  maxSupplyArea?: number;
+  minNetArea?: number;
+  maxNetArea?: number;
+  minTotalArea?: number;
+  maxTotalArea?: number;
 }

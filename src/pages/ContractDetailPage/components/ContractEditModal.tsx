@@ -135,7 +135,7 @@ const ContractEditModal = ({
         price: contractData.price?.toString() ?? "",
         lessorUids,
         lesseeUids,
-        propertyUid: matchedProperty ? matchedProperty.uid : null,
+        propertyUid: matchedProperty ? `${matchedProperty.uid}` : null,
         status: (contractData.status ?? "") as ContractStatus | "",
       });
 

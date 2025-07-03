@@ -33,8 +33,6 @@ interface CounselDetailPageViewProps {
   onDeleteClick: () => void;
   onDeleteCancel: () => void;
   onDeleteConfirm: () => void;
-  onAddQuestion: () => void;
-  onRemoveQuestion: (counselDetailUid: number) => void;
 }
 
 const CounselDetailPageView = ({
@@ -53,8 +51,6 @@ const CounselDetailPageView = ({
   onDeleteClick,
   onDeleteCancel,
   onDeleteConfirm,
-  onAddQuestion,
-  onRemoveQuestion,
 }: CounselDetailPageViewProps) => {
   if (isLoading) {
     return (
@@ -107,8 +103,6 @@ const CounselDetailPageView = ({
           counselDetails={data.counselDetails}
           isEditing={isEditing}
           onDetailChange={onDetailChange}
-          onAddQuestion={onAddQuestion}
-          onRemoveQuestion={onRemoveQuestion}
         />
 
         <CounselDeleteDialog

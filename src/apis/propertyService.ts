@@ -320,26 +320,14 @@ export const searchPublicProperties = async (
         "maxMonthlyRent",
         searchParams.maxMonthlyRent.toString()
       );
-    if (searchParams.minExclusiveArea)
-      queryParams.append(
-        "minExclusiveArea",
-        searchParams.minExclusiveArea.toString()
-      );
-    if (searchParams.maxExclusiveArea)
-      queryParams.append(
-        "maxExclusiveArea",
-        searchParams.maxExclusiveArea.toString()
-      );
-    if (searchParams.minSupplyArea)
-      queryParams.append(
-        "minSupplyArea",
-        searchParams.minSupplyArea.toString()
-      );
-    if (searchParams.maxSupplyArea)
-      queryParams.append(
-        "maxSupplyArea",
-        searchParams.maxSupplyArea.toString()
-      );
+    if (searchParams.minNetArea)
+      queryParams.append("minNetArea", searchParams.minNetArea.toString());
+    if (searchParams.maxNetArea)
+      queryParams.append("maxNetArea", searchParams.maxNetArea.toString());
+    if (searchParams.minTotalArea)
+      queryParams.append("minTotalArea", searchParams.minTotalArea.toString());
+    if (searchParams.maxTotalArea)
+      queryParams.append("maxTotalArea", searchParams.maxTotalArea.toString());
 
     const { data } = await apiClient.get(
       `/property-articles/search?${queryParams.toString()}`
@@ -347,7 +335,7 @@ export const searchPublicProperties = async (
 
     const normalizedData = data.content.map((item: PublicPropertyItem) => ({
       ...item,
-      supplyArea: item.supplyArea == null ? 0 : item.supplyArea,
+      totalArea: item.totalArea == null ? 0 : item.totalArea,
     }));
 
     return {

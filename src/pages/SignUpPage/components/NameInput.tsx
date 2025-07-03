@@ -24,7 +24,7 @@ const NameInput = ({
   onBlur,
   onKeyDown,
 }: NameInputProps) => {
-  const isError = error || (name && !isValidName(name));
+  const isError = error || Boolean(name && !isValidName(name));
   const errorMessage =
     helperText ||
     (name && !isValidName(name)

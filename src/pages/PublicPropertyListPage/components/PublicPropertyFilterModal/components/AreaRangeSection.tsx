@@ -1,20 +1,20 @@
 import { Box, Slider, Typography } from "@mui/material";
 
 interface AreaRangeSectionProps {
-  minExclusiveArea?: number;
-  maxExclusiveArea?: number;
-  minSupplyArea?: number;
-  maxSupplyArea?: number;
+  minNetArea?: number;
+  maxNetArea?: number;
+  minTotalArea?: number;
+  maxTotalArea?: number;
   onSliderChange: (
     field: string
   ) => (_: Event, newValue: number | number[]) => void;
 }
 
 export default function AreaRangeSection({
-  minExclusiveArea,
-  maxExclusiveArea,
-  minSupplyArea,
-  maxSupplyArea,
+  minNetArea,
+  maxNetArea,
+  minTotalArea,
+  maxTotalArea,
   onSliderChange,
 }: AreaRangeSectionProps) {
   return (
@@ -27,8 +27,8 @@ export default function AreaRangeSection({
       <Box sx={{ mb: 3 }}>
         <Typography gutterBottom>전용면적 (㎡)</Typography>
         <Slider
-          value={[minExclusiveArea || 0, maxExclusiveArea || 200]}
-          onChange={onSliderChange("ExclusiveArea")}
+          value={[minNetArea || 0, maxNetArea || 200]}
+          onChange={onSliderChange("NetArea")}
           min={0}
           max={50000}
           step={500}
@@ -41,8 +41,8 @@ export default function AreaRangeSection({
       <Box sx={{ mb: 3 }}>
         <Typography gutterBottom>공급면적 (㎡)</Typography>
         <Slider
-          value={[minSupplyArea || 0, maxSupplyArea || 200]}
-          onChange={onSliderChange("SupplyArea")}
+          value={[minTotalArea || 0, maxTotalArea || 200]}
+          onChange={onSliderChange("TotalArea")}
           min={0}
           max={50000}
           step={500}

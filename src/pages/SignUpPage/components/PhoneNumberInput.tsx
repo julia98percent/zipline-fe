@@ -27,7 +27,8 @@ const PhoneNumberInput = ({
   onBlur,
   onKeyDown,
 }: PhoneNumberInputProps) => {
-  const isError = error || (phoneNumber && !isValidPhoneNumber(phoneNumber));
+  const isError =
+    error || Boolean(phoneNumber && !isValidPhoneNumber(phoneNumber));
   const errorMessage =
     helperText ||
     (phoneNumber && !isValidPhoneNumber(phoneNumber)

@@ -23,7 +23,7 @@ const EmailInput = ({
   onBlur,
   onKeyDown,
 }: EmailInputProps) => {
-  const isError = error || (email && !isValidEmail(email));
+  const isError = error || Boolean(email && !isValidEmail(email));
   const errorMessage =
     helperText ||
     (email && !isValidEmail(email) ? "올바른 이메일 형식을 입력해주세요" : "");

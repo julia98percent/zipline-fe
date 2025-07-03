@@ -38,7 +38,7 @@ interface AgentPropertyDetailPageViewProps {
   tab: number;
   editModalOpen: boolean;
   deleteModalOpen: boolean;
-  propertyUid: number;
+  propertyUid: string | null;
   onTabChange: (value: number) => void;
   onEdit: () => void;
   onDelete: () => void;
@@ -76,7 +76,7 @@ function AgentPropertyDetailPageView({
             open={editModalOpen}
             handleClose={onEditModalClose}
             initialData={property}
-            propertyUid={Number(propertyUid)}
+            propertyUid={propertyUid}
             fetchPropertyData={onPropertyDataRefresh}
           />
         )}

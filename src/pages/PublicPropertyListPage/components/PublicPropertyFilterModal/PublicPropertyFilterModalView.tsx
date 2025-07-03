@@ -87,10 +87,10 @@ export default function PublicPropertyFilterModalView({
 
           {/* Area Ranges */}
           <AreaRangeSection
-            minExclusiveArea={localFilters.minExclusiveArea}
-            maxExclusiveArea={localFilters.maxExclusiveArea}
-            minSupplyArea={localFilters.minSupplyArea}
-            maxSupplyArea={localFilters.maxSupplyArea}
+            minNetArea={localFilters.minNetArea}
+            maxNetArea={localFilters.maxNetArea}
+            minTotalArea={localFilters.minTotalArea}
+            maxTotalArea={localFilters.maxTotalArea}
             onSliderChange={onSliderChange}
           />
         </Box>

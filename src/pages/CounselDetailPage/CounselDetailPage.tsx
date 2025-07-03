@@ -59,12 +59,13 @@ function CounselDetailPage() {
         title: editedData.title,
         type: editedData.type,
         counselDate: dayjs(editedData.counselDate).toISOString(),
-        dueDate: dayjs(editedData.dueDate).format("YYYY-MM-DD"),
+        dueDate: editedData.dueDate
+          ? dayjs(editedData.dueDate).format("YYYY-MM-DD")
+          : null,
         completed: editedData.completed,
         counselDetails: editedData.counselDetails.map(
           (detail: CounselDetailItem) => ({
-            question: detail.question,
-            answer: detail.answer,
+            content: detail.content,
           })
         ),
       };
@@ -150,30 +151,6 @@ function CounselDetailPage() {
     }
   };
 
-  const handleAddQuestion = () => {
-    if (!editedData) return;
-    const newDetail: CounselDetailItem = {
-      counselDetailUid: Date.now(),
-      question: "",
-      answer: "",
-    };
-    setEditedData({
-      ...editedData,
-      counselDetails: [...editedData.counselDetails, newDetail],
-    });
-  };
-
-  const handleRemoveQuestion = (counselDetailUid: number) => {
-    if (!editedData) return;
-    if (editedData.counselDetails.length <= 1) return;
-    setEditedData({
-      ...editedData,
-      counselDetails: editedData.counselDetails.filter(
-        (detail) => detail.counselDetailUid !== counselDetailUid
-      ),
-    });
-  };
-
   return (
     <CounselDetailPageView
       counselData={counselData}
@@ -191,8 +168,6 @@ function CounselDetailPage() {
       onDeleteClick={handleDeleteClick}
       onDeleteCancel={handleDeleteCancel}
       onDeleteConfirm={handleDeleteConfirm}
-      onAddQuestion={handleAddQuestion}
-      onRemoveQuestion={handleRemoveQuestion}
     />
   );
 }

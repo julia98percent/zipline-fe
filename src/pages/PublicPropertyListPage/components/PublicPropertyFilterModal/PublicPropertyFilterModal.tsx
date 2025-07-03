@@ -183,10 +183,10 @@ const PublicPropertyFilterModal = ({
       maxDeposit: undefined,
       minMonthlyRent: undefined,
       maxMonthlyRent: undefined,
-      minExclusiveArea: undefined,
-      maxExclusiveArea: undefined,
-      minSupplyArea: undefined,
-      maxSupplyArea: undefined,
+      minNetArea: undefined,
+      maxNetArea: undefined,
+      minTotalArea: undefined,
+      maxTotalArea: undefined,
     });
     setRegion((prev) => ({
       ...prev,

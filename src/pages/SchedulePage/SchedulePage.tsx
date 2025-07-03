@@ -43,7 +43,7 @@ const SchedulePage = () => {
   );
   const [schedules, setSchedules] = useState<Schedule[]>([]);
   const [isUpdating, setIsUpdating] = useState(false);
-  const [dayMaxEvents, setDayMaxEvents] = useState(6);
+  const [dayMaxEvents, setDayMaxEvents] = useState(4);
 
   const fetchSchedules = async (startDate: string, endDate: string) => {
     try {
@@ -127,16 +127,10 @@ const SchedulePage = () => {
         const endOfMonth = dayjs().endOf("month").toISOString();
         await fetchSchedules(startOfMonth, endOfMonth);
 
-        showToast({
-          message: result.message || "일정이 성공적으로 등록되었습니다.",
-          type: "success",
-        });
+        showToast({ message: result.message, type: "success" });
         setIsAddModalOpen(false);
       } else {
-        showToast({
-          message: result.message || "일정 등록에 실패했습니다.",
-          type: "error",
-        });
+        showToast({ message: result.message, type: "error" });
       }
     } catch (error) {
       console.error("Failed to create schedule:", error);
@@ -160,13 +154,13 @@ const SchedulePage = () => {
         );
         handleCloseDetailModal();
         showToast({
-          message: result.message || "일정이 성공적으로 업데이트되었습니다.",
+          message: result.message,
           type: "success",
         });
       } else {
         console.error("Update failed:", result.message);
         showToast({
-          message: result.message || "일정 업데이트에 실패했습니다.",
+          message: result.message,
           type: "error",
         });
       }

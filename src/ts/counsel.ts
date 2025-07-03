@@ -49,8 +49,7 @@ export interface CounselDetail extends Counsel {
 
 export interface CounselDetailItem {
   counselDetailUid: number;
-  question: string;
-  answer: string;
+  content: string;
 }
 
 export type PreCounselListData = PaginatedResponse<

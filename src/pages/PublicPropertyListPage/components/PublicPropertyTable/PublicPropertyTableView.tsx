@@ -126,10 +126,10 @@ const PublicPropertyTableView = ({
       ),
     },
     {
-      key: "exclusiveArea",
+      key: "netArea",
       label: (
         <SortableHeader
-          field="exclusiveArea"
+          field="netArea"
           label="전용면적"
           unit={useMetric ? "(m²)" : "(평)"}
           sortFields={sortFields}
@@ -139,16 +139,16 @@ const PublicPropertyTableView = ({
       align: "center",
       render: (_, property) => (
         <PropertyCellRenderer.Area
-          area={property.exclusiveArea}
+          area={property.netArea}
           useMetric={useMetric}
         />
       ),
     },
     {
-      key: "supplyArea",
+      key: "totalArea",
       label: (
         <SortableHeader
-          field="supplyArea"
+          field="totalArea"
           label="공급면적"
           unit={useMetric ? "(m²)" : "(평)"}
           sortFields={sortFields}
@@ -158,7 +158,7 @@ const PublicPropertyTableView = ({
       align: "center",
       render: (_, property) => (
         <PropertyCellRenderer.Area
-          area={property.supplyArea ?? 0}
+          area={property.totalArea ?? 0}
           useMetric={useMetric}
         />
       ),

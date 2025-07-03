@@ -8,7 +8,6 @@ import {
   MenuItem,
   FormControl,
   InputLabel,
-  IconButton,
   Button,
   Box,
   CircularProgress,
@@ -19,8 +18,6 @@ import {
   fetchPropertiesForCounsel,
   createCounsel,
 } from "@apis/counselService";
-import AddCircleOutlineIcon from "@mui/icons-material/AddCircleOutline";
-import RemoveCircleOutlineIcon from "@mui/icons-material/RemoveCircleOutline";
 import { CounselCategory } from "@ts/counsel";
 
 interface Customer {
@@ -34,8 +31,7 @@ interface Property {
 }
 
 export interface CounselQuestion {
-  question: string;
-  answer: string;
+  content: string;
 }
 
 interface CounselModalProps {
@@ -48,12 +44,10 @@ function CounselModal({ open, onClose, onSuccess }: CounselModalProps) {
   const [selectedCustomer, setSelectedCustomer] = useState("");
   const [counselType, setCounselType] = useState("");
   const [dueDate, setDueDate] = useState("");
-  const [selectedProperty, setSelectedProperty] = useState<number | null>(null);
+  const [selectedProperty, setSelectedProperty] = useState<string | null>(null);
   const [title, setTitle] = useState("");
   const [counselDateTime, setCounselDateTime] = useState("");
-  const [questions, setQuestions] = useState<CounselQuestion[]>([
-    { question: "", answer: "" },
-  ]);
+  const [counselContent, setCounselContent] = useState("");
   const [customers, setCustomers] = useState<Customer[]>([]);
   const [properties, setProperties] = useState<Property[]>([]);
   const [isCustomersLoading, setIsCustomersLoading] = useState(false);
@@ -92,27 +86,6 @@ function CounselModal({ open, onClose, onSuccess }: CounselModalProps) {
     }
   }, [open]);
 
-  const handleAddQuestion = () => {
-    setQuestions([...questions, { question: "", answer: "" }]);
-  };
-
-  const handleRemoveQuestion = (index: number) => {
-    if (questions.length > 1) {
-      const newQuestions = questions.filter((_, i) => i !== index);
-      setQuestions(newQuestions);
-    }
-  };
-
-  const handleQuestionChange = (
-    index: number,
-    field: keyof CounselQuestion,
-    value: string
-  ) => {
-    const newQuestions = [...questions];
-    newQuestions[index][field] = value;
-    setQuestions(newQuestions);
-  };
-
   const handleSubmit = async () => {
     // 필수 입력 항목 검증
     if (!selectedCustomer || !counselType || !title || !counselDateTime) {
@@ -120,12 +93,9 @@ function CounselModal({ open, onClose, onSuccess }: CounselModalProps) {
       return;
     }
 
-    // 최소 하나의 문항이 있는지 확인
-    const hasValidQuestion = questions.some(
-      (q) => q.question.trim() && q.answer.trim()
-    );
-    if (!hasValidQuestion) {
-      alert("최소 하나의 문항을 입력해주세요.");
+    // 상담 내용이 있는지 확인
+    if (!counselContent.trim()) {
+      alert("상담 내용을 입력해주세요.");
       return;
     }
 
@@ -135,11 +105,12 @@ function CounselModal({ open, onClose, onSuccess }: CounselModalProps) {
         counselDate: new Date(counselDateTime).toISOString(),
         type: counselType,
         dueDate,
-        propertyUid: selectedProperty,
-        counselDetails: questions.map((q) => ({
-          question: q.question,
-          answer: q.answer,
-        })),
+        propertyUid: selectedProperty || undefined,
+        counselDetails: [
+          {
+            content: counselContent,
+          },
+        ],
       });
 
       onClose();
@@ -242,44 +213,16 @@ function CounselModal({ open, onClose, onSuccess }: CounselModalProps) {
             </Select>
           </FormControl>
 
-          {questions.map((question, index) => (
-            <Box
-              key={index}
-              sx={{ display: "flex", gap: 2, alignItems: "center" }}
-            >
-              <TextField
-                label="질문"
-                value={question.question}
-                onChange={(e) =>
-                  handleQuestionChange(index, "question", e.target.value)
-                }
-                fullWidth
-              />
-              <TextField
-                label="답변"
-                value={question.answer}
-                onChange={(e) =>
-                  handleQuestionChange(index, "answer", e.target.value)
-                }
-                fullWidth
-              />
-              <IconButton
-                onClick={() => handleRemoveQuestion(index)}
-                disabled={questions.length === 1}
-                sx={{ color: questions.length === 1 ? "gray" : "red" }}
-              >
-                <RemoveCircleOutlineIcon />
-              </IconButton>
-            </Box>
-          ))}
-
-          <Button
-            startIcon={<AddCircleOutlineIcon />}
-            onClick={handleAddQuestion}
-            sx={{ alignSelf: "flex-start" }}
-          >
-            문항 추가
-          </Button>
+          <TextField
+            label="상담 내용"
+            value={counselContent}
+            onChange={(e) => setCounselContent(e.target.value)}
+            multiline
+            rows={6}
+            placeholder="상담 내용을 입력해주세요"
+            fullWidth
+            required
+          />
         </Box>
       </DialogContent>
       <DialogActions>

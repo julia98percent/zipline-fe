@@ -37,7 +37,7 @@ export interface PropertyBase {
 }
 
 export interface Property extends PropertyBase {
-  customerName: string;
+  customer: string;
   detailAddress: string;
   legalDistrictCode: string;
   moveInDate: string;
@@ -86,8 +86,8 @@ export interface PublicPropertyItem {
   monthlyRent: number;
   longitude: number;
   latitude: number;
-  supplyArea: number;
-  exclusiveArea: number;
+  totalArea: number;
+  netArea: number;
   platform: string;
   platformUrl: string;
   createdAt: string;
@@ -112,10 +112,10 @@ export interface PublicPropertySearchParams {
   maxDeposit?: number;
   minMonthlyRent?: number;
   maxMonthlyRent?: number;
-  minExclusiveArea?: number;
-  maxExclusiveArea?: number;
-  minSupplyArea?: number;
-  maxSupplyArea?: number;
+  minNetArea?: number;
+  maxNetArea?: number;
+  minTotalArea?: number;
+  maxTotalArea?: number;
 }
 
 export type PublicPropertySearchResponse = PaginatedResponse<

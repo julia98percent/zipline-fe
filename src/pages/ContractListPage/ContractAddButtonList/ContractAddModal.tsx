@@ -35,7 +35,7 @@ const ContractAddModal = ({ open, handleClose, fetchContractData }: Props) => {
 
   const [lessorUids, setLessorUids] = useState<number[]>([]);
   const [lesseeUids, setLesseeUids] = useState<number[]>([]);
-  const [propertyUid, setPropertyUid] = useState<string | null>(null);
+  const [propertyUid, setPropertyUid] = useState<number | null>(null);
   const [status, setStatus] = useState<ContractStatus>("IN_PROGRESS");
 
   const [customerOptions, setCustomerOptions] = useState<CustomerResponse[]>(

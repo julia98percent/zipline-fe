@@ -33,7 +33,7 @@ function AgentPropertyDetailPage() {
     if (!propertyUid) return;
 
     try {
-      const propertyData = await fetchPropertyDetail(propertyUid);
+      const propertyData = await fetchPropertyDetail(Number(propertyUid));
       setProperty(propertyData);
     } catch (error) {
       console.error(error);
@@ -129,6 +129,8 @@ function AgentPropertyDetailPage() {
     }
   };
 
+  if (!propertyUid) navigate("/error");
+
   if (!property) return null;
 
   return (
@@ -140,7 +142,7 @@ function AgentPropertyDetailPage() {
       tab={tab}
       editModalOpen={editModalOpen}
       deleteModalOpen={deleteModalOpen}
-      propertyUid={propertyUid || null}
+      propertyUid={Number(propertyUid)}
       onTabChange={setTab}
       onEdit={handleEdit}
       onDelete={handleDelete}

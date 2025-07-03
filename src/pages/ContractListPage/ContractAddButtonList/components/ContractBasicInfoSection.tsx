@@ -8,7 +8,7 @@ interface Props {
   setCategory: (category: string | null) => void;
   status: ContractStatus;
   setStatus: (status: ContractStatus) => void;
-  propertyUid: string | null;
+  propertyUid: number | null;
   setPropertyUid: (uid: number | null) => void;
   propertyOptions: AgentPropertyResponse[];
   errors: FormErrors;

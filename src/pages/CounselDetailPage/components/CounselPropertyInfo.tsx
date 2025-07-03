@@ -81,13 +81,13 @@ const CounselPropertyInfo = ({
         <div className={styles.infoItem}>
           <span className={styles.infoLabel}>반려동물</span>
           <span className={styles.infoValue}>
-            {property.hasPet ? "가능" : "불가능"}
+            {property.petsAllowed ? "가능" : "불가능"}
           </span>
         </div>
-        {property.description && (
+        {property.details && (
           <div className={styles.infoItem}>
             <span className={styles.infoLabel}>설명</span>
-            <span className={styles.infoValue}>{property.description}</span>
+            <span className={styles.infoValue}>{property.details}</span>
           </div>
         )}
       </div>
@@ -96,4 +96,3 @@ const CounselPropertyInfo = ({
 };
 
 export default CounselPropertyInfo;
-export type { PropertyInfo };

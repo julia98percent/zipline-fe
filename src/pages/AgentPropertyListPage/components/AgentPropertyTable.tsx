@@ -1,32 +1,9 @@
 import Table, { ColumnConfig, RowData } from "@components/Table/Table";
-import { Property, PropertyCategory, PropertyCategoryType } from "@ts/property";
+import { Property, PropertyCategory } from "@ts/property";
 import { formatDate } from "@utils/dateUtil";
 import { Typography, Chip } from "@mui/material";
 
-// Property를 Table 컴포넌트가 기대하는 RowData 형태로 변환
-interface PropertyRowData extends RowData {
-  customerName: string;
-  address: string;
-  detailAddress: string;
-  legalDistrictCode: string;
-  deposit: number | null;
-  monthlyRent: number | null;
-  price: number | null;
-  type: string;
-  longitude: number;
-  latitude: number;
-  moveInDate: string;
-  realCategory: PropertyCategoryType;
-  petsAllowed: boolean;
-  floor: number;
-  hasElevator: boolean;
-  constructionYear: string;
-  parkingCapacity: number;
-  netArea: number;
-  totalArea: number;
-  details?: string;
-  uid: string;
-}
+type PropertyRowData = RowData & Property;
 
 interface AgentPropertyTableProps {
   propertyList: Property[];
@@ -139,7 +116,7 @@ const AgentPropertyTable = ({
       width: "150px",
       render: (_, row) => (
         <Typography variant="body2" fontWeight="bold">
-          {getPriceText(row as Property)}
+          {getPriceText(row)}
         </Typography>
       ),
     },
@@ -170,7 +147,6 @@ const AgentPropertyTable = ({
     },
   ];
 
-  // Property 데이터를 RowData 형태로 변환
   const tableData: PropertyRowData[] = propertyList.map((property) => ({
     ...property,
     id: property.uid,

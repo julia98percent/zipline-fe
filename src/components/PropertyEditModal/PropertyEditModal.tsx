@@ -75,8 +75,6 @@ function PropertyEditModal({
 
   useEffect(() => {
     if (open && initialData) {
-      if (initialData.customerUid != null)
-        setCustomerUid(initialData.customerUid);
       if (initialData.address) setAddress(initialData.address);
       if (initialData.detailAddress)
         setdetailAddress(initialData.detailAddress);
@@ -206,7 +204,7 @@ function PropertyEditModal({
       type,
       longitude,
       latitude,
-      moveInDate: moveInDate?.format("YYYY-MM-DD"),
+      moveInDate: moveInDate ? moveInDate?.format("YYYY-MM-DD") : null,
       realCategory,
       petsAllowed,
       floor: Number(floor),

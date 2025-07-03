@@ -1,13 +1,13 @@
 import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import dayjs from "dayjs";
-import { showToast } from "@components/Toast/Toast";
+import { showToast } from "@components/Toast";
 import CounselDetailPageView from "./CounselDetailPageView";
-import { CounselCategory } from "@ts/counsel";
+import { Counsel, CounselCategory } from "@ts/counsel";
 import { PropertyCategory } from "@ts/property";
-import { CounselDetail, CounselDetailItem } from "@ts/counsel";
+
 import {
-  fetchCounselDetail,
+  fetchCounsel,
   updateCounsel,
   deleteCounsel,
 } from "@apis/counselService";
@@ -17,17 +17,17 @@ function CounselDetailPage() {
   const { counselUid } = useParams();
   const navigate = useNavigate();
 
-  const [counselData, setCounselData] = useState<CounselDetail | null>(null);
+  const [counselData, setCounselData] = useState<Counsel | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
-  const [editedData, setEditedData] = useState<CounselDetail | null>(null);
+  const [editedData, setEditedData] = useState<Counsel | null>(null);
 
   useEffect(() => {
     const fetchData = async () => {
       setIsLoading(true);
       try {
-        const result = await fetchCounselDetail(counselUid!);
+        const result = await fetchCounsel(counselUid!);
         if (result) {
           setCounselData(result);
           setEditedData(result);
@@ -58,7 +58,7 @@ function CounselDetailPage() {
       const updateData = {
         title: editedData.title,
         type: editedData.type,
-        counselDate: dayjs(editedData.counselDate).toISOString(),
+        counselDate: editedData.counselDate,
         dueDate: editedData.dueDate
           ? dayjs(editedData.dueDate).format("YYYY-MM-DD")
           : null,

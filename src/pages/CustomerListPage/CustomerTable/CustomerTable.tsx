@@ -14,6 +14,7 @@ import {
   renderLabelsColumn,
   renderActionsColumn,
 } from "./columnRenderers";
+import { fetchLabels as fetchLabelsApi } from "@apis/customerService";
 
 interface EditingCustomer extends Customer {
   isEditing?: boolean;
@@ -52,17 +53,16 @@ const CustomerTable = ({
     null
   );
 
-  // 라벨 목록 가져오기
   useEffect(() => {
-    const fetchLabels = async () => {
+    const loadLabels = async () => {
       try {
-        const labels = await fetchLabels();
+        const labels = await fetchLabelsApi();
         setAvailableLabels(labels);
       } catch (error) {
         console.error("Failed to fetch labels:", error);
       }
     };
-    fetchLabels();
+    loadLabels();
   }, []);
 
   const handleRowClick = (customer: Customer) => {
@@ -80,11 +80,10 @@ const CustomerTable = ({
 
     try {
       await deleteCustomer(customerToDelete.uid);
-      // 현재 페이지의 데이터가 1개이고 첫 페이지가 아닌 경우, 이전 페이지로 이동
+
       if (customerList.length === 1 && page > 0) {
         setPage(page - 1);
       } else {
-        // 현재 페이지 새로고침
         const newPage = customerList.length === 1 ? 0 : page;
         setPage(newPage);
       }

@@ -300,7 +300,6 @@ const AgentPropertyListPageView = ({
           rowsPerPage={searchParams.size}
           onPageChange={onPageChange}
           onRowsPerPageChange={onRowsPerPageChange}
-          useMetric={false}
           onRowClick={handleRowClick}
         />
 

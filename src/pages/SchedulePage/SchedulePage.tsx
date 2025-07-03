@@ -154,13 +154,13 @@ const SchedulePage = () => {
         );
         handleCloseDetailModal();
         showToast({
-          message: result.message,
+          message: result.message || "",
           type: "success",
         });
       } else {
         console.error("Update failed:", result.message);
         showToast({
-          message: result.message,
+          message: result.message || "",
           type: "error",
         });
       }

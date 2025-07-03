@@ -34,7 +34,7 @@ interface Props {
   setLessorUids: (uids: number[]) => void;
   lesseeUids: number[];
   setLesseeUids: (uids: number[]) => void;
-  propertyUid: string | null;
+  propertyUid: number | null;
   setPropertyUid: (uid: number | null) => void;
   status: ContractStatus;
   setStatus: (status: ContractStatus) => void;

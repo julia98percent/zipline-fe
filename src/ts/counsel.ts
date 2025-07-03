@@ -1,6 +1,6 @@
+import { PaginatedResponse } from "./apiResponse";
 import { Customer } from "./customer";
 import { Property } from "./property";
-import { PaginatedResponse } from "./apiResponse";
 export interface PreCounsel {
   name: string;
   phoneNumber: string;
@@ -34,6 +34,11 @@ export interface Counsel {
   completed: boolean;
   counselDate: Date;
   counselUid: number;
+  customer: Omit<
+    Customer,
+    "trafficSource" | "birthday" | "legalDistrictCode" | "telProvider"
+  >;
+  property: Property;
   customerName: string;
   dueDate: string;
   propertyUid: number;

@@ -1,63 +1,77 @@
 import apiClient from "@apis/apiClient";
-import { Notification, NotificationState } from "@stores/useNotificationStore";
+import { Notification } from "@stores/useNotificationStore";
+import { API_STATUS_CODES } from "@ts/apiResponse";
+import { NOTIFICATION_ERROR_MESSAGES } from "@constants/clientErrorMessage";
+import { handleApiResponse, handleApiError } from "@utils/apiUtil";
 
-export const fetchNotifications = async (
-  setNotificationList: (notificationList: Notification[]) => void
-) => {
+interface ApiResponse<T = unknown> {
+  success: boolean;
+  code: number;
+  message: string;
+  data: T;
+}
+
+export const fetchNotifications = async (): Promise<Notification[]> => {
   try {
-    const response = await apiClient.get("/notifications");
-    if (response?.status === 200 && response?.data?.data) {
-      setNotificationList(response.data.data);
-    }
+    const response = await apiClient.get<ApiResponse<Notification[]>>(
+      "/notifications"
+    );
+    return handleApiResponse(
+      response.data,
+      NOTIFICATION_ERROR_MESSAGES.FETCH_FAILED
+    );
   } catch (error) {
-    console.error("Failed to fetch notifications:", error);
+    return handleApiError(error, "fetching notifications");
   }
 };
 
 export const readNotification = async (
-  notificationId: number,
-  updateNotification: NotificationState["updateNotification"]
-) => {
+  notificationId: number
+): Promise<Notification> => {
   try {
-    const response = await apiClient.put(
+    const response = await apiClient.put<ApiResponse<Notification>>(
       `/notifications/${notificationId}/read`
     );
-    const result = response?.data?.data;
-    if (response?.status === 200 && result) {
-      updateNotification(notificationId, result);
-    }
+    return handleApiResponse(
+      response.data,
+      NOTIFICATION_ERROR_MESSAGES.READ_FAILED
+    );
   } catch (error) {
-    console.error("Failed to read notification:", error);
+    return handleApiError(error, "reading notification");
   }
 };
 
-export const readAllNotification = async (
-  updateNotification: NotificationState["updateNotification"]
-) => {
+export const readAllNotifications = async (): Promise<Notification[]> => {
   try {
-    const response = await apiClient.put(`/notifications/read`);
-    const result = response?.data?.data;
-    if (response?.status === 200 && result) {
-      for (const notification of result) {
-        updateNotification(notification.uid, notification);
-      }
-    }
+    const response = await apiClient.put<ApiResponse<Notification[]>>(
+      `/notifications/read`
+    );
+    return handleApiResponse(
+      response.data,
+      NOTIFICATION_ERROR_MESSAGES.READ_ALL_FAILED
+    );
   } catch (error) {
-    console.error("Failed to read all notifications:", error);
+    return handleApiError(error, "reading all notifications");
   }
 };
 
 export const deleteNotification = async (
-  notificationId: number,
-  deleteNotification: NotificationState["deleteNotification"]
-) => {
+  notificationId: number
+): Promise<void> => {
   try {
-    const response = await apiClient.delete(`/notifications/${notificationId}`);
-    const isSuccess = response?.data?.success;
-    if (response?.status === 200 && isSuccess) {
-      deleteNotification(notificationId);
+    const response = await apiClient.delete<ApiResponse>(
+      `/notifications/${notificationId}`
+    );
+
+    if (
+      response.status !== API_STATUS_CODES.SUCCESS ||
+      !response.data?.success
+    ) {
+      throw new Error(
+        response.data?.message || NOTIFICATION_ERROR_MESSAGES.DELETE_FAILED
+      );
     }
   } catch (error) {
-    console.error("Failed to delete notification:", error);
+    return handleApiError(error, "deleting notification");
   }
 };

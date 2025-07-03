@@ -9,13 +9,14 @@ import {
 } from "@mui/material";
 import { useState, useRef, useEffect, useCallback } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import useUserStore from "@stores/useUserStore";
+import useAuthStore from "@stores/useAuthStore";
 import AccountCircleIcon from "@mui/icons-material/AccountCircle";
-import apiClient from "@apis/apiClient";
 import { useSSE } from "@context/SSEContext";
 import { Notifications } from "@mui/icons-material";
 import NotificationList from "./NotificationList";
 import useNotificationStore from "@stores/useNotificationStore";
+import { fetchNotifications } from "@apis/notificationService";
+import { logoutUser } from "@apis/userService";
 import { clearAllAuthState } from "@utils/authUtil";
 
 interface PageHeaderProps {
@@ -24,7 +25,7 @@ interface PageHeaderProps {
 
 const PageHeader = ({ title }: PageHeaderProps) => {
   useSSE();
-  const { notificationList } = useNotificationStore();
+  const { notificationList, setNotificationList } = useNotificationStore();
 
   const [isNotificationOpen, setIsNotificationOpen] = useState(false);
   const [isChildModalOpen, setIsChildModalOpen] = useState(false);
@@ -35,7 +36,7 @@ const PageHeader = ({ title }: PageHeaderProps) => {
   );
 
   const navigate = useNavigate();
-  const { user } = useUserStore();
+  const { user } = useAuthStore();
 
   const unreadCount =
     notificationList?.filter((notification) => !notification.read).length || 0;
@@ -79,13 +80,28 @@ const PageHeader = ({ title }: PageHeaderProps) => {
 
   const handleLogout = async () => {
     try {
-      await apiClient.post("/users/logout", {}, { withCredentials: true });
+      await logoutUser();
     } finally {
       handleUserMenuClose();
       clearAllAuthState();
       navigate("/sign-in");
     }
   };
+
+  useEffect(() => {
+    const loadNotifications = async () => {
+      try {
+        if (!notificationList || notificationList.length === 0) {
+          const notifications = await fetchNotifications();
+          setNotificationList(notifications);
+        }
+      } catch (error) {
+        console.error("알림 데이터 로딩 실패:", error);
+      }
+    };
+
+    loadNotifications();
+  }, [notificationList, setNotificationList]);
 
   return (
     <Box

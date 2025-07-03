@@ -1,22 +1,8 @@
-import { useState, useEffect } from "react";
-import {
-  Dialog,
-  DialogTitle,
-  DialogContent,
-  DialogActions,
-  Button,
-  Box,
-  Typography,
-  TextField,
-  Autocomplete,
-  FormControlLabel,
-  Checkbox,
-} from "@mui/material";
-import { Schedule } from "../../interfaces/schedule";
-import dayjs from "dayjs";
-import apiClient from "@apis/apiClient";
+import { Schedule } from "@ts/schedule";
+import { useScheduleDetailModal } from "./useScheduleDetailModal";
+import ScheduleDetailModalView from "./ScheduleDetailModalView";
 
-interface Props {
+interface ScheduleDetailModalProps {
   open: boolean;
   onClose: () => void;
   schedule: Schedule | null;
@@ -30,437 +16,56 @@ const ScheduleDetailModal = ({
   schedule,
   onSave,
   isUpdating = false,
-}: Props) => {
-  const [editingSchedule, setEditingSchedule] = useState<Schedule | null>(
-    schedule
-  );
-  const [selectedCustomer, setSelectedCustomer] = useState<{
-    uid: number;
-    name: string;
-  } | null>(
-    schedule?.customerUid && schedule?.customerName
-      ? {
-          uid: schedule.customerUid,
-          name: schedule.customerName,
-        }
-      : null
-  );
-  const [includeTime, setIncludeTime] = useState(false);
-  const [startDate, setStartDate] = useState("");
-  const [endDate, setEndDate] = useState("");
-  const [startTime, setStartTime] = useState("00:00");
-  const [endTime, setEndTime] = useState("00:00");
-  const [customerOptions, setCustomerOptions] = useState<
-    Array<{ uid: number; name: string }>
-  >([]);
-
-  useEffect(() => {
-    if (schedule) {
-      setEditingSchedule(schedule);
-      setSelectedCustomer(
-        schedule.customerUid && schedule.customerName
-          ? {
-              uid: schedule.customerUid,
-              name: schedule.customerName,
-            }
-          : null
-      );
-      const start = dayjs(schedule.startDate);
-      const end = dayjs(schedule.endDate);
-      const hasTime =
-        start.format("HH:mm") !== "00:00" || end.format("HH:mm") !== "00:00";
-
-      setStartDate(start.format("YYYY-MM-DD"));
-      setEndDate(end.format("YYYY-MM-DD"));
-      setStartTime(start.format("HH:mm"));
-      setEndTime(end.format("HH:mm"));
-      setIncludeTime(hasTime);
-    }
-  }, [schedule]);
-
-  useEffect(() => {
-    // 고객 목록 조회
-    apiClient
-      .get("/customers", { params: { page: 0, size: 1000 } })
-      .then((res) => {
-        const customers: Array<{ uid: number; name: string }> =
-          res.data?.data?.customers?.map(
-            (c: { uid: number; name: string }) => ({ uid: c.uid, name: c.name })
-          ) || [];
-        setCustomerOptions(customers);
-      })
-      .catch(() => setCustomerOptions([]));
-  }, []);
-
-  const handleScheduleChange = (field: keyof Schedule, value: string) => {
-    if (!editingSchedule) return;
-
-    setEditingSchedule({
-      ...editingSchedule,
-      [field]: value,
-    });
-  };
-
-  const handleSave = () => {
-    if (!editingSchedule) return;
-
-    const { uid, ...scheduleWithoutUidAndName } = editingSchedule;
-    const start = includeTime
-      ? dayjs(`${startDate}T${startTime}:00`).toISOString()
-      : dayjs(`${startDate}T00:00:00`).toISOString();
-    const end = includeTime
-      ? dayjs(`${endDate}T${endTime}:00`).toISOString()
-      : dayjs(`${endDate}T23:59:59`).toISOString();
-    const updatedSchedule = {
-      ...scheduleWithoutUidAndName,
-      customerUid: selectedCustomer?.uid || null,
-      startDate: start,
-      endDate: end,
-    };
-
-    onSave({
-      ...updatedSchedule,
-      uid,
-    });
-  };
+}: ScheduleDetailModalProps) => {
+  const {
+    editingSchedule,
+    selectedCustomer,
+    includeTime,
+    startDate,
+    endDate,
+    startTime,
+    endTime,
+    customerOptions,
+    handleTitleChange,
+    handleDescriptionChange,
+    handleStartDateChange,
+    handleEndDateChange,
+    handleStartTimeChange,
+    handleEndTimeChange,
+    handleIncludeTimeChange,
+    handleCustomerChange,
+    handleSave,
+  } = useScheduleDetailModal({
+    open,
+    schedule,
+    onSave,
+  });
 
   if (!schedule) return null;
 
   return (
-    <Dialog
+    <ScheduleDetailModalView
       open={open}
       onClose={onClose}
-      maxWidth="sm"
-      fullWidth
-      PaperProps={{
-        sx: {
-          borderRadius: "12px",
-        },
-      }}
-    >
-      <DialogTitle
-        sx={{
-          fontSize: "24px",
-          fontWeight: "600",
-          color: "#000000",
-          p: "24px 24px 16px 24px",
-        }}
-      >
-        일정 상세 조회
-      </DialogTitle>
-      <DialogContent sx={{ p: "0 24px" }}>
-        <Box sx={{ display: "flex", flexDirection: "column", gap: 2 }}>
-          <Box>
-            <Typography
-              sx={{
-                fontSize: "14px",
-                color: "#666666",
-                mb: "4px",
-              }}
-            >
-              제목
-            </Typography>
-            <TextField
-              fullWidth
-              value={editingSchedule?.title}
-              onChange={(e) => handleScheduleChange("title", e.target.value)}
-              sx={{
-                "& .MuiOutlinedInput-root": {
-                  backgroundColor: "#FFFFFF",
-                  height: "56px",
-                  "& fieldset": {
-                    borderColor: "#E0E0E0",
-                  },
-                  "&:hover fieldset": {
-                    borderColor: "#164F9E",
-                  },
-                  "&.Mui-focused fieldset": {
-                    borderColor: "#164F9E",
-                  },
-                },
-              }}
-            />
-          </Box>
-
-          <FormControlLabel
-            control={
-              <Checkbox
-                checked={includeTime}
-                onChange={(e) => setIncludeTime(e.target.checked)}
-                sx={{
-                  color: "#666666",
-                  "&.Mui-checked": {
-                    color: "#164F9E",
-                  },
-                }}
-              />
-            }
-            label="시간 포함"
-            sx={{
-              mb: 1.5,
-              "& .MuiFormControlLabel-label": {
-                fontSize: "14px",
-                color: "#666666",
-              },
-            }}
-          />
-
-          <Box>
-            <Typography
-              sx={{
-                fontSize: "14px",
-                color: "#666666",
-                mb: "4px",
-              }}
-            >
-              시작일
-            </Typography>
-            <Box sx={{ display: "flex", gap: 2 }}>
-              <Box sx={{ flex: 1 }}>
-                <TextField
-                  fullWidth
-                  type="date"
-                  value={startDate}
-                  onChange={(e) => setStartDate(e.target.value)}
-                  sx={{
-                    "& .MuiOutlinedInput-root": {
-                      backgroundColor: "#FFFFFF",
-                      height: "56px",
-                      "& fieldset": {
-                        borderColor: "#E0E0E0",
-                      },
-                      "&:hover fieldset": {
-                        borderColor: "#164F9E",
-                      },
-                      "&.Mui-focused fieldset": {
-                        borderColor: "#164F9E",
-                      },
-                    },
-                  }}
-                />
-              </Box>
-              <Box sx={{ flex: 1 }}>
-                <TextField
-                  fullWidth
-                  type="time"
-                  value={startTime}
-                  onChange={(e) => setStartTime(e.target.value)}
-                  disabled={!includeTime}
-                  sx={{
-                    "& .MuiOutlinedInput-root": {
-                      backgroundColor: "#FFFFFF",
-                      height: "56px",
-                      "& fieldset": {
-                        borderColor: "#E0E0E0",
-                      },
-                      "&:hover fieldset": {
-                        borderColor: "#164F9E",
-                      },
-                      "&.Mui-focused fieldset": {
-                        borderColor: "#164F9E",
-                      },
-                      "&.Mui-disabled": {
-                        backgroundColor: "#F8F9FA",
-                        "& fieldset": {
-                          borderColor: "#E0E0E0",
-                        },
-                      },
-                    },
-                  }}
-                />
-              </Box>
-            </Box>
-          </Box>
-
-          <Box>
-            <Typography
-              sx={{
-                fontSize: "14px",
-                color: "#666666",
-                mb: "4px",
-              }}
-            >
-              종료일
-            </Typography>
-            <Box sx={{ display: "flex", gap: 2 }}>
-              <Box sx={{ flex: 1 }}>
-                <TextField
-                  fullWidth
-                  type="date"
-                  value={endDate}
-                  onChange={(e) => setEndDate(e.target.value)}
-                  sx={{
-                    "& .MuiOutlinedInput-root": {
-                      backgroundColor: "#FFFFFF",
-                      height: "56px",
-                      "& fieldset": {
-                        borderColor: "#E0E0E0",
-                      },
-                      "&:hover fieldset": {
-                        borderColor: "#164F9E",
-                      },
-                      "&.Mui-focused fieldset": {
-                        borderColor: "#164F9E",
-                      },
-                    },
-                  }}
-                />
-              </Box>
-              <Box sx={{ flex: 1 }}>
-                <TextField
-                  fullWidth
-                  type="time"
-                  value={endTime}
-                  onChange={(e) => setEndTime(e.target.value)}
-                  disabled={!includeTime}
-                  sx={{
-                    "& .MuiOutlinedInput-root": {
-                      backgroundColor: "#FFFFFF",
-                      height: "56px",
-                      "& fieldset": {
-                        borderColor: "#E0E0E0",
-                      },
-                      "&:hover fieldset": {
-                        borderColor: "#164F9E",
-                      },
-                      "&.Mui-focused fieldset": {
-                        borderColor: "#164F9E",
-                      },
-                      "&.Mui-disabled": {
-                        backgroundColor: "#F8F9FA",
-                        "& fieldset": {
-                          borderColor: "#E0E0E0",
-                        },
-                      },
-                    },
-                  }}
-                />
-              </Box>
-            </Box>
-          </Box>
-
-          <Box>
-            <Typography
-              sx={{
-                fontSize: "14px",
-                color: "#666666",
-                mb: "4px",
-              }}
-            >
-              고객
-            </Typography>
-            <Autocomplete
-              fullWidth
-              options={customerOptions}
-              value={selectedCustomer}
-              onChange={(_, newValue) => {
-                setSelectedCustomer(newValue);
-              }}
-              getOptionLabel={(option) => `${option.name} (${option.uid})`}
-              renderInput={(params) => (
-                <TextField
-                  {...params}
-                  placeholder="고객명 또는 ID를 입력하세요"
-                  sx={{
-                    "& .MuiOutlinedInput-root": {
-                      backgroundColor: "#FFFFFF",
-                      "& fieldset": {
-                        borderColor: "#E0E0E0",
-                      },
-                      "&:hover fieldset": {
-                        borderColor: "#164F9E",
-                      },
-                      "&.Mui-focused fieldset": {
-                        borderColor: "#164F9E",
-                      },
-                    },
-                  }}
-                />
-              )}
-              renderOption={(props, option) => (
-                <li {...props}>
-                  <Typography>
-                    {option.name} ({option.uid})
-                  </Typography>
-                </li>
-              )}
-              filterOptions={(options, { inputValue }) => {
-                const searchValue = inputValue.toLowerCase();
-                return options.filter(
-                  (option) =>
-                    option.name.toLowerCase().includes(searchValue) ||
-                    option.uid.toString().includes(searchValue)
-                );
-              }}
-            />
-          </Box>
-
-          <Box>
-            <Typography
-              sx={{
-                fontSize: "14px",
-                color: "#666666",
-                mb: "4px",
-              }}
-            >
-              세부사항
-            </Typography>
-            <TextField
-              fullWidth
-              multiline
-              rows={3}
-              value={editingSchedule?.description || ""}
-              onChange={(e) =>
-                handleScheduleChange("description", e.target.value)
-              }
-              sx={{
-                "& .MuiOutlinedInput-root": {
-                  backgroundColor: "#FFFFFF",
-                  "& fieldset": {
-                    borderColor: "#E0E0E0",
-                  },
-                  "&:hover fieldset": {
-                    borderColor: "#164F9E",
-                  },
-                  "&.Mui-focused fieldset": {
-                    borderColor: "#164F9E",
-                  },
-                },
-              }}
-            />
-          </Box>
-        </Box>
-      </DialogContent>
-      <DialogActions sx={{ p: 3, gap: 1 }}>
-        <Button
-          onClick={onClose}
-          variant="outlined"
-          sx={{
-            borderColor: "#666666",
-            color: "#666666",
-            "&:hover": {
-              borderColor: "#333333",
-              backgroundColor: "rgba(102, 102, 102, 0.04)",
-            },
-          }}
-        >
-          취소
-        </Button>
-        <Button
-          onClick={handleSave}
-          variant="contained"
-          disabled={isUpdating}
-          sx={{
-            backgroundColor: "#164F9E",
-            "&:hover": {
-              backgroundColor: "#0D3B7A",
-            },
-          }}
-        >
-          {isUpdating ? "수정 중..." : "수정"}
-        </Button>
-      </DialogActions>
-    </Dialog>
+      isUpdating={isUpdating}
+      editingSchedule={editingSchedule}
+      selectedCustomer={selectedCustomer}
+      includeTime={includeTime}
+      startDate={startDate}
+      endDate={endDate}
+      startTime={startTime}
+      endTime={endTime}
+      customerOptions={customerOptions}
+      onTitleChange={handleTitleChange}
+      onDescriptionChange={handleDescriptionChange}
+      onStartDateChange={handleStartDateChange}
+      onEndDateChange={handleEndDateChange}
+      onStartTimeChange={handleStartTimeChange}
+      onEndTimeChange={handleEndTimeChange}
+      onIncludeTimeChange={handleIncludeTimeChange}
+      onCustomerChange={handleCustomerChange}
+      onSave={handleSave}
+    />
   );
 };
 

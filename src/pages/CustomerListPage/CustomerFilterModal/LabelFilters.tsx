@@ -1,0 +1,73 @@
+import { Box, Typography, Chip } from "@mui/material";
+import { Label, CustomerFilter } from "@ts/customer";
+
+interface Props {
+  setFiltersTemp: (
+    filters: CustomerFilter | ((prev: CustomerFilter) => CustomerFilter)
+  ) => void;
+  labels: Label[];
+  selectedLabels: Label[];
+  setSelectedLabels: (labels: Label[]) => void;
+}
+
+const LabelFilters = ({
+  setFiltersTemp,
+  labels,
+  selectedLabels,
+  setSelectedLabels,
+}: Props) => {
+  const handleLabelSelect = (label: { uid: number; name: string }) => {
+    const isSelected = selectedLabels.some((l) => l.uid === label.uid);
+    let newSelectedLabels: typeof selectedLabels;
+
+    if (isSelected) {
+      newSelectedLabels = selectedLabels.filter((l) => l.uid !== label.uid);
+    } else {
+      newSelectedLabels = [...selectedLabels, label];
+    }
+
+    setSelectedLabels(newSelectedLabels);
+    setFiltersTemp((prev) => ({
+      ...prev,
+      labelUids: newSelectedLabels.map((l) => l.uid),
+    }));
+  };
+
+  return (
+    <Box sx={{ mb: 3 }}>
+      <Typography variant="h6" sx={{ mb: 2, fontWeight: 600 }}>
+        라벨
+      </Typography>
+      <Box sx={{ display: "flex", flexWrap: "wrap", gap: 1 }}>
+        {labels.map((label) => (
+          <Chip
+            key={label.uid}
+            label={label.name}
+            clickable
+            variant={
+              selectedLabels.some((l) => l.uid === label.uid)
+                ? "filled"
+                : "outlined"
+            }
+            onClick={() => handleLabelSelect(label)}
+            sx={{
+              backgroundColor: selectedLabels.some((l) => l.uid === label.uid)
+                ? "#1976d2"
+                : "transparent",
+              color: selectedLabels.some((l) => l.uid === label.uid)
+                ? "white"
+                : "inherit",
+              "&:hover": {
+                backgroundColor: selectedLabels.some((l) => l.uid === label.uid)
+                  ? "#1565c0"
+                  : "#f5f5f5",
+              },
+            }}
+          />
+        ))}
+      </Box>
+    </Box>
+  );
+};
+
+export default LabelFilters;

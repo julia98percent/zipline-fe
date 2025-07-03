@@ -1,0 +1,185 @@
+import {
+  Box,
+  Paper,
+  Typography,
+  Chip,
+  TextField,
+  Autocomplete,
+} from "@mui/material";
+import { Label, Customer } from "@ts/customer";
+
+interface CustomerRoleLabelsProps {
+  customer: Customer;
+  isEditing: boolean;
+  editedCustomer: Customer | null;
+  availableLabels: { uid: number; name: string }[];
+  onInputChange: (
+    field: keyof Customer,
+    value: string | number | boolean | null | { uid: number; name: string }[]
+  ) => void;
+}
+
+const CustomerRoleLabels = ({
+  customer,
+  isEditing,
+  editedCustomer,
+  availableLabels,
+  onInputChange,
+}: CustomerRoleLabelsProps) => {
+  return (
+    <Paper elevation={0} sx={{ flex: 1, p: 3, borderRadius: 2, mt: 1 }}>
+      {/* 역할 정보 영역 */}
+      <Box sx={{ mb: 4 }}>
+        <Typography
+          variant="h6"
+          sx={{ mb: 2, color: "#164F9E", fontWeight: "bold" }}
+        >
+          역할
+        </Typography>
+        <Box sx={{ display: "flex", gap: 1, flexWrap: "wrap" }}>
+          {isEditing ? (
+            <>
+              <Chip
+                label="임차인"
+                onClick={() => onInputChange("tenant", !editedCustomer?.tenant)}
+                sx={{
+                  backgroundColor: editedCustomer?.tenant
+                    ? "#FEF5EB"
+                    : "#F5F5F5",
+                  color: editedCustomer?.tenant ? "#F2994A" : "#757575",
+                  cursor: "pointer",
+                }}
+              />
+              <Chip
+                label="임대인"
+                onClick={() =>
+                  onInputChange("landlord", !editedCustomer?.landlord)
+                }
+                sx={{
+                  backgroundColor: editedCustomer?.landlord
+                    ? "#FDEEEE"
+                    : "#F5F5F5",
+                  color: editedCustomer?.landlord ? "#EB5757" : "#757575",
+                  cursor: "pointer",
+                }}
+              />
+              <Chip
+                label="매수인"
+                onClick={() => onInputChange("buyer", !editedCustomer?.buyer)}
+                sx={{
+                  backgroundColor: editedCustomer?.buyer
+                    ? "#E9F7EF"
+                    : "#F5F5F5",
+                  color: editedCustomer?.buyer ? "#219653" : "#757575",
+                  cursor: "pointer",
+                }}
+              />
+              <Chip
+                label="매도인"
+                onClick={() => onInputChange("seller", !editedCustomer?.seller)}
+                sx={{
+                  backgroundColor: editedCustomer?.seller
+                    ? "#EBF2FC"
+                    : "#F5F5F5",
+                  color: editedCustomer?.seller ? "#2F80ED" : "#757575",
+                  cursor: "pointer",
+                }}
+              />
+            </>
+          ) : (
+            <>
+              {customer.tenant && (
+                <Chip
+                  label="임차인"
+                  sx={{ backgroundColor: "#FEF5EB", color: "#F2994A" }}
+                />
+              )}
+              {customer.landlord && (
+                <Chip
+                  label="임대인"
+                  sx={{ backgroundColor: "#FDEEEE", color: "#EB5757" }}
+                />
+              )}
+              {customer.buyer && (
+                <Chip
+                  label="매수인"
+                  sx={{ backgroundColor: "#E9F7EF", color: "#219653" }}
+                />
+              )}
+              {customer.seller && (
+                <Chip
+                  label="매도인"
+                  sx={{ backgroundColor: "#EBF2FC", color: "#2F80ED" }}
+                />
+              )}
+              {!customer.tenant &&
+                !customer.landlord &&
+                !customer.buyer &&
+                !customer.seller && (
+                  <Chip
+                    label="없음"
+                    sx={{
+                      backgroundColor: "#F5F5F5",
+                      color: "#757575",
+                    }}
+                  />
+                )}
+            </>
+          )}
+        </Box>
+      </Box>
+
+      {/* 라벨 영역 */}
+      <Box>
+        <Typography
+          variant="h6"
+          sx={{ mb: 2, color: "#164F9E", fontWeight: "bold" }}
+        >
+          라벨
+        </Typography>
+        <Box sx={{ display: "flex", flexWrap: "wrap", gap: 1 }}>
+          {isEditing ? (
+            <Autocomplete
+              multiple
+              size="small"
+              options={availableLabels}
+              value={editedCustomer?.labels || []}
+              getOptionLabel={(option) => option.name}
+              onChange={(_, newValue) => {
+                onInputChange("labels", newValue);
+              }}
+              renderInput={(params) => <TextField {...params} fullWidth />}
+              renderTags={(value, getTagProps) =>
+                value.map((option, index) => (
+                  <Chip
+                    {...getTagProps({ index })}
+                    key={option.uid}
+                    label={option.name}
+                    size="small"
+                    variant="outlined"
+                  />
+                ))
+              }
+              isOptionEqualToValue={(option, value) => option.uid === value.uid}
+              sx={{ width: "100%" }}
+            />
+          ) : (
+            <>
+              {customer.labels && customer.labels.length > 0 ? (
+                customer.labels.map((label: Label) => (
+                  <Chip key={label.uid} label={label.name} variant="outlined" />
+                ))
+              ) : (
+                <Typography variant="body1" color="textSecondary">
+                  -
+                </Typography>
+              )}
+            </>
+          )}
+        </Box>
+      </Box>
+    </Paper>
+  );
+};
+
+export default CustomerRoleLabels;

@@ -1,26 +1,29 @@
 import { create } from "zustand";
-import axios from "axios";
+import { User } from "@ts/user";
+import { fetchUserInfo } from "@apis/userService";
 
 interface AuthState {
   isSignedIn: boolean | null;
+  user: User | null;
   checkAuth: () => Promise<void>;
+  setUser: (user: User) => void;
   logout: () => void;
 }
 
 const useAuthStore = create<AuthState>((set) => ({
   isSignedIn: null,
+  user: null,
   checkAuth: async () => {
     try {
-      await axios.get(`${import.meta.env.VITE_SERVER_URL}/users/info`, {
-        withCredentials: true,
-      });
-      set({ isSignedIn: true });
+      const userData = await fetchUserInfo();
+      set({ isSignedIn: true, user: userData });
     } catch {
-      set({ isSignedIn: false });
+      set({ isSignedIn: false, user: null });
     }
   },
+  setUser: (user) => set({ user }),
   logout: () => {
-    set({ isSignedIn: false });
+    set({ isSignedIn: false, user: null });
   },
 }));
 

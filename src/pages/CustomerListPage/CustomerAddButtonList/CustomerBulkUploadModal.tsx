@@ -11,7 +11,7 @@ import {
   CircularProgress,
 } from "@mui/material";
 import { useDropzone } from "react-dropzone";
-import apiClient from "@apis/apiClient";
+import { uploadCustomersBulk } from "@apis/customerService";
 import { Link } from "react-router-dom";
 import { AxiosError } from "axios";
 import { showToast } from "@components/Toast/Toast";
@@ -62,12 +62,9 @@ function CustomerBulkUploadModal({
   const handleUpload = async () => {
     if (!file || isLoading) return;
 
-    const formData = new FormData();
-    formData.append("file", file);
-
     try {
       setIsLoading(true);
-      await apiClient.post("/customers/bulk", formData);
+      await uploadCustomersBulk(file);
       showToast({
         message: "고객 정보를 업데이트 했습니다.",
         type: "success",

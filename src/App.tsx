@@ -6,7 +6,7 @@ import GuestRoute from "./components/layout/GuestRoute";
 import SignUpPage from "@pages/SignUpPage";
 import SignInPage from "@pages/SignInPage";
 import CustomerListPage from "@pages/CustomerListPage";
-import PrivatePropertyListPage from "@pages/PrivatePropertyListPage";
+import AgentPropertyListPage from "@pages/AgentPropertyListPage";
 import MyPage from "@pages/MyPage";
 import EditSurveyPage from "@pages/MyPage/EditSurveyPage";
 import SubmitSurveyPage from "@pages/SubmitSurveyPage";
@@ -21,7 +21,7 @@ import DashboardPage from "@pages/DashboardPage";
 import SchedulePage from "@pages/SchedulePage";
 import MessageTemplatePage from "@pages/MessageTemplatePage";
 import MessageHistoryPage from "@pages/MessageHistoryPage";
-import AgentPropertyDetailPage from "@pages/PrivatePropertyListPage/AgentPropertyDetailPage";
+import AgentPropertyDetailPage from "@pages/AgentPropertyDetailPage";
 import CounselListPage from "@pages/CounselListPage";
 import ContractDetailPage from "@pages/ContractDetailPage";
 import CounselDetailPage from "@pages/CounselDetailPage";
@@ -57,10 +57,7 @@ const App = () => {
             element={<CustomerDetailPage />}
           />
 
-          <Route
-            path="properties/private"
-            element={<PrivatePropertyListPage />}
-          />
+          <Route path="properties/agent" element={<AgentPropertyListPage />} />
           <Route
             path="/properties/:propertyUid"
             element={<AgentPropertyDetailPage />}

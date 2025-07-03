@@ -11,27 +11,16 @@ import {
   CircularProgress,
 } from "@mui/material";
 import NotificationsIcon from "@mui/icons-material/Notifications";
-import apiClient from "@apis/apiClient";
-
-interface Notification {
-  surveyResponseUid: number;
-  name: string;
-  phoneNumber: string;
-  submittedAt: string;
-}
-
-interface PaginatedResponse {
-  surveyResponses: Notification[];
-  totalItems: number;
-  totalPages: number;
-  currentPage: number;
-}
+import {
+  fetchSubmittedSurveyResponses,
+  SurveyResponse,
+} from "@apis/preCounselService";
 
 function SubmittedSurveyPopup() {
   const [notificationsAnchorEl, setNotificationsAnchorEl] =
     useState<null | HTMLElement>(null);
   const [loading, setLoading] = useState(true);
-  const [notifications, setNotifications] = useState<Notification[] | null>(
+  const [notifications, setNotifications] = useState<SurveyResponse[] | null>(
     null
   );
   const [page, setPage] = useState(1);
@@ -66,31 +55,25 @@ function SubmittedSurveyPopup() {
     return `${year}-${month}-${day} ${hours}:${minutes}`;
   };
 
-  const fetchSubmittedSurveyList = (pageNumber: number) => {
+  const fetchSubmittedSurveyList = async (pageNumber: number) => {
     setLoading(true);
-    apiClient
-      .get("/surveys/responses", {
-        params: {
-          page: pageNumber,
-          size: itemsPerPage,
-        },
-      })
-      .then((res) => {
-        const responseData = res?.data?.data as PaginatedResponse;
+    try {
+      const responseData = await fetchSubmittedSurveyResponses(
+        pageNumber,
+        itemsPerPage
+      );
 
-        if (responseData?.surveyResponses) {
-          setNotifications(responseData.surveyResponses);
-          setTotalPages(responseData.totalPages);
-          setPage(responseData.currentPage);
-          setTotalItems(responseData.totalItems);
-        }
-      })
-      .catch((error) => {
-        console.error("Failed to fetch submitted survey list:", error);
-      })
-      .finally(() => {
-        setLoading(false);
-      });
+      if (responseData?.surveyResponses) {
+        setNotifications(responseData.surveyResponses);
+        setTotalPages(responseData.totalPages);
+        setPage(responseData.currentPage);
+        setTotalItems(responseData.totalItems);
+      }
+    } catch (error) {
+      console.error("Failed to fetch submitted survey list:", error);
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (

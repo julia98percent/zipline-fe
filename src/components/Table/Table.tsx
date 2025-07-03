@@ -9,42 +9,85 @@ import {
   Table as MuiTable,
   TablePagination,
   SxProps,
+  TableCellProps,
 } from "@mui/material";
 
-interface RowData {
-  id: string;
-  [key: string]: React.ReactNode;
+export interface ColumnConfig<T = unknown> {
+  key: string;
+  label: string | React.ReactNode;
+  align?: TableCellProps["align"];
+  width?: string | number;
+  minWidth?: string | number;
+  render?: (value: unknown, row: T, index: number) => React.ReactNode;
+  visible?: boolean;
+}
+
+export interface RowData {
+  id: string | number;
+  [key: string]: unknown;
 }
 
 interface Props<T extends RowData> {
   isLoading?: boolean;
-  headerList: string[];
+  columns?: ColumnConfig<T>[];
+  headerList?: string[]; // 레거시 지원을 위해 유지
   bodyList: T[];
   handleRowClick?: (rowData: T, index: number, event: React.MouseEvent) => void;
-  totalElements: number;
-  page: number;
+  totalElements?: number;
+  page?: number;
   handleChangePage?: (_: unknown, newPage: number) => void;
   rowsPerPage?: number;
-  handleChangeRowsPerPage: React.ChangeEventHandler<
+  handleChangeRowsPerPage?: React.ChangeEventHandler<
     HTMLInputElement | HTMLTextAreaElement
   >;
   noDataMessage?: string;
   sx?: SxProps;
+  pagination?: boolean;
+  rowsPerPageOptions?: number[];
+  stickyHeader?: boolean;
+  maxHeight?: string | number;
 }
 
 function Table<T extends RowData>({
   isLoading = false,
-  headerList,
+  columns,
+  headerList, // 레거시 지원
   bodyList,
   handleRowClick,
   totalElements = bodyList?.length || 0,
-  page,
+  page = 0,
   handleChangePage,
   rowsPerPage = 25,
   handleChangeRowsPerPage,
   noDataMessage = "데이터가 없습니다.",
   sx,
+  pagination = true,
+  rowsPerPageOptions = [10, 25, 50],
+  stickyHeader = false,
+  maxHeight,
 }: Props<T>) {
+  // columns가 제공되면 우선 사용, 없으면 headerList 사용 (레거시 지원)
+  const allColumns: ColumnConfig<T>[] =
+    columns ||
+    headerList?.map((header) => ({ key: header, label: header })) ||
+    [];
+
+  // visible 속성이 false인 컬럼은 제외
+  const finalColumns: ColumnConfig<T>[] = allColumns.filter(
+    (column) => column.visible !== false
+  );
+
+  const renderCell = (
+    column: ColumnConfig<T>,
+    rowData: T,
+    index: number
+  ): React.ReactNode => {
+    if (column.render) {
+      return column.render(rowData[column.key], rowData, index);
+    }
+    return rowData[column.key] as React.ReactNode;
+  };
+
   return (
     <Paper
       sx={{
@@ -53,25 +96,38 @@ function Table<T extends RowData>({
         ...sx,
       }}
     >
-      <TableContainer>
-        <MuiTable>
+      <TableContainer sx={{ maxHeight: maxHeight }}>
+        <MuiTable stickyHeader={stickyHeader}>
           <TableHead>
             <TableRow>
-              {headerList.map((name) => (
-                <TableCell key={name}>{name}</TableCell>
+              {finalColumns.map((column) => (
+                <TableCell
+                  key={column.key}
+                  align={column.align}
+                  sx={{
+                    width: column.width,
+                    minWidth: column.minWidth,
+                  }}
+                >
+                  {column.label}
+                </TableCell>
               ))}
             </TableRow>
           </TableHead>
           <TableBody>
             {isLoading ? (
               <TableRow>
-                <TableCell colSpan={5} align="center" sx={{ py: 3 }}>
+                <TableCell
+                  colSpan={finalColumns.length}
+                  align="center"
+                  sx={{ py: 3 }}
+                >
                   <CircularProgress size={24} />
                 </TableCell>
               </TableRow>
             ) : bodyList.length === 0 ? (
               <TableRow>
-                <TableCell colSpan={headerList.length} align="center">
+                <TableCell colSpan={finalColumns.length} align="center">
                   {noDataMessage}
                 </TableCell>
               </TableRow>
@@ -85,18 +141,18 @@ function Table<T extends RowData>({
                   }}
                   sx={{ cursor: handleRowClick ? "pointer" : "default" }}
                 >
-                  {Object.keys(rowData)
-                    .filter((key) => key !== "id")
-                    .map((key) => (
-                      <TableCell key={key}>{rowData[key]}</TableCell>
-                    ))}
+                  {finalColumns.map((column) => (
+                    <TableCell key={column.key} align={column.align}>
+                      {renderCell(column, rowData, index)}
+                    </TableCell>
+                  ))}
                 </TableRow>
               ))
             )}
           </TableBody>
         </MuiTable>
       </TableContainer>
-      {handleChangePage && (
+      {pagination && handleChangePage && handleChangeRowsPerPage && (
         <TablePagination
           component="div"
           count={totalElements}
@@ -104,7 +160,7 @@ function Table<T extends RowData>({
           onPageChange={handleChangePage}
           rowsPerPage={rowsPerPage}
           onRowsPerPageChange={handleChangeRowsPerPage}
-          rowsPerPageOptions={[10, 25, 50]}
+          rowsPerPageOptions={rowsPerPageOptions}
           labelRowsPerPage="페이지당 행 수"
           labelDisplayedRows={({ from, to, count }) =>
             `${count}개 중 ${from}-${to}개`

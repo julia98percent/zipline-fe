@@ -2,8 +2,7 @@ import { useCallback, useState } from "react";
 import { Box, Typography, List } from "@mui/material";
 import type { Notification } from "@stores/useNotificationStore";
 import PreCounselDetailModal from "@components/PreCounselDetailModal";
-import { readAllNotification } from "@apis/notificationService";
-import useNotificationStore from "@stores/useNotificationStore";
+import { readAllNotifications } from "@apis/notificationService";
 import Button from "@components/Button";
 import NotificationItem from "./NotificationItem";
 
@@ -18,8 +17,6 @@ function NotificationList({
 }: NotificationListProps) {
   const [isSurveyDetailModalOpen, setIsSurveyDetailModalOpen] = useState(false);
   const [selectedSurveyId, setSelectedSurveyId] = useState<number | null>(null);
-
-  const { updateNotification } = useNotificationStore();
 
   const handleModalStateChange = useCallback(
     (isOpen: boolean) => {
@@ -44,7 +41,7 @@ function NotificationList({
   };
 
   const handleReadAllNotifications = () => {
-    readAllNotification(updateNotification);
+    readAllNotifications();
   };
 
   return (

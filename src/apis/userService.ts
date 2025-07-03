@@ -1,15 +1,98 @@
+import { User, SignUpInput } from "@ts/user";
 import apiClient from "@apis/apiClient";
+import { ApiResponse } from "@ts/apiResponse";
+import { USER_ERROR_MESSAGES } from "@constants/clientErrorMessage";
+import { handleApiError, handleApiResponse } from "@utils/apiUtil";
 
-export const fetchUserInfo = async (setUser: any) => {
+export const fetchUserInfo = async (): Promise<User> => {
   try {
-    const response = await apiClient.get("/users/info");
-    if (response?.status === 200 && response?.data?.data) {
-      setUser(response.data.data);
-      return true;
-    }
-    return false;
+    const response = await apiClient.get<ApiResponse<User>>("/users/info");
+    return handleApiResponse(
+      response.data,
+      USER_ERROR_MESSAGES.INFO_FETCH_FAILED
+    );
   } catch (error) {
-    console.error("Failed to fetch user info:", error);
+    return handleApiError(error, "fetching user info");
+  }
+};
+
+export const loginUser = async (userId: string, password: string) => {
+  try {
+    const response = await apiClient.post(
+      "/users/login",
+      {
+        id: userId,
+        password,
+      },
+      {
+        withCredentials: true,
+      }
+    );
+    return response;
+  } catch (error) {
+    return handleApiError(error, "logging in user");
+  }
+};
+
+export const signupUser = async ({
+  userId,
+  password,
+  passwordCheck,
+  passwordQuestionUid,
+  questionAnswer,
+  name,
+  phoneNumber,
+  email,
+}: SignUpInput) => {
+  try {
+    const response = await apiClient.post<ApiResponse>(
+      "/users/signup",
+      {
+        id: userId,
+        password,
+        passwordCheck,
+        passwordQuestionUid: Number(passwordQuestionUid),
+        questionAnswer,
+        name,
+        phoneNo: phoneNumber,
+        email,
+      },
+      {
+        withCredentials: true,
+      }
+    );
+
+    return response;
+  } catch (error) {
+    console.error("Signup error:", error);
     throw error;
+  }
+};
+
+export interface UpdateUserInfoRequest {
+  name?: string;
+  email?: string;
+  phoneNo?: string;
+  noticeMonth?: number;
+  noticeTime?: string;
+  url?: string;
+}
+
+export const updateUserInfo = async (
+  data: UpdateUserInfoRequest
+): Promise<void> => {
+  try {
+    const response = await apiClient.patch("/users/info", data);
+    return response.data;
+  } catch (error) {
+    return handleApiError(error, "updating user info");
+  }
+};
+
+export const logoutUser = async (): Promise<void> => {
+  try {
+    await apiClient.post("/users/logout", {}, { withCredentials: true });
+  } catch (error) {
+    return handleApiError(error, "logging out user");
   }
 };

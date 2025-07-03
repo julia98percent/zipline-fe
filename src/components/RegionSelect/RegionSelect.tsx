@@ -7,16 +7,8 @@ import {
   InputLabel,
   SelectChangeEvent,
 } from "@mui/material";
-import apiClient from "@apis/apiClient";
-
-interface Region {
-  cortarNo: number;
-  cortarName: string;
-  centerLat: number;
-  centerLon: number;
-  level: number;
-  parentCortarNo: number;
-}
+import { fetchSido, fetchSigungu, fetchDong } from "@apis/regionService";
+import { Region } from "@ts/region";
 
 interface RegionState {
   sido: Region[];
@@ -30,7 +22,7 @@ interface RegionState {
 
 interface RegionSelectProps {
   value: {
-    code: number | null;
+    code: string | null;
     name: string;
     legalDistrictCode?: string; // 8자리 법정동 코드
   };
@@ -65,186 +57,172 @@ function RegionSelect({
 
   // 시도 데이터 초기 로드 및 초기 지역 설정
   useEffect(() => {
-    apiClient
-      .get("/region/0")
-      .then((res) => {
-        if (res.data?.data) {
-          const sidoList = res.data.data;
-          setRegion((prev) => ({ ...prev, sido: sidoList }));
+    const loadInitialData = async () => {
+      try {
+        const sidoList = await fetchSido();
+        setRegion((prev) => ({ ...prev, sido: sidoList }));
 
-          // 법정동 코드가 있는 경우 처리
-          if (value.legalDistrictCode) {
-            const codes = extractRegionCodes(value.legalDistrictCode);
+        // 법정동 코드가 있는 경우 처리
+        if (value.legalDistrictCode) {
+          const codes = extractRegionCodes(value.legalDistrictCode);
 
-            if (codes) {
-              const matchedSido = sidoList.find(
-                (sido: Region) => sido.cortarNo === codes.sidoCode
-              );
-
-              if (matchedSido) {
-                setRegion((prev) => ({
-                  ...prev,
-                  selectedSido: matchedSido.cortarNo,
-                }));
-
-                // 시도 선택 및 시군구 데이터 로드
-                apiClient
-                  .get(`/region/${matchedSido.cortarNo}`)
-                  .then((res) => {
-                    if (res.data?.data) {
-                      const sigunguList = res.data.data;
-                      const matchedSigungu = sigunguList.find(
-                        (sigungu: Region) =>
-                          sigungu.cortarNo === codes.sigunguCode
-                      );
-
-                      if (matchedSigungu) {
-                        setRegion((prev) => ({
-                          ...prev,
-                          sigungu: sigunguList,
-                          selectedSigungu: matchedSigungu.cortarNo,
-                        }));
-
-                        // 시군구 선택 및 동 데이터 로드
-                        apiClient
-                          .get(`/region/${matchedSigungu.cortarNo}`)
-                          .then((res) => {
-                            if (res.data?.data) {
-                              const dongList = res.data.data;
-                              const matchedDong = dongList.find(
-                                (dong: Region) =>
-                                  dong.cortarNo === codes.dongCode
-                              );
-
-                              if (matchedDong) {
-                                setRegion((prev) => ({
-                                  ...prev,
-                                  dong: dongList,
-                                  selectedDong: matchedDong.cortarNo,
-                                }));
-
-                                const regionPath = `${matchedSido.cortarName} ${matchedSigungu.cortarName} ${matchedDong.cortarName}`;
-                                onChange({
-                                  code: matchedDong.cortarNo,
-                                  name: regionPath,
-                                });
-                              }
-                            }
-                          })
-                          .catch(console.error);
-                      }
-                    }
-                  })
-                  .catch(console.error);
-              }
-            }
-          } else if (value.name) {
-            const [sidoName, sigunguName, dongName] = value.name.split(" ");
-
+          if (codes) {
             const matchedSido = sidoList.find(
-              (sido: Region) => sido.cortarName === sidoName
+              (sido: Region) => sido.cortarNo === codes.sidoCode
             );
 
             if (matchedSido) {
+              setRegion((prev) => ({
+                ...prev,
+                selectedSido: matchedSido.cortarNo,
+              }));
+
               // 시도 선택 및 시군구 데이터 로드
-              apiClient
-                .get(`/region/${matchedSido.cortarNo}`)
-                .then((res) => {
-                  if (res.data?.data) {
-                    const sigunguList = res.data.data;
-                    const matchedSigungu = sigunguList.find(
-                      (sigungu: Region) => sigungu.cortarName === sigunguName
+              try {
+                const sigunguList = await fetchSigungu(matchedSido.cortarNo);
+                const matchedSigungu = sigunguList.find(
+                  (sigungu: Region) => sigungu.cortarNo === codes.sigunguCode
+                );
+
+                if (matchedSigungu) {
+                  setRegion((prev) => ({
+                    ...prev,
+                    sigungu: sigunguList,
+                    selectedSigungu: matchedSigungu.cortarNo,
+                  }));
+
+                  // 시군구 선택 및 동 데이터 로드
+                  try {
+                    const dongList = await fetchDong(matchedSigungu.cortarNo);
+                    const matchedDong = dongList.find(
+                      (dong: Region) => dong.cortarNo === codes.dongCode
                     );
 
-                    setRegion((prev) => ({
-                      ...prev,
-                      selectedSido: matchedSido.cortarNo,
-                      sigungu: sigunguList,
-                    }));
+                    if (matchedDong) {
+                      setRegion((prev) => ({
+                        ...prev,
+                        dong: dongList,
+                        selectedDong: matchedDong.cortarNo,
+                      }));
 
-                    if (matchedSigungu) {
-                      // 시군구 선택 및 동 데이터 로드
-                      apiClient
-                        .get(`/region/${matchedSigungu.cortarNo}`)
-                        .then((res) => {
-                          if (res.data?.data) {
-                            const dongList = res.data.data;
-
-                            const matchedDong = dongList.find(
-                              (dong: Region) => dong.cortarName === dongName
-                            );
-
-                            // 동 데이터와 선택 상태를 한 번에 업데이트
-                            setRegion((prev) => {
-                              const newState = {
-                                ...prev,
-                                selectedSigungu: matchedSigungu.cortarNo,
-                                dong: dongList,
-                                selectedDong: matchedDong?.cortarNo || null,
-                              };
-
-                              return newState;
-                            });
-
-                            // 최종 선택된 지역 정보 전달
-                            if (matchedDong) {
-                              onChange({
-                                code: matchedDong.cortarNo,
-                                name: value.name,
-                              });
-                            }
-                          }
-                        })
-                        .catch(console.error);
+                      const regionPath = `${matchedSido.cortarName} ${matchedSigungu.cortarName} ${matchedDong.cortarName}`;
+                      onChange({
+                        code: matchedDong.cortarNo,
+                        name: regionPath,
+                      });
                     }
+                  } catch (error) {
+                    console.error("동 데이터 로드 실패:", error);
                   }
-                })
-                .catch(console.error);
+                }
+              } catch (error) {
+                console.error("시군구 데이터 로드 실패:", error);
+              }
+            }
+          }
+        } else if (value.name) {
+          const [sidoName, sigunguName, dongName] = value.name.split(" ");
+
+          const matchedSido = sidoList.find(
+            (sido: Region) => sido.cortarName === sidoName
+          );
+
+          if (matchedSido) {
+            // 시도 선택 및 시군구 데이터 로드
+            try {
+              const sigunguList = await fetchSigungu(matchedSido.cortarNo);
+              const matchedSigungu = sigunguList.find(
+                (sigungu: Region) => sigungu.cortarName === sigunguName
+              );
+
+              setRegion((prev) => ({
+                ...prev,
+                selectedSido: matchedSido.cortarNo,
+                sigungu: sigunguList,
+              }));
+
+              if (matchedSigungu) {
+                // 시군구 선택 및 동 데이터 로드
+                try {
+                  const dongList = await fetchDong(matchedSigungu.cortarNo);
+                  const matchedDong = dongList.find(
+                    (dong: Region) => dong.cortarName === dongName
+                  );
+
+                  // 동 데이터와 선택 상태를 한 번에 업데이트
+                  setRegion((prev) => ({
+                    ...prev,
+                    selectedSigungu: matchedSigungu.cortarNo,
+                    dong: dongList,
+                    selectedDong: matchedDong?.cortarNo || null,
+                  }));
+
+                  // 최종 선택된 지역 정보 전달
+                  if (matchedDong) {
+                    onChange({
+                      code: matchedDong.cortarNo,
+                      name: value.name,
+                    });
+                  }
+                } catch (error) {
+                  console.error("동 데이터 로드 실패:", error);
+                }
+              }
+            } catch (error) {
+              console.error("시군구 데이터 로드 실패:", error);
             }
           }
         }
-      })
-      .catch(console.error);
-  }, [value.legalDistrictCode, value.name, value.code]);
+      } catch (error) {
+        console.error("시도 데이터 로드 실패:", error);
+      }
+    };
+
+    loadInitialData();
+  }, [value.legalDistrictCode, value.name, value.code, onChange]);
 
   // 시도 선택 시 군구 로드
   useEffect(() => {
     if (!region.selectedSido) return;
 
-    apiClient
-      .get(`/region/${region.selectedSido}`)
-      .then((res) => {
-        if (res.data?.data) {
-          setRegion((prev) => ({
-            ...prev,
-            sigungu: res.data.data,
-            // 시도가 변경되면 하위 선택값들만 초기화
-            selectedSigungu: null,
-            selectedDong: null,
-            dong: [],
-          }));
-        }
-      })
-      .catch(console.error);
+    const loadSigunguData = async () => {
+      try {
+        const sigunguList = await fetchSigungu(region.selectedSido as number);
+        setRegion((prev) => ({
+          ...prev,
+          sigungu: sigunguList,
+          // 시도가 변경되면 하위 선택값들만 초기화
+          selectedSigungu: null,
+          selectedDong: null,
+          dong: [],
+        }));
+      } catch (error) {
+        console.error("시군구 데이터 로드 실패:", error);
+      }
+    };
+
+    loadSigunguData();
   }, [region.selectedSido]);
 
   // 군구 선택 시 동 로드
   useEffect(() => {
     if (!region.selectedSigungu) return;
 
-    apiClient
-      .get(`/region/${region.selectedSigungu}`)
-      .then((res) => {
-        if (res.data?.data) {
-          setRegion((prev) => ({
-            ...prev,
-            dong: res.data.data,
-            // 시군구가 변경되면 동 선택값만 초기화
-            selectedDong: null,
-          }));
-        }
-      })
-      .catch(console.error);
+    const loadDongData = async () => {
+      try {
+        const dongList = await fetchDong(region.selectedSigungu as number);
+        setRegion((prev) => ({
+          ...prev,
+          dong: dongList,
+          // 시군구가 변경되면 동 선택값만 초기화
+          selectedDong: null,
+        }));
+      } catch (error) {
+        console.error("동 데이터 로드 실패:", error);
+      }
+    };
+
+    loadDongData();
   }, [region.selectedSigungu]);
 
   const handleRegionChange =

@@ -44,12 +44,7 @@ export interface Counsel {
   propertyUid: number;
   title: string;
   type: CounselCategoryType;
-}
-
-export interface CounselDetail extends Counsel {
-  counselDetails: CounselDetailItem[];
-  property: Property | null;
-  customer: Customer;
+  content: string;
 }
 
 export interface CounselDetailItem {
@@ -97,4 +92,13 @@ export interface PreCounselQuestion {
   type: QuestionType;
   choices: PreCounselChoice[] | [];
   required: boolean;
+}
+
+export interface CounselUpdateRequest {
+  title: string;
+  counselDate: Date;
+  type: CounselCategoryType;
+  dueDate?: string | null;
+  completed: boolean;
+  content: string;
 }

@@ -3,7 +3,7 @@ import PageHeader from "@components/PageHeader/PageHeader";
 import styles from "./styles/CounselDetailPage.module.css";
 import { CounselCategoryType } from "@ts/counsel";
 import { PropertyCategoryType } from "@ts/property";
-import { CounselDetail, CounselDetailItem } from "@ts/counsel";
+import { Counsel } from "@ts/counsel";
 import {
   CounselBasicInfo,
   CounselCustomerInfo,
@@ -14,8 +14,8 @@ import {
 } from "./components";
 
 interface CounselDetailPageViewProps {
-  counselData: CounselDetail | null;
-  editedData: CounselDetail | null;
+  counselData: Counsel | null;
+  editedData: Counsel | null;
   isLoading: boolean;
   isEditing: boolean;
   deleteDialogOpen: boolean;
@@ -24,12 +24,8 @@ interface CounselDetailPageViewProps {
   onEdit: () => void;
   onCancelEdit: () => void;
   onSave: () => void;
-  onInputChange: (field: keyof CounselDetail, value: string | boolean) => void;
-  onDetailChange: (
-    detailUid: number,
-    field: keyof CounselDetailItem,
-    value: string
-  ) => void;
+  onInputChange: (field: keyof Counsel, value: string | boolean) => void;
+  onDetailChange: (value: string) => void;
   onDeleteClick: () => void;
   onDeleteCancel: () => void;
   onDeleteConfirm: () => void;

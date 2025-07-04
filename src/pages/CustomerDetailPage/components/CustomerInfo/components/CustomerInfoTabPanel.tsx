@@ -2,7 +2,7 @@ import { TableContainer, Paper } from "@mui/material";
 import ConsultationTable from "./ConsultationTable";
 import PropertyTable from "./PropertyTable";
 import ContractTable from "./ContractTable";
-import { Counsel } from "@ts/counsel";
+import { Counsel, CounselUpdateRequest } from "@ts/counsel";
 import { Contract } from "@ts/contract";
 import { TabType, TabState } from "../CustomerInfo";
 import { RowData } from "@components/Table";
@@ -48,11 +48,9 @@ export interface ContractRowData extends RowData {
   uid: number;
 }
 
-export type ConsultationRowData = Omit<
-  Counsel,
-  "propertyUid" | "customerName"
-> & {
+export type ConsultationRowData = Omit<CounselUpdateRequest, "content"> & {
   id: number;
+  counselUid: number;
 };
 
 const CustomerInfoTabPanel = ({

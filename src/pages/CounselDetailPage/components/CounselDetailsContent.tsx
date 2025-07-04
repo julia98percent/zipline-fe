@@ -1,16 +1,11 @@
-import { Typography, TextField } from "@mui/material";
+import { Typography, TextareaAutosize as TextArea } from "@mui/material";
 
 import styles from "../styles/CounselDetailPage.module.css";
-import { CounselDetailItem } from "@ts/counsel";
 
 interface CounselDetailsContentProps {
-  counselDetails: CounselDetailItem[];
+  content: string;
   isEditing: boolean;
-  onDetailChange: (
-    detailUid: number,
-    field: keyof CounselDetailItem,
-    value: string
-  ) => void;
+  onDetailChange: (value: string) => void;
 }
 
 const CounselDetailsContent = ({

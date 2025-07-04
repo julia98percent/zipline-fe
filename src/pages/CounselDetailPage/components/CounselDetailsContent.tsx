@@ -14,7 +14,7 @@ interface CounselDetailsContentProps {
 }
 
 const CounselDetailsContent = ({
-  counselDetails,
+  content,
   isEditing,
   onDetailChange,
 }: CounselDetailsContentProps) => {
@@ -22,43 +22,27 @@ const CounselDetailsContent = ({
     <div className={styles.card}>
       <Typography className={styles.cardTitle}>상담 내용</Typography>
       <div style={{ display: "flex", flexDirection: "column", gap: 16 }}>
-        {counselDetails.map((detail) => (
-          <div key={detail.counselDetailUid} className={styles.questionCard}>
-            {isEditing && (
-              <div
-                style={{
-                  display: "flex",
-                  justifyContent: "space-between",
-                  alignItems: "center",
-                  marginBottom: 8,
-                }}
-              ></div>
-            )}
-            {isEditing ? (
-              <TextField
-                label="질문"
-                value={detail.content}
-                onChange={(e) =>
-                  onDetailChange(
-                    detail.counselDetailUid,
-                    "content",
-                    e.target.value
-                  )
-                }
-                fullWidth
-                multiline
-                rows={2}
-                margin="normal"
-              />
-            ) : (
-              <>
-                <Typography className={styles.detailQuestion}>
-                  {detail.content}
-                </Typography>
-              </>
-            )}
-          </div>
-        ))}
+        <div className={styles.questionCard}>
+          {isEditing && (
+            <div
+              style={{
+                display: "flex",
+                justifyContent: "space-between",
+                alignItems: "center",
+                marginBottom: 8,
+              }}
+            ></div>
+          )}
+          {isEditing ? (
+            <TextArea
+              minRows={3}
+              value={content}
+              onChange={(e) => onDetailChange(e.target.value)}
+            />
+          ) : (
+            <Typography className={styles.detailQuestion}>{content}</Typography>
+          )}
+        </div>
       </div>
     </div>
   );

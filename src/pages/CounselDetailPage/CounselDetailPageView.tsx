@@ -100,7 +100,7 @@ const CounselDetailPageView = ({
         )}
 
         <CounselDetailsContent
-          counselDetails={data.counselDetails}
+          content={data.content}
           isEditing={isEditing}
           onDetailChange={onDetailChange}
         />

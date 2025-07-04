@@ -15,7 +15,10 @@ const ContractDetailPage = () => {
   const [contract, setContract] = useState<ContractDetail | null>(null);
   const [histories, setHistories] = useState<ContractHistory[]>([]);
   const [loading, setLoading] = useState(true);
-  const [editModalOpen, setEditModalOpen] = useState(false);
+  const [isUpdating, setIsUpdating] = useState(false);
+  const [basicInfoModalOpen, setBasicInfoModalOpen] = useState(false);
+  const [partyInfoModalOpen, setPartyInfoModalOpen] = useState(false);
+  const [documentsModalOpen, setDocumentsModalOpen] = useState(false);
   const [deleteModalOpen, setDeleteModalOpen] = useState(false);
 
   const loadContractData = useCallback(async () => {
@@ -39,7 +42,42 @@ const ContractDetailPage = () => {
     }
   }, [contractUid]);
 
-  const handleEdit = () => setEditModalOpen(true);
+  const handleRefreshData = useCallback(async () => {
+    if (!contractUid) return;
+
+    setIsUpdating(true);
+    try {
+      const [contractDetail, contractHistory] = await Promise.all([
+        fetchContractDetail(contractUid),
+        fetchContractHistory(contractUid),
+      ]);
+      setContract(contractDetail);
+      setHistories(contractHistory);
+      showToast({
+        message: "계약 정보가 성공적으로 업데이트되었습니다.",
+        type: "success",
+      });
+    } catch (error) {
+      showToast({
+        message: "계약 정보 업데이트 중 오류가 발생했습니다.",
+        type: "error",
+      });
+    } finally {
+      setIsUpdating(false);
+    }
+  }, [contractUid]);
+
+  const handleEditBasicInfo = () => {
+    setBasicInfoModalOpen(true);
+  };
+
+  const handleEditPartyInfo = () => {
+    setPartyInfoModalOpen(true);
+  };
+
+  const handleEditDocuments = () => {
+    setDocumentsModalOpen(true);
+  };
 
   const handleDelete = () => {
     setDeleteModalOpen(true);
@@ -64,7 +102,9 @@ const ContractDetailPage = () => {
     }
   };
 
-  const handleCloseEditModal = () => setEditModalOpen(false);
+  const handleCloseBasicInfoModal = () => setBasicInfoModalOpen(false);
+  const handleClosePartyInfoModal = () => setPartyInfoModalOpen(false);
+  const handleCloseDocumentsModal = () => setDocumentsModalOpen(false);
   const handleCloseDeleteModal = () => setDeleteModalOpen(false);
 
   useEffect(() => {
@@ -76,15 +116,21 @@ const ContractDetailPage = () => {
       contract={contract}
       histories={histories}
       loading={loading}
-      editModalOpen={editModalOpen}
+      isUpdating={isUpdating}
+      basicInfoModalOpen={basicInfoModalOpen}
+      partyInfoModalOpen={partyInfoModalOpen}
+      documentsModalOpen={documentsModalOpen}
       deleteModalOpen={deleteModalOpen}
-      contractUid={contractUid}
-      onEdit={handleEdit}
+      onEditBasicInfo={handleEditBasicInfo}
+      onEditPartyInfo={handleEditPartyInfo}
+      onEditDocuments={handleEditDocuments}
       onDelete={handleDelete}
       onConfirmDelete={confirmDelete}
-      onCloseEditModal={handleCloseEditModal}
+      onCloseBasicInfoModal={handleCloseBasicInfoModal}
+      onClosePartyInfoModal={handleClosePartyInfoModal}
+      onCloseDocumentsModal={handleCloseDocumentsModal}
       onCloseDeleteModal={handleCloseDeleteModal}
-      onRefreshData={loadContractData}
+      onRefreshData={handleRefreshData}
     />
   );
 };

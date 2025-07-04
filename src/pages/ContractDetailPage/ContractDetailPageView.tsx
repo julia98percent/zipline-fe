@@ -4,7 +4,6 @@ import ContractEditModal from "./components/ContractEditModal";
 import ContractDetailContent from "./components/ContractDetailContent";
 import styles from "@pages/ContractListPage/styles/ContractListPage.module.css";
 import DeleteConfirmModal from "@components/DeleteConfirm";
-import EditIcon from "@mui/icons-material/Edit";
 import DeleteIcon from "@mui/icons-material/Delete";
 import { ContractDetail, ContractHistory } from "@ts/contract";
 
@@ -12,13 +11,22 @@ interface ContractDetailPageViewProps {
   contract: ContractDetail | null;
   histories: ContractHistory[];
   loading: boolean;
-  editModalOpen: boolean;
+  isUpdating: boolean;
+
+  basicInfoModalOpen: boolean;
+  partyInfoModalOpen: boolean;
+  documentsModalOpen: boolean;
   deleteModalOpen: boolean;
-  contractUid?: string;
-  onEdit: () => void;
+
+  onEditBasicInfo: () => void;
+  onEditPartyInfo: () => void;
+  onEditDocuments: () => void;
   onDelete: () => void;
   onConfirmDelete: () => void;
-  onCloseEditModal: () => void;
+
+  onCloseBasicInfoModal: () => void;
+  onClosePartyInfoModal: () => void;
+  onCloseDocumentsModal: () => void;
   onCloseDeleteModal: () => void;
   onRefreshData: () => void;
 }
@@ -27,13 +35,20 @@ const ContractDetailPageView = ({
   contract,
   histories,
   loading,
-  editModalOpen,
+  isUpdating,
+  basicInfoModalOpen,
+  partyInfoModalOpen,
+  documentsModalOpen,
   deleteModalOpen,
-  contractUid,
-  onEdit,
+
+  onEditBasicInfo,
+  onEditPartyInfo,
+  onEditDocuments,
   onDelete,
   onConfirmDelete,
-  onCloseEditModal,
+  onCloseBasicInfoModal,
+  onClosePartyInfoModal,
+  onCloseDocumentsModal,
   onCloseDeleteModal,
   onRefreshData,
 }: ContractDetailPageViewProps) => {

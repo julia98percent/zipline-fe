@@ -18,9 +18,18 @@ const CONTRACT_STATUS_COLORS: Record<string, string> = {
 interface Props {
   contract: ContractDetail;
   histories: ContractHistory[];
+  onEditBasicInfo: () => void;
+  onEditPartyInfo: () => void;
+  onEditDocuments: () => void;
 }
 
-const ContractDetailContent = ({ contract, histories }: Props) => {
+const ContractDetailContent = ({
+  contract,
+  histories,
+  onEditBasicInfo,
+  onEditPartyInfo,
+  onEditDocuments,
+}: Props) => {
   const getStatusLabel = (statusValue: string): string => {
     const statusOption = CONTRACT_STATUS_OPTION_LIST.find(
       (option) => option.value === statusValue
@@ -53,6 +62,9 @@ const ContractDetailContent = ({ contract, histories }: Props) => {
       getStatusColor={getStatusColor}
       getCustomerNamesDisplay={getCustomerNamesDisplay}
       formatPrice={formatPrice}
+      onEditBasicInfo={onEditBasicInfo}
+      onEditPartyInfo={onEditPartyInfo}
+      onEditDocuments={onEditDocuments}
     />
   );
 };

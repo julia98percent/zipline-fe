@@ -5,7 +5,9 @@ import {
   CardContent,
   Chip,
   Button,
+  IconButton,
 } from "@mui/material";
+import EditIcon from "@mui/icons-material/Edit";
 import {
   ContractCategory,
   ContractCategoryType,
@@ -15,6 +17,12 @@ import {
 } from "@ts/contract";
 import Table, { ColumnConfig } from "@components/Table";
 
+interface CustomerInfo {
+  name: string;
+  uid: number;
+  phoneNo: string;
+}
+
 interface ContractDetailContentViewProps {
   contract: ContractDetail;
   histories: ContractHistory[];
@@ -22,6 +30,9 @@ interface ContractDetailContentViewProps {
   getStatusColor: (statusValue: string) => string;
   getCustomerNamesDisplay: (names: string[] | undefined | null) => string;
   formatPrice: (price: number | null | undefined, suffix?: string) => string;
+  onEditBasicInfo: () => void;
+  onEditPartyInfo: () => void;
+  onEditDocuments: () => void;
 }
 
 interface HistoryRowData {
@@ -39,6 +50,9 @@ const ContractDetailContentView = ({
   getStatusColor,
   getCustomerNamesDisplay,
   formatPrice,
+  onEditBasicInfo,
+  onEditPartyInfo,
+  onEditDocuments,
 }: ContractDetailContentViewProps) => {
   const historyColumns: ColumnConfig<HistoryRowData>[] = [
     {
@@ -142,9 +156,26 @@ const ContractDetailContentView = ({
       <Box display="flex" gap={3} mb={3}>
         <Card sx={{ flex: 1, borderRadius: 2 }}>
           <CardContent>
-            <Typography variant="h6" fontWeight="bold" gutterBottom>
-              계약 기본 정보
-            </Typography>
+            <Box
+              display="flex"
+              justifyContent="space-between"
+              alignItems="center"
+              mb={2}
+            >
+              <Typography variant="h6" fontWeight="bold">
+                계약 기본 정보
+              </Typography>
+              <IconButton
+                onClick={onEditBasicInfo}
+                size="small"
+                sx={{
+                  backgroundColor: "#f5f5f5",
+                  "&:hover": { backgroundColor: "#e0e0e0" },
+                }}
+              >
+                <EditIcon fontSize="small" />
+              </IconButton>
+            </Box>
             <InfoRow label="카테고리" value={renderCategoryChip()} />
             <InfoRow label="상태" value={renderStatusChip()} />
             <InfoRow
@@ -170,9 +201,26 @@ const ContractDetailContentView = ({
 
         <Card sx={{ flex: 1, borderRadius: 2 }}>
           <CardContent>
-            <Typography variant="h6" fontWeight="bold" gutterBottom>
-              계약 당사자 정보
-            </Typography>
+            <Box
+              display="flex"
+              justifyContent="space-between"
+              alignItems="center"
+              mb={2}
+            >
+              <Typography variant="h6" fontWeight="bold">
+                계약 당사자 정보
+              </Typography>
+              <IconButton
+                onClick={onEditPartyInfo}
+                size="small"
+                sx={{
+                  backgroundColor: "#f5f5f5",
+                  "&:hover": { backgroundColor: "#e0e0e0" },
+                }}
+              >
+                <EditIcon fontSize="small" />
+              </IconButton>
+            </Box>
             <InfoRow
               label="임대/매도인"
               value={getCustomerNamesDisplay(contract.lessorOrSellerNames)}
@@ -190,9 +238,26 @@ const ContractDetailContentView = ({
       <Box display="flex" gap={3}>
         <Card sx={{ flex: 1, minHeight: 200, borderRadius: 2 }}>
           <CardContent>
-            <Typography variant="h6" fontWeight="bold" gutterBottom>
-              첨부 문서
-            </Typography>
+            <Box
+              display="flex"
+              justifyContent="space-between"
+              alignItems="center"
+              mb={2}
+            >
+              <Typography variant="h6" fontWeight="bold">
+                첨부 문서
+              </Typography>
+              <IconButton
+                onClick={onEditDocuments}
+                size="small"
+                sx={{
+                  backgroundColor: "#f5f5f5",
+                  "&:hover": { backgroundColor: "#e0e0e0" },
+                }}
+              >
+                <EditIcon fontSize="small" />
+              </IconButton>
+            </Box>
             {contract.documents.length > 0 ? (
               contract.documents.map((doc, idx) => (
                 <Box

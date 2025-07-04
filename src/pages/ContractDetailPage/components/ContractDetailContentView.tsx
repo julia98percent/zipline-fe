@@ -28,7 +28,7 @@ interface ContractDetailContentViewProps {
   histories: ContractHistory[];
   getStatusLabel: (statusValue: string) => string;
   getStatusColor: (statusValue: string) => string;
-  getCustomerNamesDisplay: (names: string[] | undefined | null) => string;
+  getCustomerNamesDisplay: (names: CustomerInfo[]) => string;
   formatPrice: (price: number | null | undefined, suffix?: string) => string;
   onEditBasicInfo: () => void;
   onEditPartyInfo: () => void;
@@ -223,11 +223,11 @@ const ContractDetailContentView = ({
             </Box>
             <InfoRow
               label="임대/매도인"
-              value={getCustomerNamesDisplay(contract.lessorOrSellerNames)}
+              value={getCustomerNamesDisplay(contract.lessorOrSellerInfo)}
             />
             <InfoRow
               label="임차/매수인"
-              value={getCustomerNamesDisplay(contract.lesseeOrBuyerNames)}
+              value={getCustomerNamesDisplay(contract.lesseeOrBuyerInfo)}
             />
             <InfoRow label="계약일" value={contract.contractDate ?? "-"} />
           </CardContent>

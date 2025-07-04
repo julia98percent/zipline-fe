@@ -1,4 +1,8 @@
-import { ContractDetail, ContractHistory } from "@ts/contract";
+import {
+  ContractDetail,
+  ContractHistory,
+  ContractPartyInfo,
+} from "@ts/contract";
 import { CONTRACT_STATUS_OPTION_LIST } from "@constants/contract";
 import ContractDetailContentView from "./ContractDetailContentView";
 
@@ -41,9 +45,9 @@ const ContractDetailContent = ({
     return CONTRACT_STATUS_COLORS[statusValue] || "#9e9e9e";
   };
 
-  const getCustomerNamesDisplay = (names: string[] | undefined | null) => {
-    if (!names || names.length === 0) return "-";
-    return names.join(", ");
+  const getCustomerNamesDisplay = (contractPartyInfo: ContractPartyInfo[]) => {
+    if (!contractPartyInfo || contractPartyInfo.length === 0) return "-";
+    return contractPartyInfo.map((item) => item.name).join(", ");
   };
 
   const formatPrice = (

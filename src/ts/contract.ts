@@ -1,8 +1,15 @@
 import { PaginatedResponse } from "./apiResponse";
 import { CONTRACT_STATUS_OPTION_LIST } from "@constants/contract";
+
 export interface ContractDocument {
   fileName: string;
   fileUrl: string;
+}
+
+export interface ContractPartyInfo {
+  name: string;
+  uid: number;
+  phoneNo: string;
 }
 
 export interface Contract {
@@ -18,12 +25,15 @@ export interface Contract {
 }
 
 export interface ContractDetail extends Contract {
-  deposit: number;
-  monthlyRent: number;
-  price: number;
+  deposit: number | null;
+  monthlyRent: number | null;
+  price: number | null;
   expectedContractEndDate: string | null;
   documents: ContractDocument[];
   propertyAddress: string;
+  lessorOrSellerInfo: ContractPartyInfo[];
+  lesseeOrBuyerInfo: ContractPartyInfo[];
+  propertyUid: number;
 }
 
 export interface ContractHistory {

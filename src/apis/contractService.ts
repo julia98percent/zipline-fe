@@ -18,10 +18,11 @@ export const fetchContractDetail = async (
       `/contracts/${contractUid}`
     );
 
-    return handleApiResponse(
+    const result = handleApiResponse(
       response,
       CONTRACT_ERROR_MESSAGES.DETAIL_FETCH_FAILED
     );
+    return result;
   } catch (error) {
     return handleApiError(error, "fetching contract detail");
   }
@@ -162,7 +163,7 @@ export interface ContractRequest {
   price: number;
   lessorOrSellerUids: number[];
   lesseeOrBuyerUids: number[];
-  propertyUid: string | null;
+  propertyUid: number;
   status: string;
 }
 
@@ -174,6 +175,7 @@ export interface AgentPropertyResponse {
 export interface CustomerResponse {
   uid: number;
   name: string;
+  phoneNo: string;
 }
 
 export const updateContract = async (
@@ -204,9 +206,13 @@ export const fetchProperties = async (): Promise<AgentPropertyResponse[]> => {
 export const fetchCustomers = async (): Promise<CustomerResponse[]> => {
   try {
     const { data: response } = await apiClient.get("/customers");
-    return response.data.customers.map((c: CustomerResponse) => ({
+
+    const customers = response.data?.customers;
+
+    return customers.map((c: CustomerResponse) => ({
       uid: Number(c.uid),
       name: c.name,
+      phoneNo: c.phoneNo,
     }));
   } catch (error) {
     return handleApiError(error, "fetching customers");

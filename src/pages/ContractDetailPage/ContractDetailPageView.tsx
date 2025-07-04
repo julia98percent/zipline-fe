@@ -1,7 +1,11 @@
 import { CircularProgress, Button, Box } from "@mui/material";
 import PageHeader from "@components/PageHeader/PageHeader";
-import ContractEditModal from "./components/ContractEditModal";
-import ContractDetailContent from "./components/ContractDetailContent";
+import {
+  ContractBasicInfoEditModal,
+  ContractPartyEditModal,
+  ContractDetailContent,
+  ContractDocumentsEditModal,
+} from "./components";
 import styles from "@pages/ContractListPage/styles/ContractListPage.module.css";
 import DeleteConfirmModal from "@components/DeleteConfirm";
 import DeleteIcon from "@mui/icons-material/Delete";
@@ -74,13 +78,30 @@ const ContractDetailPageView = ({
       <PageHeader title="계약 상세 조회" />
 
       <div className={styles.contents}>
-        {editModalOpen && (
-          <ContractEditModal
-            open={editModalOpen}
-            handleClose={onCloseEditModal}
-            fetchContractData={onRefreshData}
-            contractUid={Number(contractUid)}
-            initialData={contract}
+        {basicInfoModalOpen && contract && (
+          <ContractBasicInfoEditModal
+            open={basicInfoModalOpen}
+            onClose={onCloseBasicInfoModal}
+            contract={contract}
+            onSuccess={onRefreshData}
+          />
+        )}
+
+        {partyInfoModalOpen && contract && (
+          <ContractPartyEditModal
+            open={partyInfoModalOpen}
+            onClose={onClosePartyInfoModal}
+            contract={contract}
+            onSuccess={onRefreshData}
+          />
+        )}
+
+        {documentsModalOpen && contract && (
+          <ContractDocumentsEditModal
+            open={documentsModalOpen}
+            onClose={onCloseDocumentsModal}
+            contract={contract}
+            onSuccess={onRefreshData}
           />
         )}
 
@@ -92,28 +113,24 @@ const ContractDetailPageView = ({
         />
 
         <div className={styles.contents2}>
-          <Box display="flex" justifyContent="flex-end" mt={0} gap={2} mb={3}>
-            <Button
-              variant="outlined"
-              color="primary"
-              startIcon={<EditIcon />}
-              onClick={onEdit}
-              sx={{ backgroundColor: "white" }}
-            >
-              수정
-            </Button>
-            <Button
-              variant="outlined"
-              color="error"
-              startIcon={<DeleteIcon />}
-              onClick={onDelete}
-              sx={{ backgroundColor: "white" }}
-            >
-              삭제
-            </Button>
-          </Box>
+          <Button
+            variant="outlined"
+            color="error"
+            startIcon={<DeleteIcon />}
+            onClick={onDelete}
+            disabled={isUpdating}
+            sx={{ backgroundColor: "white" }}
+          >
+            삭제
+          </Button>
 
-          <ContractDetailContent contract={contract} histories={histories} />
+          <ContractDetailContent
+            contract={contract}
+            histories={histories}
+            onEditBasicInfo={onEditBasicInfo}
+            onEditPartyInfo={onEditPartyInfo}
+            onEditDocuments={onEditDocuments}
+          />
         </div>
       </div>
     </div>

@@ -106,11 +106,8 @@ function CounselModal({ open, onClose, onSuccess }: CounselModalProps) {
         type: counselType,
         dueDate,
         propertyUid: selectedProperty || undefined,
-        counselDetails: [
-          {
-            content: counselContent,
-          },
-        ],
+
+        content: counselContent,
       });
 
       onClose();

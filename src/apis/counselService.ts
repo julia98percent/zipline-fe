@@ -3,9 +3,10 @@ import { COUNSEL_ERROR_MESSAGES } from "@constants/clientErrorMessage";
 import { ApiResponse } from "@ts/apiResponse";
 import { handleApiResponse, handleApiError } from "@utils/apiUtil";
 import {
-  CounselDetail,
+  Counsel,
   PreCounselListData,
   ConsultationResponse,
+  CounselUpdateRequest,
 } from "@ts/counsel";
 
 type CounselListResponse = ApiResponse<ConsultationResponse>;
@@ -25,9 +26,7 @@ interface CreateCounselRequest {
   type: string;
   dueDate?: string;
   propertyUid?: string;
-  counselDetails: Array<{
-    content: string;
-  }>;
+  content: string;
 }
 
 export const fetchCounselList = async (params: CounselListParams) => {
@@ -96,9 +95,9 @@ export const fetchDashboardCounsels = async (params: {
   }
 };
 
-export const fetchCounselDetail = async (counselUid: string) => {
+export const fetchCounsel = async (counselUid: string) => {
   try {
-    const { data: response } = await apiClient.get<ApiResponse<CounselDetail>>(
+    const { data: response } = await apiClient.get<ApiResponse<Counsel>>(
       `/counsels/${counselUid}`
     );
 
@@ -110,7 +109,7 @@ export const fetchCounselDetail = async (counselUid: string) => {
 
 export const updateCounsel = async (
   counselUid: string,
-  updateData: CounselDetail
+  updateData: CounselUpdateRequest
 ) => {
   try {
     const { data: response } = await apiClient.put<ApiResponse>(

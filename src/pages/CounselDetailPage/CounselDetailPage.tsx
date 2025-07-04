@@ -63,11 +63,7 @@ function CounselDetailPage() {
           ? dayjs(editedData.dueDate).format("YYYY-MM-DD")
           : null,
         completed: editedData.completed,
-        counselDetails: editedData.counselDetails.map(
-          (detail: CounselDetailItem) => ({
-            content: detail.content,
-          })
-        ),
+        content: editedData.content,
       };
 
       const result = await updateCounsel(counselUid!, updateData);
@@ -87,26 +83,15 @@ function CounselDetailPage() {
     }
   };
 
-  const handleInputChange = (
-    field: keyof CounselDetail,
-    value: string | boolean
-  ) => {
+  const handleInputChange = (field: keyof Counsel, value: string | boolean) => {
     if (!editedData) return;
     setEditedData({ ...editedData, [field]: value });
   };
 
-  const handleDetailChange = (
-    detailUid: number,
-    field: keyof CounselDetailItem,
-    value: string
-  ) => {
+  const handleDetailChange = (value: string) => {
     if (!editedData) return;
-    const updatedDetails = editedData.counselDetails.map((detail) =>
-      detail.counselDetailUid === detailUid
-        ? { ...detail, [field]: value }
-        : detail
-    );
-    setEditedData({ ...editedData, counselDetails: updatedDetails });
+
+    setEditedData({ ...editedData, content: value });
   };
 
   const handleDeleteClick = () => {

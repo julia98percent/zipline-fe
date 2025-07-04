@@ -12,13 +12,13 @@ import {
 import dayjs from "dayjs";
 import styles from "../styles/CounselDetailPage.module.css";
 import { CounselCategoryType } from "@ts/counsel";
-import { CounselDetail } from "@ts/counsel";
+import { Counsel } from "@ts/counsel";
 
 interface CounselBasicInfoProps {
-  data: CounselDetail;
+  data: Counsel;
   isEditing: boolean;
   COUNSEL_TYPES: Record<CounselCategoryType, string>;
-  onInputChange: (field: keyof CounselDetail, value: string | boolean) => void;
+  onInputChange: (field: keyof Counsel, value: string | boolean) => void;
 }
 
 const CounselBasicInfo = ({

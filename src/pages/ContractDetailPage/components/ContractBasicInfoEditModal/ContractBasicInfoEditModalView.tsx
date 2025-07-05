@@ -13,7 +13,6 @@ import {
   MenuItem,
   Autocomplete,
   Chip,
-  Divider,
 } from "@mui/material";
 import { ContractCategory, ContractCategoryType } from "@ts/contract";
 import { CONTRACT_STATUS_OPTION_LIST } from "@constants/contract";
@@ -25,7 +24,6 @@ interface ContractBasicInfoEditModalViewProps {
   onClose: () => void;
   isLoading: boolean;
 
-  // Form data
   category: ContractCategoryType | null;
   status: string;
   contractStartDate: string;
@@ -40,11 +38,9 @@ interface ContractBasicInfoEditModalViewProps {
   selectedLessees: CustomerResponse[];
   selectedPropertyUid: string;
 
-  // Options
   propertyOptions: AgentPropertyResponse[];
   customerOptions: CustomerResponse[];
 
-  // Event handlers
   onCategoryChange: (value: ContractCategoryType) => void;
   onStatusChange: (value: string) => void;
   onContractStartDateChange: (value: string) => void;
@@ -60,7 +56,6 @@ interface ContractBasicInfoEditModalViewProps {
   onSelectedPropertyUidChange: (value: string) => void;
   onSubmit: () => void;
 
-  // Helper functions
   formatPrice: (value: string) => string;
   getCustomerDisplayName: (customer: CustomerResponse) => string;
 }
@@ -110,7 +105,6 @@ const ContractBasicInfoEditModalView = ({
       </DialogTitle>
       <DialogContent sx={{ maxHeight: 600, overflowY: "auto" }}>
         <Box sx={{ display: "flex", flexDirection: "column", gap: 3, mt: 2 }}>
-          {/* 첫 번째 줄: 카테고리, 상태 */}
           <Box sx={{ display: "flex", gap: 2 }}>
             <FormControl fullWidth>
               <InputLabel>카테고리</InputLabel>
@@ -145,7 +139,6 @@ const ContractBasicInfoEditModalView = ({
             </FormControl>
           </Box>
 
-          {/* 두 번째 줄: 계약일, 계약 시작일 */}
           <Box sx={{ display: "flex", gap: 2 }}>
             <TextField
               label="계약일"
@@ -166,7 +159,6 @@ const ContractBasicInfoEditModalView = ({
             />
           </Box>
 
-          {/* 세 번째 줄: 계약 종료일, 기타 */}
           <Box sx={{ display: "flex", gap: 2 }}>
             <TextField
               label="계약 종료일"
@@ -186,7 +178,6 @@ const ContractBasicInfoEditModalView = ({
             />
           </Box>
 
-          {/* 계약 예상 종료일 (취소 상태일 때만) */}
           {status === "CANCELLED" && (
             <TextField
               label="계약 예상 종료일"
@@ -198,7 +189,6 @@ const ContractBasicInfoEditModalView = ({
             />
           )}
 
-          {/* 매물 선택 */}
           <FormControl fullWidth>
             <InputLabel>매물 선택</InputLabel>
             <Select
@@ -214,7 +204,6 @@ const ContractBasicInfoEditModalView = ({
             </Select>
           </FormControl>
 
-          {/* 네 번째 줄: 보증금, 월세 */}
           <Box sx={{ display: "flex", gap: 2 }}>
             <TextField
               label="보증금 (원)"
@@ -237,7 +226,6 @@ const ContractBasicInfoEditModalView = ({
             />
           </Box>
 
-          {/* 다섯 번째 줄: 매매가 */}
           <Box sx={{ display: "flex", gap: 2 }}>
             <TextField
               label="매매가 (원)"
@@ -246,11 +234,9 @@ const ContractBasicInfoEditModalView = ({
               fullWidth
               placeholder="0"
             />
-            {/* 빈 공간을 위한 플레이스홀더 */}
             <Box sx={{ flex: 1 }} />
           </Box>
 
-          {/* 임대/매도인 선택 */}
           <Autocomplete
             multiple
             options={customerOptions}
@@ -272,7 +258,6 @@ const ContractBasicInfoEditModalView = ({
             )}
           />
 
-          {/* 임차/매수인 선택 */}
           <Autocomplete
             multiple
             options={customerOptions}

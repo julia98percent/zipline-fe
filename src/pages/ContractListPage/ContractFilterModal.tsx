@@ -75,6 +75,7 @@ const ContractFilterModal = ({
               <MenuItem value="REGISTERED">등기 완료</MenuItem>
               <MenuItem value="MOVED_IN">입주 완료</MenuItem>
               <MenuItem value="TERMINATED">계약 해지</MenuItem>
+              <MenuItem value="CLOSED">계약 종료</MenuItem>
             </Select>
           </FormControl>
         </Box>

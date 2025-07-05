@@ -55,6 +55,9 @@ const CustomerTable = ({
   const [customerToDelete, setCustomerToDelete] = useState<Customer | null>(
     null
   );
+  const [labelInputValues, setLabelInputValues] = useState<{
+    [key: number]: string;
+  }>({});
 
   const loadLabels = async () => {
     try {
@@ -147,6 +150,11 @@ const CustomerTable = ({
     const newEditingCustomers = { ...editingCustomers };
     delete newEditingCustomers[uid];
     setEditingCustomers(newEditingCustomers);
+
+    // 라벨 입력값도 초기화
+    const newLabelInputValues = { ...labelInputValues };
+    delete newLabelInputValues[uid];
+    setLabelInputValues(newLabelInputValues);
   };
 
   const handleEditChange = (
@@ -235,7 +243,14 @@ const CustomerTable = ({
               editingCustomers,
               availableLabels,
               handleEditChange,
-              handleCreateLabel
+              handleCreateLabel,
+              labelInputValues[customer.uid] || "",
+              (value: string) => {
+                setLabelInputValues({
+                  ...labelInputValues,
+                  [customer.uid]: value,
+                });
+              }
             );
           case "actions":
             return renderActionsColumn(

@@ -197,7 +197,9 @@ export const renderLabelsColumn = (
     field: keyof Customer,
     value: EditableFields
   ) => void,
-  onCreateLabel?: (name: string) => Promise<void>
+  onCreateLabel?: (name: string) => Promise<void>,
+  inputValue?: string,
+  onInputChange?: (value: string) => void
 ) => {
   const editingCustomer = editingCustomers[customer.uid];
 
@@ -208,28 +210,25 @@ export const renderLabelsColumn = (
         freeSolo
         size="small"
         options={availableLabels}
+        disableClearable
+        blurOnSelect={false}
+        clearOnBlur={false}
+        handleHomeEndKeys={false}
+        inputValue={inputValue || ""}
+        onInputChange={(_, newInputValue) => {
+          onInputChange?.(newInputValue);
+        }}
         getOptionLabel={(option) => {
           return typeof option === "string" ? option : option.name;
         }}
         value={editingCustomer.labels || []}
         onChange={async (_, newValue) => {
+          // onChange에서는 기존 라벨만 처리하고, 새 라벨 생성은 Enter 키에서만 처리
           const processedLabels: Label[] = [];
 
           for (const value of newValue) {
-            if (typeof value === "object" && value.uid === NEW_LABEL_TEMP_UID) {
-              if (onCreateLabel && value.name.trim()) {
-                try {
-                  await onCreateLabel(value.name.trim());
-                  // 새로 생성된 라벨은 임시 uid로 추가
-                  processedLabels.push({
-                    uid: Date.now() + Math.random(),
-                    name: value.name.trim(),
-                  });
-                } catch (error) {
-                  console.error("라벨 생성 실패:", error);
-                }
-              }
-            } else if (typeof value === "object") {
+            if (typeof value === "object" && value.uid !== NEW_LABEL_TEMP_UID) {
+              // 기존 라벨만 추가
               processedLabels.push(value);
             }
           }
@@ -239,9 +238,91 @@ export const renderLabelsColumn = (
         renderInput={(params) => (
           <TextField
             {...params}
-            placeholder="라벨 선택 또는 새 라벨 입력"
+            placeholder="라벨 검색 및 추가"
             FormHelperTextProps={{
               sx: { fontSize: "0.7rem", margin: 0, padding: 0 },
+            }}
+            onKeyDown={(event) => {
+              const nativeEvent = event.nativeEvent as KeyboardEvent;
+              if (nativeEvent.isComposing || event.keyCode === 229) {
+                return;
+              }
+
+              if (event.key === "Enter") {
+                event.stopPropagation();
+
+                const currentInputValue = inputValue?.trim();
+
+                if (currentInputValue) {
+                  const exactMatch = availableLabels.find(
+                    (label) =>
+                      label.name.toLowerCase() ===
+                      currentInputValue.toLowerCase()
+                  );
+
+                  if (exactMatch) {
+                    const currentLabels = editingCustomer.labels || [];
+                    const isAlreadySelected = currentLabels.some(
+                      (label) => label.uid === exactMatch.uid
+                    );
+
+                    if (!isAlreadySelected) {
+                      onEditChange(customer.uid, "labels", [
+                        ...currentLabels,
+                        exactMatch,
+                      ]);
+                    }
+
+                    onInputChange?.("");
+                  } else {
+                    const partialMatches = availableLabels.filter((label) =>
+                      label.name
+                        .toLowerCase()
+                        .includes(currentInputValue.toLowerCase())
+                    );
+
+                    if (partialMatches.length > 0) {
+                      const bestMatch = partialMatches.sort(
+                        (a, b) => a.name.length - b.name.length
+                      )[0];
+                      const currentLabels = editingCustomer.labels || [];
+                      const isAlreadySelected = currentLabels.some(
+                        (label) => label.uid === bestMatch.uid
+                      );
+
+                      if (!isAlreadySelected) {
+                        onEditChange(customer.uid, "labels", [
+                          ...currentLabels,
+                          bestMatch,
+                        ]);
+                      }
+
+                      onInputChange?.("");
+                    } else {
+                      if (onCreateLabel) {
+                        onCreateLabel(currentInputValue)
+                          .then(() => {
+                            const currentLabels = editingCustomer.labels || [];
+                            const newLabel: Label = {
+                              uid: Date.now() + Math.random(),
+                              name: currentInputValue,
+                            };
+                            onEditChange(customer.uid, "labels", [
+                              ...currentLabels,
+                              newLabel,
+                            ]);
+                            onInputChange?.("");
+                          })
+                          .catch((error) => {
+                            console.error("라벨 생성 실패:", error);
+                          });
+                      }
+                    }
+                  }
+
+                  event.preventDefault();
+                }
+              }
             }}
           />
         )}
@@ -254,8 +335,10 @@ export const renderLabelsColumn = (
               size="small"
               variant="outlined"
               sx={{
-                backgroundColor: option.uid === NEW_LABEL_TEMP_UID ? "#e3f2fd" : undefined,
-                borderColor: option.uid === NEW_LABEL_TEMP_UID ? "#2196f3" : undefined,
+                backgroundColor:
+                  option.uid === NEW_LABEL_TEMP_UID ? "#e3f2fd" : undefined,
+                borderColor:
+                  option.uid === NEW_LABEL_TEMP_UID ? "#2196f3" : undefined,
               }}
             />
           ))
@@ -264,18 +347,44 @@ export const renderLabelsColumn = (
           return option.uid === value.uid;
         }}
         filterOptions={(options, params) => {
-          const filtered = options.filter((option) =>
-            option.name.toLowerCase().includes(params.inputValue.toLowerCase())
+          const { inputValue: searchValue } = params;
+
+          if (!searchValue) return options;
+
+          const exactMatches = options.filter(
+            (option) => option.name.toLowerCase() === searchValue.toLowerCase()
           );
 
-          const { inputValue } = params;
-          const isExisting = options.some(
-            (option) => option.name.toLowerCase() === inputValue.toLowerCase()
+          const startsWithMatches = options.filter(
+            (option) =>
+              option.name.toLowerCase().startsWith(searchValue.toLowerCase()) &&
+              option.name.toLowerCase() !== searchValue.toLowerCase()
           );
 
-          if (inputValue !== "" && !isExisting) {
-            return [...filtered, { uid: NEW_LABEL_TEMP_UID, name: inputValue } as Label];
+          const partialMatches = options.filter(
+            (option) =>
+              option.name.toLowerCase().includes(searchValue.toLowerCase()) &&
+              !option.name
+                .toLowerCase()
+                .startsWith(searchValue.toLowerCase()) &&
+              option.name.toLowerCase() !== searchValue.toLowerCase()
+          );
+
+          const hasExactMatch = exactMatches.length > 0;
+
+          const filtered = [
+            ...exactMatches,
+            ...startsWithMatches,
+            ...partialMatches,
+          ];
+
+          if (!hasExactMatch) {
+            filtered.push({
+              uid: NEW_LABEL_TEMP_UID,
+              name: searchValue,
+            } as Label);
           }
+
           return filtered;
         }}
         renderOption={(props, option) => (

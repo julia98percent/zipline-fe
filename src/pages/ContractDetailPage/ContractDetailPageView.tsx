@@ -18,15 +18,19 @@ interface ContractDetailPageViewProps {
   infoModalOpen: boolean;
   documentsModalOpen: boolean;
   deleteModalOpen: boolean;
+  statusChangeModalOpen: boolean;
+  pendingStatusChange: "CANCELLED" | "TERMINATED" | null;
   onEditBasicInfo: () => void;
   onEditDocuments: () => void;
   onDelete: () => void;
   onConfirmDelete: () => void;
-
   onCloseInfoModal: () => void;
   onCloseDocumentsModal: () => void;
   onCloseDeleteModal: () => void;
+  onCloseStatusChangeModal: () => void;
+  onConfirmStatusChange: () => void;
   onRefreshData: () => void;
+  onStatusChange?: (newStatus: "CANCELLED" | "TERMINATED") => void;
   onQuickStatusChange?: (newStatus: string) => void;
 }
 
@@ -39,6 +43,8 @@ const ContractDetailPageView = ({
   documentsModalOpen,
   deleteModalOpen,
 
+  statusChangeModalOpen,
+  pendingStatusChange,
   onEditBasicInfo,
   onEditDocuments,
   onDelete,
@@ -46,7 +52,10 @@ const ContractDetailPageView = ({
   onCloseInfoModal,
   onCloseDocumentsModal,
   onCloseDeleteModal,
+  onCloseStatusChangeModal,
+  onConfirmStatusChange,
   onRefreshData,
+  onStatusChange,
   onQuickStatusChange,
 }: ContractDetailPageViewProps) => {
   if (loading) {
@@ -96,6 +105,21 @@ const ContractDetailPageView = ({
           category="계약"
         />
 
+        <DeleteConfirmModal
+          open={statusChangeModalOpen}
+          onConfirm={onConfirmStatusChange}
+          onCancel={onCloseStatusChangeModal}
+          category="계약"
+          title={`계약 ${
+            pendingStatusChange === "CANCELLED" ? "취소" : "해지"
+          }`}
+          message={`정말로 계약을 ${
+            pendingStatusChange === "CANCELLED" ? "취소" : "해지"
+          }하시겠습니까?`}
+          confirmText={pendingStatusChange === "CANCELLED" ? "취소" : "해지"}
+          confirmColor="warning"
+        />
+
         <div className={styles.contents2}>
           <Button
             variant="outlined"
@@ -113,6 +137,7 @@ const ContractDetailPageView = ({
             histories={histories}
             onEditBasicInfo={onEditBasicInfo}
             onEditDocuments={onEditDocuments}
+            onStatusChange={onStatusChange}
             onQuickStatusChange={onQuickStatusChange}
           />
         </div>

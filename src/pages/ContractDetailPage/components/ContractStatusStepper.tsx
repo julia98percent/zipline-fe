@@ -1,3 +1,4 @@
+import { useState } from "react";
 import {
   Stepper,
   Step,
@@ -5,8 +6,19 @@ import {
   Box,
   Typography,
   Paper,
+  IconButton,
+  Menu,
+  MenuItem,
+  ListItemIcon,
+  ListItemText,
 } from "@mui/material";
-import { CheckCircle, Cancel } from "@mui/icons-material";
+import {
+  CheckCircle,
+  Cancel,
+  MoreVert,
+  CancelOutlined,
+  RemoveCircleOutline,
+} from "@mui/icons-material";
 import { CONTRACT_STATUS_OPTION_LIST } from "@constants/contract";
 
 interface ContractStatusStepperProps {
@@ -15,14 +27,34 @@ interface ContractStatusStepperProps {
     currentStatus: string;
     changedAt: string;
   }>;
+  onStatusChange?: (newStatus: "CANCELLED" | "TERMINATED") => void;
   onQuickStatusChange?: (newStatus: string) => void;
 }
 
 const ContractStatusStepper = ({
   currentStatus,
   contractHistory = [],
+  onStatusChange,
   onQuickStatusChange,
 }: ContractStatusStepperProps) => {
+  const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
+  const open = Boolean(anchorEl);
+
+  const handleMenuClick = (event: React.MouseEvent<HTMLElement>) => {
+    setAnchorEl(event.currentTarget);
+  };
+
+  const handleMenuClose = () => {
+    setAnchorEl(null);
+  };
+
+  const handleStatusChange = (newStatus: "CANCELLED" | "TERMINATED") => {
+    if (onStatusChange) {
+      onStatusChange(newStatus);
+    }
+    handleMenuClose();
+  };
+
   const handleQuickStatusChange = (newStatus: string) => {
     if (onQuickStatusChange) {
       onQuickStatusChange(newStatus);
@@ -89,9 +121,62 @@ const ContractStatusStepper = ({
         backgroundColor: "#fafafa",
       }}
     >
-      <Typography variant="h6" fontWeight="bold" mb={2}>
-        계약 진행 상태
-      </Typography>
+      <Box
+        display="flex"
+        justifyContent="space-between"
+        alignItems="center"
+        mb={2}
+      >
+        <Typography variant="h6" fontWeight="bold">
+          계약 진행 상태
+        </Typography>
+        {!isTerminated && onStatusChange && (
+          <>
+            <IconButton
+              onClick={handleMenuClick}
+              size="small"
+              sx={{
+                backgroundColor: "white",
+                border: "1px solid #e0e0e0",
+                boxShadow: "0 1px 3px rgba(0,0,0,0.12)",
+                "&:hover": {
+                  backgroundColor: "#f0f0f0",
+                  borderColor: "#d0d0d0",
+                },
+              }}
+              title="계약 상태 변경"
+            >
+              <MoreVert fontSize="small" />
+            </IconButton>
+            <Menu
+              anchorEl={anchorEl}
+              open={open}
+              onClose={handleMenuClose}
+              anchorOrigin={{
+                vertical: "bottom",
+                horizontal: "right",
+              }}
+              transformOrigin={{
+                vertical: "top",
+                horizontal: "right",
+              }}
+            >
+              <MenuItem onClick={() => handleStatusChange("CANCELLED")}>
+                <ListItemIcon>
+                  <CancelOutlined fontSize="small" color="warning" />
+                </ListItemIcon>
+                <ListItemText>계약 취소</ListItemText>
+              </MenuItem>
+              <MenuItem onClick={() => handleStatusChange("TERMINATED")}>
+                <ListItemIcon>
+                  <RemoveCircleOutline fontSize="small" color="error" />
+                </ListItemIcon>
+                <ListItemText>계약 해지</ListItemText>
+              </MenuItem>
+            </Menu>
+          </>
+        )}
+      </Box>
 
       {isTerminated ? (
         <Box display="flex" alignItems="center" justifyContent="center" py={2}>

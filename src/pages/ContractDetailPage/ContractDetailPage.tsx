@@ -4,6 +4,7 @@ import {
   fetchContractDetail,
   fetchContractHistory,
   deleteContract,
+  updateContractStatus,
   updateContractToNextStatus,
 } from "@apis/contractService";
 import { showToast } from "@components/Toast";
@@ -20,6 +21,10 @@ const ContractDetailPage = () => {
   const [infoModalOpen, setInfoModalOpen] = useState(false);
   const [documentsModalOpen, setDocumentsModalOpen] = useState(false);
   const [deleteModalOpen, setDeleteModalOpen] = useState(false);
+  const [statusChangeModalOpen, setStatusChangeModalOpen] = useState(false);
+  const [pendingStatusChange, setPendingStatusChange] = useState<
+    "CANCELLED" | "TERMINATED" | null
+  >(null);
 
   const loadContractData = useCallback(async () => {
     if (!contractUid) return;
@@ -79,6 +84,11 @@ const ContractDetailPage = () => {
     setDeleteModalOpen(true);
   };
 
+  const handleStatusChange = async (newStatus: "CANCELLED" | "TERMINATED") => {
+    setPendingStatusChange(newStatus);
+    setStatusChangeModalOpen(true);
+  };
+
   const handleQuickStatusChange = async (newStatus: string) => {
     if (!contractUid || !contract) return;
 
@@ -100,6 +110,37 @@ const ContractDetailPage = () => {
         message: "계약 상태 변경 중 오류가 발생했습니다.",
         type: "error",
       });
+    }
+  };
+
+  const confirmStatusChange = async () => {
+    if (!contractUid || !contract || !pendingStatusChange) return;
+
+    try {
+      setContract({ ...contract, status: pendingStatusChange });
+
+      await updateContractStatus(contractUid, pendingStatusChange, contract);
+
+      showToast({
+        message: `계약이 ${
+          pendingStatusChange === "CANCELLED" ? "취소" : "해지"
+        }되었습니다.`,
+        type: "success",
+      });
+    } catch (error) {
+      console.error("Error updating contract status:", error);
+
+      await loadContractData();
+
+      showToast({
+        message: `계약 ${
+          pendingStatusChange === "CANCELLED" ? "취소" : "해지"
+        } 중 오류가 발생했습니다.`,
+        type: "error",
+      });
+    } finally {
+      setStatusChangeModalOpen(false);
+      setPendingStatusChange(null);
     }
   };
 
@@ -125,6 +166,10 @@ const ContractDetailPage = () => {
   const handleCloseInfoModal = () => setInfoModalOpen(false);
   const handleCloseDocumentsModal = () => setDocumentsModalOpen(false);
   const handleCloseDeleteModal = () => setDeleteModalOpen(false);
+  const handleCloseStatusChangeModal = () => {
+    setStatusChangeModalOpen(false);
+    setPendingStatusChange(null);
+  };
 
   useEffect(() => {
     loadContractData();
@@ -139,6 +184,8 @@ const ContractDetailPage = () => {
       infoModalOpen={infoModalOpen}
       documentsModalOpen={documentsModalOpen}
       deleteModalOpen={deleteModalOpen}
+      statusChangeModalOpen={statusChangeModalOpen}
+      pendingStatusChange={pendingStatusChange}
       onEditBasicInfo={handleEditBasicInfo}
       onEditDocuments={handleEditDocuments}
       onDelete={handleDelete}
@@ -146,7 +193,10 @@ const ContractDetailPage = () => {
       onCloseInfoModal={handleCloseInfoModal}
       onCloseDocumentsModal={handleCloseDocumentsModal}
       onCloseDeleteModal={handleCloseDeleteModal}
+      onCloseStatusChangeModal={handleCloseStatusChangeModal}
+      onConfirmStatusChange={confirmStatusChange}
       onRefreshData={handleRefreshData}
+      onStatusChange={handleStatusChange}
       onQuickStatusChange={handleQuickStatusChange}
     />
   );

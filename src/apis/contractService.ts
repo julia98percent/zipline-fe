@@ -107,6 +107,18 @@ const updateContractWithStatus = async (
   }
 };
 
+export const updateContractStatus = async (
+  contractUid: string,
+  status: "CANCELLED" | "TERMINATED",
+  currentContract: ContractDetail
+): Promise<void> => {
+  return updateContractWithStatus(
+    contractUid,
+    status,
+    currentContract,
+    "updating contract status"
+  );
+};
 
 export const updateContractToNextStatus = async (
   contractUid: string,

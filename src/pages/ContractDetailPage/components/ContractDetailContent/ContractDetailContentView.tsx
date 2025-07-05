@@ -33,6 +33,7 @@ interface ContractDetailContentViewProps {
   formatPrice: (price: number | null | undefined, suffix?: string) => string;
   onEditBasicInfo: () => void;
   onEditDocuments: () => void;
+  onStatusChange?: (newStatus: "CANCELLED" | "TERMINATED") => void;
   onQuickStatusChange?: (newStatus: string) => void;
 }
 
@@ -53,6 +54,7 @@ const ContractDetailContentView = ({
   formatPrice,
   onEditBasicInfo,
   onEditDocuments,
+  onStatusChange,
   onQuickStatusChange,
 }: ContractDetailContentViewProps) => {
   const historyColumns: ColumnConfig<HistoryRowData>[] = [
@@ -156,6 +158,7 @@ const ContractDetailContentView = ({
       <ContractStatusStepper
         currentStatus={contract.status}
         contractHistory={histories}
+        onStatusChange={onStatusChange}
         onQuickStatusChange={onQuickStatusChange}
       />
 

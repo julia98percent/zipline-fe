@@ -14,7 +14,10 @@ import {
   renderLabelsColumn,
   renderActionsColumn,
 } from "./columnRenderers";
-import { fetchLabels as fetchLabelsApi } from "@apis/customerService";
+import {
+  fetchLabels as fetchLabelsApi,
+  createLabel,
+} from "@apis/customerService";
 
 interface EditingCustomer extends Customer {
   isEditing?: boolean;
@@ -53,17 +56,38 @@ const CustomerTable = ({
     null
   );
 
+  const loadLabels = async () => {
+    try {
+      const labels = await fetchLabelsApi();
+      setAvailableLabels(labels);
+    } catch (error) {
+      console.error("Failed to fetch labels:", error);
+    }
+  };
+
   useEffect(() => {
-    const loadLabels = async () => {
-      try {
-        const labels = await fetchLabelsApi();
-        setAvailableLabels(labels);
-      } catch (error) {
-        console.error("Failed to fetch labels:", error);
-      }
-    };
     loadLabels();
   }, []);
+
+  const handleCreateLabel = async (name: string): Promise<void> => {
+    try {
+      await createLabel(name);
+
+      const updatedLabels = await fetchLabelsApi();
+      setAvailableLabels(updatedLabels);
+      showToast({
+        message: `라벨 "${name}"을 생성했습니다.`,
+        type: "success",
+      });
+    } catch (error) {
+      console.error("Failed to create label:", error);
+      showToast({
+        message: "라벨 생성에 실패했습니다.",
+        type: "error",
+      });
+      throw error;
+    }
+  };
 
   const handleRowClick = (customer: Customer) => {
     if (editingCustomers[customer.uid]) return;
@@ -210,7 +234,8 @@ const CustomerTable = ({
               customer,
               editingCustomers,
               availableLabels,
-              handleEditChange
+              handleEditChange,
+              handleCreateLabel
             );
           case "actions":
             return renderActionsColumn(

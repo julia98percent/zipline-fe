@@ -345,7 +345,7 @@ const ContractDetailContentView = ({
       <Card sx={{ borderRadius: 2 }}>
         <CardContent>
           <Typography variant="h6" fontWeight="bold" gutterBottom>
-            상태 변경 이력
+            계약 상태 변경 이력
           </Typography>
           {histories.length > 0 ? (
             <Table

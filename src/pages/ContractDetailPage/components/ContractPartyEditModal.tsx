@@ -170,11 +170,7 @@ const ContractPartyEditModal = ({
               ))
             }
             renderInput={(params) => (
-              <TextField
-                {...params}
-                label="임대/매도인 선택"
-                placeholder="고객을 선택해주세요"
-              />
+              <TextField {...params} label="임대/매도인 선택" />
             )}
           />
 
@@ -197,11 +193,7 @@ const ContractPartyEditModal = ({
               ))
             }
             renderInput={(params) => (
-              <TextField
-                {...params}
-                label="임차/매수인 선택"
-                placeholder="고객을 선택해주세요"
-              />
+              <TextField {...params} label="임차/매수인 선택" />
             )}
           />
         </Box>

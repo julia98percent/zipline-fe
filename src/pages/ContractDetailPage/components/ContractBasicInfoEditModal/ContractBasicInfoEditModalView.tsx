@@ -250,14 +250,6 @@ const ContractBasicInfoEditModalView = ({
             <Box sx={{ flex: 1 }} />
           </Box>
 
-          {/* 구분선 */}
-          <Divider sx={{ my: 2 }} />
-
-          {/* 당사자 정보 섹션 */}
-          <Typography variant="h6" fontWeight="bold" sx={{ mb: 2 }}>
-            계약 당사자 정보
-          </Typography>
-
           {/* 임대/매도인 선택 */}
           <Autocomplete
             multiple

@@ -84,6 +84,10 @@ const ContractDetailPage = () => {
     setDeleteModalOpen(true);
   };
 
+  const handleNavigateToList = () => {
+    navigate("/contracts");
+  };
+
   const handleStatusChange = async (newStatus: "CANCELLED" | "TERMINATED") => {
     setPendingStatusChange(newStatus);
     setStatusChangeModalOpen(true);
@@ -190,6 +194,7 @@ const ContractDetailPage = () => {
       onEditDocuments={handleEditDocuments}
       onDelete={handleDelete}
       onConfirmDelete={confirmDelete}
+      onNavigateToList={handleNavigateToList}
       onCloseInfoModal={handleCloseInfoModal}
       onCloseDocumentsModal={handleCloseDocumentsModal}
       onCloseDeleteModal={handleCloseDeleteModal}

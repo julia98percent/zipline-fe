@@ -24,6 +24,7 @@ interface ContractDetailPageViewProps {
   onEditDocuments: () => void;
   onDelete: () => void;
   onConfirmDelete: () => void;
+  onNavigateToList: () => void;
   onCloseInfoModal: () => void;
   onCloseDocumentsModal: () => void;
   onCloseDeleteModal: () => void;
@@ -42,13 +43,13 @@ const ContractDetailPageView = ({
   infoModalOpen,
   documentsModalOpen,
   deleteModalOpen,
-
   statusChangeModalOpen,
   pendingStatusChange,
   onEditBasicInfo,
   onEditDocuments,
   onDelete,
   onConfirmDelete,
+  onNavigateToList,
   onCloseInfoModal,
   onCloseDocumentsModal,
   onCloseDeleteModal,
@@ -121,16 +122,34 @@ const ContractDetailPageView = ({
         />
 
         <div className={styles.contents2}>
-          <Button
-            variant="outlined"
-            color="error"
-            startIcon={<DeleteIcon />}
-            onClick={onDelete}
-            disabled={isUpdating}
-            sx={{ backgroundColor: "white" }}
+          <Box
+            display="flex"
+            justifyContent="space-between"
+            alignItems="center"
+            width="100%"
+            mb={2}
           >
-            삭제
-          </Button>
+            <Button
+              variant="outlined"
+              color="primary"
+              onClick={onNavigateToList}
+              disabled={isUpdating}
+              sx={{ backgroundColor: "white" }}
+            >
+              목록으로
+            </Button>
+
+            <Button
+              variant="outlined"
+              color="error"
+              startIcon={<DeleteIcon />}
+              onClick={onDelete}
+              disabled={isUpdating}
+              sx={{ backgroundColor: "white" }}
+            >
+              삭제
+            </Button>
+          </Box>
 
           <ContractDetailContent
             contract={contract}

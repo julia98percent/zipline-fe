@@ -14,6 +14,10 @@ interface DeleteConfirmModalProps {
   onConfirm: () => void;
   onCancel: () => void;
   category: string;
+  title?: string;
+  message?: string;
+  confirmText?: string;
+  confirmColor?: "error" | "warning" | "primary";
 }
 
 const DeleteConfirmModal = ({
@@ -21,7 +25,14 @@ const DeleteConfirmModal = ({
   onConfirm,
   onCancel,
   category = "",
+  title,
+  message,
+  confirmText = "삭제",
+  confirmColor = "error",
 }: DeleteConfirmModalProps) => {
+  const defaultTitle = `${category} 삭제`;
+  const defaultMessage = `이 ${category}을 정말 삭제할까요?`;
+
   return (
     <Dialog
       open={open}
@@ -42,7 +53,7 @@ const DeleteConfirmModal = ({
         }}
       >
         <Typography variant="h6" fontWeight="bold">
-          {category} 삭제
+          {title || defaultTitle}
         </Typography>
         <IconButton edge="end" onClick={onCancel}>
           <CloseIcon />
@@ -51,7 +62,7 @@ const DeleteConfirmModal = ({
 
       <DialogContent>
         <Typography textAlign="center" mt={1} mb={2}>
-          이 {category}을 정말 삭제할까요?
+          {message || defaultMessage}
         </Typography>
       </DialogContent>
 
@@ -59,14 +70,14 @@ const DeleteConfirmModal = ({
         <Button
           onClick={onConfirm}
           variant="contained"
-          color="error"
+          color={confirmColor}
           sx={{
             minWidth: 100,
             boxShadow: "none",
             "&:hover": { boxShadow: "none" },
           }}
         >
-          삭제
+          {confirmText}
         </Button>
         <Button onClick={onCancel} variant="outlined" sx={{ minWidth: 100 }}>
           취소

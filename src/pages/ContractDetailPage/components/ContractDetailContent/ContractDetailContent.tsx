@@ -1,4 +1,8 @@
-import { ContractDetail, ContractHistory } from "@ts/contract";
+import {
+  ContractDetail,
+  ContractHistory,
+  ContractPartyInfo,
+} from "@ts/contract";
 import { CONTRACT_STATUS_OPTION_LIST } from "@constants/contract";
 import ContractDetailContentView from "./ContractDetailContentView";
 
@@ -13,14 +17,26 @@ const CONTRACT_STATUS_COLORS: Record<string, string> = {
   REGISTERED: "#388e3c",
   MOVED_IN: "#388e3c",
   TERMINATED: "#d32f2f",
+  CLOSED: "#9e9e9e",
 };
 
 interface Props {
   contract: ContractDetail;
   histories: ContractHistory[];
+  onEditBasicInfo: () => void;
+  onEditDocuments: () => void;
+  onStatusChange?: (newStatus: "CANCELLED" | "TERMINATED") => void;
+  onQuickStatusChange?: (newStatus: string) => void;
 }
 
-const ContractDetailContent = ({ contract, histories }: Props) => {
+const ContractDetailContent = ({
+  contract,
+  histories,
+  onEditBasicInfo,
+  onEditDocuments,
+  onStatusChange,
+  onQuickStatusChange,
+}: Props) => {
   const getStatusLabel = (statusValue: string): string => {
     const statusOption = CONTRACT_STATUS_OPTION_LIST.find(
       (option) => option.value === statusValue
@@ -32,9 +48,9 @@ const ContractDetailContent = ({ contract, histories }: Props) => {
     return CONTRACT_STATUS_COLORS[statusValue] || "#9e9e9e";
   };
 
-  const getCustomerNamesDisplay = (names: string[] | undefined | null) => {
-    if (!names || names.length === 0) return "-";
-    return names.join(", ");
+  const getCustomerNamesDisplay = (contractPartyInfo: ContractPartyInfo[]) => {
+    if (!contractPartyInfo || contractPartyInfo.length === 0) return "-";
+    return contractPartyInfo.map((item) => item.name).join(", ");
   };
 
   const formatPrice = (
@@ -53,6 +69,10 @@ const ContractDetailContent = ({ contract, histories }: Props) => {
       getStatusColor={getStatusColor}
       getCustomerNamesDisplay={getCustomerNamesDisplay}
       formatPrice={formatPrice}
+      onEditBasicInfo={onEditBasicInfo}
+      onEditDocuments={onEditDocuments}
+      onStatusChange={onStatusChange}
+      onQuickStatusChange={onQuickStatusChange}
     />
   );
 };

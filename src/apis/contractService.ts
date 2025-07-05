@@ -18,10 +18,11 @@ export const fetchContractDetail = async (
       `/contracts/${contractUid}`
     );
 
-    return handleApiResponse(
+    const result = handleApiResponse(
       response,
       CONTRACT_ERROR_MESSAGES.DETAIL_FETCH_FAILED
     );
+    return result;
   } catch (error) {
     return handleApiError(error, "fetching contract detail");
   }
@@ -50,6 +51,86 @@ export const deleteContract = async (contractUid: string): Promise<void> => {
   } catch (error) {
     return handleApiError(error, "deleting contract");
   }
+};
+
+const updateContractWithStatus = async (
+  contractUid: string,
+  status: string,
+  currentContract: ContractDetail,
+  errorContext: string
+): Promise<void> => {
+  try {
+    const contractRequestDTO: ContractRequest = {
+      category: currentContract.category,
+      contractDate: currentContract.contractDate,
+      contractStartDate: currentContract.contractStartDate,
+      contractEndDate: currentContract.contractEndDate,
+      expectedContractEndDate: currentContract.expectedContractEndDate,
+      deposit: currentContract.deposit || 0,
+      monthlyRent: currentContract.monthlyRent || 0,
+      price: currentContract.price || 0,
+      lessorOrSellerUids: currentContract.lessorOrSellerInfo.map(
+        (info) => info.uid
+      ),
+      lesseeOrBuyerUids: currentContract.lesseeOrBuyerInfo.map(
+        (info) => info.uid
+      ),
+      propertyUid: currentContract.propertyUid,
+      status: status,
+      other: currentContract.other,
+    };
+
+    const existingDocuments = currentContract.documents.map((doc) => ({
+      fileName: doc.fileName,
+      fileUrl: doc.fileUrl,
+    }));
+
+    const formData = new FormData();
+    formData.append(
+      "existingDocuments",
+      new Blob([JSON.stringify(existingDocuments)], {
+        type: "application/json",
+      })
+    );
+    formData.append(
+      "contractRequestDTO",
+      new Blob([JSON.stringify(contractRequestDTO)], {
+        type: "application/json",
+      })
+    );
+
+    await apiClient.patch(`/contracts/${contractUid}`, formData, {
+      headers: { "Content-Type": "multipart/form-data" },
+    });
+  } catch (error) {
+    return handleApiError(error, errorContext);
+  }
+};
+
+export const updateContractStatus = async (
+  contractUid: string,
+  status: "CANCELLED" | "TERMINATED",
+  currentContract: ContractDetail
+): Promise<void> => {
+  return updateContractWithStatus(
+    contractUid,
+    status,
+    currentContract,
+    "updating contract status"
+  );
+};
+
+export const updateContractToNextStatus = async (
+  contractUid: string,
+  status: string,
+  currentContract: ContractDetail
+): Promise<void> => {
+  return updateContractWithStatus(
+    contractUid,
+    status,
+    currentContract,
+    "updating contract to next status"
+  );
 };
 
 export const searchContracts = async (
@@ -162,8 +243,9 @@ export interface ContractRequest {
   price: number;
   lessorOrSellerUids: number[];
   lesseeOrBuyerUids: number[];
-  propertyUid: string | null;
+  propertyUid: number;
   status: string;
+  other: string | null;
 }
 
 export interface AgentPropertyResponse {
@@ -174,6 +256,7 @@ export interface AgentPropertyResponse {
 export interface CustomerResponse {
   uid: number;
   name: string;
+  phoneNo: string;
 }
 
 export const updateContract = async (
@@ -204,9 +287,13 @@ export const fetchProperties = async (): Promise<AgentPropertyResponse[]> => {
 export const fetchCustomers = async (): Promise<CustomerResponse[]> => {
   try {
     const { data: response } = await apiClient.get("/customers");
-    return response.data.customers.map((c: CustomerResponse) => ({
+
+    const customers = response.data?.customers;
+
+    return customers.map((c: CustomerResponse) => ({
       uid: Number(c.uid),
       name: c.name,
+      phoneNo: c.phoneNo,
     }));
   } catch (error) {
     return handleApiError(error, "fetching customers");

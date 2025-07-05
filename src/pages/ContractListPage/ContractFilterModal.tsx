@@ -52,7 +52,11 @@ const ContractFilterModal = ({
           {/* 기간 필터 */}
           <FormControl fullWidth>
             <InputLabel>기간</InputLabel>
-            <Select value={period} onChange={(e) => setPeriod(e.target.value)} label="기간">
+            <Select
+              value={period}
+              onChange={(e) => setPeriod(e.target.value)}
+              label="기간"
+            >
               <MenuItem value="">전체</MenuItem>
               <MenuItem value="1개월 이내">1개월 이내</MenuItem>
               <MenuItem value="3개월 이내">3개월 이내</MenuItem>
@@ -63,7 +67,11 @@ const ContractFilterModal = ({
           {/* 상태 필터 */}
           <FormControl fullWidth>
             <InputLabel>계약 상태</InputLabel>
-            <Select value={status} onChange={(e) => setStatus(e.target.value)} label="계약 상태">
+            <Select
+              value={status}
+              onChange={(e) => setStatus(e.target.value)}
+              label="계약 상태"
+            >
               <MenuItem value="">전체</MenuItem>
               <MenuItem value="LISTED">매물 등록됨</MenuItem>
               <MenuItem value="NEGOTIATING">협상 중</MenuItem>
@@ -75,6 +83,7 @@ const ContractFilterModal = ({
               <MenuItem value="REGISTERED">등기 완료</MenuItem>
               <MenuItem value="MOVED_IN">입주 완료</MenuItem>
               <MenuItem value="TERMINATED">계약 해지</MenuItem>
+              <MenuItem value="CLOSED">계약 종료</MenuItem>
             </Select>
           </FormControl>
         </Box>

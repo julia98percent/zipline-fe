@@ -80,6 +80,20 @@ const ContractDetailPageView = ({
     <div className={styles.container}>
       <PageHeader title="계약 상세 조회" />
 
+      {isUpdating && (
+        <Box
+          sx={{
+            width: "100%",
+            position: "fixed",
+            top: 0,
+            left: 0,
+            zIndex: 9999,
+          }}
+        >
+          <LinearProgress />
+        </Box>
+      )}
+
       <div className={styles.contents}>
         {infoModalOpen && contract && (
           <ContractBasicInfoEditModal

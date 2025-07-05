@@ -17,13 +17,13 @@ const CONTRACT_STATUS_COLORS: Record<string, string> = {
   REGISTERED: "#388e3c",
   MOVED_IN: "#388e3c",
   TERMINATED: "#d32f2f",
+  CLOSED: "#9e9e9e",
 };
 
 interface Props {
   contract: ContractDetail;
   histories: ContractHistory[];
   onEditBasicInfo: () => void;
-  onEditPartyInfo: () => void;
   onEditDocuments: () => void;
 }
 
@@ -31,7 +31,6 @@ const ContractDetailContent = ({
   contract,
   histories,
   onEditBasicInfo,
-  onEditPartyInfo,
   onEditDocuments,
 }: Props) => {
   const getStatusLabel = (statusValue: string): string => {
@@ -67,7 +66,6 @@ const ContractDetailContent = ({
       getCustomerNamesDisplay={getCustomerNamesDisplay}
       formatPrice={formatPrice}
       onEditBasicInfo={onEditBasicInfo}
-      onEditPartyInfo={onEditPartyInfo}
       onEditDocuments={onEditDocuments}
     />
   );

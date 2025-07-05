@@ -33,6 +33,7 @@ interface ContractDetailContentViewProps {
   formatPrice: (price: number | null | undefined, suffix?: string) => string;
   onEditBasicInfo: () => void;
   onEditDocuments: () => void;
+  onQuickStatusChange?: (newStatus: string) => void;
 }
 
 interface HistoryRowData {
@@ -52,6 +53,7 @@ const ContractDetailContentView = ({
   formatPrice,
   onEditBasicInfo,
   onEditDocuments,
+  onQuickStatusChange,
 }: ContractDetailContentViewProps) => {
   const historyColumns: ColumnConfig<HistoryRowData>[] = [
     {
@@ -151,13 +153,12 @@ const ContractDetailContentView = ({
 
   return (
     <Box display="flex" flexDirection="column" gap={3}>
-      {/* 상단: 계약 진행 상태 (수평 배치) */}
       <ContractStatusStepper
         currentStatus={contract.status}
         contractHistory={histories}
+        onQuickStatusChange={onQuickStatusChange}
       />
 
-      {/* 중간: 계약 기본 정보와 첨부 문서 */}
       <Box display="flex" gap={3}>
         <Card
           sx={{
@@ -193,7 +194,6 @@ const ContractDetailContentView = ({
               </IconButton>
             </Box>
             <Box sx={{ flex: 1, overflowY: "auto" }}>
-              {/* 계약 기본 정보 섹션 - 두 열로 배치 */}
               <Box display="flex" gap={4} mb={2}>
                 <Box flex={1}>
                   <InfoRow label="상태" value={renderStatusChip()} />

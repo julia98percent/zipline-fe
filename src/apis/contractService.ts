@@ -53,6 +53,74 @@ export const deleteContract = async (contractUid: string): Promise<void> => {
   }
 };
 
+const updateContractWithStatus = async (
+  contractUid: string,
+  status: string,
+  currentContract: ContractDetail,
+  errorContext: string
+): Promise<void> => {
+  try {
+    const contractRequestDTO: ContractRequest = {
+      category: currentContract.category,
+      contractDate: currentContract.contractDate,
+      contractStartDate: currentContract.contractStartDate,
+      contractEndDate: currentContract.contractEndDate,
+      expectedContractEndDate: currentContract.expectedContractEndDate,
+      deposit: currentContract.deposit || 0,
+      monthlyRent: currentContract.monthlyRent || 0,
+      price: currentContract.price || 0,
+      lessorOrSellerUids: currentContract.lessorOrSellerInfo.map(
+        (info) => info.uid
+      ),
+      lesseeOrBuyerUids: currentContract.lesseeOrBuyerInfo.map(
+        (info) => info.uid
+      ),
+      propertyUid: currentContract.propertyUid,
+      status: status,
+      other: currentContract.other,
+    };
+
+    const existingDocuments = currentContract.documents.map((doc) => ({
+      fileName: doc.fileName,
+      fileUrl: doc.fileUrl,
+    }));
+
+    const formData = new FormData();
+    formData.append(
+      "existingDocuments",
+      new Blob([JSON.stringify(existingDocuments)], {
+        type: "application/json",
+      })
+    );
+    formData.append(
+      "contractRequestDTO",
+      new Blob([JSON.stringify(contractRequestDTO)], {
+        type: "application/json",
+      })
+    );
+
+    await apiClient.patch(`/contracts/${contractUid}`, formData, {
+      headers: { "Content-Type": "multipart/form-data" },
+    });
+  } catch (error) {
+    return handleApiError(error, errorContext);
+  }
+};
+
+
+export const updateContractToNextStatus = async (
+  contractUid: string,
+  status: string,
+  currentContract: ContractDetail
+): Promise<void> => {
+  return updateContractWithStatus(
+    contractUid,
+    status,
+    currentContract,
+    "updating contract to next status"
+  );
+};
+
 export const searchContracts = async (
   searchParams: ContractListSearchParams
 ): Promise<{ contracts: Contract[]; totalElements: number }> => {

@@ -15,12 +15,20 @@ interface ContractStatusStepperProps {
     currentStatus: string;
     changedAt: string;
   }>;
+  onQuickStatusChange?: (newStatus: string) => void;
 }
 
 const ContractStatusStepper = ({
   currentStatus,
   contractHistory = [],
+  onQuickStatusChange,
 }: ContractStatusStepperProps) => {
+  const handleQuickStatusChange = (newStatus: string) => {
+    if (onQuickStatusChange) {
+      onQuickStatusChange(newStatus);
+    }
+  };
+
   const normalFlow = [
     "LISTED",
     "NEGOTIATING",
@@ -32,6 +40,22 @@ const ContractStatusStepper = ({
     "MOVED_IN",
     "CLOSED",
   ];
+
+  const canAdvanceToStep = (targetStatus: string) => {
+    const currentIndex = normalFlow.indexOf(currentStatus);
+    const targetIndex = normalFlow.indexOf(targetStatus);
+    return targetIndex === currentIndex + 1;
+  };
+
+  const isClickableStep = (targetStatus: string) => {
+    return canAdvanceToStep(targetStatus);
+  };
+
+  const handleStepClick = (targetStatus: string) => {
+    if (canAdvanceToStep(targetStatus)) {
+      handleQuickStatusChange(targetStatus);
+    }
+  };
 
   const getStatusLabel = (status: string) => {
     const statusOption = CONTRACT_STATUS_OPTION_LIST.find(
@@ -108,6 +132,7 @@ const ContractStatusStepper = ({
             const stepDate = getStatusDate(step);
             const isCompleted = index < activeStep;
             const isActive = index === activeStep;
+            const isClickable = isClickableStep(step) && !isTerminated;
 
             return (
               <Step key={step} completed={isCompleted}>
@@ -125,12 +150,33 @@ const ContractStatusStepper = ({
                           ? "#4caf50"
                           : isActive
                           ? "#2196f3"
+                          : isClickable
+                          ? "#e3f2fd"
                           : "#e0e0e0",
-                        color: isCompleted || isActive ? "#fff" : "#666",
+                        color:
+                          isCompleted || isActive
+                            ? "#fff"
+                            : isClickable
+                            ? "#1976d2"
+                            : "#666",
                         fontSize: 12,
                         fontWeight: "bold",
                         transition: "all 0.3s ease",
+                        cursor: isClickable ? "pointer" : "default",
+                        border: isClickable ? "2px solid #1976d2" : "none",
+                        "&:hover": isClickable
+                          ? {
+                              backgroundColor: "#bbdefb",
+                              transform: "scale(1.05)",
+                            }
+                          : {},
                       }}
+                      onClick={() => isClickable && handleStepClick(step)}
+                      title={
+                        isClickable
+                          ? `클릭하여 '${getStatusLabel(step)}'로 진행`
+                          : undefined
+                      }
                     >
                       {isCompleted ? (
                         <CheckCircle sx={{ fontSize: 20 }} />
@@ -149,6 +195,8 @@ const ContractStatusStepper = ({
                           ? "#4caf50"
                           : isActive
                           ? "#2196f3"
+                          : isClickable
+                          ? "#1976d2"
                           : "#666",
                         fontSize: 10,
                         lineHeight: 1.2,

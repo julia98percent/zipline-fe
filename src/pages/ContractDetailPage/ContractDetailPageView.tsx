@@ -1,5 +1,5 @@
-import { CircularProgress, Button, Box } from "@mui/material";
-import PageHeader from "@components/PageHeader/PageHeader";
+import { CircularProgress, Button, Box, LinearProgress } from "@mui/material";
+import PageHeader from "@components/PageHeader";
 import {
   ContractDetailContent,
   ContractDocumentsEditModal,
@@ -15,11 +15,9 @@ interface ContractDetailPageViewProps {
   histories: ContractHistory[];
   loading: boolean;
   isUpdating: boolean;
-
   infoModalOpen: boolean;
   documentsModalOpen: boolean;
   deleteModalOpen: boolean;
-
   onEditBasicInfo: () => void;
   onEditDocuments: () => void;
   onDelete: () => void;
@@ -29,6 +27,7 @@ interface ContractDetailPageViewProps {
   onCloseDocumentsModal: () => void;
   onCloseDeleteModal: () => void;
   onRefreshData: () => void;
+  onQuickStatusChange?: (newStatus: string) => void;
 }
 
 const ContractDetailPageView = ({
@@ -48,6 +47,7 @@ const ContractDetailPageView = ({
   onCloseDocumentsModal,
   onCloseDeleteModal,
   onRefreshData,
+  onQuickStatusChange,
 }: ContractDetailPageViewProps) => {
   if (loading) {
     return (
@@ -113,6 +113,7 @@ const ContractDetailPageView = ({
             histories={histories}
             onEditBasicInfo={onEditBasicInfo}
             onEditDocuments={onEditDocuments}
+            onQuickStatusChange={onQuickStatusChange}
           />
         </div>
       </div>

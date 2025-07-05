@@ -4,6 +4,7 @@ import {
   fetchContractDetail,
   fetchContractHistory,
   deleteContract,
+  updateContractToNextStatus,
 } from "@apis/contractService";
 import { showToast } from "@components/Toast";
 import { ContractDetail, ContractHistory } from "@ts/contract";
@@ -78,6 +79,30 @@ const ContractDetailPage = () => {
     setDeleteModalOpen(true);
   };
 
+  const handleQuickStatusChange = async (newStatus: string) => {
+    if (!contractUid || !contract) return;
+
+    try {
+      setContract({ ...contract, status: newStatus });
+
+      await updateContractToNextStatus(contractUid, newStatus, contract);
+
+      showToast({
+        message: `계약 상태가 변경되었습니다.`,
+        type: "success",
+      });
+    } catch (error) {
+      console.error("Error updating contract status:", error);
+
+      await loadContractData();
+
+      showToast({
+        message: "계약 상태 변경 중 오류가 발생했습니다.",
+        type: "error",
+      });
+    }
+  };
+
   const confirmDelete = async () => {
     try {
       await deleteContract(contractUid!);
@@ -122,6 +147,7 @@ const ContractDetailPage = () => {
       onCloseDocumentsModal={handleCloseDocumentsModal}
       onCloseDeleteModal={handleCloseDeleteModal}
       onRefreshData={handleRefreshData}
+      onQuickStatusChange={handleQuickStatusChange}
     />
   );
 };

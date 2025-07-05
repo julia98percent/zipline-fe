@@ -25,6 +25,7 @@ interface Props {
   histories: ContractHistory[];
   onEditBasicInfo: () => void;
   onEditDocuments: () => void;
+  onQuickStatusChange?: (newStatus: string) => void;
 }
 
 const ContractDetailContent = ({
@@ -32,6 +33,7 @@ const ContractDetailContent = ({
   histories,
   onEditBasicInfo,
   onEditDocuments,
+  onQuickStatusChange,
 }: Props) => {
   const getStatusLabel = (statusValue: string): string => {
     const statusOption = CONTRACT_STATUS_OPTION_LIST.find(
@@ -67,6 +69,7 @@ const ContractDetailContent = ({
       formatPrice={formatPrice}
       onEditBasicInfo={onEditBasicInfo}
       onEditDocuments={onEditDocuments}
+      onQuickStatusChange={onQuickStatusChange}
     />
   );
 };

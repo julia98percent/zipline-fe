@@ -139,6 +139,7 @@ const ContractDocumentsEditModal = ({
         lesseeOrBuyerUids: lesseeUids,
         propertyUid: contract.propertyUid,
         status: contract.status,
+        other: contract.other || null,
       };
 
       const docsToKeep = documents.map((doc) => ({
@@ -165,7 +166,6 @@ const ContractDocumentsEditModal = ({
       );
 
       await updateContract(contract.uid, formDataToSend);
-
 
       showToast({
         message: "첨부 문서가 성공적으로 수정되었습니다.",

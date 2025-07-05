@@ -245,6 +245,7 @@ export interface ContractRequest {
   lesseeOrBuyerUids: number[];
   propertyUid: number;
   status: string;
+  other: string | null;
 }
 
 export interface AgentPropertyResponse {

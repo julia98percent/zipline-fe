@@ -34,6 +34,7 @@ export interface ContractDetail extends Contract {
   lessorOrSellerInfo: ContractPartyInfo[];
   lesseeOrBuyerInfo: ContractPartyInfo[];
   propertyUid: number;
+  other: string | null;
 }
 
 export interface ContractHistory {

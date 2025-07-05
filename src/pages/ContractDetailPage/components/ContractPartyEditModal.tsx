@@ -96,6 +96,7 @@ const ContractPartyEditModal = ({
         lesseeOrBuyerUids: lesseeUids,
         propertyUid: contract.propertyUid,
         status: contract.status,
+        other: contract.other || null,
       };
 
       const docsToKeep = contract.documents.map((doc) => ({

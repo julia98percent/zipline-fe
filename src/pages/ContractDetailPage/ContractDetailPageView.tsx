@@ -1,10 +1,9 @@
 import { CircularProgress, Button, Box } from "@mui/material";
 import PageHeader from "@components/PageHeader/PageHeader";
 import {
-  ContractBasicInfoEditModal,
-  ContractPartyEditModal,
   ContractDetailContent,
   ContractDocumentsEditModal,
+  ContractBasicInfoEditModal,
 } from "./components";
 import styles from "@pages/ContractListPage/styles/ContractListPage.module.css";
 import DeleteConfirmModal from "@components/DeleteConfirm";
@@ -17,19 +16,16 @@ interface ContractDetailPageViewProps {
   loading: boolean;
   isUpdating: boolean;
 
-  basicInfoModalOpen: boolean;
-  partyInfoModalOpen: boolean;
+  infoModalOpen: boolean;
   documentsModalOpen: boolean;
   deleteModalOpen: boolean;
 
   onEditBasicInfo: () => void;
-  onEditPartyInfo: () => void;
   onEditDocuments: () => void;
   onDelete: () => void;
   onConfirmDelete: () => void;
 
-  onCloseBasicInfoModal: () => void;
-  onClosePartyInfoModal: () => void;
+  onCloseInfoModal: () => void;
   onCloseDocumentsModal: () => void;
   onCloseDeleteModal: () => void;
   onRefreshData: () => void;
@@ -40,18 +36,15 @@ const ContractDetailPageView = ({
   histories,
   loading,
   isUpdating,
-  basicInfoModalOpen,
-  partyInfoModalOpen,
+  infoModalOpen,
   documentsModalOpen,
   deleteModalOpen,
 
   onEditBasicInfo,
-  onEditPartyInfo,
   onEditDocuments,
   onDelete,
   onConfirmDelete,
-  onCloseBasicInfoModal,
-  onClosePartyInfoModal,
+  onCloseInfoModal,
   onCloseDocumentsModal,
   onCloseDeleteModal,
   onRefreshData,
@@ -78,19 +71,10 @@ const ContractDetailPageView = ({
       <PageHeader title="계약 상세 조회" />
 
       <div className={styles.contents}>
-        {basicInfoModalOpen && contract && (
+        {infoModalOpen && contract && (
           <ContractBasicInfoEditModal
-            open={basicInfoModalOpen}
-            onClose={onCloseBasicInfoModal}
-            contract={contract}
-            onSuccess={onRefreshData}
-          />
-        )}
-
-        {partyInfoModalOpen && contract && (
-          <ContractPartyEditModal
-            open={partyInfoModalOpen}
-            onClose={onClosePartyInfoModal}
+            open={infoModalOpen}
+            onClose={onCloseInfoModal}
             contract={contract}
             onSuccess={onRefreshData}
           />
@@ -128,7 +112,6 @@ const ContractDetailPageView = ({
             contract={contract}
             histories={histories}
             onEditBasicInfo={onEditBasicInfo}
-            onEditPartyInfo={onEditPartyInfo}
             onEditDocuments={onEditDocuments}
           />
         </div>

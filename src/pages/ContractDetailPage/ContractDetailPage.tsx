@@ -16,8 +16,7 @@ const ContractDetailPage = () => {
   const [histories, setHistories] = useState<ContractHistory[]>([]);
   const [loading, setLoading] = useState(true);
   const [isUpdating, setIsUpdating] = useState(false);
-  const [basicInfoModalOpen, setBasicInfoModalOpen] = useState(false);
-  const [partyInfoModalOpen, setPartyInfoModalOpen] = useState(false);
+  const [infoModalOpen, setInfoModalOpen] = useState(false);
   const [documentsModalOpen, setDocumentsModalOpen] = useState(false);
   const [deleteModalOpen, setDeleteModalOpen] = useState(false);
 
@@ -57,7 +56,7 @@ const ContractDetailPage = () => {
         message: "계약 정보가 성공적으로 업데이트되었습니다.",
         type: "success",
       });
-    } catch (error) {
+    } catch {
       showToast({
         message: "계약 정보 업데이트 중 오류가 발생했습니다.",
         type: "error",
@@ -68,11 +67,7 @@ const ContractDetailPage = () => {
   }, [contractUid]);
 
   const handleEditBasicInfo = () => {
-    setBasicInfoModalOpen(true);
-  };
-
-  const handleEditPartyInfo = () => {
-    setPartyInfoModalOpen(true);
+    setInfoModalOpen(true);
   };
 
   const handleEditDocuments = () => {
@@ -102,8 +97,7 @@ const ContractDetailPage = () => {
     }
   };
 
-  const handleCloseBasicInfoModal = () => setBasicInfoModalOpen(false);
-  const handleClosePartyInfoModal = () => setPartyInfoModalOpen(false);
+  const handleCloseInfoModal = () => setInfoModalOpen(false);
   const handleCloseDocumentsModal = () => setDocumentsModalOpen(false);
   const handleCloseDeleteModal = () => setDeleteModalOpen(false);
 
@@ -117,17 +111,14 @@ const ContractDetailPage = () => {
       histories={histories}
       loading={loading}
       isUpdating={isUpdating}
-      basicInfoModalOpen={basicInfoModalOpen}
-      partyInfoModalOpen={partyInfoModalOpen}
+      infoModalOpen={infoModalOpen}
       documentsModalOpen={documentsModalOpen}
       deleteModalOpen={deleteModalOpen}
       onEditBasicInfo={handleEditBasicInfo}
-      onEditPartyInfo={handleEditPartyInfo}
       onEditDocuments={handleEditDocuments}
       onDelete={handleDelete}
       onConfirmDelete={confirmDelete}
-      onCloseBasicInfoModal={handleCloseBasicInfoModal}
-      onClosePartyInfoModal={handleClosePartyInfoModal}
+      onCloseInfoModal={handleCloseInfoModal}
       onCloseDocumentsModal={handleCloseDocumentsModal}
       onCloseDeleteModal={handleCloseDeleteModal}
       onRefreshData={handleRefreshData}

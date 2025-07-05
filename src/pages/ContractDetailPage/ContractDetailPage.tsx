@@ -101,6 +101,13 @@ const ContractDetailPage = () => {
 
       await updateContractToNextStatus(contractUid, newStatus, contract);
 
+      const [updatedContract, updatedHistories] = await Promise.all([
+        fetchContractDetail(contractUid),
+        fetchContractHistory(contractUid),
+      ]);
+      setContract(updatedContract);
+      setHistories(updatedHistories);
+
       showToast({
         message: `계약 상태가 변경되었습니다.`,
         type: "success",

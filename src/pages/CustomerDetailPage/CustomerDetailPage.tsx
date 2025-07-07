@@ -102,32 +102,38 @@ const CustomerDetailPage = () => {
     setLabelInputValue(""); // 라벨 입력값 초기화
   };
 
-  const handleInputChange = (
-    field: keyof Customer,
-    value: string | number | boolean | null | { uid: number; name: string }[]
-  ) => {
-    if (!editedCustomer) return;
+  const handleInputChange = useCallback(
+    (
+      field: keyof Customer,
+      value: string | number | boolean | null | { uid: number; name: string }[]
+    ) => {
+      if (!editedCustomer) return;
 
-    const processedValue = value === "" ? null : value;
-    const updated = {
-      ...editedCustomer,
-      [field]: processedValue,
-    };
+      const processedValue = value === "" ? null : value;
+      const updated = {
+        ...editedCustomer,
+        [field]: processedValue,
+      };
 
-    setEditedCustomer(updated);
-  };
+      setEditedCustomer(updated);
+    },
+    [editedCustomer]
+  );
 
-  const handleRegionChange = (value: { code: number | null; name: string }) => {
-    if (!editedCustomer) return;
+  const handleRegionChange = useCallback(
+    (value: { code: number | null; name: string }) => {
+      if (!editedCustomer) return;
 
-    const updated = {
-      ...editedCustomer,
-      legalDistrictCode: `${value.code}`,
-      preferredRegion: value.name,
-    };
+      const updated = {
+        ...editedCustomer,
+        legalDistrictCode: `${value.code}`,
+        preferredRegion: value.name,
+      };
 
-    setEditedCustomer(updated);
-  };
+      setEditedCustomer(updated);
+    },
+    [editedCustomer]
+  );
 
   const handleSaveEdit = async () => {
     if (!editedCustomer || !customerId) return;

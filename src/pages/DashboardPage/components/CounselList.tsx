@@ -72,7 +72,6 @@ const CounselList: React.FC<CounselListProps> = ({
     },
   ];
 
-  // 테이블 데이터 변환 (counselUid를 id로 매핑)
   const tableData = currentCounselList.map((counsel) => ({
     id: counsel.counselUid,
     ...counsel,
@@ -118,24 +117,41 @@ const CounselList: React.FC<CounselListProps> = ({
               fontSize: "14px",
               padding: "6px 12px",
             },
+            "& .MuiTabs-indicator": {
+              backgroundColor: "primary.main",
+            },
           }}
         >
           <Tab
             label={
               <div className="flex items-center gap-1">
-                <p>의뢰일 임박 순</p>
+                <p style={{ color: "inherit" }}>의뢰일 임박 순</p>
                 <Tooltip title="2주 이내 의뢰 마감 예정인 상담이 표시됩니다.">
                   <HelpOutlineIcon
-                    sx={{ fontSize: 16, color: "text.secondary" }}
+                    sx={{ fontSize: 16, color: "primary.main" }}
                   />
                 </Tooltip>
               </div>
             }
             value="request"
-            sx={{ fontSize: "13px" }}
+            sx={{
+              fontSize: "13px",
+              "&.Mui-selected": {
+                color: "primary.main",
+              },
+            }}
           />
 
-          <Tab label="최신 순" value="latest" sx={{ fontSize: "13px" }} />
+          <Tab
+            label="최신 순"
+            value="latest"
+            sx={{
+              fontSize: "13px",
+              "&.Mui-selected": {
+                color: "primary.main",
+              },
+            }}
+          />
         </Tabs>
       </Box>
       <Box sx={{ flex: 1, overflow: "auto" }}>

@@ -98,23 +98,40 @@ const ContractList = ({
               fontSize: "14px",
               padding: "6px 12px",
             },
+            "& .MuiTabs-indicator": {
+              backgroundColor: "primary.main",
+            },
           }}
         >
           <Tab
             label={
               <div className="flex items-center gap-1">
-                <p>만료 예정 계약</p>
+                <p style={{ color: "inherit" }}>만료 예정 계약</p>
                 <Tooltip title="6개월 이내 만료 예정인 계약이 표시됩니다.">
                   <HelpOutlineIcon
-                    sx={{ fontSize: 16, color: "text.secondary" }}
+                    sx={{ fontSize: 16, color: "primary.main" }}
                   />
                 </Tooltip>
               </div>
             }
             value="expiring"
-            sx={{ fontSize: "13px" }}
+            sx={{
+              fontSize: "13px",
+              "&.Mui-selected": {
+                color: "primary.main",
+              },
+            }}
           />
-          <Tab label="최근 계약" value="recent" sx={{ fontSize: "13px" }} />
+          <Tab
+            label="최근 계약"
+            value="recent"
+            sx={{
+              fontSize: "13px",
+              "&.Mui-selected": {
+                color: "primary.main",
+              },
+            }}
+          />
         </Tabs>
       </Box>
       <Box sx={{ flex: 1, overflow: "auto" }}>

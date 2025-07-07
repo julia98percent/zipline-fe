@@ -1,7 +1,7 @@
 import { Box, CircularProgress, Paper } from "@mui/material";
 import PageHeader from "@components/PageHeader/PageHeader";
 import DeleteConfirmModal from "@components/DeleteConfirm/DeleteConfirmModal";
-import { Customer } from "@ts/customer";
+import { Customer, Label } from "@ts/customer";
 import CustomerInfo from "./components/CustomerInfo/CustomerInfo";
 import {
   CustomerActionButtons,
@@ -29,6 +29,9 @@ interface CustomerDetailPageViewProps {
   onDeleteClick: () => void;
   onDeleteCancel: () => void;
   onDeleteConfirm: () => void;
+  onCreateLabel?: (name: string) => Promise<Label>;
+  labelInputValue?: string;
+  onLabelInputChange?: (value: string) => void;
 }
 
 const CustomerDetailPageView = ({
@@ -47,6 +50,9 @@ const CustomerDetailPageView = ({
   onDeleteClick,
   onDeleteCancel,
   onDeleteConfirm,
+  onCreateLabel,
+  labelInputValue,
+  onLabelInputChange,
 }: CustomerDetailPageViewProps) => {
   if (loading || !customer || !customerId) {
     return (
@@ -104,6 +110,9 @@ const CustomerDetailPageView = ({
             editedCustomer={editedCustomer}
             availableLabels={availableLabels}
             onInputChange={onInputChange}
+            onCreateLabel={onCreateLabel}
+            labelInputValue={labelInputValue}
+            onLabelInputChange={onLabelInputChange}
           />
         </Box>
 

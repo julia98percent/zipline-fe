@@ -5,11 +5,12 @@ import {
   updateCustomer,
   deleteCustomer,
   fetchLabels,
+  createLabel,
 } from "@apis/customerService";
 import { formatPhoneNumber } from "@utils/numberUtil";
 import { showToast } from "@components/Toast/Toast";
 import CustomerDetailPageView from "./CustomerDetailPageView";
-import { Customer, CustomerUpdateData } from "@ts/customer";
+import { Customer, CustomerUpdateData, Label } from "@ts/customer";
 import { API_ERROR_MESSAGES } from "@ts/apiResponse";
 
 const CustomerDetailPage = () => {
@@ -23,6 +24,7 @@ const CustomerDetailPage = () => {
     { uid: number; name: string }[]
   >([]);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
+  const [labelInputValue, setLabelInputValue] = useState("");
 
   const fetchCustomerData = useCallback(async () => {
     if (!customerId) return;
@@ -52,6 +54,28 @@ const CustomerDetailPage = () => {
     }
   }, [isEditing]);
 
+  const handleCreateLabel = async (name: string): Promise<Label> => {
+    try {
+      const newLabel = await createLabel(name);
+
+      setAvailableLabels((prev) => [...prev, newLabel]);
+
+      showToast({
+        message: `라벨 "${name}"을 생성했습니다.`,
+        type: "success",
+      });
+
+      return newLabel;
+    } catch (error) {
+      console.error("Failed to create label:", error);
+      showToast({
+        message: "라벨 생성에 실패했습니다.",
+        type: "error",
+      });
+      throw error;
+    }
+  };
+
   const handleEditClick = () => {
     if (customer) {
       const editedData = {
@@ -75,6 +99,7 @@ const CustomerDetailPage = () => {
   const handleCancelEdit = () => {
     setEditedCustomer(null);
     setIsEditing(false);
+    setLabelInputValue(""); // 라벨 입력값 초기화
   };
 
   const handleInputChange = (
@@ -157,10 +182,11 @@ const CustomerDetailPage = () => {
         type: "success",
       });
       setIsEditing(false);
+      setLabelInputValue("");
       fetchCustomerData();
     } catch (e) {
       const error = e as API_ERROR_MESSAGES;
- 
+
       const errorMessage =
         error?.response?.data.message || "고객 정보 수정에 실패했습니다.";
 
@@ -217,6 +243,9 @@ const CustomerDetailPage = () => {
       onDeleteClick={handleDeleteClick}
       onDeleteCancel={handleDeleteCancel}
       onDeleteConfirm={handleDeleteConfirm}
+      onCreateLabel={handleCreateLabel}
+      labelInputValue={labelInputValue}
+      onLabelInputChange={setLabelInputValue}
     />
   );
 };

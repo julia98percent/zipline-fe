@@ -4,6 +4,7 @@ import ChevronLeftIcon from "@mui/icons-material/ChevronLeft";
 import ChevronRightIcon from "@mui/icons-material/ChevronRight";
 import dayjs from "dayjs";
 import { Schedule } from "@ts/schedule";
+import { WEEKLY_SCHEDULE_MAX_ITEMS_PER_DAY } from "@constants/schedule";
 
 interface WeeklyScheduleCalendarProps {
   schedules: Schedule[];
@@ -104,7 +105,7 @@ const WeeklyScheduleCalendar: React.FC<WeeklyScheduleCalendarProps> = ({
                   borderRadius: "4px",
                   p: 1,
                   height: "100%",
-                  minHeight: "200px",
+                  minHeight: "250px", // 최대 일정 개수를 표시하기 위해 높이 증가
                   backgroundColor: dayjs().isSame(date, "day")
                     ? "#f0f8ff"
                     : "#fff",
@@ -121,7 +122,7 @@ const WeeklyScheduleCalendar: React.FC<WeeklyScheduleCalendarProps> = ({
                 <Box
                   sx={{ display: "flex", flexDirection: "column", gap: 0.5 }}
                 >
-                  {daySchedules.slice(0, 3).map((schedule) => (
+                  {daySchedules.slice(0, WEEKLY_SCHEDULE_MAX_ITEMS_PER_DAY).map((schedule) => (
                     <Box
                       key={schedule.uid}
                       onClick={() => handleScheduleClick(schedule)}
@@ -154,7 +155,7 @@ const WeeklyScheduleCalendar: React.FC<WeeklyScheduleCalendarProps> = ({
                       </Typography>
                     </Box>
                   ))}
-                  {daySchedules.length > 3 && (
+                  {daySchedules.length > WEEKLY_SCHEDULE_MAX_ITEMS_PER_DAY && (
                     <Button
                       size="small"
                       variant="text"
@@ -167,7 +168,7 @@ const WeeklyScheduleCalendar: React.FC<WeeklyScheduleCalendarProps> = ({
                         p: 0.5,
                       }}
                     >
-                      +{daySchedules.length - 3}개 더보기
+                      +{daySchedules.length - WEEKLY_SCHEDULE_MAX_ITEMS_PER_DAY}개 더보기
                     </Button>
                   )}
                 </Box>

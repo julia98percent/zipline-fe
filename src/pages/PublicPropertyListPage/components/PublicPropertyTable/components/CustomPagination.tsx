@@ -65,10 +65,10 @@ const CustomPagination = ({
               "& input": {
                 padding: "0px 8px",
                 "&::-webkit-inner-spin-button, &::-webkit-outer-spin-button": {
-                  "-webkit-appearance": "none",
+                  WebkitAppearance: "none",
                   margin: 0,
                 },
-                "-moz-appearance": "textfield",
+                MozAppearance: "textfield",
               },
             },
           }}

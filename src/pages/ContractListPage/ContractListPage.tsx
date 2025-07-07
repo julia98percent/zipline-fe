@@ -46,7 +46,6 @@ function ContractListPage() {
   const mappedCategory = categoryKeywordMap[searchKeyword] || "";
   const navigate = useNavigate();
 
-  // Business Logic
   const fetchContractData = useCallback(async () => {
     setLoading(true);
     try {

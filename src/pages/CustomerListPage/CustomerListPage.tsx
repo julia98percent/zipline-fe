@@ -3,6 +3,7 @@ import { Customer, CustomerFilter } from "@ts/customer";
 import { searchCustomers, updateCustomer } from "@apis/customerService";
 import { showToast } from "@components/Toast/Toast";
 import CustomerListPageView from "./CustomerListPageView";
+import { DEFAULT_ROWS_PER_PAGE } from "@components/Table/Table";
 
 const INITIAL_FILTERS: CustomerFilter = {
   tenant: false,
@@ -26,7 +27,7 @@ const CustomerListPage = () => {
   const [customerList, setCustomerList] = useState<Customer[]>([]);
   const [totalCount, setTotalCount] = useState(0);
   const [page, setPage] = useState(0);
-  const [rowsPerPage, setRowsPerPage] = useState(10);
+  const [rowsPerPage, setRowsPerPage] = useState(DEFAULT_ROWS_PER_PAGE);
   const [searchTerm, setSearchTerm] = useState("");
   const [filterModalOpen, setFilterModalOpen] = useState(false);
   const [filters, setFilters] = useState<CustomerFilter>(INITIAL_FILTERS);

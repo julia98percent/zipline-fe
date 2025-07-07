@@ -9,6 +9,7 @@ import Status from "@components/Status";
 import { MessageHistory } from "@ts/message";
 import { fetchMessages } from "@apis/messageService";
 import Table from "@components/Table";
+import { DEFAULT_ROWS_PER_PAGE } from "@components/Table/Table";
 
 interface TableRowData {
   id: string;
@@ -23,7 +24,7 @@ const MessageHistoryPage = () => {
     useState<MessageHistory | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [page, setPage] = useState(0);
-  const [rowsPerPage, setRowsPerPage] = useState(50);
+  const [rowsPerPage, setRowsPerPage] = useState(DEFAULT_ROWS_PER_PAGE);
   const [totalElements, setTotalElements] = useState(0);
 
   const [detailModalOpen, setDetailModalOpen] = useState(false);

@@ -4,11 +4,12 @@ import PageHeader from "@components/PageHeader";
 import PreCounselTable from "@components/PreCounselTable/PreCounselTable";
 import { PreCounsel } from "@ts/counsel";
 import { fetchCounsels } from "@apis/counselService";
+import { DEFAULT_ROWS_PER_PAGE } from "@components/Table/Table";
 
 function PreCounselListPage() {
   const [counsels, setCounsels] = useState<PreCounsel[]>([]);
   const [page, setPage] = useState(0);
-  const [rowsPerPage, setRowsPerPage] = useState(25);
+  const [rowsPerPage, setRowsPerPage] = useState(DEFAULT_ROWS_PER_PAGE);
   const [isLoading, setIsLoading] = useState(true);
   const [totalElements, setTotalElements] = useState(0);
   const [isSurveyDetailModalOpen, setIsSurveyDetailModalOpen] = useState(false);

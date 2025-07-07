@@ -4,6 +4,7 @@ import { searchContracts } from "@apis/contractService";
 import { Contract, ContractCategory } from "@ts/contract";
 import { CONTRACT_STATUS_OPTION_LIST } from "@constants/contract";
 import ContractListPageView from "./ContractListPageView";
+import { DEFAULT_ROWS_PER_PAGE } from "@components/Table/Table";
 
 function ContractListPage() {
   const CONTRACT_STATUS_SEARCH_OPTIONS = [
@@ -39,7 +40,7 @@ function ContractListPage() {
   const [selectedSort, setSelectedSort] = useState<string>("LATEST");
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
   const [page, setPage] = useState(0);
-  const [rowsPerPage, setRowsPerPage] = useState(10);
+  const [rowsPerPage, setRowsPerPage] = useState(DEFAULT_ROWS_PER_PAGE);
   const [totalElements, setTotalElements] = useState(0);
 
   const mappedCategory = categoryKeywordMap[searchKeyword] || "";

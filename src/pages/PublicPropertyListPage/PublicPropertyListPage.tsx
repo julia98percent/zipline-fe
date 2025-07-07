@@ -3,10 +3,11 @@ import { useCallback, useEffect, useState } from "react";
 import { PublicPropertyItem, PublicPropertySearchParams } from "@ts/property";
 import { searchPublicProperties } from "@apis/propertyService";
 import PublicPropertyListPageView from "./PublicPropertyListPageView";
+import { DEFAULT_ROWS_PER_PAGE } from "@components/Table/Table";
 
 const INITIAL_SEARCH_PARAMS: PublicPropertySearchParams = {
   page: 0,
-  size: 20,
+  size: DEFAULT_ROWS_PER_PAGE,
   sortFields: { id: "ASC" },
   category: "",
   buildingType: "",

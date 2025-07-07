@@ -48,6 +48,7 @@ interface Props<T extends RowData> {
 }
 
 export const ROWS_PER_PAGE_OPTIONS = [10, 25, 50];
+export const DEFAULT_ROWS_PER_PAGE = 25;
 
 function Table<T extends RowData>({
   isLoading = false,

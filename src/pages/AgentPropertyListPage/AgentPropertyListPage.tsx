@@ -9,10 +9,11 @@ import { fetchSido, fetchSigungu, fetchDong } from "@apis/regionService";
 import { Property, PropertyType, PropertyCategoryType } from "@ts/property";
 import { Region } from "@ts/region";
 import { showToast } from "@components/Toast";
+import { DEFAULT_ROWS_PER_PAGE } from "@components/Table/Table";
 
 const DEFAULT_SEARCH_PARAMS: AgentPropertySearchParams = {
   page: 0,
-  size: 50,
+  size: DEFAULT_ROWS_PER_PAGE,
   sortFields: {},
 };
 

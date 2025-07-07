@@ -7,10 +7,10 @@ import {
   TableBody,
   CircularProgress,
   Table as MuiTable,
-  TablePagination,
   SxProps,
   TableCellProps,
 } from "@mui/material";
+import EnhancedPagination from "./EnhancedPagination";
 
 export interface ColumnConfig<T = unknown> {
   key: string;
@@ -154,18 +154,13 @@ function Table<T extends RowData>({
         </MuiTable>
       </TableContainer>
       {pagination && handleChangePage && handleChangeRowsPerPage && (
-        <TablePagination
-          component="div"
-          count={totalElements}
+        <EnhancedPagination
+          totalElements={totalElements}
           page={page}
-          onPageChange={handleChangePage}
           rowsPerPage={rowsPerPage}
+          onPageChange={handleChangePage}
           onRowsPerPageChange={handleChangeRowsPerPage}
           rowsPerPageOptions={ROWS_PER_PAGE_OPTIONS}
-          labelRowsPerPage="페이지당 행 수"
-          labelDisplayedRows={({ from, to, count }) =>
-            `${count}개 중 ${from}-${to}개`
-          }
         />
       )}
     </Paper>

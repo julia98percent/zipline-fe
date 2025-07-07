@@ -8,6 +8,9 @@ import {
 } from "@mui/material";
 import { Label, Customer } from "@ts/customer";
 
+// 새로 생성할 라벨을 나타내는 임시 UID
+const NEW_LABEL_TEMP_UID = -1;
+
 interface CustomerRoleLabelsProps {
   customer: Customer;
   isEditing: boolean;
@@ -17,6 +20,9 @@ interface CustomerRoleLabelsProps {
     field: keyof Customer,
     value: string | number | boolean | null | { uid: number; name: string }[]
   ) => void;
+  onCreateLabel?: (name: string) => Promise<Label>;
+  labelInputValue?: string;
+  onLabelInputChange?: (value: string) => void;
 }
 
 const CustomerRoleLabels = ({
@@ -25,6 +31,9 @@ const CustomerRoleLabels = ({
   editedCustomer,
   availableLabels,
   onInputChange,
+  onCreateLabel,
+  labelInputValue,
+  onLabelInputChange,
 }: CustomerRoleLabelsProps) => {
   return (
     <Paper elevation={0} sx={{ flex: 1, p: 3, borderRadius: 2, mt: 1 }}>
@@ -141,14 +150,128 @@ const CustomerRoleLabels = ({
           {isEditing ? (
             <Autocomplete
               multiple
+              freeSolo
               size="small"
               options={availableLabels}
-              value={editedCustomer?.labels || []}
-              getOptionLabel={(option) => option.name}
-              onChange={(_, newValue) => {
-                onInputChange("labels", newValue);
+              disableClearable
+              blurOnSelect={false}
+              clearOnBlur={false}
+              handleHomeEndKeys={false}
+              inputValue={labelInputValue || ""}
+              onInputChange={(_, newInputValue) => {
+                onLabelInputChange?.(newInputValue);
               }}
-              renderInput={(params) => <TextField {...params} fullWidth />}
+              getOptionLabel={(option) => {
+                return typeof option === "string" ? option : option.name;
+              }}
+              value={editedCustomer?.labels || []}
+              onChange={async (_, newValue) => {
+                const processedLabels: Label[] = [];
+
+                for (const value of newValue) {
+                  if (
+                    typeof value === "object" &&
+                    value.uid !== NEW_LABEL_TEMP_UID
+                  ) {
+                    processedLabels.push(value);
+                  }
+                }
+
+                onInputChange("labels", processedLabels);
+              }}
+              renderInput={(params) => (
+                <TextField
+                  {...params}
+                  placeholder="라벨 검색 및 추가"
+                  helperText="텍스트 입력 후 Enter 키로 라벨 추가"
+                  FormHelperTextProps={{
+                    sx: { fontSize: "0.7rem", margin: 0, padding: 0 },
+                  }}
+                  onKeyDown={(event) => {
+                    const nativeEvent = event.nativeEvent as KeyboardEvent;
+                    if (nativeEvent.isComposing || event.keyCode === 229) {
+                      return;
+                    }
+
+                    if (event.key === "Enter") {
+                      // Autocomplete의 기본 Enter 동작을 방지
+                      event.stopPropagation();
+
+                      const currentInputValue = labelInputValue?.trim();
+
+                      if (currentInputValue) {
+                        const exactMatch = availableLabels.find(
+                          (label) =>
+                            label.name.toLowerCase() ===
+                            currentInputValue.toLowerCase()
+                        );
+
+                        if (exactMatch) {
+                          const currentLabels = editedCustomer?.labels || [];
+                          const isAlreadySelected = currentLabels.some(
+                            (label) => label.uid === exactMatch.uid
+                          );
+
+                          if (!isAlreadySelected) {
+                            onInputChange("labels", [
+                              ...currentLabels,
+                              exactMatch,
+                            ]);
+                          }
+                          // 성공적으로 추가되거나 이미 있는 경우 모두 입력 필드 초기화
+                          onLabelInputChange?.("");
+                        } else {
+                          const partialMatches = availableLabels.filter(
+                            (label) =>
+                              label.name
+                                .toLowerCase()
+                                .includes(currentInputValue.toLowerCase())
+                          );
+
+                          if (partialMatches.length > 0) {
+                            const bestMatch = partialMatches.sort(
+                              (a, b) => a.name.length - b.name.length
+                            )[0];
+                            const currentLabels = editedCustomer?.labels || [];
+                            const isAlreadySelected = currentLabels.some(
+                              (label) => label.uid === bestMatch.uid
+                            );
+
+                            if (!isAlreadySelected) {
+                              onInputChange("labels", [
+                                ...currentLabels,
+                                bestMatch,
+                              ]);
+                            }
+
+                            onLabelInputChange?.("");
+                          } else {
+                            if (onCreateLabel) {
+                              onCreateLabel(currentInputValue)
+                                .then((createdLabel) => {
+                                  const currentLabels =
+                                    editedCustomer?.labels || [];
+                                  onInputChange("labels", [
+                                    ...currentLabels,
+                                    createdLabel,
+                                  ]);
+
+                                  onLabelInputChange?.("");
+                                })
+                                .catch((error) => {
+                                  console.error("라벨 생성 실패:", error);
+                                });
+                            }
+                          }
+                        }
+
+                        event.preventDefault();
+                      }
+                    }
+                  }}
+                  fullWidth
+                />
+              )}
               renderTags={(value, getTagProps) =>
                 value.map((option, index) => (
                   <Chip
@@ -157,10 +280,85 @@ const CustomerRoleLabels = ({
                     label={option.name}
                     size="small"
                     variant="outlined"
+                    sx={{
+                      backgroundColor:
+                        option.uid === NEW_LABEL_TEMP_UID
+                          ? "#e3f2fd"
+                          : undefined,
+                      borderColor:
+                        option.uid === NEW_LABEL_TEMP_UID
+                          ? "#2196f3"
+                          : undefined,
+                    }}
                   />
                 ))
               }
-              isOptionEqualToValue={(option, value) => option.uid === value.uid}
+              isOptionEqualToValue={(option, value) => {
+                return option.uid === value.uid;
+              }}
+              filterOptions={(options, params) => {
+                const { inputValue: searchValue } = params;
+
+                if (!searchValue) return options;
+
+                const exactMatches = options.filter(
+                  (option) =>
+                    option.name.toLowerCase() === searchValue.toLowerCase()
+                );
+
+                const startsWithMatches = options.filter(
+                  (option) =>
+                    option.name
+                      .toLowerCase()
+                      .startsWith(searchValue.toLowerCase()) &&
+                    option.name.toLowerCase() !== searchValue.toLowerCase()
+                );
+
+                const partialMatches = options.filter(
+                  (option) =>
+                    option.name
+                      .toLowerCase()
+                      .includes(searchValue.toLowerCase()) &&
+                    !option.name
+                      .toLowerCase()
+                      .startsWith(searchValue.toLowerCase()) &&
+                    option.name.toLowerCase() !== searchValue.toLowerCase()
+                );
+
+                const hasExactMatch = exactMatches.length > 0;
+
+                const filtered = [
+                  ...exactMatches,
+                  ...startsWithMatches,
+                  ...partialMatches,
+                ];
+
+                if (!hasExactMatch) {
+                  filtered.push({
+                    uid: NEW_LABEL_TEMP_UID,
+                    name: searchValue,
+                  } as Label);
+                }
+
+                return filtered;
+              }}
+              renderOption={(props, option) => (
+                <Box component="li" {...props}>
+                  {option.uid === NEW_LABEL_TEMP_UID ? (
+                    <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
+                      <span>"{option.name}" 새 라벨 생성</span>
+                      <Chip
+                        label="NEW"
+                        size="small"
+                        color="primary"
+                        variant="outlined"
+                      />
+                    </Box>
+                  ) : (
+                    option.name
+                  )}
+                </Box>
+              )}
               sx={{ width: "100%" }}
             />
           ) : (

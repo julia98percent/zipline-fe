@@ -14,7 +14,10 @@ import {
   renderLabelsColumn,
   renderActionsColumn,
 } from "./columnRenderers";
-import { fetchLabels as fetchLabelsApi } from "@apis/customerService";
+import {
+  fetchLabels as fetchLabelsApi,
+  createLabel,
+} from "@apis/customerService";
 
 interface EditingCustomer extends Customer {
   isEditing?: boolean;
@@ -52,18 +55,44 @@ const CustomerTable = ({
   const [customerToDelete, setCustomerToDelete] = useState<Customer | null>(
     null
   );
+  const [labelInputValues, setLabelInputValues] = useState<{
+    [key: number]: string;
+  }>({});
+
+  const loadLabels = async () => {
+    try {
+      const labels = await fetchLabelsApi();
+      setAvailableLabels(labels);
+    } catch (error) {
+      console.error("Failed to fetch labels:", error);
+    }
+  };
 
   useEffect(() => {
-    const loadLabels = async () => {
-      try {
-        const labels = await fetchLabelsApi();
-        setAvailableLabels(labels);
-      } catch (error) {
-        console.error("Failed to fetch labels:", error);
-      }
-    };
     loadLabels();
   }, []);
+
+  const handleCreateLabel = async (name: string): Promise<Label> => {
+    try {
+      const newLabel = await createLabel(name);
+
+      setAvailableLabels((prev) => [...prev, newLabel]);
+
+      showToast({
+        message: `라벨 "${name}"을 생성했습니다.`,
+        type: "success",
+      });
+
+      return newLabel;
+    } catch (error) {
+      console.error("Failed to create label:", error);
+      showToast({
+        message: "라벨 생성에 실패했습니다.",
+        type: "error",
+      });
+      throw error;
+    }
+  };
 
   const handleRowClick = (customer: Customer) => {
     if (editingCustomers[customer.uid]) return;
@@ -123,6 +152,11 @@ const CustomerTable = ({
     const newEditingCustomers = { ...editingCustomers };
     delete newEditingCustomers[uid];
     setEditingCustomers(newEditingCustomers);
+
+    // 라벨 입력값도 초기화
+    const newLabelInputValues = { ...labelInputValues };
+    delete newLabelInputValues[uid];
+    setLabelInputValues(newLabelInputValues);
   };
 
   const handleEditChange = (
@@ -161,23 +195,27 @@ const CustomerTable = ({
         return;
       }
 
-      const updatedCustomer = {
-        ...editedCustomer,
-        uid: editedCustomer.uid,
-        name: editedCustomer.name,
-        phoneNo: editedCustomer.phoneNo,
-        tenant: editedCustomer.tenant,
-        landlord: editedCustomer.landlord,
-        buyer: editedCustomer.buyer,
-        seller: editedCustomer.seller,
-        labels: Array.isArray(editedCustomer.labels)
-          ? editedCustomer.labels
-          : [],
-        trafficSource: editedCustomer.trafficSource,
-      };
+      try {
+        const updatedCustomer = {
+          ...editedCustomer,
+          uid: editedCustomer.uid,
+          name: editedCustomer.name,
+          phoneNo: editedCustomer.phoneNo,
+          tenant: editedCustomer.tenant,
+          landlord: editedCustomer.landlord,
+          buyer: editedCustomer.buyer,
+          seller: editedCustomer.seller,
+          labels: Array.isArray(editedCustomer.labels)
+            ? editedCustomer.labels
+            : [],
+          trafficSource: editedCustomer.trafficSource,
+        };
 
-      await onCustomerUpdate(updatedCustomer);
-      handleEditCancel(uid);
+        await onCustomerUpdate(updatedCustomer);
+        handleEditCancel(uid);
+      } catch (error) {
+        console.error("Failed to save customer:", error);
+      }
     }
   };
 
@@ -210,7 +248,15 @@ const CustomerTable = ({
               customer,
               editingCustomers,
               availableLabels,
-              handleEditChange
+              handleEditChange,
+              handleCreateLabel,
+              labelInputValues[customer.uid] || "",
+              (value: string) => {
+                setLabelInputValues({
+                  ...labelInputValues,
+                  [customer.uid]: value,
+                });
+              }
             );
           case "actions":
             return renderActionsColumn(

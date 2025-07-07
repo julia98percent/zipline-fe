@@ -1,6 +1,7 @@
 import { useState, useEffect, useCallback } from "react";
 import { Customer, CustomerFilter } from "@ts/customer";
-import { searchCustomers } from "@apis/customerService";
+import { searchCustomers, updateCustomer } from "@apis/customerService";
+import { showToast } from "@components/Toast/Toast";
 import CustomerListPageView from "./CustomerListPageView";
 
 const INITIAL_FILTERS: CustomerFilter = {
@@ -88,12 +89,45 @@ const CustomerListPage = () => {
     [page, rowsPerPage, searchTerm, filters]
   );
 
-  const handleCustomerUpdate = (updatedCustomer: Customer) => {
-    setCustomerList((prev) =>
-      prev.map((customer) =>
-        customer.uid === updatedCustomer.uid ? updatedCustomer : customer
-      )
-    );
+  const handleCustomerUpdate = async (updatedCustomer: Customer) => {
+    try {
+      await updateCustomer(updatedCustomer.uid, {
+        name: updatedCustomer.name,
+        phoneNo: updatedCustomer.phoneNo,
+        tenant: updatedCustomer.tenant,
+        landlord: updatedCustomer.landlord,
+        buyer: updatedCustomer.buyer,
+        seller: updatedCustomer.seller,
+        labelUids: (updatedCustomer.labels || []).map((label) => label.uid),
+        trafficSource: updatedCustomer.trafficSource,
+        birthday: updatedCustomer.birthday,
+        legalDistrictCode: updatedCustomer.legalDistrictCode,
+        minPrice: updatedCustomer.minPrice,
+        maxPrice: updatedCustomer.maxPrice,
+        minDeposit: updatedCustomer.minDeposit,
+        maxDeposit: updatedCustomer.maxDeposit,
+        minRent: updatedCustomer.minRent,
+        maxRent: updatedCustomer.maxRent,
+        telProvider: updatedCustomer.telProvider,
+      });
+
+      setCustomerList((prev) =>
+        prev.map((customer) =>
+          customer.uid === updatedCustomer.uid ? updatedCustomer : customer
+        )
+      );
+
+      showToast({
+        message: "고객 정보가 성공적으로 수정되었습니다.",
+        type: "success",
+      });
+    } catch (error) {
+      showToast({
+        message: "고객 정보 수정에 실패했습니다.",
+        type: "error",
+      });
+      throw error;
+    }
   };
 
   const handleFilterApply = (appliedFilters: CustomerFilter) => {

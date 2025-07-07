@@ -11,7 +11,6 @@ import {
   CustomerListData,
   Label,
   CustomerUpdateData,
-  CustomerBase,
 } from "@ts/customer";
 import { handleApiResponse, handleApiError } from "@utils/apiUtil";
 import { ContractResponse } from "@ts/contract";
@@ -128,7 +127,7 @@ export const fetchCustomerDetail = async (
 
 export const updateCustomer = async (
   customerId: string | number,
-  customerData: CustomerBase
+  customerData: CustomerUpdateData
 ): Promise<void> => {
   try {
     const { data: response } = await apiClient.put<
@@ -229,16 +228,20 @@ export const fetchCustomerContracts = async (
   }
 };
 
-// 라벨 생성
-export const createLabel = async (name: string): Promise<void> => {
+export const createLabel = async (name: string): Promise<Label> => {
   try {
-    const { data: response } = await apiClient.post<ApiResponse>("/labels", {
-      name,
-    });
+    const { data: response } = await apiClient.post<ApiResponse<Label>>(
+      "/labels",
+      {
+        name,
+      }
+    );
 
-    if (!response.success) {
+    if (!response.success || !response.data) {
       throw new Error(response.message || "라벨 생성에 실패했습니다.");
     }
+
+    return response.data;
   } catch (error) {
     return handleApiError(error, "creating label");
   }

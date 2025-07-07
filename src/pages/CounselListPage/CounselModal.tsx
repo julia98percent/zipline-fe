@@ -13,12 +13,18 @@ import {
   CircularProgress,
 } from "@mui/material";
 import { useState, useEffect } from "react";
+import dayjs from "dayjs";
+import utc from "dayjs/plugin/utc";
+import timezone from "dayjs/plugin/timezone";
 import {
   fetchCustomersForCounsel,
   fetchPropertiesForCounsel,
   createCounsel,
 } from "@apis/counselService";
 import { CounselCategory } from "@ts/counsel";
+
+dayjs.extend(utc);
+dayjs.extend(timezone);
 
 interface Customer {
   uid: number;
@@ -46,7 +52,9 @@ function CounselModal({ open, onClose, onSuccess }: CounselModalProps) {
   const [dueDate, setDueDate] = useState("");
   const [selectedProperty, setSelectedProperty] = useState<string | null>(null);
   const [title, setTitle] = useState("");
-  const [counselDateTime, setCounselDateTime] = useState("");
+  const [counselDateTime, setCounselDateTime] = useState(
+    dayjs().tz("Asia/Seoul").format("YYYY-MM-DDTHH:mm")
+  );
   const [counselContent, setCounselContent] = useState("");
   const [customers, setCustomers] = useState<Customer[]>([]);
   const [properties, setProperties] = useState<Property[]>([]);
@@ -87,13 +95,11 @@ function CounselModal({ open, onClose, onSuccess }: CounselModalProps) {
   }, [open]);
 
   const handleSubmit = async () => {
-    // 필수 입력 항목 검증
     if (!selectedCustomer || !counselType || !title || !counselDateTime) {
       alert("고객, 상담 유형, 제목, 상담일시는 필수 입력 항목입니다.");
       return;
     }
 
-    // 상담 내용이 있는지 확인
     if (!counselContent.trim()) {
       alert("상담 내용을 입력해주세요.");
       return;

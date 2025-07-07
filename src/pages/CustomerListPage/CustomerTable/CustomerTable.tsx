@@ -193,23 +193,27 @@ const CustomerTable = ({
         return;
       }
 
-      const updatedCustomer = {
-        ...editedCustomer,
-        uid: editedCustomer.uid,
-        name: editedCustomer.name,
-        phoneNo: editedCustomer.phoneNo,
-        tenant: editedCustomer.tenant,
-        landlord: editedCustomer.landlord,
-        buyer: editedCustomer.buyer,
-        seller: editedCustomer.seller,
-        labels: Array.isArray(editedCustomer.labels)
-          ? editedCustomer.labels
-          : [],
-        trafficSource: editedCustomer.trafficSource,
-      };
+      try {
+        const updatedCustomer = {
+          ...editedCustomer,
+          uid: editedCustomer.uid,
+          name: editedCustomer.name,
+          phoneNo: editedCustomer.phoneNo,
+          tenant: editedCustomer.tenant,
+          landlord: editedCustomer.landlord,
+          buyer: editedCustomer.buyer,
+          seller: editedCustomer.seller,
+          labels: Array.isArray(editedCustomer.labels)
+            ? editedCustomer.labels
+            : [],
+          trafficSource: editedCustomer.trafficSource,
+        };
 
-      await onCustomerUpdate(updatedCustomer);
-      handleEditCancel(uid);
+        await onCustomerUpdate(updatedCustomer);
+        handleEditCancel(uid);
+      } catch (error) {
+        console.error("Failed to save customer:", error);
+      }
     }
   };
 

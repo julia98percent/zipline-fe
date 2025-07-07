@@ -11,7 +11,6 @@ import {
   CustomerListData,
   Label,
   CustomerUpdateData,
-  CustomerBase,
 } from "@ts/customer";
 import { handleApiResponse, handleApiError } from "@utils/apiUtil";
 import { ContractResponse } from "@ts/contract";
@@ -128,7 +127,7 @@ export const fetchCustomerDetail = async (
 
 export const updateCustomer = async (
   customerId: string | number,
-  customerData: CustomerBase
+  customerData: CustomerUpdateData
 ): Promise<void> => {
   try {
     const { data: response } = await apiClient.put<

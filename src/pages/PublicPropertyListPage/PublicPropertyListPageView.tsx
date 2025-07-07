@@ -5,7 +5,6 @@ import {
   CircularProgress,
   Paper,
   SelectChangeEvent,
-  Typography,
   FormControlLabel,
   TextField,
   InputAdornment,

@@ -102,7 +102,7 @@ const CustomerDetailPage = () => {
     setLabelInputValue(""); // 라벨 입력값 초기화
   };
 
-  const handleInputChange = (
+  const handleInputChange = useCallback((
     field: keyof Customer,
     value: string | number | boolean | null | { uid: number; name: string }[]
   ) => {
@@ -115,9 +115,9 @@ const CustomerDetailPage = () => {
     };
 
     setEditedCustomer(updated);
-  };
+  }, [editedCustomer]);
 
-  const handleRegionChange = (value: { code: number | null; name: string }) => {
+  const handleRegionChange = useCallback((value: { code: number | null; name: string }) => {
     if (!editedCustomer) return;
 
     const updated = {
@@ -127,7 +127,7 @@ const CustomerDetailPage = () => {
     };
 
     setEditedCustomer(updated);
-  };
+  }, [editedCustomer]);
 
   const handleSaveEdit = async () => {
     if (!editedCustomer || !customerId) return;

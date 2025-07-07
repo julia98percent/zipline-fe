@@ -20,7 +20,9 @@ interface Customer {
 interface ScheduleDetailModalViewProps {
   open: boolean;
   onClose: () => void;
+  onEdit?: () => void;
   isUpdating?: boolean;
+  isEditMode?: boolean;
   editingSchedule: Schedule | null;
   selectedCustomer: Customer | null;
   includeTime: boolean;
@@ -46,7 +48,9 @@ interface ScheduleDetailModalViewProps {
 const ScheduleDetailModalView = ({
   open,
   onClose,
+  onEdit,
   isUpdating = false,
+  isEditMode = false,
   editingSchedule,
   selectedCustomer,
   includeTime,
@@ -68,12 +72,16 @@ const ScheduleDetailModalView = ({
   return (
     <Dialog open={open} onClose={onClose} maxWidth="sm" fullWidth>
       <DialogTitle>
-        {editingSchedule?.uid ? "일정 수정" : "일정 추가"}
+        {isEditMode
+          ? editingSchedule?.uid
+            ? "일정 수정"
+            : "일정 추가"
+          : "일정 상세"}
       </DialogTitle>
       <DialogContent>
         <Box sx={{ mt: 2 }}>
           <TextField
-            autoFocus
+            autoFocus={isEditMode}
             margin="dense"
             label="제목"
             type="text"
@@ -81,7 +89,21 @@ const ScheduleDetailModalView = ({
             variant="outlined"
             value={editingSchedule?.title || ""}
             onChange={onTitleChange}
-            sx={{ mb: 2 }}
+            InputProps={{
+              readOnly: !isEditMode,
+            }}
+            sx={{
+              mb: 2,
+              ...(!isEditMode && {
+                "& .MuiInputBase-root": {
+                  cursor: "default",
+                  pointerEvents: "none",
+                },
+                "& .MuiInputLabel-root": {
+                  cursor: "default",
+                },
+              }),
+            }}
           />
           <TextField
             margin="dense"
@@ -93,7 +115,45 @@ const ScheduleDetailModalView = ({
             rows={3}
             value={editingSchedule?.description || ""}
             onChange={onDescriptionChange}
-            sx={{ mb: 2 }}
+            disabled={!isEditMode}
+            sx={{
+              mb: 2,
+              ...(!isEditMode && {
+                "& .MuiInputBase-root": {
+                  cursor: "default",
+                  overflow: "auto",
+                  backgroundColor: "transparent !important",
+                  "&::-webkit-scrollbar": {
+                    width: "6px",
+                  },
+                  "&::-webkit-scrollbar-track": {
+                    background: "#f1f1f1",
+                    borderRadius: "3px",
+                  },
+                  "&::-webkit-scrollbar-thumb": {
+                    background: "#c1c1c1",
+                    borderRadius: "3px",
+                    "&:hover": {
+                      background: "#a8a8a8",
+                    },
+                  },
+                },
+                "& .MuiInputLabel-root": {
+                  cursor: "default",
+                  color: "rgba(0, 0, 0, 0.6) !important",
+                },
+                "& .MuiInputBase-input": {
+                  cursor: "default",
+                  userSelect: "none",
+                  resize: "none",
+                  color: "rgba(0, 0, 0, 0.87) !important",
+                  WebkitTextFillColor: "rgba(0, 0, 0, 0.87) !important",
+                },
+                "& .MuiOutlinedInput-notchedOutline": {
+                  borderColor: "rgba(0, 0, 0, 0.23) !important",
+                },
+              }),
+            }}
           />
 
           <Autocomplete
@@ -102,6 +162,7 @@ const ScheduleDetailModalView = ({
             value={selectedCustomer}
             onChange={onCustomerChange}
             isOptionEqualToValue={(option, value) => option.uid === value.uid}
+            disabled={!isEditMode}
             renderInput={(params) => (
               <TextField
                 {...params}
@@ -109,17 +170,54 @@ const ScheduleDetailModalView = ({
                 margin="dense"
                 variant="outlined"
                 fullWidth
+                InputProps={{
+                  ...params.InputProps,
+                  readOnly: !isEditMode,
+                }}
               />
             )}
-            sx={{ mb: 2 }}
+            sx={{
+              mb: 2,
+              ...(!isEditMode && {
+                "& .MuiInputBase-root": {
+                  cursor: "default",
+                  pointerEvents: "none",
+                  backgroundColor: "transparent !important",
+                },
+                "& .MuiInputLabel-root": {
+                  cursor: "default",
+                  color: "rgba(0, 0, 0, 0.6) !important",
+                },
+                "& .MuiInputBase-input": {
+                  color: "rgba(0, 0, 0, 0.87) !important",
+                  WebkitTextFillColor: "rgba(0, 0, 0, 0.87) !important",
+                },
+                "& .MuiOutlinedInput-notchedOutline": {
+                  borderColor: "rgba(0, 0, 0, 0.23) !important",
+                },
+                "& .MuiAutocomplete-endAdornment": {
+                  display: "none",
+                },
+              }),
+            }}
           />
 
           <FormControlLabel
             control={
-              <Checkbox checked={includeTime} onChange={onIncludeTimeChange} />
+              <Checkbox
+                checked={includeTime}
+                onChange={onIncludeTimeChange}
+                disabled={!isEditMode}
+              />
             }
             label="시간 포함"
-            sx={{ mb: 2 }}
+            sx={{
+              mb: 2,
+              ...(!isEditMode && {
+                cursor: "default",
+                pointerEvents: "none",
+              }),
+            }}
           />
 
           <Box sx={{ display: "flex", gap: 2, mb: 2 }}>
@@ -132,6 +230,20 @@ const ScheduleDetailModalView = ({
               InputLabelProps={{
                 shrink: true,
               }}
+              InputProps={{
+                readOnly: !isEditMode,
+              }}
+              sx={{
+                ...(!isEditMode && {
+                  "& .MuiInputBase-root": {
+                    cursor: "default",
+                    pointerEvents: "none",
+                  },
+                  "& .MuiInputLabel-root": {
+                    cursor: "default",
+                  },
+                }),
+              }}
             />
             {includeTime && (
               <TextField
@@ -142,6 +254,20 @@ const ScheduleDetailModalView = ({
                 fullWidth
                 InputLabelProps={{
                   shrink: true,
+                }}
+                InputProps={{
+                  readOnly: !isEditMode,
+                }}
+                sx={{
+                  ...(!isEditMode && {
+                    "& .MuiInputBase-root": {
+                      cursor: "default",
+                      pointerEvents: "none",
+                    },
+                    "& .MuiInputLabel-root": {
+                      cursor: "default",
+                    },
+                  }),
                 }}
               />
             )}
@@ -157,6 +283,20 @@ const ScheduleDetailModalView = ({
               InputLabelProps={{
                 shrink: true,
               }}
+              InputProps={{
+                readOnly: !isEditMode,
+              }}
+              sx={{
+                ...(!isEditMode && {
+                  "& .MuiInputBase-root": {
+                    cursor: "default",
+                    pointerEvents: "none",
+                  },
+                  "& .MuiInputLabel-root": {
+                    cursor: "default",
+                  },
+                }),
+              }}
             />
             {includeTime && (
               <TextField
@@ -168,6 +308,20 @@ const ScheduleDetailModalView = ({
                 InputLabelProps={{
                   shrink: true,
                 }}
+                InputProps={{
+                  readOnly: !isEditMode,
+                }}
+                sx={{
+                  ...(!isEditMode && {
+                    "& .MuiInputBase-root": {
+                      cursor: "default",
+                      pointerEvents: "none",
+                    },
+                    "& .MuiInputLabel-root": {
+                      cursor: "default",
+                    },
+                  }),
+                }}
               />
             )}
           </Box>
@@ -175,11 +329,19 @@ const ScheduleDetailModalView = ({
       </DialogContent>
       <DialogActions>
         <Button onClick={onClose} color="inherit">
-          취소
+          {isEditMode ? "취소" : "닫기"}
         </Button>
-        <Button onClick={onSave} variant="contained" disabled={isUpdating}>
-          {isUpdating ? "저장 중..." : "저장"}
-        </Button>
+        {isEditMode ? (
+          <Button onClick={onSave} variant="contained" disabled={isUpdating}>
+            {isUpdating ? "저장 중..." : "저장"}
+          </Button>
+        ) : (
+          onEdit && (
+            <Button onClick={onEdit} variant="contained">
+              수정
+            </Button>
+          )
+        )}
       </DialogActions>
     </Dialog>
   );

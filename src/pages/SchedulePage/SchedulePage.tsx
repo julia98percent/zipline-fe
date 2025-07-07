@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import dayjs from "dayjs";
 import { EventClickArg, DatesSetArg } from "@fullcalendar/core";
 import { Schedule } from "@ts/schedule";
@@ -10,6 +10,7 @@ import {
 } from "@apis/scheduleService";
 import ScheduleView from "./ScheduleView";
 import { SCHEDULE_ERROR_MESSAGES } from "@constants/clientErrorMessage";
+import { DAY_MAX_EVENTS } from "@constants/schedule";
 
 interface CalendarEvent {
   id: string;
@@ -38,12 +39,17 @@ interface ScheduleFormData {
 const SchedulePage = () => {
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
   const [isDetailModalOpen, setIsDetailModalOpen] = useState(false);
+  const [isEditMode, setIsEditMode] = useState(false);
   const [selectedSchedule, setSelectedSchedule] = useState<Schedule | null>(
     null
   );
   const [schedules, setSchedules] = useState<Schedule[]>([]);
   const [isUpdating, setIsUpdating] = useState(false);
-  const [dayMaxEvents, setDayMaxEvents] = useState(4);
+
+  const [currentDateRange, setCurrentDateRange] = useState<{
+    start: string;
+    end: string;
+  } | null>(null);
 
   const fetchSchedules = async (startDate: string, endDate: string) => {
     try {
@@ -61,35 +67,12 @@ const SchedulePage = () => {
     }
   };
 
-  useEffect(() => {
-    const calculateDayMaxEvents = () => {
-      const width = window.innerWidth;
-      if (width < 768) {
-        setDayMaxEvents(2);
-      } else if (width < 1024) {
-        setDayMaxEvents(3);
-      } else {
-        setDayMaxEvents(4);
-      }
-    };
-
-    calculateDayMaxEvents();
-    window.addEventListener("resize", calculateDayMaxEvents);
-
-    return () => {
-      window.removeEventListener("resize", calculateDayMaxEvents);
-    };
-  }, []);
-
-  useEffect(() => {
-    const startOfMonth = dayjs().startOf("month").toISOString();
-    const endOfMonth = dayjs().endOf("month").toISOString();
-    fetchSchedules(startOfMonth, endOfMonth);
-  }, []);
-
   const handleDatesSet = (arg: DatesSetArg) => {
     const start = dayjs(arg.start).toISOString();
     const end = dayjs(arg.end).subtract(1, "day").toISOString();
+
+    setCurrentDateRange({ start, end });
+
     fetchSchedules(start, end);
   };
 
@@ -107,15 +90,21 @@ const SchedulePage = () => {
     );
     if (schedule) {
       setSelectedSchedule(schedule);
+      setIsEditMode(false);
       setIsDetailModalOpen(true);
     }
   };
 
   const handleCloseDetailModal = () => {
     setIsDetailModalOpen(false);
+    setIsEditMode(false);
     setTimeout(() => {
       setSelectedSchedule(null);
     }, 200);
+  };
+
+  const handleEditClick = () => {
+    setIsEditMode(true);
   };
 
   const handleSubmitSchedule = async (formData: ScheduleFormData) => {
@@ -123,9 +112,14 @@ const SchedulePage = () => {
       const result = await createSchedule(formData);
 
       if (result.success) {
-        const startOfMonth = dayjs().startOf("month").toISOString();
-        const endOfMonth = dayjs().endOf("month").toISOString();
-        await fetchSchedules(startOfMonth, endOfMonth);
+        if (currentDateRange) {
+          await fetchSchedules(currentDateRange.start, currentDateRange.end);
+        } else {
+          // fallback: 현재 날짜 범위가 없는 경우 당월로 조회
+          const startOfMonth = dayjs().startOf("month").toISOString();
+          const endOfMonth = dayjs().endOf("month").toISOString();
+          await fetchSchedules(startOfMonth, endOfMonth);
+        }
 
         showToast({ message: result.message, type: "success" });
         setIsAddModalOpen(false);
@@ -152,15 +146,16 @@ const SchedulePage = () => {
             schedule.uid === updatedSchedule.uid ? updatedSchedule : schedule
           )
         );
-        handleCloseDetailModal();
+        setSelectedSchedule(updatedSchedule);
+        setIsEditMode(false);
         showToast({
-          message: result.message || "",
+          message: result.message || "일정 정보를 수정했습니다.",
           type: "success",
         });
       } else {
         console.error("Update failed:", result.message);
         showToast({
-          message: result.message || "",
+          message: result.message || "일정 수정에 실패했습니다.",
           type: "error",
         });
       }
@@ -213,10 +208,11 @@ const SchedulePage = () => {
     state: {
       isAddModalOpen,
       isDetailModalOpen,
+      isEditMode,
       selectedSchedule,
       schedules,
       isUpdating,
-      dayMaxEvents,
+      dayMaxEvents: DAY_MAX_EVENTS,
       events,
     },
     handlers: {
@@ -225,6 +221,7 @@ const SchedulePage = () => {
       handleCloseModal,
       handleScheduleClick,
       handleCloseDetailModal,
+      handleEditClick,
       handleSubmitSchedule,
       handleUpdateSchedule,
     },

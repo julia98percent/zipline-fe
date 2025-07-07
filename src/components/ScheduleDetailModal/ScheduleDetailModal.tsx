@@ -7,7 +7,9 @@ interface ScheduleDetailModalProps {
   onClose: () => void;
   schedule: Schedule | null;
   onSave: (schedule: Schedule) => void;
+  onEdit?: () => void;
   isUpdating?: boolean;
+  isEditMode?: boolean;
 }
 
 const ScheduleDetailModal = ({
@@ -15,7 +17,9 @@ const ScheduleDetailModal = ({
   onClose,
   schedule,
   onSave,
+  onEdit,
   isUpdating = false,
+  isEditMode = false,
 }: ScheduleDetailModalProps) => {
   const {
     editingSchedule,
@@ -47,7 +51,9 @@ const ScheduleDetailModal = ({
     <ScheduleDetailModalView
       open={open}
       onClose={onClose}
+      onEdit={onEdit}
       isUpdating={isUpdating}
+      isEditMode={isEditMode}
       editingSchedule={editingSchedule}
       selectedCustomer={selectedCustomer}
       includeTime={includeTime}

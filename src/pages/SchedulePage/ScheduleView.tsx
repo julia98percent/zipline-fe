@@ -39,6 +39,7 @@ interface ScheduleViewProps {
   state: {
     isAddModalOpen: boolean;
     isDetailModalOpen: boolean;
+    isEditMode: boolean;
     selectedSchedule: Schedule | null;
     schedules: Schedule[];
     isUpdating: boolean;
@@ -51,6 +52,7 @@ interface ScheduleViewProps {
     handleCloseModal: () => void;
     handleScheduleClick: (clickInfo: EventClickArg) => void;
     handleCloseDetailModal: () => void;
+    handleEditClick: () => void;
     handleSubmitSchedule: (formData: ScheduleFormData) => Promise<void>;
     handleUpdateSchedule: (updatedSchedule: Schedule) => Promise<void>;
   };
@@ -60,6 +62,7 @@ const ScheduleView = ({ state, handlers }: ScheduleViewProps) => {
   const {
     isAddModalOpen,
     isDetailModalOpen,
+    isEditMode,
     selectedSchedule,
     isUpdating,
     dayMaxEvents,
@@ -72,6 +75,7 @@ const ScheduleView = ({ state, handlers }: ScheduleViewProps) => {
     handleCloseModal,
     handleScheduleClick,
     handleCloseDetailModal,
+    handleEditClick,
     handleSubmitSchedule,
     handleUpdateSchedule,
   } = handlers;
@@ -315,6 +319,23 @@ const ScheduleView = ({ state, handlers }: ScheduleViewProps) => {
               },
             },
           },
+
+          "& .fc-more-link": {
+            fontSize: "11px",
+            color: "#666",
+            textDecoration: "none",
+            padding: "2px 6px",
+            backgroundColor: "#f5f5f5",
+            borderRadius: "4px",
+            marginTop: "2px",
+            textAlign: "center",
+            border: "1px solid #e0e0e0",
+            "&:hover": {
+              backgroundColor: "#e0e0e0",
+              color: "#333",
+              textDecoration: "none",
+            },
+          },
         }}
       >
         <FullCalendar
@@ -351,10 +372,18 @@ const ScheduleView = ({ state, handlers }: ScheduleViewProps) => {
           eventTextColor="#FFFFFF"
           eventBackgroundColor="rgba(25, 118, 210, 0.8)"
           eventBorderColor="#1565C0"
+          moreLinkClick="popover"
+          dayPopoverFormat={{ month: "long", day: "numeric", year: "numeric" }}
           dayCellDidMount={(arg) => {
             const cell = arg.el;
-            const width = cell.offsetWidth;
-            cell.style.height = `${width}px`;
+            cell.style.minHeight = "110px";
+          }}
+          eventDidMount={(info) => {
+            const eventEl = info.el;
+            eventEl.style.fontSize = "12px";
+            eventEl.style.padding = "3px 6px";
+            eventEl.style.borderRadius = "4px";
+            eventEl.style.marginBottom = "2px";
           }}
         />
       </Paper>
@@ -370,7 +399,9 @@ const ScheduleView = ({ state, handlers }: ScheduleViewProps) => {
         onClose={handleCloseDetailModal}
         schedule={selectedSchedule}
         onSave={handleUpdateSchedule}
+        onEdit={handleEditClick}
         isUpdating={isUpdating}
+        isEditMode={isEditMode}
       />
     </Box>
   );

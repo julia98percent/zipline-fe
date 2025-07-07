@@ -122,39 +122,43 @@ const WeeklyScheduleCalendar: React.FC<WeeklyScheduleCalendarProps> = ({
                 <Box
                   sx={{ display: "flex", flexDirection: "column", gap: 0.5 }}
                 >
-                  {daySchedules.slice(0, WEEKLY_SCHEDULE_MAX_ITEMS_PER_DAY).map((schedule) => (
-                    <Box
-                      key={schedule.uid}
-                      onClick={() => handleScheduleClick(schedule)}
-                      sx={{
-                        p: 0.5,
-                        fontSize: "11px",
-                        borderRadius: "2px",
-                        backgroundColor: getScheduleColor(schedule.customerUid),
-                        cursor: "pointer",
-                        border: "1px solid rgba(0, 0, 0, 0.1)",
-                        "&:hover": {
-                          opacity: 0.8,
-                        },
-                      }}
-                    >
-                      <Typography variant="caption" sx={{ fontSize: "10px" }}>
-                        {dayjs(schedule.startDate).format("HH:mm")}
-                      </Typography>
-                      <Typography
-                        variant="caption"
+                  {daySchedules
+                    .slice(0, WEEKLY_SCHEDULE_MAX_ITEMS_PER_DAY)
+                    .map((schedule) => (
+                      <Box
+                        key={schedule.uid}
+                        onClick={() => handleScheduleClick(schedule)}
                         sx={{
-                          fontSize: "10px",
-                          display: "block",
-                          overflow: "hidden",
-                          textOverflow: "ellipsis",
-                          whiteSpace: "nowrap",
+                          p: 0.5,
+                          fontSize: "11px",
+                          borderRadius: "2px",
+                          backgroundColor: getScheduleColor(
+                            schedule.customerUid
+                          ),
+                          cursor: "pointer",
+                          border: "1px solid rgba(0, 0, 0, 0.1)",
+                          "&:hover": {
+                            opacity: 0.8,
+                          },
                         }}
                       >
-                        {schedule.title}
-                      </Typography>
-                    </Box>
-                  ))}
+                        <Typography variant="caption" sx={{ fontSize: "10px" }}>
+                          {dayjs(schedule.startDate).format("HH:mm")}
+                        </Typography>
+                        <Typography
+                          variant="caption"
+                          sx={{
+                            fontSize: "10px",
+                            display: "block",
+                            overflow: "hidden",
+                            textOverflow: "ellipsis",
+                            whiteSpace: "nowrap",
+                          }}
+                        >
+                          {schedule.title}
+                        </Typography>
+                      </Box>
+                    ))}
                   {daySchedules.length > WEEKLY_SCHEDULE_MAX_ITEMS_PER_DAY && (
                     <Button
                       size="small"
@@ -168,7 +172,8 @@ const WeeklyScheduleCalendar: React.FC<WeeklyScheduleCalendarProps> = ({
                         p: 0.5,
                       }}
                     >
-                      +{daySchedules.length - WEEKLY_SCHEDULE_MAX_ITEMS_PER_DAY}개 더보기
+                      +{daySchedules.length - WEEKLY_SCHEDULE_MAX_ITEMS_PER_DAY}
+                      개 더보기
                     </Button>
                   )}
                 </Box>

@@ -197,7 +197,7 @@ export const renderLabelsColumn = (
     field: keyof Customer,
     value: EditableFields
   ) => void,
-  onCreateLabel?: (name: string) => Promise<void>,
+  onCreateLabel?: (name: string) => Promise<Label>,
   inputValue?: string,
   onInputChange?: (value: string) => void
 ) => {
@@ -301,15 +301,11 @@ export const renderLabelsColumn = (
                     } else {
                       if (onCreateLabel) {
                         onCreateLabel(currentInputValue)
-                          .then(() => {
+                          .then((createdLabel) => {
                             const currentLabels = editingCustomer.labels || [];
-                            const newLabel: Label = {
-                              uid: Date.now() + Math.random(),
-                              name: currentInputValue,
-                            };
                             onEditChange(customer.uid, "labels", [
                               ...currentLabels,
-                              newLabel,
+                              createdLabel,
                             ]);
                             onInputChange?.("");
                           })

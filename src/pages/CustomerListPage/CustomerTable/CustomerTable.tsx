@@ -72,16 +72,18 @@ const CustomerTable = ({
     loadLabels();
   }, []);
 
-  const handleCreateLabel = async (name: string): Promise<void> => {
+  const handleCreateLabel = async (name: string): Promise<Label> => {
     try {
-      await createLabel(name);
+      const newLabel = await createLabel(name);
 
-      const updatedLabels = await fetchLabelsApi();
-      setAvailableLabels(updatedLabels);
+      setAvailableLabels((prev) => [...prev, newLabel]);
+
       showToast({
         message: `라벨 "${name}"을 생성했습니다.`,
         type: "success",
       });
+
+      return newLabel;
     } catch (error) {
       console.error("Failed to create label:", error);
       showToast({

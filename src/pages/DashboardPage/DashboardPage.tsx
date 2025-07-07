@@ -43,11 +43,11 @@ const DashboardPage = () => {
         />
 
         {/* 메인 컨텐츠 영역 */}
-        <div className="flex flex-col gap-6 h-[calc(100vh-300px)]">
+        <div className="flex flex-col gap-6">
           {/* 상단 영역 - 주간 일정과 설문 목록 */}
-          <div className="flex flex-col lg:flex-row gap-6 flex-1">
+          <div className="flex flex-col lg:flex-row gap-6">
             {/* 왼쪽 - 주간 일정 캘린더 */}
-            <div className="flex-1 lg:flex-[2] flex flex-col">
+            <div className="flex-1 lg:flex-[2] flex flex-col min-h-[400px]">
               <WeeklyScheduleCalendar
                 schedules={dashboardData.schedules}
                 handlePrevWeek={dashboardData.handlePrevWeek}
@@ -72,7 +72,7 @@ const DashboardPage = () => {
           </div>
 
           {/* 하단 영역 - 상담 목록과 계약 목록을 한 줄로 */}
-          <div className="flex flex-col md:flex-row gap-6 min-h-[400px]">
+          <div className="flex flex-col md:flex-row gap-6">
             {/* 상담 목록 */}
             <div className="flex-1 min-h-[400px]">
               <CounselList

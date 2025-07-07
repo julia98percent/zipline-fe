@@ -81,12 +81,13 @@ const CounselList: React.FC<CounselListProps> = ({
   return (
     <Card
       sx={{
-        flex: 1,
         display: "flex",
         flexDirection: "column",
         boxShadow: "0 2px 6px rgba(0, 0, 0, 0.05)",
         borderRadius: "6px",
         backgroundColor: "#fff",
+        minHeight: "400px",
+        height: "fit-content",
       }}
     >
       <Box

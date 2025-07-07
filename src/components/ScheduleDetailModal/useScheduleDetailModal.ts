@@ -38,7 +38,6 @@ export const useScheduleDetailModal = ({
   const [endTime, setEndTime] = useState("00:00");
   const [customerOptions, setCustomerOptions] = useState<Customer[]>([]);
 
-  // Initialize form data when schedule changes
   useEffect(() => {
     if (schedule) {
       setEditingSchedule(schedule);
@@ -63,7 +62,6 @@ export const useScheduleDetailModal = ({
     }
   }, [schedule]);
 
-  // Fetch customer options
   useEffect(() => {
     const fetchCustomers = async () => {
       try {

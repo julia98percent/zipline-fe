@@ -39,6 +39,7 @@ interface ScheduleViewProps {
   state: {
     isAddModalOpen: boolean;
     isDetailModalOpen: boolean;
+    isEditMode: boolean;
     selectedSchedule: Schedule | null;
     schedules: Schedule[];
     isUpdating: boolean;
@@ -51,6 +52,7 @@ interface ScheduleViewProps {
     handleCloseModal: () => void;
     handleScheduleClick: (clickInfo: EventClickArg) => void;
     handleCloseDetailModal: () => void;
+    handleEditClick: () => void;
     handleSubmitSchedule: (formData: ScheduleFormData) => Promise<void>;
     handleUpdateSchedule: (updatedSchedule: Schedule) => Promise<void>;
   };
@@ -60,6 +62,7 @@ const ScheduleView = ({ state, handlers }: ScheduleViewProps) => {
   const {
     isAddModalOpen,
     isDetailModalOpen,
+    isEditMode,
     selectedSchedule,
     isUpdating,
     dayMaxEvents,
@@ -72,6 +75,7 @@ const ScheduleView = ({ state, handlers }: ScheduleViewProps) => {
     handleCloseModal,
     handleScheduleClick,
     handleCloseDetailModal,
+    handleEditClick,
     handleSubmitSchedule,
     handleUpdateSchedule,
   } = handlers;
@@ -370,7 +374,9 @@ const ScheduleView = ({ state, handlers }: ScheduleViewProps) => {
         onClose={handleCloseDetailModal}
         schedule={selectedSchedule}
         onSave={handleUpdateSchedule}
+        onEdit={handleEditClick}
         isUpdating={isUpdating}
+        isEditMode={isEditMode}
       />
     </Box>
   );

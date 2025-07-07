@@ -38,6 +38,7 @@ interface ScheduleFormData {
 const SchedulePage = () => {
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
   const [isDetailModalOpen, setIsDetailModalOpen] = useState(false);
+  const [isEditMode, setIsEditMode] = useState(false);
   const [selectedSchedule, setSelectedSchedule] = useState<Schedule | null>(
     null
   );
@@ -107,15 +108,21 @@ const SchedulePage = () => {
     );
     if (schedule) {
       setSelectedSchedule(schedule);
+      setIsEditMode(false);
       setIsDetailModalOpen(true);
     }
   };
 
   const handleCloseDetailModal = () => {
     setIsDetailModalOpen(false);
+    setIsEditMode(false);
     setTimeout(() => {
       setSelectedSchedule(null);
     }, 200);
+  };
+
+  const handleEditClick = () => {
+    setIsEditMode(true);
   };
 
   const handleSubmitSchedule = async (formData: ScheduleFormData) => {
@@ -152,15 +159,16 @@ const SchedulePage = () => {
             schedule.uid === updatedSchedule.uid ? updatedSchedule : schedule
           )
         );
-        handleCloseDetailModal();
+        setSelectedSchedule(updatedSchedule);
+        setIsEditMode(false);
         showToast({
-          message: result.message || "",
+          message: result.message || "일정 정보를 수정했습니다.",
           type: "success",
         });
       } else {
         console.error("Update failed:", result.message);
         showToast({
-          message: result.message || "",
+          message: result.message || "일정 수정에 실패했습니다.",
           type: "error",
         });
       }
@@ -213,6 +221,7 @@ const SchedulePage = () => {
     state: {
       isAddModalOpen,
       isDetailModalOpen,
+      isEditMode,
       selectedSchedule,
       schedules,
       isUpdating,
@@ -225,6 +234,7 @@ const SchedulePage = () => {
       handleCloseModal,
       handleScheduleClick,
       handleCloseDetailModal,
+      handleEditClick,
       handleSubmitSchedule,
       handleUpdateSchedule,
     },

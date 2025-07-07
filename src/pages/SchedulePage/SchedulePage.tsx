@@ -10,6 +10,7 @@ import {
 } from "@apis/scheduleService";
 import ScheduleView from "./ScheduleView";
 import { SCHEDULE_ERROR_MESSAGES } from "@constants/clientErrorMessage";
+import { DAY_MAX_EVENTS } from "@constants/schedule";
 
 interface CalendarEvent {
   id: string;
@@ -225,7 +226,7 @@ const SchedulePage = () => {
       selectedSchedule,
       schedules,
       isUpdating,
-      dayMaxEvents,
+      dayMaxEvents: DAY_MAX_EVENTS,
       events,
     },
     handlers: {

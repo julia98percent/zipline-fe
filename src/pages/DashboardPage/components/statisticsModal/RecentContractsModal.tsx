@@ -244,7 +244,6 @@ const RecentContractsModal = ({ open, onClose }: RecentContractsModalProps) => {
           handleChangeRowsPerPage={(e) =>
             handleRowsPerPageChange(parseInt(e.target.value, 10))
           }
-          rowsPerPageOptions={[10, 25, 50]}
           isLoading={loading}
           noDataMessage="계약 데이터가 없습니다"
         />

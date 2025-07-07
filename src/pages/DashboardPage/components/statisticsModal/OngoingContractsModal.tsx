@@ -236,7 +236,6 @@ const OngoingContractsModal = ({
           handleChangeRowsPerPage={(e) =>
             handleRowsPerPageChange(parseInt(e.target.value, 10))
           }
-          rowsPerPageOptions={[10, 25, 50]}
           isLoading={loading}
           noDataMessage="진행중인 계약이 없습니다"
         />

@@ -4,12 +4,13 @@ import { fetchCounselList } from "@apis/counselService";
 import { showToast } from "@components/Toast/Toast";
 import CounselListPageView from "./CounselListPageView";
 import { Counsel } from "@ts/counsel";
+import { DEFAULT_ROWS_PER_PAGE } from "@components/Table/Table";
 
 function CounselListPage() {
   const navigate = useNavigate();
   const [counsels, setCounsels] = useState<Counsel[]>([]);
   const [page, setPage] = useState(0);
-  const [rowsPerPage, setRowsPerPage] = useState(10);
+  const [rowsPerPage, setRowsPerPage] = useState(DEFAULT_ROWS_PER_PAGE);
   const [totalElements, setTotalElements] = useState(0);
   const [isLoading, setIsLoading] = useState(true);
   const [isModalOpen, setIsModalOpen] = useState(false);

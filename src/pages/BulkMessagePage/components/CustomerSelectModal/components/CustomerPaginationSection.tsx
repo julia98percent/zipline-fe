@@ -23,7 +23,6 @@ export default function CustomerPaginationSection({
       onPageChange={onPageChange}
       rowsPerPage={rowsPerPage}
       onRowsPerPageChange={onRowsPerPageChange}
-      rowsPerPageOptions={[10, 20, 50]}
       sx={{
         borderTop: 1,
         borderColor: "divider",

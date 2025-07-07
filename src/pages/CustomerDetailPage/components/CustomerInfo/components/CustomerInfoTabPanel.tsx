@@ -7,6 +7,7 @@ import { Contract } from "@ts/contract";
 import { TabType, TabState } from "../CustomerInfo";
 import { RowData } from "@components/Table";
 import { Property, PropertyType } from "@ts/property";
+import { DEFAULT_ROWS_PER_PAGE } from "@components/Table/Table";
 
 interface CustomerInfoTabPanelProps {
   tabType: TabType;
@@ -76,7 +77,9 @@ const CustomerInfoTabPanel = ({
             counselList={consultationData}
             totalCount={consultationState?.totalCount || 0}
             page={consultationState?.page || 0}
-            rowsPerPage={consultationState?.rowsPerPage || 10}
+            rowsPerPage={
+              consultationState?.rowsPerPage || DEFAULT_ROWS_PER_PAGE
+            }
             onPageChange={onConsultationPageChange || (() => {})}
             onRowsPerPageChange={onConsultationRowsPerPageChange || (() => {})}
             loading={consultationState?.loading || false}
@@ -88,7 +91,7 @@ const CustomerInfoTabPanel = ({
             properties={propertyData}
             totalCount={propertyState?.totalCount || 0}
             page={propertyState?.page || 0}
-            rowsPerPage={propertyState?.rowsPerPage || 10}
+            rowsPerPage={propertyState?.rowsPerPage || DEFAULT_ROWS_PER_PAGE}
             onPageChange={onPropertyPageChange || (() => {})}
             onRowsPerPageChange={onPropertyRowsPerPageChange || (() => {})}
             loading={propertyState?.loading || false}
@@ -100,7 +103,7 @@ const CustomerInfoTabPanel = ({
             contractList={contractData}
             totalCount={contractState?.totalCount || 0}
             page={contractState?.page || 0}
-            rowsPerPage={contractState?.rowsPerPage || 10}
+            rowsPerPage={contractState?.rowsPerPage || DEFAULT_ROWS_PER_PAGE}
             onPageChange={onContractPageChange || (() => {})}
             onRowsPerPageChange={onContractRowsPerPageChange || (() => {})}
             loading={contractState?.loading || false}

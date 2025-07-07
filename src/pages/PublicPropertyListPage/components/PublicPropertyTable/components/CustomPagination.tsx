@@ -7,6 +7,7 @@ import {
   Typography,
 } from "@mui/material";
 import SearchIcon from "@mui/icons-material/Search";
+import { ROWS_PER_PAGE_OPTIONS } from "@components/Table/Table";
 
 interface Props {
   pageInput: string;
@@ -89,7 +90,7 @@ const CustomPagination = ({
         rowsPerPage={rowsPerPage}
         onPageChange={onPageChange}
         onRowsPerPageChange={onRowsPerPageChange}
-        rowsPerPageOptions={[10, 25, 50]}
+        rowsPerPageOptions={ROWS_PER_PAGE_OPTIONS}
         labelRowsPerPage="페이지당 행 수"
         labelDisplayedRows={({ from, to, count }) =>
           `${count}개 중 ${from}-${to}개`

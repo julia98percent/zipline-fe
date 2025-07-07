@@ -43,10 +43,11 @@ interface Props<T extends RowData> {
   noDataMessage?: string;
   sx?: SxProps;
   pagination?: boolean;
-  rowsPerPageOptions?: number[];
   stickyHeader?: boolean;
   maxHeight?: string | number;
 }
+
+export const ROWS_PER_PAGE_OPTIONS = [10, 25, 50];
 
 function Table<T extends RowData>({
   isLoading = false,
@@ -62,7 +63,6 @@ function Table<T extends RowData>({
   noDataMessage = "데이터가 없습니다.",
   sx,
   pagination = true,
-  rowsPerPageOptions = [10, 25, 50],
   stickyHeader = false,
   maxHeight,
 }: Props<T>) {
@@ -160,7 +160,7 @@ function Table<T extends RowData>({
           onPageChange={handleChangePage}
           rowsPerPage={rowsPerPage}
           onRowsPerPageChange={handleChangeRowsPerPage}
-          rowsPerPageOptions={rowsPerPageOptions}
+          rowsPerPageOptions={ROWS_PER_PAGE_OPTIONS}
           labelRowsPerPage="페이지당 행 수"
           labelDisplayedRows={({ from, to, count }) =>
             `${count}개 중 ${from}-${to}개`

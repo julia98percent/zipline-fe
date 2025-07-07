@@ -296,7 +296,6 @@ const CustomerTable = ({
         rowsPerPage={rowsPerPage}
         handleChangeRowsPerPage={(e) => setRowsPerPage(Number(e.target.value))}
         noDataMessage="고객 데이터가 없습니다"
-        rowsPerPageOptions={[10, 25, 50, 100]}
       />
       <DeleteConfirmModal
         open={deleteModalOpen}

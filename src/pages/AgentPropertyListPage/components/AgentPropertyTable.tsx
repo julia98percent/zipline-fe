@@ -177,7 +177,6 @@ const AgentPropertyTable = ({
       handleChangeRowsPerPage={handleChangeRowsPerPage}
       handleRowClick={onRowClick ? handleRowClick : undefined}
       pagination={true}
-      rowsPerPageOptions={[5, 10, 25, 50]}
     />
   );
 };

@@ -88,7 +88,6 @@ const CounselTable = ({
       handleChangeRowsPerPage={onRowsPerPageChange}
       noDataMessage="상담 내역이 없습니다."
       pagination={true}
-      rowsPerPageOptions={[10, 25, 50]}
       sx={{
         borderRadius: "8px",
         boxShadow: "0 2px 6px rgba(0, 0, 0, 0.05)",

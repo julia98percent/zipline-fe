@@ -91,7 +91,7 @@ const PageHeader = ({ title }: PageHeaderProps) => {
   useEffect(() => {
     const loadNotifications = async () => {
       try {
-        if (!notificationList || notificationList.length === 0) {
+        if (!notificationList) {
           const notifications = await fetchNotifications();
           setNotificationList(notifications);
         }

@@ -29,3 +29,16 @@ export interface PaginationBase {
 export type PaginatedResponse<K extends string, T> = {
   [P in K]: T;
 } & PaginationBase;
+
+export interface CursorPaginationBase {
+  firstPage: boolean;
+  hasNext: boolean;
+  hasPrevious: boolean;
+  lastPage: boolean;
+  nextCursorId: string | null;
+  prevCursorId: string | null;
+}
+
+export type CursorPaginatedResponse<K extends string, T> = {
+  [P in K]: T;
+} & CursorPaginationBase;

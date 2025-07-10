@@ -1,11 +1,7 @@
 import { Box } from "@mui/material";
 import { PublicPropertyItem } from "@ts/property";
 import Table, { ColumnConfig, RowData } from "@components/Table";
-import {
-  CustomPagination,
-  PropertyCellRenderer,
-  SortableHeader,
-} from "./components";
+import { PropertyCellRenderer, SortableHeader } from "./components";
 
 interface Props {
   propertyList: PublicPropertyItem[];

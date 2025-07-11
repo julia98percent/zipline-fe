@@ -135,7 +135,7 @@ function Table<T extends RowData>({
             ) : (
               bodyList.map((rowData: T, index: number) => (
                 <TableRow
-                  key={rowData.id}
+                  key={rowData.id + `${index}`}
                   hover
                   onClick={(event) => {
                     handleRowClick?.(rowData, index, event);

@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useMemo } from "react";
 import {
   Box,
   Card,
@@ -12,6 +12,7 @@ import { formatDate } from "@utils/dateUtil";
 import { Contract } from "@ts/contract";
 import Table, { ColumnConfig } from "@components/Table";
 import HelpOutlineIcon from "@mui/icons-material/HelpOutline";
+import dayjs from "dayjs";
 
 interface ContractListProps {
   contractTab: "expiring" | "recent";
@@ -29,7 +30,42 @@ const ContractList = ({
   contractLoading,
   handleContractTabChange,
 }: ContractListProps) => {
-  // 컬럼 설정
+  const filteredAndSortedContracts = useMemo(() => {
+    if (!currentContractList || currentContractList.length === 0) {
+      return [];
+    }
+
+    let processedContracts = [...currentContractList];
+
+    if (contractTab === "expiring") {
+      const sixMonthsFromNow = dayjs().add(6, "month");
+
+      processedContracts = processedContracts
+        .filter((contract) => {
+          if (!contract.contractEndDate) return false;
+
+          const endDate = dayjs(contract.contractEndDate);
+          const now = dayjs();
+
+          return endDate.isAfter(now) && endDate.isBefore(sixMonthsFromNow);
+        })
+        .sort((a, b) => {
+          if (!a.contractEndDate || !b.contractEndDate) return 0;
+          return dayjs(a.contractEndDate).diff(dayjs(b.contractEndDate));
+        });
+    } else if (contractTab === "recent") {
+      processedContracts = processedContracts.sort((a, b) => {
+        if (!a.contractDate && !b.contractDate) return 0;
+        if (!a.contractDate) return 1;
+        if (!b.contractDate) return -1;
+
+        return dayjs(b.contractDate).diff(dayjs(a.contractDate));
+      });
+    }
+
+    return processedContracts;
+  }, [currentContractList, contractTab]);
+
   const columns: ColumnConfig<Contract>[] = [
     {
       key: "lessorOrSellerNames",
@@ -45,28 +81,46 @@ const ContractList = ({
     },
     {
       key: "contractEndDate",
-      label: "종료일",
+      label: contractTab === "expiring" ? "종료일" : "계약일",
       align: "left",
-      render: (_, contract) =>
-        contract.contractEndDate ? formatDate(contract.contractEndDate) : "-",
+      render: (_, contract) => {
+        if (contractTab === "expiring") {
+          return contract.contractEndDate
+            ? formatDate(contract.contractEndDate)
+            : "-";
+        } else {
+          return contract.contractDate
+            ? formatDate(contract.contractDate)
+            : "-";
+        }
+      },
     },
   ];
 
   // 테이블 데이터 변환 (uid를 id로 매핑)
-  const tableData = currentContractList.map((contract) => ({
+  const tableData = filteredAndSortedContracts.map((contract) => ({
     id: contract.uid,
     ...contract,
   }));
 
+  const getNoDataMessage = () => {
+    if (contractTab === "expiring") {
+      return "6개월 이내 만료 예정인 계약이 없습니다";
+    } else {
+      return "최근 계약이 없습니다";
+    }
+  };
+
   return (
     <Card
       sx={{
-        flex: 1,
         display: "flex",
         flexDirection: "column",
-        boxShadow: "0 2px 6px rgba(0, 0, 0, 0.05)",
         borderRadius: "6px",
         backgroundColor: "#fff",
+        minHeight: "400px",
+        height: "fit-content",
+        boxShadow: "none",
       }}
     >
       <Box
@@ -97,23 +151,38 @@ const ContractList = ({
               fontSize: "14px",
               padding: "6px 12px",
             },
+            "& .MuiTabs-indicator": {
+              backgroundColor: "primary.main",
+            },
           }}
         >
           <Tab
             label={
               <div className="flex items-center gap-1">
-                <p>만료 예정 계약</p>
+                <p style={{ color: "inherit" }}>만료 예정 계약</p>
                 <Tooltip title="6개월 이내 만료 예정인 계약이 표시됩니다.">
-                  <HelpOutlineIcon
-                    sx={{ fontSize: 16, color: "text.secondary" }}
-                  />
+                  <HelpOutlineIcon sx={{ fontSize: 16, color: "inherit" }} />
                 </Tooltip>
               </div>
             }
             value="expiring"
-            sx={{ fontSize: "13px" }}
+            sx={{
+              fontSize: "13px",
+              "&.Mui-selected": {
+                color: "primary.main",
+              },
+            }}
           />
-          <Tab label="최근 계약" value="recent" sx={{ fontSize: "13px" }} />
+          <Tab
+            label="최근 계약"
+            value="recent"
+            sx={{
+              fontSize: "13px",
+              "&.Mui-selected": {
+                color: "primary.main",
+              },
+            }}
+          />
         </Tabs>
       </Box>
       <Box sx={{ flex: 1, overflow: "auto" }}>
@@ -133,7 +202,7 @@ const ContractList = ({
             columns={columns}
             bodyList={tableData}
             pagination={false}
-            noDataMessage="계약이 없습니다"
+            noDataMessage={getNoDataMessage()}
             sx={{
               "& .MuiTableCell-head": {
                 fontSize: "13px",
@@ -147,6 +216,7 @@ const ContractList = ({
               "& .MuiTableRow-root:hover": {
                 backgroundColor: "rgba(22, 79, 158, 0.04)",
               },
+              boxShadow: "none",
             }}
           />
         )}

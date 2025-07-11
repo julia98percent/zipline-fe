@@ -1,6 +1,5 @@
-import { Box } from "@mui/material";
-import "./DashboardPage.css";
 import PageHeader from "@components/PageHeader/PageHeader";
+import { useOutletContext } from "react-router-dom";
 import { useDashboard } from "./useDashboard";
 import StatisticsCards from "./components/StatisticsCards";
 import WeeklyScheduleCalendar from "./components/WeeklyScheduleCalendar";
@@ -11,22 +10,19 @@ import {
   DashboardModals,
 } from "./components";
 
+interface OutletContext {
+  onMobileMenuToggle: () => void;
+}
+
 const DashboardPage = () => {
+  const { onMobileMenuToggle } = useOutletContext<OutletContext>();
   const dashboardData = useDashboard();
 
   return (
-    <Box
-      sx={{
-        flexGrow: 1,
-        height: "100vh",
-        overflow: "auto",
-        backgroundColor: "#f5f5f5",
-        p: 0,
-      }}
-    >
-      <PageHeader title="대시보드" />
+    <div className="flex-1 h-screen overflow-auto bg-gray-100 p-0">
+      <PageHeader title="대시보드" onMobileMenuToggle={onMobileMenuToggle} />
 
-      <Box sx={{ p: 3, pt: 0 }}>
+      <div className="p-6 pt-0">
         {/* 통계 카드 영역 */}
         <StatisticsCards
           recentCustomers={dashboardData.recentCustomers}
@@ -47,31 +43,11 @@ const DashboardPage = () => {
         />
 
         {/* 메인 컨텐츠 영역 */}
-        <Box
-          sx={{
-            display: "flex",
-            flexDirection: "column",
-            gap: 3,
-            height: "calc(100vh - 300px)",
-          }}
-        >
+        <div className="flex flex-col gap-6">
           {/* 상단 영역 - 주간 일정과 설문 목록 */}
-          <Box
-            sx={{
-              display: "flex",
-              flexDirection: { xs: "column", lg: "row" },
-              gap: 3,
-              flex: 1,
-            }}
-          >
+          <div className="flex flex-col xl:flex-row gap-6">
             {/* 왼쪽 - 주간 일정 캘린더 */}
-            <Box
-              sx={{
-                flex: { xs: "1", lg: "2" },
-                display: "flex",
-                flexDirection: "column",
-              }}
-            >
+            <div className="flex-1 md:flex-[2] flex flex-col min-h-[400px] xl:w-full">
               <WeeklyScheduleCalendar
                 schedules={dashboardData.schedules}
                 handlePrevWeek={dashboardData.handlePrevWeek}
@@ -84,40 +60,21 @@ const DashboardPage = () => {
                 handleMoreClick={dashboardData.handleMoreClick}
                 onViewAllSchedules={dashboardData.handleViewAllSchedules}
               />
-            </Box>
+            </div>
 
             {/* 오른쪽 - 신규 설문 목록 */}
-            <Box
-              sx={{
-                flex: { xs: "1", lg: "1" },
-                display: "flex",
-                flexDirection: "column",
-                minHeight: "400px",
-              }}
-            >
+            <div className="flex-1 lg:flex-1 flex flex-col min-h-[400px]">
               <SurveyList
                 surveyResponses={dashboardData.surveyResponses}
                 handleSurveyClick={dashboardData.handleSurveyClick}
               />
-            </Box>
-          </Box>
+            </div>
+          </div>
 
           {/* 하단 영역 - 상담 목록과 계약 목록을 한 줄로 */}
-          <Box
-            sx={{
-              display: "flex",
-              flexDirection: { xs: "column", md: "row" },
-              gap: 3,
-              minHeight: "400px",
-            }}
-          >
+          <div className="flex flex-col md:flex-row gap-6">
             {/* 상담 목록 */}
-            <Box
-              sx={{
-                flex: 1,
-                minHeight: "400px",
-              }}
-            >
+            <div className="flex-1 min-h-[400px]">
               <CounselList
                 counselTab={dashboardData.counselTab}
                 currentCounselList={dashboardData.currentCounselList}
@@ -125,25 +82,20 @@ const DashboardPage = () => {
                 handleCounselTabChange={dashboardData.handleCounselTabChange}
                 handleCounselClick={dashboardData.handleCounselClick}
               />
-            </Box>
+            </div>
 
             {/* 계약 목록 */}
-            <Box
-              sx={{
-                flex: 1,
-                minHeight: "400px",
-              }}
-            >
+            <div className="flex-1 min-h-[400px]">
               <ContractList
                 contractTab={dashboardData.contractTab}
                 currentContractList={dashboardData.currentContractList}
                 contractLoading={dashboardData.contractLoading}
                 handleContractTabChange={dashboardData.handleContractTabChange}
               />
-            </Box>
-          </Box>
-        </Box>
-      </Box>
+            </div>
+          </div>
+        </div>
+      </div>
 
       {/* 모든 모달들 */}
       <DashboardModals
@@ -173,7 +125,7 @@ const DashboardPage = () => {
         completedContractsOpen={dashboardData.completedContractsOpen}
         setCompletedContractsOpen={dashboardData.setCompletedContractsOpen}
       />
-    </Box>
+    </div>
   );
 };
 

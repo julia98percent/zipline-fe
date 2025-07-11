@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { useNavigate, useParams } from "react-router-dom";
+import { useNavigate, useParams, useOutletContext } from "react-router-dom";
 import dayjs from "dayjs";
 import { showToast } from "@components/Toast";
 import CounselDetailPageView from "./CounselDetailPageView";
@@ -13,7 +13,12 @@ import {
 } from "@apis/counselService";
 import { COUNSEL_ERROR_MESSAGES } from "@constants/clientErrorMessage";
 
+interface OutletContext {
+  onMobileMenuToggle: () => void;
+}
+
 function CounselDetailPage() {
+  const { onMobileMenuToggle } = useOutletContext<OutletContext>();
   const { counselUid } = useParams();
   const navigate = useNavigate();
 
@@ -153,6 +158,7 @@ function CounselDetailPage() {
       onDeleteClick={handleDeleteClick}
       onDeleteCancel={handleDeleteCancel}
       onDeleteConfirm={handleDeleteConfirm}
+      onMobileMenuToggle={onMobileMenuToggle}
     />
   );
 }

@@ -1,5 +1,6 @@
 import { useEffect, useState, useCallback } from "react";
 import { SelectChangeEvent } from "@mui/material";
+import { useOutletContext } from "react-router-dom";
 import AgentPropertyListPageView from "./AgentPropertyListPageView";
 import {
   searchAgentProperties,
@@ -10,6 +11,10 @@ import { Property, PropertyType, PropertyCategoryType } from "@ts/property";
 import { Region } from "@ts/region";
 import { showToast } from "@components/Toast";
 import { DEFAULT_ROWS_PER_PAGE } from "@components/Table/Table";
+
+interface OutletContext {
+  onMobileMenuToggle: () => void;
+}
 
 const DEFAULT_SEARCH_PARAMS: AgentPropertySearchParams = {
   page: 0,
@@ -34,6 +39,8 @@ const TYPE_OPTIONS = [
 ];
 
 function AgentPropertyListPage() {
+  const { onMobileMenuToggle } = useOutletContext<OutletContext>();
+
   // 상태 관리
   const [loading, setLoading] = useState(false);
   const [agentPropertyList, setAgentPropertyList] = useState<Property[]>([]);
@@ -317,6 +324,7 @@ function AgentPropertyListPage() {
       showAddPropertyModal={showAddPropertyModal}
       onCloseAddPropertyModal={handleCloseAddPropertyModal}
       onSaveProperty={handleSaveProperty}
+      onMobileMenuToggle={onMobileMenuToggle}
     />
   );
 }

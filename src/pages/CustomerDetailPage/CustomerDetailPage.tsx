@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback } from "react";
-import { useParams, useNavigate } from "react-router-dom";
+import { useParams, useNavigate, useOutletContext } from "react-router-dom";
 import {
   fetchCustomerDetail,
   updateCustomer,
@@ -13,7 +13,12 @@ import CustomerDetailPageView from "./CustomerDetailPageView";
 import { Customer, CustomerUpdateData, Label } from "@ts/customer";
 import { API_ERROR_MESSAGES } from "@ts/apiResponse";
 
+interface OutletContext {
+  onMobileMenuToggle: () => void;
+}
+
 const CustomerDetailPage = () => {
+  const { onMobileMenuToggle } = useOutletContext<OutletContext>();
   const { customerId } = useParams();
   const navigate = useNavigate();
   const [loading, setLoading] = useState(true);
@@ -252,6 +257,7 @@ const CustomerDetailPage = () => {
       onCreateLabel={handleCreateLabel}
       labelInputValue={labelInputValue}
       onLabelInputChange={setLabelInputValue}
+      onMobileMenuToggle={onMobileMenuToggle}
     />
   );
 };

@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { Outlet, Navigate } from "react-router-dom";
 import NavigationBar from "@components/NavigationBar";
 import { Box, CircularProgress } from "@mui/material";
@@ -8,6 +8,15 @@ import { SSEProvider } from "@context/SSEContext";
 
 const PrivateRoute = () => {
   const { user, isSignedIn, checkAuth } = useAuthStore();
+  const [mobileOpen, setMobileOpen] = useState(false);
+
+  const handleMobileMenuToggle = () => {
+    setMobileOpen(!mobileOpen);
+  };
+
+  const handleMobileClose = () => {
+    setMobileOpen(false);
+  };
 
   useEffect(() => {
     if (isSignedIn === null) {
@@ -50,9 +59,19 @@ const PrivateRoute = () => {
           height: "100vh",
         }}
       >
-        <NavigationBar />
-        <Box sx={{ width: "100%", backgroundColor: "#f5f5f5", flex: 1 }}>
-          <Outlet />
+        <NavigationBar
+          mobileOpen={mobileOpen}
+          onMobileClose={handleMobileClose}
+        />
+        <Box
+          sx={{
+            backgroundColor: "#f5f5f5",
+            flex: 1,
+            minWidth: 0,
+            overflowX: "hidden",
+          }}
+        >
+          <Outlet context={{ onMobileMenuToggle: handleMobileMenuToggle }} />
         </Box>
       </Box>
     </SSEProvider>

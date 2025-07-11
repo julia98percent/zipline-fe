@@ -24,6 +24,7 @@ interface BulkMessagePageProps {
   onRemoveCustomer: (index: number) => void;
   onSendMessage: () => void;
   onCloseCustomerModal: () => void;
+  onMobileMenuToggle?: () => void;
 }
 
 const BulkMessagePage = ({
@@ -40,6 +41,7 @@ const BulkMessagePage = ({
   onRemoveCustomer,
   onSendMessage,
   onCloseCustomerModal,
+  onMobileMenuToggle,
 }: BulkMessagePageProps) => {
   const [toast, setToast] = useState<{
     open: boolean;
@@ -56,7 +58,10 @@ const BulkMessagePage = ({
         backgroundColor: "#f5f5f5",
       }}
     >
-      <PageHeader title="단체 문자 발송" />
+      <PageHeader
+        title="단체 문자 발송"
+        onMobileMenuToggle={onMobileMenuToggle}
+      />
 
       <Box sx={{ p: 3, display: "flex", gap: "28px" }}>
         {/* 왼쪽 영역: 문자 템플릿 선택 및 내용 */}

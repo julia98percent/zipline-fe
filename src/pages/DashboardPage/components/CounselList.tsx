@@ -72,7 +72,6 @@ const CounselList: React.FC<CounselListProps> = ({
     },
   ];
 
-  // 테이블 데이터 변환 (counselUid를 id로 매핑)
   const tableData = currentCounselList.map((counsel) => ({
     id: counsel.counselUid,
     ...counsel,
@@ -81,12 +80,13 @@ const CounselList: React.FC<CounselListProps> = ({
   return (
     <Card
       sx={{
-        flex: 1,
         display: "flex",
         flexDirection: "column",
         boxShadow: "0 2px 6px rgba(0, 0, 0, 0.05)",
         borderRadius: "6px",
         backgroundColor: "#fff",
+        minHeight: "400px",
+        height: "fit-content",
       }}
     >
       <Box
@@ -117,24 +117,39 @@ const CounselList: React.FC<CounselListProps> = ({
               fontSize: "14px",
               padding: "6px 12px",
             },
+            "& .MuiTabs-indicator": {
+              backgroundColor: "primary.main",
+            },
           }}
         >
           <Tab
             label={
               <div className="flex items-center gap-1">
-                <p>의뢰일 임박 순</p>
+                <p style={{ color: "inherit" }}>의뢰일 임박 순</p>
                 <Tooltip title="2주 이내 의뢰 마감 예정인 상담이 표시됩니다.">
-                  <HelpOutlineIcon
-                    sx={{ fontSize: 16, color: "text.secondary" }}
-                  />
+                  <HelpOutlineIcon sx={{ fontSize: 16, color: "inherit" }} />
                 </Tooltip>
               </div>
             }
             value="request"
-            sx={{ fontSize: "13px" }}
+            sx={{
+              fontSize: "13px",
+              "&.Mui-selected": {
+                color: "primary.main",
+              },
+            }}
           />
 
-          <Tab label="최신 순" value="latest" sx={{ fontSize: "13px" }} />
+          <Tab
+            label="최신 순"
+            value="latest"
+            sx={{
+              fontSize: "13px",
+              "&.Mui-selected": {
+                color: "primary.main",
+              },
+            }}
+          />
         </Tabs>
       </Box>
       <Box sx={{ flex: 1, overflow: "auto" }}>
@@ -155,7 +170,7 @@ const CounselList: React.FC<CounselListProps> = ({
             bodyList={tableData}
             handleRowClick={(counsel) => handleCounselClick(counsel.counselUid)}
             pagination={false}
-            noDataMessage="상담이 없습니다"
+            noDataMessage="마감 예정인 상담이 없습니다"
             sx={{
               "& .MuiTableCell-head": {
                 fontSize: "13px",
@@ -169,6 +184,7 @@ const CounselList: React.FC<CounselListProps> = ({
               "& .MuiTableRow-root:hover": {
                 backgroundColor: "rgba(22, 79, 158, 0.04)",
               },
+              boxShadow: "none",
             }}
           />
         )}

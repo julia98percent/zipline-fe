@@ -1,9 +1,14 @@
 import { SelectChangeEvent } from "@mui/material";
 import { useCallback, useEffect, useState, useRef } from "react";
+import { useOutletContext } from "react-router-dom";
 import { PublicPropertyItem, PublicPropertySearchParams } from "@ts/property";
 import { getPublicProperties } from "@apis/propertyService";
 import PublicPropertyListPageView from "./PublicPropertyListPageView";
 import { DEFAULT_ROWS_PER_PAGE } from "@components/Table/Table";
+
+interface OutletContext {
+  onMobileMenuToggle: () => void;
+}
 
 const INITIAL_SEARCH_PARAMS: PublicPropertySearchParams = {
   cursorId: null,
@@ -30,6 +35,7 @@ const PublicPropertyListPage = () => {
   const [hasNext, setHasNext] = useState<boolean>(true);
   const [cursorId, setCursorId] = useState<string | null>(null);
 
+  const { onMobileMenuToggle } = useOutletContext<OutletContext>();
   const [publicPropertyList, setPublicPropertyList] = useState<
     PublicPropertyItem[]
   >([]);
@@ -239,6 +245,7 @@ const PublicPropertyListPage = () => {
       onMetricToggle={handleMetricToggle}
       onFilterModalToggle={handleFilterModalToggle}
       onFilterModalClose={handleFilterModalClose}
+      onMobileMenuToggle={onMobileMenuToggle}
     />
   );
 };

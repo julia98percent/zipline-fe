@@ -1,9 +1,14 @@
 import { useState, useEffect, useCallback } from "react";
+import { useOutletContext } from "react-router-dom";
 import { Customer, CustomerFilter } from "@ts/customer";
 import { searchCustomers, updateCustomer } from "@apis/customerService";
 import { showToast } from "@components/Toast/Toast";
 import CustomerListPageView from "./CustomerListPageView";
 import { DEFAULT_ROWS_PER_PAGE } from "@components/Table/Table";
+
+interface OutletContext {
+  onMobileMenuToggle: () => void;
+}
 
 const INITIAL_FILTERS: CustomerFilter = {
   tenant: false,
@@ -23,6 +28,7 @@ const INITIAL_FILTERS: CustomerFilter = {
   noRole: false,
 };
 const CustomerListPage = () => {
+  const { onMobileMenuToggle } = useOutletContext<OutletContext>();
   const [loading, setLoading] = useState(true);
   const [customerList, setCustomerList] = useState<Customer[]>([]);
   const [totalCount, setTotalCount] = useState(0);
@@ -170,6 +176,7 @@ const CustomerListPage = () => {
       onCustomerUpdate={handleCustomerUpdate}
       onRefresh={() => fetchCustomerList(false)}
       onCustomerCreate={() => fetchCustomerList(true)}
+      onMobileMenuToggle={onMobileMenuToggle}
     />
   );
 };

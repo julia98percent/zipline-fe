@@ -45,6 +45,7 @@ interface CustomerListPageViewProps {
   onCustomerUpdate: (customer: Customer) => void;
   onRefresh: () => void;
   onCustomerCreate: () => void;
+  onMobileMenuToggle?: () => void;
 }
 
 const CustomerListPageView = ({
@@ -66,6 +67,7 @@ const CustomerListPageView = ({
   onCustomerUpdate,
   onRefresh,
   onCustomerCreate,
+  onMobileMenuToggle,
 }: CustomerListPageViewProps) => {
   if (loading) {
     return (
@@ -97,7 +99,7 @@ const CustomerListPageView = ({
         boxSizing: "border-box",
       }}
     >
-      <PageHeader title="고객 목록" />
+      <PageHeader title="고객 목록" onMobileMenuToggle={onMobileMenuToggle} />
 
       <Box
         sx={{

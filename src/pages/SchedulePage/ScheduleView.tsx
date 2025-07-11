@@ -56,9 +56,14 @@ interface ScheduleViewProps {
     handleSubmitSchedule: (formData: ScheduleFormData) => Promise<void>;
     handleUpdateSchedule: (updatedSchedule: Schedule) => Promise<void>;
   };
+  onMobileMenuToggle?: () => void;
 }
 
-const ScheduleView = ({ state, handlers }: ScheduleViewProps) => {
+const ScheduleView = ({
+  state,
+  handlers,
+  onMobileMenuToggle,
+}: ScheduleViewProps) => {
   const {
     isAddModalOpen,
     isDetailModalOpen,
@@ -89,7 +94,7 @@ const ScheduleView = ({ state, handlers }: ScheduleViewProps) => {
         backgroundColor: "#f5f5f5",
       }}
     >
-      <PageHeader title="일정" />
+      <PageHeader title="일정" onMobileMenuToggle={onMobileMenuToggle} />
 
       <Box sx={{ display: "flex", justifyContent: "flex-end", px: 3, mt: 2 }}>
         <Button

@@ -1,4 +1,5 @@
 import { useState, useEffect, useCallback } from "react";
+import { useOutletContext } from "react-router-dom";
 import PreCounselDetailModal from "@components/PreCounselDetailModal";
 import PageHeader from "@components/PageHeader";
 import PreCounselTable from "@components/PreCounselTable/PreCounselTable";
@@ -6,7 +7,12 @@ import { PreCounsel } from "@ts/counsel";
 import { fetchCounsels } from "@apis/counselService";
 import { DEFAULT_ROWS_PER_PAGE } from "@components/Table/Table";
 
+interface OutletContext {
+  onMobileMenuToggle: () => void;
+}
+
 function PreCounselListPage() {
+  const { onMobileMenuToggle } = useOutletContext<OutletContext>();
   const [counsels, setCounsels] = useState<PreCounsel[]>([]);
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(DEFAULT_ROWS_PER_PAGE);
@@ -55,7 +61,10 @@ function PreCounselListPage() {
 
   return (
     <div className="bg-[#f5f5f5]">
-      <PageHeader title="사전 상담 목록" />
+      <PageHeader
+        title="사전 상담 목록"
+        onMobileMenuToggle={onMobileMenuToggle}
+      />
       <div className="w-full p-5">
         <PreCounselTable
           counsels={counsels}

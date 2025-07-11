@@ -29,6 +29,7 @@ interface MessageTemplatePageViewProps {
   onOpenDeleteDialog: () => void;
   onDeleteTemplate: () => void;
   onCloseDeleteDialog: () => void;
+  onMobileMenuToggle?: () => void;
 }
 
 function MessageTemplatePageView({
@@ -51,6 +52,7 @@ function MessageTemplatePageView({
   onOpenDeleteDialog,
   onDeleteTemplate,
   onCloseDeleteDialog,
+  onMobileMenuToggle,
 }: MessageTemplatePageViewProps) {
   return (
     <Box
@@ -61,7 +63,7 @@ function MessageTemplatePageView({
         backgroundColor: "#f5f5f5",
       }}
     >
-      <PageHeader title="문자 템플릿" />
+      <PageHeader title="문자 템플릿" onMobileMenuToggle={onMobileMenuToggle} />
 
       <Box sx={{ p: 3, display: "flex", gap: "28px" }}>
         {/* 왼쪽 영역: 템플릿 목록과 변수 목록 */}

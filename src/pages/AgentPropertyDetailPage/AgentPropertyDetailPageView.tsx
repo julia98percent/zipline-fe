@@ -46,6 +46,7 @@ interface AgentPropertyDetailPageViewProps {
   onEditModalClose: () => void;
   onDeleteModalClose: () => void;
   onPropertyDataRefresh: () => void;
+  onMobileMenuToggle: () => void;
 }
 
 function AgentPropertyDetailPageView({
@@ -64,12 +65,16 @@ function AgentPropertyDetailPageView({
   onEditModalClose,
   onDeleteModalClose,
   onPropertyDataRefresh,
+  onMobileMenuToggle,
 }: AgentPropertyDetailPageViewProps) {
   if (!property) return null;
 
   return (
     <PageContainer>
-      <PageHeader title="매물 상세 조회" />
+      <PageHeader
+        title="매물 상세 조회"
+        onMobileMenuToggle={onMobileMenuToggle}
+      />
       <DetailPageContainer>
         {editModalOpen && property && (
           <PropertyEditModal

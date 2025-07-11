@@ -33,6 +33,7 @@ interface ContractDetailPageViewProps {
   onRefreshData: () => void;
   onStatusChange?: (newStatus: "CANCELLED" | "TERMINATED") => void;
   onQuickStatusChange?: (newStatus: string) => void;
+  onMobileMenuToggle: () => void;
 }
 
 const ContractDetailPageView = ({
@@ -58,6 +59,7 @@ const ContractDetailPageView = ({
   onRefreshData,
   onStatusChange,
   onQuickStatusChange,
+  onMobileMenuToggle,
 }: ContractDetailPageViewProps) => {
   if (loading) {
     return (
@@ -78,7 +80,10 @@ const ContractDetailPageView = ({
 
   return (
     <div className={styles.container}>
-      <PageHeader title="계약 상세 조회" />
+      <PageHeader
+        title="계약 상세 조회"
+        onMobileMenuToggle={onMobileMenuToggle}
+      />
 
       {isUpdating && (
         <Box

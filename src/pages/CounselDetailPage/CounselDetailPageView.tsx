@@ -29,6 +29,7 @@ interface CounselDetailPageViewProps {
   onDeleteClick: () => void;
   onDeleteCancel: () => void;
   onDeleteConfirm: () => void;
+  onMobileMenuToggle: () => void;
 }
 
 const CounselDetailPageView = ({
@@ -47,6 +48,7 @@ const CounselDetailPageView = ({
   onDeleteClick,
   onDeleteCancel,
   onDeleteConfirm,
+  onMobileMenuToggle,
 }: CounselDetailPageViewProps) => {
   if (isLoading) {
     return (
@@ -68,7 +70,7 @@ const CounselDetailPageView = ({
 
   return (
     <Box className={styles.container}>
-      <PageHeader title="상담 상세" />
+      <PageHeader title="상담 상세" onMobileMenuToggle={onMobileMenuToggle} />
 
       <Box className={styles.contentContainer}>
         <CounselActionButtons

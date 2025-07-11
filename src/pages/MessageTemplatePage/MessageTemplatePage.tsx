@@ -1,4 +1,5 @@
 import { useState, useEffect, useCallback } from "react";
+import { useOutletContext } from "react-router-dom";
 import {
   fetchMessageTemplates,
   createMessageTemplate,
@@ -9,6 +10,10 @@ import { showToast } from "@components/Toast/Toast";
 import MessageTemplatePageView from "./MessageTemplatePageView";
 import { MessageTemplate, MessageTemplateList } from "@ts/message";
 
+interface OutletContext {
+  onMobileMenuToggle: () => void;
+}
+
 const ALLOWED_VARIABLES = ["이름", "생년월일", "관심지역"] as const;
 
 const TEMPLATE_LIST_INITIAL: MessageTemplateList[] = [
@@ -17,6 +22,7 @@ const TEMPLATE_LIST_INITIAL: MessageTemplateList[] = [
   { id: 3, name: "계약 만료", category: "EXPIRED_NOTI", templates: [] },
 ];
 function MessageTemplatePageContainer() {
+  const { onMobileMenuToggle } = useOutletContext<OutletContext>();
   const [templateTitle, setTemplateTitle] = useState("");
   const [templateContent, setTemplateContent] = useState("");
   const [selectedTemplate, setSelectedTemplate] =
@@ -207,6 +213,7 @@ function MessageTemplatePageContainer() {
       onOpenDeleteDialog={handleOpenDeleteDialog}
       onDeleteTemplate={handleDeleteTemplate}
       onCloseDeleteDialog={() => setOpenDeleteDialog(false)}
+      onMobileMenuToggle={onMobileMenuToggle}
     />
   );
 }

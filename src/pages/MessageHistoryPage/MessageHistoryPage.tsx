@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { useOutletContext } from "react-router-dom";
 import { Box, Paper, Button } from "@mui/material";
 import RefreshIcon from "@mui/icons-material/Refresh";
 import PageHeader from "@components/PageHeader/PageHeader";
@@ -11,6 +12,10 @@ import { fetchMessages } from "@apis/messageService";
 import Table from "@components/Table";
 import { DEFAULT_ROWS_PER_PAGE } from "@components/Table/Table";
 
+interface OutletContext {
+  onMobileMenuToggle: () => void;
+}
+
 interface TableRowData {
   id: string;
   dateCreated: string;
@@ -19,6 +24,7 @@ interface TableRowData {
 }
 
 const MessageHistoryPage = () => {
+  const { onMobileMenuToggle } = useOutletContext<OutletContext>();
   const [messages, setMessages] = useState<MessageHistory[]>([]);
   const [selectedMessageHistory, setSelectedMessageHistory] =
     useState<MessageHistory | null>(null);
@@ -79,7 +85,10 @@ const MessageHistoryPage = () => {
         minHeight: "100vh",
       }}
     >
-      <PageHeader title="문자 발송 내역" />
+      <PageHeader
+        title="문자 발송 내역"
+        onMobileMenuToggle={onMobileMenuToggle}
+      />
 
       <Box sx={{ p: "20px" }}>
         <Box

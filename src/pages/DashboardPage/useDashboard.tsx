@@ -14,7 +14,10 @@ import {
 } from "@apis/scheduleService";
 import { fetchSubmittedSurveyResponses as fetchSurveyResponsesAPI } from "@apis/preCounselService";
 import { fetchDashboardCounsels } from "@apis/counselService";
-import { fetchExpiringContractsForDashboard } from "@apis/contractService";
+import {
+  fetchExpiringContractsForDashboard,
+  fetchRecentContractsForDashboard,
+} from "@apis/contractService";
 
 dayjs.extend(isSameOrAfter);
 dayjs.extend(isSameOrBefore);
@@ -55,7 +58,7 @@ interface DashboardData {
   setOngoingContractsOpen: React.Dispatch<React.SetStateAction<boolean>>;
   completedContractsOpen: boolean;
   setCompletedContractsOpen: React.Dispatch<React.SetStateAction<boolean>>;
-
+  recentContracts: Contract[];
   // Computed values
   currentCounselList: Counsel[];
   currentContractList: Contract[];
@@ -101,6 +104,7 @@ export const useDashboard = (): DashboardData => {
   const [recentContractsCount, setRecentContractsCount] = useState<number>(0);
   const [ongoingContracts, setOngoingContracts] = useState<number>(0);
   const [completedContracts, setCompletedContracts] = useState<number>(0);
+  const [recentContracts, setRecentContracts] = useState<Contract[]>([]);
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const [schedules, setSchedules] = useState<Schedule[]>([]);
   const [moreModalOpen, setMoreModalOpen] = useState(false);
@@ -328,10 +332,9 @@ export const useDashboard = (): DashboardData => {
   }, [counselTab, counselListByDueDate, counselListByLatest]);
 
   const currentContractList = useMemo(() => {
-    return contractTab === "expiring" ? expiringContracts : expiringContracts;
-  }, [contractTab, expiringContracts]);
+    return contractTab === "expiring" ? expiringContracts : recentContracts;
+  }, [contractTab, expiringContracts, recentContracts]);
 
-  // Initial statistics data fetching (독립적으로 한번만 실행)
   useEffect(() => {
     const fetchStatisticsData = async () => {
       try {
@@ -391,7 +394,10 @@ export const useDashboard = (): DashboardData => {
           0,
           5
         );
+        const recentContracts = await fetchRecentContractsForDashboard(0, 5);
+
         setExpiringContracts(expiringContracts.contracts || []);
+        setRecentContracts(recentContracts.contracts || []);
       } catch (error) {
         console.error("Failed to fetch contracts:", error);
         setExpiringContracts([]);
@@ -439,7 +445,7 @@ export const useDashboard = (): DashboardData => {
 
     currentCounselList,
     currentContractList,
-
+    recentContracts,
     handlePrevWeek,
     handleNextWeek,
     handleCounselTabChange,

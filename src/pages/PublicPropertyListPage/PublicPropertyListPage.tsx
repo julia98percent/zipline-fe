@@ -1,7 +1,7 @@
 import { SelectChangeEvent } from "@mui/material";
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useState, useRef } from "react";
 import { PublicPropertyItem, PublicPropertySearchParams } from "@ts/property";
-import { searchPublicProperties } from "@apis/propertyService";
+import { getPublicProperties } from "@apis/propertyService";
 import PublicPropertyListPageView from "./PublicPropertyListPageView";
 import { DEFAULT_ROWS_PER_PAGE } from "@components/Table/Table";
 
@@ -46,6 +46,8 @@ const PublicPropertyListPage = () => {
   const [searchParams, setSearchParams] = useState<PublicPropertySearchParams>(
     INITIAL_SEARCH_PARAMS
   );
+
+  const prevSearchParamsRef = useRef<PublicPropertySearchParams>(null);
 
   const handleSidoChange = (event: SelectChangeEvent<string>) => {
     const value = event.target.value;
@@ -140,14 +142,6 @@ const PublicPropertyListPage = () => {
     }
   };
 
-  const handlePageChange = (newPage: number) => {
-    setSearchParams((prev) => ({ ...prev, page: newPage }));
-  };
-
-  const handleRowsPerPageChange = (newSize: number) => {
-    setSearchParams((prev) => ({ ...prev, size: newSize, page: 0 }));
-  };
-
   const handleMetricToggle = () => {
     setUseMetric((prev) => !prev);
   };
@@ -160,27 +154,66 @@ const PublicPropertyListPage = () => {
     setShowFilterModal(false);
   };
 
-  const fetchPropertyData = useCallback(async () => {
-    setLoading(true);
+  const fetchPropertyData = useCallback(
+    async (isLoadMore = false) => {
+      if (loading && !isLoadMore) return; // 이미 로딩 중이면 중복 호출 방지
 
-    try {
-      const response = await searchPublicProperties(searchParams);
+      setLoading(true);
 
-      setPublicPropertyList(response.content);
-      setTotalElements(response.totalElements);
-      setTotalPages(response.totalPages);
-    } catch {
-      setPublicPropertyList([]);
-      setTotalElements(0);
-      setTotalPages(0);
-    } finally {
-      setLoading(false);
+      if (!isLoadMore) {
+        setPublicPropertyList([]);
+        setCursorId(null);
+      }
+
+      try {
+        const params = {
+          ...searchParams,
+          cursorId: isLoadMore ? cursorId : null,
+        };
+
+        const response = await getPublicProperties(params);
+        const contentArray = Array.isArray(response.content)
+          ? response.content
+          : [];
+
+        if (isLoadMore) {
+          setPublicPropertyList((prev) => [...prev, ...contentArray]);
+        } else {
+          setPublicPropertyList(contentArray);
+        }
+
+        setCursorId(response.nextCursorId);
+        setHasNext(response.hasNext);
+      } catch (error) {
+        if (!isLoadMore) {
+          setPublicPropertyList([]);
+          setHasNext(false);
+        }
+        console.error("Failed to fetch properties:", error);
+      } finally {
+        setLoading(false);
+      }
+    },
+    [searchParams, cursorId, loading]
+  );
+
+  const handleLoadMore = useCallback(() => {
+    if (hasNext && !loading) {
+      fetchPropertyData(true);
     }
-  }, [searchParams]);
+  }, [hasNext, loading, fetchPropertyData]);
 
   useEffect(() => {
-    fetchPropertyData();
-  }, [fetchPropertyData]);
+    const hasSearchParamsChanged =
+      !prevSearchParamsRef.current ||
+      JSON.stringify(prevSearchParamsRef.current) !==
+        JSON.stringify(searchParams);
+
+    if (hasSearchParamsChanged) {
+      prevSearchParamsRef.current = searchParams;
+      fetchPropertyData(false);
+    }
+  }, [searchParams]);
 
   return (
     <PublicPropertyListPageView

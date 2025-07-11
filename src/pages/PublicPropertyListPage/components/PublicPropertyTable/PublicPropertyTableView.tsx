@@ -5,34 +5,18 @@ import { PropertyCellRenderer, SortableHeader } from "./components";
 
 interface Props {
   propertyList: PublicPropertyItem[];
-  totalElements: number;
-  totalPages: number;
-  page: number;
-  rowsPerPage: number;
   onSort: (field: string) => void;
-  sortFields: { [key: string]: string };
+  sortField?: string;
+  isAscending?: boolean;
   useMetric: boolean;
-  pageInput: string;
-  onPageInputChange: (event: React.ChangeEvent<HTMLInputElement>) => void;
-  onPageInputSubmit: () => void;
-  onPageChange: (_: unknown, newPage: number) => void;
-  onRowsPerPageChange: (event: React.ChangeEvent<HTMLInputElement>) => void;
 }
 
 const PublicPropertyTableView = ({
   propertyList,
-  totalElements,
-  totalPages,
-  page,
-  rowsPerPage,
   onSort,
-  sortFields,
+  sortField,
+  isAscending,
   useMetric,
-  pageInput,
-  onPageInputChange,
-  onPageInputSubmit,
-  onPageChange,
-  onRowsPerPageChange,
 }: Props) => {
   // 컬럼 설정
   const columns: ColumnConfig<PublicPropertyItem>[] = [
@@ -82,7 +66,8 @@ const PublicPropertyTableView = ({
         <SortableHeader
           field="price"
           label="매매 가격"
-          sortFields={sortFields}
+          sortField={sortField}
+          isAscending={isAscending}
           onSort={onSort}
         />
       ),
@@ -97,7 +82,8 @@ const PublicPropertyTableView = ({
         <SortableHeader
           field="deposit"
           label="보증금"
-          sortFields={sortFields}
+          sortField={sortField}
+          isAscending={isAscending}
           onSort={onSort}
         />
       ),
@@ -112,7 +98,8 @@ const PublicPropertyTableView = ({
         <SortableHeader
           field="monthlyRent"
           label="월세"
-          sortFields={sortFields}
+          sortField={sortField}
+          isAscending={isAscending}
           onSort={onSort}
         />
       ),
@@ -128,7 +115,8 @@ const PublicPropertyTableView = ({
           field="netArea"
           label="전용면적"
           unit={useMetric ? "(m²)" : "(평)"}
-          sortFields={sortFields}
+          sortField={sortField}
+          isAscending={isAscending}
           onSort={onSort}
         />
       ),
@@ -147,7 +135,8 @@ const PublicPropertyTableView = ({
           field="totalArea"
           label="공급면적"
           unit={useMetric ? "(m²)" : "(평)"}
-          sortFields={sortFields}
+          sortField={sortField}
+          isAscending={isAscending}
           onSort={onSort}
         />
       ),
@@ -161,7 +150,6 @@ const PublicPropertyTableView = ({
     },
   ];
 
-  // 테이블 데이터 변환
   const tableData = propertyList.map((property) => property);
 
   return (
@@ -180,19 +168,12 @@ const PublicPropertyTableView = ({
           },
           "& .MuiTableCell-head": {
             fontWeight: 600,
+            position: "sticky",
+            top: 0, // 추가
+            background: "#fff",
+            zIndex: 2,
           },
         }}
-      />
-      <CustomPagination
-        pageInput={pageInput}
-        totalPages={totalPages}
-        totalElements={totalElements}
-        page={page}
-        rowsPerPage={rowsPerPage}
-        onPageInputChange={onPageInputChange}
-        onPageInputSubmit={onPageInputSubmit}
-        onPageChange={onPageChange}
-        onRowsPerPageChange={onRowsPerPageChange}
       />
     </Box>
   );

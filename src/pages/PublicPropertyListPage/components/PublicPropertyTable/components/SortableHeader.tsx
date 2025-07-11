@@ -4,7 +4,8 @@ interface Props {
   field: string;
   label: string;
   unit?: string;
-  sortFields: { [key: string]: string };
+  sortField?: string;
+  isAscending?: boolean;
   onSort: (field: string) => void;
 }
 
@@ -12,7 +13,8 @@ const SortableHeader = ({
   field,
   label,
   unit = "",
-  sortFields,
+  sortField,
+  isAscending,
   onSort,
 }: Props) => {
   const getSortDirection = (field: string) => {

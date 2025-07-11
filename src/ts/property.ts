@@ -95,12 +95,11 @@ export interface PublicPropertyItem {
   address: string;
 }
 
-export interface PublicPropertySearchParams {
-  page: number;
+type SortingOption = { sortField: string; isAscending: boolean };
+
+interface BasePublicPropertySearchParams {
+  cursorId?: string | null;
   size: number;
-  sortFields: {
-    [key: string]: string;
-  };
   regionCode?: string;
   buildingName?: string;
   buildingType?: string;

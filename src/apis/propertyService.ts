@@ -1,5 +1,9 @@
 import apiClient from "@apis/apiClient";
-import { ApiResponse, PaginatedResponse } from "@ts/apiResponse";
+import {
+  ApiResponse,
+  CursorPaginatedResponse,
+  PaginatedResponse,
+} from "@ts/apiResponse";
 import { ContractCategoryType } from "@ts/contract";
 import {
   PropertyType,
@@ -274,21 +278,23 @@ export const updateProperty = async (
   }
 };
 
-export const searchPublicProperties = async (
+export const getPublicProperties = async (
   searchParams: PublicPropertySearchParams
-): Promise<PublicPropertySearchResponse> => {
+): Promise<
+  CursorPaginatedResponse<"content", PublicPropertySearchResponse>
+> => {
   try {
     const queryParams = new URLSearchParams();
 
-    queryParams.append("page", searchParams.page.toString());
+    if (searchParams.cursorId !== undefined && searchParams.cursorId !== null) {
+      queryParams.append("cursorId", searchParams.cursorId);
+    }
+
     queryParams.append("size", searchParams.size.toString());
 
-    // sortFields가 존재하고 비어있지 않을 때만 추가
-    if (
-      searchParams.sortFields &&
-      Object.keys(searchParams.sortFields).length > 0
-    ) {
-      queryParams.append("sortFields", JSON.stringify(searchParams.sortFields));
+    if ("sortField" in searchParams && "isAscending" in searchParams) {
+      queryParams.append("sortField", searchParams.sortField);
+      queryParams.append("isAscending", searchParams.isAscending.toString());
     }
 
     if (searchParams.regionCode)
@@ -329,14 +335,21 @@ export const searchPublicProperties = async (
     if (searchParams.maxTotalArea)
       queryParams.append("maxTotalArea", searchParams.maxTotalArea.toString());
 
-    const { data } = await apiClient.get(
-      `/property-articles/search?${queryParams.toString()}`
+    const response = await apiClient.get(
+      `/public-properties?${queryParams.toString()}`
     );
+    const data = response?.data?.data;
 
-    const normalizedData = data.content.map((item: PublicPropertyItem) => ({
-      ...item,
-      totalArea: item.totalArea == null ? 0 : item.totalArea,
-    }));
+    if (!data) {
+      throw new Error("서버 응답에 data 필드 없음");
+    }
+
+    const normalizedData = (data.content ?? []).map(
+      (item: PublicPropertyItem) => ({
+        ...item,
+        totalArea: item.totalArea == null ? 0 : item.totalArea,
+      })
+    );
 
     return {
       ...data,

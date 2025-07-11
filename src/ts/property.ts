@@ -1,4 +1,4 @@
-import { PaginatedResponse } from "./apiResponse";
+import { PaginatedResponse, CursorPaginatedResponse } from "./apiResponse";
 export const PropertyCategory = {
   ONE_ROOM: "원룸",
   TWO_ROOM: "투룸",
@@ -95,12 +95,11 @@ export interface PublicPropertyItem {
   address: string;
 }
 
-export interface PublicPropertySearchParams {
-  page: number;
+type SortingOption = { sortField: string; isAscending: boolean };
+
+interface BasePublicPropertySearchParams {
+  cursorId?: string | null;
   size: number;
-  sortFields: {
-    [key: string]: string;
-  };
   regionCode?: string;
   buildingName?: string;
   buildingType?: string;
@@ -118,7 +117,11 @@ export interface PublicPropertySearchParams {
   maxTotalArea?: number;
 }
 
-export type PublicPropertySearchResponse = PaginatedResponse<
+export type PublicPropertySearchParams =
+  | BasePublicPropertySearchParams
+  | (BasePublicPropertySearchParams & SortingOption);
+
+export type PublicPropertySearchResponse = CursorPaginatedResponse<
   "content",
   PublicPropertyItem[]
 >;

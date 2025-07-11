@@ -21,8 +21,7 @@ import { PublicPropertyItem, PublicPropertySearchParams } from "@ts/property";
 interface PublicPropertyListPageViewProps {
   loading: boolean;
   publicPropertyList: PublicPropertyItem[];
-  totalElements: number;
-  totalPages: number;
+  hasNext: boolean;
   searchAddress: string;
   selectedSido: string;
   selectedGu: string;
@@ -38,8 +37,7 @@ interface PublicPropertyListPageViewProps {
   onSortReset: () => void;
   onAddressSearch: (event: React.ChangeEvent<HTMLInputElement>) => void;
   onAddressSearchSubmit: () => void;
-  onPageChange: (newPage: number) => void;
-  onRowsPerPageChange: (newSize: number) => void;
+  onLoadMore: () => void;
   onMetricToggle: () => void;
   onFilterModalToggle: () => void;
   onFilterModalClose: () => void;
@@ -48,8 +46,7 @@ interface PublicPropertyListPageViewProps {
 const PublicPropertyListPageView = ({
   loading,
   publicPropertyList,
-  totalElements,
-  totalPages,
+  hasNext,
   searchAddress,
   selectedSido,
   selectedGu,
@@ -65,13 +62,12 @@ const PublicPropertyListPageView = ({
   onSortReset,
   onAddressSearch,
   onAddressSearchSubmit,
-  onPageChange,
-  onRowsPerPageChange,
+  onLoadMore,
   onMetricToggle,
   onFilterModalToggle,
   onFilterModalClose,
 }: PublicPropertyListPageViewProps) => {
-  if (loading) {
+  if (loading && publicPropertyList.length === 0) {
     return (
       <>
         <PageHeader title="공개 매물 목록" />
@@ -110,37 +106,26 @@ const PublicPropertyListPageView = ({
             boxShadow: "0 2px 8px rgba(0,0,0,0.04)",
           }}
         >
-          <Box
-            sx={{
-              display: "flex",
-              justifyContent: "space-between",
-              alignItems: "center",
-              mb: 2,
-            }}
-          >
-            <Typography variant="h6" fontWeight="bold">
-              공개 매물 검색 결과 : {totalElements} 건
-            </Typography>
-            <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
-              <Button
-                variant="outlined"
-                size="small"
-                onClick={onSortReset}
-                sx={{ height: "32px" }}
-              >
-                필터 초기화
-              </Button>
-              <Button
-                startIcon={<FilterListIcon />}
-                color={showFilterModal ? "primary" : "inherit"}
-                variant={showFilterModal ? "contained" : "outlined"}
-                onClick={onFilterModalToggle}
-                sx={{ height: "32px", ml: 1 }}
-              >
-                상세 필터
-              </Button>
-            </Box>
+          <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
+            <Button
+              variant="outlined"
+              size="small"
+              onClick={onSortReset}
+              sx={{ height: "32px" }}
+            >
+              필터 초기화
+            </Button>
+            <Button
+              startIcon={<FilterListIcon />}
+              color={showFilterModal ? "primary" : "inherit"}
+              variant={showFilterModal ? "contained" : "outlined"}
+              onClick={onFilterModalToggle}
+              sx={{ height: "32px", ml: 1 }}
+            >
+              상세 필터
+            </Button>
           </Box>
+
           <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
             <TextField
               fullWidth
@@ -202,14 +187,20 @@ const PublicPropertyListPageView = ({
         >
           <PublicPropertyTable
             propertyList={publicPropertyList}
-            totalElements={totalElements}
-            totalPages={totalPages}
-            page={searchParams.page}
-            rowsPerPage={searchParams.size}
-            onPageChange={onPageChange}
-            onRowsPerPageChange={onRowsPerPageChange}
+            hasMore={hasNext}
+            isLoading={loading}
+            loadMore={onLoadMore}
             onSort={onSort}
-            sortFields={searchParams.sortFields}
+            sortField={
+              searchParams && "sortField" in searchParams
+                ? searchParams.sortField
+                : undefined
+            }
+            isAscending={
+              searchParams && "isAscending" in searchParams
+                ? searchParams.isAscending
+                : undefined
+            }
             useMetric={useMetric}
           />
         </Paper>

@@ -1,18 +1,19 @@
 import { SelectChangeEvent } from "@mui/material";
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useState, useRef } from "react";
 import { PublicPropertyItem, PublicPropertySearchParams } from "@ts/property";
-import { searchPublicProperties } from "@apis/propertyService";
+import { getPublicProperties } from "@apis/propertyService";
 import PublicPropertyListPageView from "./PublicPropertyListPageView";
 import { DEFAULT_ROWS_PER_PAGE } from "@components/Table/Table";
 
 const INITIAL_SEARCH_PARAMS: PublicPropertySearchParams = {
-  page: 0,
+  cursorId: null,
   size: DEFAULT_ROWS_PER_PAGE,
-  sortFields: { id: "ASC" },
-  category: "",
-  buildingType: "",
-  buildingName: "",
-  address: "",
+  sortField: "id",
+  isAscending: true,
+  category: undefined,
+  buildingType: undefined,
+  buildingName: undefined,
+  address: undefined,
   minPrice: undefined,
   maxPrice: undefined,
   minDeposit: undefined,
@@ -24,14 +25,16 @@ const INITIAL_SEARCH_PARAMS: PublicPropertySearchParams = {
   minTotalArea: undefined,
   maxTotalArea: undefined,
 };
+
 const PublicPropertyListPage = () => {
+  const [hasNext, setHasNext] = useState<boolean>(true);
+  const [cursorId, setCursorId] = useState<string | null>(null);
+
   const [publicPropertyList, setPublicPropertyList] = useState<
     PublicPropertyItem[]
   >([]);
   const [loading, setLoading] = useState<boolean>(false);
   const [showFilterModal, setShowFilterModal] = useState<boolean>(false);
-  const [totalElements, setTotalElements] = useState<number>(0);
-  const [totalPages, setTotalPages] = useState<number>(0);
   const [searchAddress, setSearchAddress] = useState<string>("");
 
   const [selectedSido, setSelectedSido] = useState("");
@@ -43,6 +46,8 @@ const PublicPropertyListPage = () => {
   const [searchParams, setSearchParams] = useState<PublicPropertySearchParams>(
     INITIAL_SEARCH_PARAMS
   );
+
+  const prevSearchParamsRef = useRef<PublicPropertySearchParams>(null);
 
   const handleSidoChange = (event: SelectChangeEvent<string>) => {
     const value = event.target.value;
@@ -75,36 +80,44 @@ const PublicPropertyListPage = () => {
       setSearchParams((prev) => ({
         ...prev,
         ...newFilters,
-        page: 0,
+        cursorId: null,
       }));
     }
   };
 
   const handleSort = (field: string) => {
     setSearchParams((prev) => {
-      const currentSort = prev.sortFields[field];
-      const newSortFields: { [key: string]: string } = {};
+      const currentSortField = "sortField" in prev ? prev.sortField : null;
+      const currentIsAscending =
+        "isAscending" in prev ? prev.isAscending : null;
 
-      if (currentSort) {
-        newSortFields[field] = currentSort === "ASC" ? "DESC" : "ASC";
-      } else {
-        newSortFields[field] = "ASC";
+      const newSortField = field;
+      let newIsAscending = true;
+
+      if (currentSortField === field && currentIsAscending !== null) {
+        newIsAscending = !currentIsAscending;
       }
 
       return {
         ...prev,
-        sortFields: newSortFields,
-        page: 0,
+        sortField: newSortField,
+        isAscending: newIsAscending,
+        cursorId: null,
       };
     });
   };
 
   const handleSortReset = () => {
-    setSearchParams((prev) => ({
-      ...prev,
-      sortFields: { id: "ASC" },
-      page: 0,
-    }));
+    setSearchParams((prev) => {
+      const { sortField, isAscending, ...rest } =
+        prev as PublicPropertySearchParams;
+      return {
+        ...rest,
+        sortField: "id",
+        isAscending: true,
+        cursorId: null,
+      };
+    });
   };
 
   const handleAddressSearch = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -116,26 +129,17 @@ const PublicPropertyListPage = () => {
       setSearchParams((prev) => ({
         ...prev,
         address: searchAddress.trim(),
-        page: 0,
+        cursorId: null,
       }));
     } else {
       setSearchParams((prev) => {
-        // eslint-disable-next-line @typescript-eslint/no-unused-vars
         const { address, ...rest } = prev;
         return {
           ...rest,
-          page: 0,
+          cursorId: null,
         };
       });
     }
-  };
-
-  const handlePageChange = (newPage: number) => {
-    setSearchParams((prev) => ({ ...prev, page: newPage }));
-  };
-
-  const handleRowsPerPageChange = (newSize: number) => {
-    setSearchParams((prev) => ({ ...prev, size: newSize, page: 0 }));
   };
 
   const handleMetricToggle = () => {
@@ -150,34 +154,72 @@ const PublicPropertyListPage = () => {
     setShowFilterModal(false);
   };
 
-  const fetchPropertyData = useCallback(async () => {
-    setLoading(true);
+  const fetchPropertyData = useCallback(
+    async (isLoadMore = false) => {
+      if (loading && !isLoadMore) return; // 이미 로딩 중이면 중복 호출 방지
 
-    try {
-      const response = await searchPublicProperties(searchParams);
+      setLoading(true);
 
-      setPublicPropertyList(response.content);
-      setTotalElements(response.totalElements);
-      setTotalPages(response.totalPages);
-    } catch {
-      setPublicPropertyList([]);
-      setTotalElements(0);
-      setTotalPages(0);
-    } finally {
-      setLoading(false);
+      if (!isLoadMore) {
+        setPublicPropertyList([]);
+        setCursorId(null);
+      }
+
+      try {
+        const params = {
+          ...searchParams,
+          cursorId: isLoadMore ? cursorId : null,
+        };
+
+        const response = await getPublicProperties(params);
+        const contentArray = Array.isArray(response.content)
+          ? response.content
+          : [];
+
+        if (isLoadMore) {
+          setPublicPropertyList((prev) => [...prev, ...contentArray]);
+        } else {
+          setPublicPropertyList(contentArray);
+        }
+
+        setCursorId(response.nextCursorId);
+        setHasNext(response.hasNext);
+      } catch (error) {
+        if (!isLoadMore) {
+          setPublicPropertyList([]);
+          setHasNext(false);
+        }
+        console.error("Failed to fetch properties:", error);
+      } finally {
+        setLoading(false);
+      }
+    },
+    [searchParams, cursorId, loading]
+  );
+
+  const handleLoadMore = useCallback(() => {
+    if (hasNext && !loading) {
+      fetchPropertyData(true);
     }
-  }, [searchParams]);
+  }, [hasNext, loading, fetchPropertyData]);
 
   useEffect(() => {
-    fetchPropertyData();
-  }, [fetchPropertyData]);
+    const hasSearchParamsChanged =
+      !prevSearchParamsRef.current ||
+      JSON.stringify(prevSearchParamsRef.current) !==
+        JSON.stringify(searchParams);
+
+    if (hasSearchParamsChanged) {
+      prevSearchParamsRef.current = searchParams;
+      fetchPropertyData(false);
+    }
+  }, [searchParams]);
 
   return (
     <PublicPropertyListPageView
       loading={loading}
       publicPropertyList={publicPropertyList}
-      totalElements={totalElements}
-      totalPages={totalPages}
+      hasNext={hasNext}
       searchAddress={searchAddress}
       selectedSido={selectedSido}
       selectedGu={selectedGu}
@@ -193,8 +235,7 @@ const PublicPropertyListPage = () => {
       onSortReset={handleSortReset}
       onAddressSearch={handleAddressSearch}
       onAddressSearchSubmit={handleAddressSearchSubmit}
-      onPageChange={handlePageChange}
-      onRowsPerPageChange={handleRowsPerPageChange}
+      onLoadMore={handleLoadMore}
       onMetricToggle={handleMetricToggle}
       onFilterModalToggle={handleFilterModalToggle}
       onFilterModalClose={handleFilterModalClose}

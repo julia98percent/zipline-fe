@@ -122,7 +122,7 @@ const RecentCustomersModal = ({
           columns={columns}
           bodyList={tableData}
           handleRowClick={(survey) => onSurveyClick(survey.surveyResponseUid)}
-          pagination={true}
+          pagination={false}
           page={page}
           rowsPerPage={rowsPerPage}
           totalElements={totalCount}

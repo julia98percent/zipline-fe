@@ -33,11 +33,11 @@ const WeeklyScheduleCalendar: React.FC<WeeklyScheduleCalendarProps> = ({
     <div className="flex-1 flex flex-col bg-white rounded-md shadow-sm border border-gray-100">
       {/* Header */}
       <div className="p-4 border-b border-gray-200 flex items-center justify-between">
-        <div className="flex items-center  h-full">
+        <div className="flex items-center gap-2 h-full">
           <h2 className="text-lg font-semibold text-blue-700">주간 일정</h2>
           <button
             onClick={onViewAllSchedules}
-            className="hidden md:inline-flex px-3 py-1 text-xs border border-gray-300 rounded hover:bg-gray-50 transition-colors"
+            className="hidden md:inline-flex px-3 py-1 text-xs border border-gray-300 rounded hover:bg-gray-50 transition-colors hover:cursor-pointer"
           >
             전체 일정 보기
           </button>

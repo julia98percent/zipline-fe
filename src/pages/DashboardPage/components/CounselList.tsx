@@ -127,9 +127,7 @@ const CounselList: React.FC<CounselListProps> = ({
               <div className="flex items-center gap-1">
                 <p style={{ color: "inherit" }}>의뢰일 임박 순</p>
                 <Tooltip title="2주 이내 의뢰 마감 예정인 상담이 표시됩니다.">
-                  <HelpOutlineIcon
-                    sx={{ fontSize: 16, color: "primary.main" }}
-                  />
+                  <HelpOutlineIcon sx={{ fontSize: 16, color: "inherit" }} />
                 </Tooltip>
               </div>
             }
@@ -172,7 +170,7 @@ const CounselList: React.FC<CounselListProps> = ({
             bodyList={tableData}
             handleRowClick={(counsel) => handleCounselClick(counsel.counselUid)}
             pagination={false}
-            noDataMessage="상담이 없습니다"
+            noDataMessage="마감 예정인 상담이 없습니다"
             sx={{
               "& .MuiTableCell-head": {
                 fontSize: "13px",
@@ -186,6 +184,7 @@ const CounselList: React.FC<CounselListProps> = ({
               "& .MuiTableRow-root:hover": {
                 backgroundColor: "rgba(22, 79, 158, 0.04)",
               },
+              boxShadow: "none",
             }}
           />
         )}

@@ -17,20 +17,14 @@ const SortableHeader = ({
   isAscending,
   onSort,
 }: Props) => {
-  const getSortDirection = (field: string) => {
-    return sortFields[field] || false;
-  };
+  const isActive = sortField === field;
 
-  const getSortIcon = (field: string) => {
-    const direction = getSortDirection(field);
-    if (!direction) return null;
-    return direction === "ASC" ? "↑" : "↓";
-  };
+  const direction = isActive && isAscending ? "asc" : "desc";
 
   return (
     <TableSortLabel
-      active={!!getSortDirection(field)}
-      direction={getSortDirection(field) === "ASC" ? "asc" : "desc"}
+      active={isActive}
+      direction={direction}
       onClick={() => onSort(field)}
       sx={{
         "&.MuiTableSortLabel-root": {
@@ -51,7 +45,7 @@ const SortableHeader = ({
         },
       }}
     >
-      {label} {unit} {getSortIcon(field)}
+      {label} {unit}
     </TableSortLabel>
   );
 };

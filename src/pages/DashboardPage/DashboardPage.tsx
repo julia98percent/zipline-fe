@@ -45,9 +45,9 @@ const DashboardPage = () => {
         {/* 메인 컨텐츠 영역 */}
         <div className="flex flex-col gap-6">
           {/* 상단 영역 - 주간 일정과 설문 목록 */}
-          <div className="flex flex-col lg:flex-row gap-6">
+          <div className="flex flex-col xl:flex-row gap-6">
             {/* 왼쪽 - 주간 일정 캘린더 */}
-            <div className="flex-1 lg:flex-[2] flex flex-col min-h-[400px]">
+            <div className="flex-1 md:flex-[2] flex flex-col min-h-[400px] xl:w-full">
               <WeeklyScheduleCalendar
                 schedules={dashboardData.schedules}
                 handlePrevWeek={dashboardData.handlePrevWeek}

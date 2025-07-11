@@ -6,11 +6,14 @@ import {
   MenuItem,
   IconButton,
   Badge,
+  useMediaQuery,
+  useTheme,
 } from "@mui/material";
 import { useState, useRef, useEffect, useCallback } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import useAuthStore from "@stores/useAuthStore";
 import AccountCircleIcon from "@mui/icons-material/AccountCircle";
+import MenuIcon from "@mui/icons-material/Menu";
 import { useSSE } from "@context/SSEContext";
 import { Notifications } from "@mui/icons-material";
 import NotificationList from "./NotificationList";
@@ -21,11 +24,14 @@ import { clearAllAuthState } from "@utils/authUtil";
 
 interface PageHeaderProps {
   title: string;
+  onMobileMenuToggle?: () => void;
 }
 
-const PageHeader = ({ title }: PageHeaderProps) => {
+const PageHeader = ({ title, onMobileMenuToggle }: PageHeaderProps) => {
   useSSE();
   const { notificationList, setNotificationList } = useNotificationStore();
+  const theme = useTheme();
+  const isMobile = useMediaQuery(theme.breakpoints.down("md"));
 
   const [isNotificationOpen, setIsNotificationOpen] = useState(false);
   const [isChildModalOpen, setIsChildModalOpen] = useState(false);
@@ -120,10 +126,31 @@ const PageHeader = ({ title }: PageHeaderProps) => {
       }}
     >
       <Box sx={{ display: "flex", alignItems: "center", gap: 2 }}>
+        {isMobile && (
+          <IconButton
+            onClick={onMobileMenuToggle}
+            sx={{
+              color: "#222222",
+              "&:hover": {
+                backgroundColor: "rgba(0, 0, 0, 0.04)",
+              },
+            }}
+          >
+            <MenuIcon />
+          </IconButton>
+        )}
         <Typography
           variant="h5"
           component="h1"
-          sx={{ fontWeight: "bold", color: "#222222" }}
+          sx={{
+            fontWeight: "bold",
+            color: "#222222",
+            ...(isMobile && {
+              position: "absolute",
+              left: "50%",
+              transform: "translateX(-50%)",
+            }),
+          }}
         >
           {title}
         </Typography>

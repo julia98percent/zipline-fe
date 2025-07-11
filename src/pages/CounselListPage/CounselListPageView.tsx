@@ -35,6 +35,7 @@ interface CounselListPageViewProps {
   onModalOpen: () => void;
   onModalClose: () => void;
   onModalSuccess: () => void;
+  onMobileMenuToggle?: () => void;
 }
 
 function CounselListPageView({
@@ -62,6 +63,7 @@ function CounselListPageView({
   onModalOpen,
   onModalClose,
   onModalSuccess,
+  onMobileMenuToggle,
 }: CounselListPageViewProps) {
   return (
     <Box
@@ -72,7 +74,7 @@ function CounselListPageView({
         minHeight: "100vh",
       }}
     >
-      <PageHeader title="상담 내역" />
+      <PageHeader title="상담 내역" onMobileMenuToggle={onMobileMenuToggle} />
 
       <Box
         sx={{

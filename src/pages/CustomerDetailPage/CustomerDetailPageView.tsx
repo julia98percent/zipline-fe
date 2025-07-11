@@ -32,6 +32,7 @@ interface CustomerDetailPageViewProps {
   onCreateLabel?: (name: string) => Promise<Label>;
   labelInputValue?: string;
   onLabelInputChange?: (value: string) => void;
+  onMobileMenuToggle: () => void;
 }
 
 const CustomerDetailPageView = ({
@@ -53,6 +54,7 @@ const CustomerDetailPageView = ({
   onCreateLabel,
   labelInputValue,
   onLabelInputChange,
+  onMobileMenuToggle,
 }: CustomerDetailPageViewProps) => {
   if (loading || !customer || !customerId) {
     return (
@@ -85,7 +87,7 @@ const CustomerDetailPageView = ({
         boxSizing: "border-box",
       }}
     >
-      <PageHeader title="고객 상세" />
+      <PageHeader title="고객 상세" onMobileMenuToggle={onMobileMenuToggle} />
 
       <Box sx={{ p: 3, pt: 0 }}>
         <CustomerActionButtons

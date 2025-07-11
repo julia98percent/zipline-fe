@@ -1,5 +1,5 @@
 import { useEffect, useState, useCallback } from "react";
-import { useParams, useNavigate } from "react-router-dom";
+import { useParams, useNavigate, useOutletContext } from "react-router-dom";
 import {
   AgentPropertyDetail,
   ContractHistoryItem,
@@ -14,7 +14,12 @@ import {
 import { showToast } from "@components/Toast/Toast";
 import AgentPropertyDetailPageView from "./AgentPropertyDetailPageView";
 
+interface OutletContext {
+  onMobileMenuToggle: () => void;
+}
+
 function AgentPropertyDetailPage() {
+  const { onMobileMenuToggle } = useOutletContext<OutletContext>();
   const { propertyUid } = useParams();
   const navigate = useNavigate();
   const [property, setProperty] = useState<AgentPropertyDetail | null>(null);
@@ -150,6 +155,7 @@ function AgentPropertyDetailPage() {
       onEditModalClose={() => setEditModalOpen(false)}
       onDeleteModalClose={() => setDeleteModalOpen(false)}
       onPropertyDataRefresh={fetchPropertyData}
+      onMobileMenuToggle={onMobileMenuToggle}
     />
   );
 }

@@ -41,6 +41,7 @@ interface PublicPropertyListPageViewProps {
   onMetricToggle: () => void;
   onFilterModalToggle: () => void;
   onFilterModalClose: () => void;
+  onMobileMenuToggle?: () => void;
 }
 
 const PublicPropertyListPageView = ({
@@ -66,11 +67,15 @@ const PublicPropertyListPageView = ({
   onMetricToggle,
   onFilterModalToggle,
   onFilterModalClose,
+  onMobileMenuToggle,
 }: PublicPropertyListPageViewProps) => {
   if (loading && publicPropertyList.length === 0) {
     return (
       <>
-        <PageHeader title="공개 매물 목록" />
+        <PageHeader
+          title="공개 매물 목록"
+          onMobileMenuToggle={onMobileMenuToggle}
+        />
         <Box
           sx={{
             display: "flex",
@@ -88,7 +93,10 @@ const PublicPropertyListPageView = ({
 
   return (
     <>
-      <PageHeader title="공개 매물 목록" />
+      <PageHeader
+        title="공개 매물 목록"
+        onMobileMenuToggle={onMobileMenuToggle}
+      />
       <Box
         sx={{
           padding: "20px",

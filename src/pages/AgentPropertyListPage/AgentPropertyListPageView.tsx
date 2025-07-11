@@ -65,6 +65,7 @@ interface AgentPropertyListPageViewProps {
   showAddPropertyModal: boolean;
   onCloseAddPropertyModal: () => void;
   onSaveProperty: () => void;
+  onMobileMenuToggle?: () => void;
 }
 
 const AgentPropertyListPageView = ({
@@ -96,6 +97,7 @@ const AgentPropertyListPageView = ({
   showAddPropertyModal,
   onCloseAddPropertyModal,
   onSaveProperty,
+  onMobileMenuToggle,
 }: AgentPropertyListPageViewProps) => {
   const navigate = useNavigate();
 
@@ -106,7 +108,10 @@ const AgentPropertyListPageView = ({
   if (loading) {
     return (
       <PageContainer>
-        <PageHeader title="개인 매물 목록" />
+        <PageHeader
+          title="개인 매물 목록"
+          onMobileMenuToggle={onMobileMenuToggle}
+        />
         <LoadingContainer>
           <CircularProgress color="primary" />
         </LoadingContainer>
@@ -115,8 +120,11 @@ const AgentPropertyListPageView = ({
   }
 
   return (
-    <PageContainer sx={{ minWidth: "800px" }}>
-      <PageHeader title="개인 매물 목록" />
+    <PageContainer>
+      <PageHeader
+        title="개인 매물 목록"
+        onMobileMenuToggle={onMobileMenuToggle}
+      />
 
       <ContentContainer>
         {/* 상단 필터 바 */}

@@ -1,12 +1,17 @@
 import { useEffect, useState, useCallback } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useOutletContext } from "react-router-dom";
 import { fetchCounselList } from "@apis/counselService";
 import { showToast } from "@components/Toast/Toast";
 import CounselListPageView from "./CounselListPageView";
 import { Counsel } from "@ts/counsel";
 import { DEFAULT_ROWS_PER_PAGE } from "@components/Table/Table";
 
+interface OutletContext {
+  onMobileMenuToggle: () => void;
+}
+
 function CounselListPage() {
+  const { onMobileMenuToggle } = useOutletContext<OutletContext>();
   const navigate = useNavigate();
   const [counsels, setCounsels] = useState<Counsel[]>([]);
   const [page, setPage] = useState(0);
@@ -126,6 +131,7 @@ function CounselListPage() {
       onModalOpen={() => setIsModalOpen(true)}
       onModalClose={() => setIsModalOpen(false)}
       onModalSuccess={handleModalSuccess}
+      onMobileMenuToggle={onMobileMenuToggle}
     />
   );
 }

@@ -36,6 +36,7 @@ interface ContractListPageViewProps {
   onFilterApply: (filter: { period: string; status: string }) => void;
   onAddModalClose: () => void;
   onRefreshData: () => void;
+  onMobileMenuToggle?: () => void;
 }
 
 const ContractListPageView = ({
@@ -65,10 +66,11 @@ const ContractListPageView = ({
   onFilterApply,
   onAddModalClose,
   onRefreshData,
+  onMobileMenuToggle,
 }: ContractListPageViewProps) => {
   return (
     <div className={styles.container}>
-      <PageHeader title="계약 목록" />
+      <PageHeader title="계약 목록" onMobileMenuToggle={onMobileMenuToggle} />
 
       <div className={styles.contents}>
         <div className={styles.controlsContainer}>

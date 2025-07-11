@@ -1,12 +1,17 @@
 import { useEffect, useState, useCallback } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useOutletContext } from "react-router-dom";
 import { searchContracts } from "@apis/contractService";
 import { Contract, ContractCategory } from "@ts/contract";
 import { CONTRACT_STATUS_OPTION_LIST } from "@constants/contract";
 import ContractListPageView from "./ContractListPageView";
 import { DEFAULT_ROWS_PER_PAGE } from "@components/Table/Table";
 
+interface OutletContext {
+  onMobileMenuToggle: () => void;
+}
+
 function ContractListPage() {
+  const { onMobileMenuToggle } = useOutletContext<OutletContext>();
   const CONTRACT_STATUS_SEARCH_OPTIONS = [
     { value: "", label: "전체" },
     ...CONTRACT_STATUS_OPTION_LIST,
@@ -171,6 +176,7 @@ function ContractListPage() {
       onFilterApply={handleFilterApply}
       onAddModalClose={handleAddModalClose}
       onRefreshData={fetchContractData}
+      onMobileMenuToggle={onMobileMenuToggle}
     />
   );
 }

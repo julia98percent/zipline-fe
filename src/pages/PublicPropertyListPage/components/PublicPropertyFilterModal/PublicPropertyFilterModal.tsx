@@ -170,9 +170,9 @@ const PublicPropertyFilterModal = ({
 
   const handleReset = () => {
     setLocalFilters({
-      page: 0,
       size: 20,
-      sortFields: { id: "ASC" },
+      sortField: "id",
+      isAscending: true,
       category: "",
       buildingType: "",
       buildingName: "",

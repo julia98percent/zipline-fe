@@ -170,14 +170,77 @@ const AgentPropertyFilterModal = ({
     setDepositRange([0, 50000]);
   };
 
-  const formatPrice = (value: number) => {
+  const formatPrice = (value: number, isMaxValue?: boolean) => {
+    let formatted = "";
     if (value >= 10000) {
-      return `${(value / 10000).toFixed(0)}억원`;
+      formatted = `${(value / 10000).toFixed(0)}억원`;
     } else if (value >= 1000) {
-      return `${(value / 1000).toFixed(0)}천만원`;
+      formatted = `${(value / 1000).toFixed(0)}천만원`;
     } else {
-      return `${value}만원`;
+      formatted = `${value}만원`;
     }
+
+    // 최대값일 때 "~" 추가
+    if (isMaxValue) {
+      formatted += "~";
+    }
+
+    return formatted;
+  };
+
+  // 슬라이더용 포맷 함수 (최대값 체크 포함)
+  const formatPriceForSlider = (value: number, max?: number) => {
+    let formatted = "";
+    if (value >= 10000) {
+      formatted = `${(value / 10000).toFixed(0)}억원`;
+    } else if (value >= 1000) {
+      formatted = `${(value / 1000).toFixed(0)}천만원`;
+    } else {
+      formatted = `${value}만원`;
+    }
+
+    // 최대값일 때 "~" 추가
+    if (max && value === max) {
+      formatted += "~";
+    }
+
+    return formatted;
+  };
+
+  // 가격 범위에 따른 동적 step 계산
+  const getPriceStep = (value: number) => {
+    if (value <= 1000) return 100; // 1천만원까지는 100만원 단위
+    if (value <= 5000) return 500; // 5천만원까지는 500만원 단위
+    if (value <= 10000) return 1000; // 1억까지는 1천만원 단위
+    return 5000; // 1억 이후는 5천만원 단위
+  };
+
+  // 가격 슬라이더 변경 시 step에 맞춰 값 조정
+  const handlePriceRangeChange = (newValue: number | number[]) => {
+    const range = Array.isArray(newValue) ? newValue : [newValue, newValue];
+    const [min, max] = range;
+    const minStep = getPriceStep(min);
+    const maxStep = getPriceStep(max);
+
+    // 각 값을 해당 구간의 step에 맞춰 반올림
+    const adjustedMin = Math.round(min / minStep) * minStep;
+    const adjustedMax = Math.round(max / maxStep) * maxStep;
+
+    setPriceRange([adjustedMin, adjustedMax]);
+  };
+
+  // 보증금 슬라이더 변경 시 step에 맞춰 값 조정
+  const handleDepositRangeChange = (newValue: number | number[]) => {
+    const range = Array.isArray(newValue) ? newValue : [newValue, newValue];
+    const [min, max] = range;
+    const minStep = getPriceStep(min);
+    const maxStep = getPriceStep(max);
+
+    // 각 값을 해당 구간의 step에 맞춰 반올림
+    const adjustedMin = Math.round(min / minStep) * minStep;
+    const adjustedMax = Math.round(max / maxStep) * maxStep;
+
+    setDepositRange([adjustedMin, adjustedMax]);
   };
 
   return (
@@ -209,7 +272,7 @@ const AgentPropertyFilterModal = ({
         </IconButton>
       </DialogTitle>
 
-      <DialogContent sx={{ px: 3, py: 2 }}>
+      <DialogContent sx={{ px: 5, py: 2 }}>
         {/* 건물 특성 */}
         <Box sx={{ mb: 4 }}>
           <Typography variant="subtitle1" fontWeight={600} sx={{ mb: 2 }}>
@@ -306,7 +369,10 @@ const AgentPropertyFilterModal = ({
           {/* 전용 면적 */}
           <Box sx={{ mb: 3 }}>
             <Typography variant="body2" sx={{ mb: 1, color: "text.secondary" }}>
-              전용 면적: {netAreaRange[0]}m² - {netAreaRange[1]}m²
+              전용 면적: {netAreaRange[0]}m² -{" "}
+              {netAreaRange[1] === 200
+                ? `${netAreaRange[1]}m²~`
+                : `${netAreaRange[1]}m²`}
             </Typography>
             <Slider
               value={netAreaRange}
@@ -315,13 +381,29 @@ const AgentPropertyFilterModal = ({
               min={0}
               max={200}
               step={5}
+              valueLabelFormat={(value) =>
+                value === 200 ? `${value}m²~` : `${value}m²`
+              }
               sx={{
                 color: "primary.main",
                 "& .MuiSlider-thumb": {
                   backgroundColor: "primary.main",
+                  boxShadow: "none",
+                  "&:hover": {
+                    boxShadow: "none",
+                  },
+                  "&:focus": {
+                    boxShadow: "none",
+                  },
+                  "&.Mui-active": {
+                    boxShadow: "none",
+                  },
                 },
                 "& .MuiSlider-track": {
                   backgroundColor: "primary.main",
+                },
+                "& .MuiSlider-rail": {
+                  backgroundColor: "grey.300",
                 },
               }}
             />
@@ -330,7 +412,10 @@ const AgentPropertyFilterModal = ({
           {/* 공급 면적 */}
           <Box sx={{ mb: 3 }}>
             <Typography variant="body2" sx={{ mb: 1, color: "text.secondary" }}>
-              공급 면적: {totalAreaRange[0]}m² - {totalAreaRange[1]}m²
+              공급 면적: {totalAreaRange[0]}m² -{" "}
+              {totalAreaRange[1] === 300
+                ? `${totalAreaRange[1]}m²~`
+                : `${totalAreaRange[1]}m²`}
             </Typography>
             <Slider
               value={totalAreaRange}
@@ -341,13 +426,29 @@ const AgentPropertyFilterModal = ({
               min={0}
               max={300}
               step={5}
+              valueLabelFormat={(value) =>
+                value === 300 ? `${value}m²~` : `${value}m²`
+              }
               sx={{
                 color: "primary.main",
                 "& .MuiSlider-thumb": {
                   backgroundColor: "primary.main",
+                  boxShadow: "none",
+                  "&:hover": {
+                    boxShadow: "none",
+                  },
+                  "&:focus": {
+                    boxShadow: "none",
+                  },
+                  "&.Mui-active": {
+                    boxShadow: "none",
+                  },
                 },
                 "& .MuiSlider-track": {
                   backgroundColor: "primary.main",
+                },
+                "& .MuiSlider-rail": {
+                  backgroundColor: "grey.300",
                 },
               }}
             />
@@ -384,23 +485,36 @@ const AgentPropertyFilterModal = ({
           <Box sx={{ mb: 3 }}>
             <Typography variant="body2" sx={{ mb: 1, color: "text.secondary" }}>
               매매가: {formatPrice(priceRange[0])} -{" "}
-              {formatPrice(priceRange[1])}
+              {formatPrice(priceRange[1], priceRange[1] === 100000)}
             </Typography>
             <Slider
               value={priceRange}
-              onChange={(_, newValue) => setPriceRange(newValue as number[])}
+              onChange={(_, newValue) => handlePriceRangeChange(newValue)}
               valueLabelDisplay="auto"
               min={0}
               max={100000}
-              step={1000}
-              valueLabelFormat={formatPrice}
+              step={100}
+              valueLabelFormat={(value) => formatPriceForSlider(value, 100000)}
               sx={{
                 color: "primary.main",
                 "& .MuiSlider-thumb": {
                   backgroundColor: "primary.main",
+                  boxShadow: "none",
+                  "&:hover": {
+                    boxShadow: "none",
+                  },
+                  "&:focus": {
+                    boxShadow: "none",
+                  },
+                  "&.Mui-active": {
+                    boxShadow: "none",
+                  },
                 },
                 "& .MuiSlider-track": {
                   backgroundColor: "primary.main",
+                },
+                "& .MuiSlider-rail": {
+                  backgroundColor: "grey.300",
                 },
               }}
             />
@@ -410,23 +524,36 @@ const AgentPropertyFilterModal = ({
           <Box sx={{ mb: 3 }}>
             <Typography variant="body2" sx={{ mb: 1, color: "text.secondary" }}>
               보증금: {formatPrice(depositRange[0])} -{" "}
-              {formatPrice(depositRange[1])}
+              {formatPrice(depositRange[1], depositRange[1] === 50000)}
             </Typography>
             <Slider
               value={depositRange}
-              onChange={(_, newValue) => setDepositRange(newValue as number[])}
+              onChange={(_, newValue) => handleDepositRangeChange(newValue)}
               valueLabelDisplay="auto"
               min={0}
               max={50000}
-              step={500}
-              valueLabelFormat={formatPrice}
+              step={100}
+              valueLabelFormat={(value) => formatPriceForSlider(value, 50000)}
               sx={{
                 color: "primary.main",
                 "& .MuiSlider-thumb": {
                   backgroundColor: "primary.main",
+                  boxShadow: "none",
+                  "&:hover": {
+                    boxShadow: "none",
+                  },
+                  "&:focus": {
+                    boxShadow: "none",
+                  },
+                  "&.Mui-active": {
+                    boxShadow: "none",
+                  },
                 },
                 "& .MuiSlider-track": {
                   backgroundColor: "primary.main",
+                },
+                "& .MuiSlider-rail": {
+                  backgroundColor: "grey.300",
                 },
               }}
             />
@@ -434,7 +561,7 @@ const AgentPropertyFilterModal = ({
         </Box>
       </DialogContent>
 
-      <DialogActions sx={{ p: 3, gap: 2 }}>
+      <DialogActions sx={{ p: 5, gap: 2 }}>
         <Button
           variant="outlined"
           onClick={handleReset}

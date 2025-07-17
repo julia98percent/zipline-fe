@@ -120,24 +120,41 @@ const AgentPropertyFilterModal = ({
     }
 
     // 범위 필터들
+    // 전용 면적
     if (netAreaRange[0] > 0 || netAreaRange[1] < 200) {
       cleanedFilters.minNetArea = netAreaRange[0];
       cleanedFilters.maxNetArea = netAreaRange[1];
+    } else {
+      // 기본값인 경우 undefined로 설정하여 필터 제거
+      cleanedFilters.minNetArea = undefined;
+      cleanedFilters.maxNetArea = undefined;
     }
 
+    // 공급 면적
     if (totalAreaRange[0] > 0 || totalAreaRange[1] < 300) {
       cleanedFilters.minTotalArea = totalAreaRange[0];
       cleanedFilters.maxTotalArea = totalAreaRange[1];
+    } else {
+      cleanedFilters.minTotalArea = undefined;
+      cleanedFilters.maxTotalArea = undefined;
     }
 
+    // 매매가
     if (priceRange[0] > 0 || priceRange[1] < 100000) {
       cleanedFilters.minPrice = priceRange[0];
       cleanedFilters.maxPrice = priceRange[1];
+    } else {
+      cleanedFilters.minPrice = undefined;
+      cleanedFilters.maxPrice = undefined;
     }
 
+    // 보증금
     if (depositRange[0] > 0 || depositRange[1] < 50000) {
       cleanedFilters.minDeposit = depositRange[0];
       cleanedFilters.maxDeposit = depositRange[1];
+    } else {
+      cleanedFilters.minDeposit = undefined;
+      cleanedFilters.maxDeposit = undefined;
     }
 
     onApply(cleanedFilters);

@@ -31,7 +31,7 @@ const TextField = ({
       placeholder={placeholder}
       error={error}
       helperText={helperText}
-      className={`border rounded-md p-2 ${className}`}
+      className={className || ""}
       type={type}
       InputProps={{
         readOnly: Boolean(onChange) == false,

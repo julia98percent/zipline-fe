@@ -142,10 +142,11 @@ const CustomerSelectModal = ({
 
   const handleRegionChange =
     (type: "sido" | "sigungu" | "dong") =>
-    (event: SelectChangeEvent<string>) => {
+    (event: SelectChangeEvent<number>) => {
       const selectedRegion = region[type].find(
-        (item: Region) => item.cortarName === event.target.value
+        (item: Region) => item.cortarNo == event.target.value
       );
+
       if (selectedRegion) {
         setRegion((prev) => ({
           ...prev,

@@ -1,11 +1,6 @@
-import {
-  FormControl,
-  InputLabel,
-  MenuItem,
-  Select,
-  SelectChangeEvent,
-  TextField,
-} from "@mui/material";
+import { SelectChangeEvent } from "@mui/material";
+import Select, { MenuItem } from "@components/Select";
+import TextField from "@components/TextField";
 
 const BUILDING_TYPES = [
   "단독/다가구",
@@ -50,47 +45,36 @@ export default function PropertyTypeFilterSection({
 }: PropertyTypeFilterSectionProps) {
   return (
     <>
-      {/* Property Type */}
-      <FormControl fullWidth sx={{ mb: 3 }}>
-        <InputLabel>매물 유형</InputLabel>
-        <Select
-          value={category || ""}
-          onChange={onCategoryChange}
-          label="매물 유형"
-        >
-          <MenuItem value="">전체</MenuItem>
-          <MenuItem value="SALE">매매</MenuItem>
-          <MenuItem value="MONTHLY">월세</MenuItem>
-          <MenuItem value="DEPOSIT">전세</MenuItem>
-        </Select>
-      </FormControl>
+      <Select
+        value={category || ""}
+        onChange={onCategoryChange}
+        label="매물 유형"
+      >
+        <MenuItem value="SALE">매매</MenuItem>
+        <MenuItem value="MONTHLY">월세</MenuItem>
+        <MenuItem value="DEPOSIT">전세</MenuItem>
+      </Select>
 
       {/* Building Type */}
-      <FormControl fullWidth sx={{ mb: 3 }}>
-        <InputLabel>건물 유형</InputLabel>
-        <Select
-          value={buildingType || ""}
-          onChange={onBuildingTypeChange}
-          label="건물 유형"
-        >
-          <MenuItem value="">전체</MenuItem>
-          {BUILDING_TYPES.map((type) => (
-            <MenuItem key={type} value={type}>
-              {type}
-            </MenuItem>
-          ))}
-        </Select>
-      </FormControl>
+      <Select
+        value={buildingType || ""}
+        onChange={onBuildingTypeChange}
+        label="건물 유형"
+      >
+        {BUILDING_TYPES.map((type) => (
+          <MenuItem key={type} value={type}>
+            {type}
+          </MenuItem>
+        ))}
+      </Select>
 
       {/* Building Name */}
-      <FormControl fullWidth sx={{ mb: 3 }}>
-        <TextField
-          value={buildingName || ""}
-          onChange={onBuildingNameChange}
-          label="건물명"
-          fullWidth
-        />
-      </FormControl>
+      <TextField
+        value={buildingName || ""}
+        onChange={onBuildingNameChange}
+        label="건물명"
+        fullWidth
+      />
     </>
   );
 }

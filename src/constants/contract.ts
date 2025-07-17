@@ -1,15 +1,29 @@
+export enum ContractStatusEnum {
+  LISTED = "LISTED",
+  NEGOTIATING = "NEGOTIATING",
+  INTENT_SIGNED = "INTENT_SIGNED",
+  CANCELLED = "CANCELLED",
+  CONTRACTED = "CONTRACTED",
+  IN_PROGRESS = "IN_PROGRESS",
+  PAID_COMPLETE = "PAID_COMPLETE",
+  REGISTERED = "REGISTERED",
+  MOVED_IN = "MOVED_IN",
+  TERMINATED = "TERMINATED",
+  CLOSED = "CLOSED",
+}
+
 export const CONTRACT_STATUS_OPTION_LIST = [
-  { value: "LISTED", label: "매물 등록" },
-  { value: "NEGOTIATING", label: "협상 중" },
-  { value: "INTENT_SIGNED", label: "가계약" },
-  { value: "CANCELLED", label: "계약 취소" },
-  { value: "CONTRACTED", label: "계약 체결" },
-  { value: "IN_PROGRESS", label: "계약 진행 중" },
-  { value: "PAID_COMPLETE", label: "잔금 지급 완료" },
-  { value: "REGISTERED", label: "등기 완료" },
-  { value: "MOVED_IN", label: "입주 완료" },
-  { value: "TERMINATED", label: "계약 해지" },
-  { value: "CLOSED", label: "계약 종료" },
+  { value: ContractStatusEnum.LISTED, label: "매물 등록" },
+  { value: ContractStatusEnum.NEGOTIATING, label: "협상 중" },
+  { value: ContractStatusEnum.INTENT_SIGNED, label: "가계약" },
+  { value: ContractStatusEnum.CANCELLED, label: "계약 취소" },
+  { value: ContractStatusEnum.CONTRACTED, label: "계약 체결" },
+  { value: ContractStatusEnum.IN_PROGRESS, label: "계약 진행 중" },
+  { value: ContractStatusEnum.PAID_COMPLETE, label: "잔금 지급 완료" },
+  { value: ContractStatusEnum.REGISTERED, label: "등기 완료" },
+  { value: ContractStatusEnum.MOVED_IN, label: "입주 완료" },
+  { value: ContractStatusEnum.TERMINATED, label: "계약 해지" },
+  { value: ContractStatusEnum.CLOSED, label: "계약 종료" },
 ] as const;
 
 const CONTRACT_STATUS_COLOR_MAP: Record<string, string> = {

@@ -1,12 +1,5 @@
-import {
-  Box,
-  Typography,
-  FormControl,
-  InputLabel,
-  Select,
-  MenuItem,
-  SelectChangeEvent,
-} from "@mui/material";
+import { SelectChangeEvent } from "@mui/material";
+import RegionSelector from "@components/RegionSelector";
 import TextField from "@components/TextField";
 import { Region } from "@ts/region";
 
@@ -33,60 +26,43 @@ export default function AdditionalInfoSection({
   onFieldChange,
 }: AdditionalInfoSectionProps) {
   return (
-    <Box sx={{ mb: 4 }}>
-      <Typography variant="h6" sx={{ mb: 2, fontWeight: "bold" }}>
-        부가 정보
-      </Typography>
-      <Box sx={{ mb: 2 }}>
-        <Typography variant="subtitle2" sx={{ mb: 1 }}>
-          관심 지역
-        </Typography>
-        <Box sx={{ display: "flex", flexDirection: "column", gap: 2 }}>
-          {(["sido", "sigungu", "dong"] as const).map((type) => {
-            const selectedKey = `selected${
-              type.charAt(0).toUpperCase() + type.slice(1)
-            }` as keyof typeof regionState;
-            return (
-              <FormControl fullWidth key={type} size="small">
-                <InputLabel>
-                  {type === "sido"
-                    ? "시/도"
-                    : type === "sigungu"
-                    ? "시/군/구"
-                    : "읍/면/동"}
-                </InputLabel>
-                <Select
-                  value={String(regionState[selectedKey] || "")}
-                  onChange={onRegionChange(type)}
-                  label={
-                    type === "sido"
-                      ? "시/도"
-                      : type === "sigungu"
-                      ? "시/군/구"
-                      : "읍/면/동"
-                  }
-                  disabled={
-                    type !== "sido" &&
-                    !regionState[
-                      type === "dong" ? "selectedSigungu" : "selectedSido"
-                    ]
-                  }
-                >
-                  {regionState[type].map((item: Region) => (
-                    <MenuItem key={item.cortarNo} value={String(item.cortarNo)}>
-                      {item.cortarName}
-                    </MenuItem>
-                  ))}
-                </Select>
-              </FormControl>
-            );
-          })}
-        </Box>
-      </Box>
-      <Box>
-        <Typography variant="subtitle2" sx={{ mb: 1 }}>
-          유입경로
-        </Typography>
+    <div className="mb-8">
+      <h6 className="text-lg font-bold mb-4">부가 정보</h6>
+      <div className="mb-4">
+        <div className="text-sm font-medium mb-2">관심 지역</div>
+        <div className="flex flex-col gap-4">
+          <RegionSelector
+            value={regionState.selectedSido || ""}
+            regions={regionState.sido}
+            onChange={(event) =>
+              onRegionChange("sido")(event as unknown as SelectChangeEvent)
+            }
+            label="시/도"
+          />
+
+          <RegionSelector
+            value={regionState.selectedSigungu || ""}
+            regions={regionState.sigungu}
+            onChange={(event) =>
+              onRegionChange("sigungu")(event as unknown as SelectChangeEvent)
+            }
+            disabled={!regionState.selectedSido}
+            label="시/군/구"
+          />
+
+          <RegionSelector
+            value={regionState.selectedDong || ""}
+            regions={regionState.dong}
+            onChange={(event) =>
+              onRegionChange("dong")(event as unknown as SelectChangeEvent)
+            }
+            disabled={!regionState.selectedSigungu}
+            label="읍/면/동"
+          />
+        </div>
+      </div>
+      <div>
+        <div className="text-sm font-medium mb-2">유입경로</div>
         <TextField
           name="trafficSource"
           value={trafficSource}
@@ -95,7 +71,7 @@ export default function AdditionalInfoSection({
           placeholder="유입경로를 입력하세요"
           size="small"
         />
-      </Box>
-    </Box>
+      </div>
+    </div>
   );
 }

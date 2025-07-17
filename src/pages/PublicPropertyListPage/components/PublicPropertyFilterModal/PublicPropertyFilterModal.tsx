@@ -24,7 +24,6 @@ const PublicPropertyFilterModal = ({
   onApply,
   filters,
 }: PublicPropertyFilterModalProps) => {
-  // Local state for form values
   const [localFilters, setLocalFilters] =
     useState<PublicPropertySearchParams>(filters);
   const [region, setRegion] = useState<RegionState>({
@@ -96,7 +95,7 @@ const PublicPropertyFilterModal = ({
 
   const handleSidoChange = (event: SelectChangeEvent<string>) => {
     const selectedRegion = region.sido.find(
-      (item) => item.cortarName === event.target.value
+      (item) => String(item.cortarNo) === event.target.value
     );
     if (selectedRegion) {
       setRegion((prev) => ({
@@ -112,7 +111,7 @@ const PublicPropertyFilterModal = ({
 
   const handleGuChange = (event: SelectChangeEvent<string>) => {
     const selectedRegion = region.sigungu.find(
-      (item) => item.cortarName === event.target.value
+      (item) => String(item.cortarNo) === event.target.value
     );
     if (selectedRegion) {
       setRegion((prev) => ({
@@ -126,7 +125,7 @@ const PublicPropertyFilterModal = ({
 
   const handleDongChange = (event: SelectChangeEvent<string>) => {
     const selectedRegion = region.dong.find(
-      (item) => item.cortarName === event.target.value
+      (item) => String(item.cortarNo) == event.target.value
     );
     if (selectedRegion) {
       setRegion((prev) => ({
@@ -171,9 +170,9 @@ const PublicPropertyFilterModal = ({
 
   const handleReset = () => {
     setLocalFilters({
-      page: 0,
       size: 20,
-      sortFields: { id: "ASC" },
+      sortField: "id",
+      isAscending: true,
       category: "",
       buildingType: "",
       buildingName: "",

@@ -125,7 +125,7 @@ function AgentPropertyListPage() {
   // 이벤트 핸들러
   const handleSidoChange = useCallback(
     async (e: SelectChangeEvent) => {
-      const newSido = e.target.value;
+      const newSido = String(e.target.value);
       setSelectedSido(newSido);
       setSelectedGu("");
       setSelectedDong("");
@@ -146,7 +146,7 @@ function AgentPropertyListPage() {
 
   const handleGuChange = useCallback(
     async (e: SelectChangeEvent) => {
-      const newGu = e.target.value;
+      const newGu = String(e.target.value);
       setSelectedGu(newGu);
       setSelectedDong("");
 
@@ -169,7 +169,7 @@ function AgentPropertyListPage() {
 
   const handleDongChange = useCallback(
     async (e: SelectChangeEvent) => {
-      const newDong = e.target.value;
+      const newDong = String(e.target.value);
       setSelectedDong(newDong);
 
       const newParams = {

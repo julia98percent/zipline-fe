@@ -33,7 +33,7 @@ interface CustomerSelectModalViewProps {
   onSearchChange: (search: string) => void;
   onRegionChange: (
     type: "sido" | "sigungu" | "dong"
-  ) => (event: SelectChangeEvent<string>) => void;
+  ) => (event: SelectChangeEvent<number>) => void;
   onRoleFilterChange: (role: string) => void;
   onLabelFilterChange: (labelUid: number) => void;
   onChangePage: (event: unknown, newPage: number) => void;

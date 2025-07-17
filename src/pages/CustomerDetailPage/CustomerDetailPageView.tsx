@@ -83,7 +83,7 @@ const CustomerDetailPageView = ({
         overflow: "auto",
         backgroundColor: "#f5f5f5",
         p: 0,
-        maxWidth: { xs: "100%", md: "calc(100vw - 240px)" },
+        maxWidth: "100vw",
         boxSizing: "border-box",
       }}
     >

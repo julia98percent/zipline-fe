@@ -3,8 +3,6 @@ import Button from "@components/Button";
 import {
   Box,
   TextField,
-  MenuItem,
-  Select,
   FormControlLabel,
   Checkbox,
   CircularProgress,
@@ -13,6 +11,7 @@ import {
   Paper,
   Tooltip,
 } from "@mui/material";
+import Select, { MenuItem } from "@components/Select";
 import PageHeader from "@components/PageHeader";
 import SingleChoiceAdd from "./SingleChoiceAdd";
 import MultipleChoiceAdd from "./MultipleChoiceAdd";
@@ -47,6 +46,8 @@ interface EditSurveyPageViewProps {
   onUpdateSurvey: () => void;
   isQuestionDeletable: (index: number) => boolean;
 }
+
+const StringBooleanSelect = Select<string | boolean>;
 
 const EditSurveyPageView = ({
   survey,
@@ -181,21 +182,21 @@ const EditSurveyPageView = ({
                 }
                 sx={{ mb: 2 }}
               />
-              <Select
+              <StringBooleanSelect
                 disabled={questionIndex < 2}
                 fullWidth
                 value={question.type}
                 onChange={(event) =>
                   onQuestionChange(questionIndex, "type", event.target.value)
                 }
-                sx={{ mb: 2 }}
+                className="mb-2"
               >
                 {QUESTION_TYPE.map((type) => (
                   <MenuItem key={type.value} value={type.value}>
                     {type.label}
                   </MenuItem>
                 ))}
-              </Select>
+              </StringBooleanSelect>
 
               <FormControlLabel
                 control={

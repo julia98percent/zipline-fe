@@ -6,11 +6,12 @@ import {
   DialogActions,
   Button,
   Box,
-  MenuItem,
-  Select,
-  FormControl,
-  InputLabel,
 } from "@mui/material";
+import Select, { MenuItem, StringSelect } from "@components/Select";
+import {
+  ContractStatusEnum,
+  CONTRACT_STATUS_OPTION_LIST,
+} from "@constants/contract";
 
 interface ContractFilterModalProps {
   open: boolean;
@@ -19,11 +20,13 @@ interface ContractFilterModalProps {
   initialFilter: { period: string; status: string };
 }
 
+const ContractStatusSelect = Select<ContractStatusEnum>;
+
 const ContractFilterModal = ({
   open,
   onClose,
   onApply,
-  initialFilter = { period: "", status: "" }, // ✅ 기본값 부여
+  initialFilter = { period: "", status: "" },
 }: ContractFilterModalProps) => {
   const [period, setPeriod] = useState(initialFilter.period);
   const [status, setStatus] = useState(initialFilter.status);
@@ -49,43 +52,30 @@ const ContractFilterModal = ({
       <DialogTitle>계약 필터</DialogTitle>
       <DialogContent>
         <Box display="flex" gap={2} flexDirection="column" mt={2}>
-          {/* 기간 필터 */}
-          <FormControl fullWidth>
-            <InputLabel>기간</InputLabel>
-            <Select
-              value={period}
-              onChange={(e) => setPeriod(e.target.value)}
-              label="기간"
-            >
-              <MenuItem value="">전체</MenuItem>
-              <MenuItem value="1개월 이내">1개월 이내</MenuItem>
-              <MenuItem value="3개월 이내">3개월 이내</MenuItem>
-              <MenuItem value="6개월 이내">6개월 이내</MenuItem>
-            </Select>
-          </FormControl>
+          <StringSelect
+            value={period}
+            onChange={(e) => setPeriod(e.target.value)}
+            label="기간"
+          >
+            <MenuItem value="">전체</MenuItem>
+            <MenuItem value="1개월 이내">1개월 이내</MenuItem>
+            <MenuItem value="3개월 이내">3개월 이내</MenuItem>
+            <MenuItem value="6개월 이내">6개월 이내</MenuItem>
+          </StringSelect>
 
-          {/* 상태 필터 */}
-          <FormControl fullWidth>
-            <InputLabel>계약 상태</InputLabel>
-            <Select
-              value={status}
-              onChange={(e) => setStatus(e.target.value)}
-              label="계약 상태"
-            >
-              <MenuItem value="">전체</MenuItem>
-              <MenuItem value="LISTED">매물 등록됨</MenuItem>
-              <MenuItem value="NEGOTIATING">협상 중</MenuItem>
-              <MenuItem value="INTENT_SIGNED">가계약</MenuItem>
-              <MenuItem value="CANCELLED">계약 취소</MenuItem>
-              <MenuItem value="CONTRACTED">계약 체결</MenuItem>
-              <MenuItem value="IN_PROGRESS">계약 진행 중</MenuItem>
-              <MenuItem value="PAID_COMPLETE">잔금 지급 완료</MenuItem>
-              <MenuItem value="REGISTERED">등기 완료</MenuItem>
-              <MenuItem value="MOVED_IN">입주 완료</MenuItem>
-              <MenuItem value="TERMINATED">계약 해지</MenuItem>
-              <MenuItem value="CLOSED">계약 종료</MenuItem>
-            </Select>
-          </FormControl>
+          <ContractStatusSelect
+            value={status}
+            onChange={(e) => setStatus(e.target.value)}
+            label="계약 상태"
+          >
+            <MenuItem value="">전체</MenuItem>
+            <MenuItem value="">전체</MenuItem>
+            {CONTRACT_STATUS_OPTION_LIST.map(({ value, label }) => (
+              <MenuItem key={value} value={value}>
+                {label}
+              </MenuItem>
+            ))}
+          </ContractStatusSelect>
         </Box>
       </DialogContent>
 

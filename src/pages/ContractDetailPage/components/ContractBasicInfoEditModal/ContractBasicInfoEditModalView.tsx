@@ -7,13 +7,10 @@ import {
   Button,
   Box,
   Typography,
-  FormControl,
-  InputLabel,
-  Select,
-  MenuItem,
   Autocomplete,
   Chip,
 } from "@mui/material";
+import { MenuItem, StringSelect } from "@components/Select";
 import { ContractCategory, ContractCategoryType } from "@ts/contract";
 import { CONTRACT_STATUS_OPTION_LIST } from "@constants/contract";
 import { AgentPropertyResponse, CustomerResponse } from "@apis/contractService";
@@ -106,37 +103,31 @@ const ContractBasicInfoEditModalView = ({
       <DialogContent sx={{ maxHeight: 600, overflowY: "auto" }}>
         <Box sx={{ display: "flex", flexDirection: "column", gap: 3, mt: 2 }}>
           <Box sx={{ display: "flex", gap: 2 }}>
-            <FormControl fullWidth>
-              <InputLabel>카테고리</InputLabel>
-              <Select
-                value={category || ""}
-                onChange={(e) =>
-                  onCategoryChange(e.target.value as ContractCategoryType)
-                }
-                label="카테고리"
-              >
-                {Object.entries(ContractCategory).map(([key, value]) => (
-                  <MenuItem key={key} value={key}>
-                    {value}
-                  </MenuItem>
-                ))}
-              </Select>
-            </FormControl>
+            <StringSelect
+              value={category || ""}
+              onChange={(e) =>
+                onCategoryChange(e.target.value as ContractCategoryType)
+              }
+              label="카테고리"
+            >
+              {Object.entries(ContractCategory).map(([key, value]) => (
+                <MenuItem key={key} value={key}>
+                  {value}
+                </MenuItem>
+              ))}
+            </StringSelect>
 
-            <FormControl fullWidth>
-              <InputLabel>상태</InputLabel>
-              <Select
-                value={status}
-                onChange={(e) => onStatusChange(e.target.value)}
-                label="상태"
-              >
-                {CONTRACT_STATUS_OPTION_LIST.map((option) => (
-                  <MenuItem key={option.value} value={option.value}>
-                    {option.label}
-                  </MenuItem>
-                ))}
-              </Select>
-            </FormControl>
+            <StringSelect
+              value={status}
+              onChange={(e) => onStatusChange(e.target.value)}
+              label="상태"
+            >
+              {CONTRACT_STATUS_OPTION_LIST.map((option) => (
+                <MenuItem key={option.value} value={option.value}>
+                  {option.label}
+                </MenuItem>
+              ))}
+            </StringSelect>
           </Box>
 
           <Box sx={{ display: "flex", gap: 2 }}>
@@ -189,20 +180,17 @@ const ContractBasicInfoEditModalView = ({
             />
           )}
 
-          <FormControl fullWidth>
-            <InputLabel>매물 선택</InputLabel>
-            <Select
-              value={selectedPropertyUid}
-              onChange={(e) => onSelectedPropertyUidChange(e.target.value)}
-              label="매물 선택"
-            >
-              {propertyOptions.map((property) => (
-                <MenuItem key={property.uid} value={property.uid.toString()}>
-                  {property.address}
-                </MenuItem>
-              ))}
-            </Select>
-          </FormControl>
+          <StringSelect
+            value={selectedPropertyUid}
+            onChange={(e) => onSelectedPropertyUidChange(e.target.value)}
+            label="매물 선택"
+          >
+            {propertyOptions.map((property) => (
+              <MenuItem key={property.uid} value={property.uid.toString()}>
+                {property.address}
+              </MenuItem>
+            ))}
+          </StringSelect>
 
           <Box sx={{ display: "flex", gap: 2 }}>
             <TextField

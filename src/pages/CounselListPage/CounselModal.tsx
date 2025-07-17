@@ -1,18 +1,15 @@
+import { useState, useEffect } from "react";
 import {
   Dialog,
   DialogTitle,
   DialogContent,
   DialogActions,
   TextField,
-  Select,
-  MenuItem,
-  FormControl,
-  InputLabel,
   Button,
   Box,
   CircularProgress,
 } from "@mui/material";
-import { useState, useEffect } from "react";
+import { MenuItem, StringSelect } from "@components/Select";
 import dayjs from "dayjs";
 import utc from "dayjs/plugin/utc";
 import timezone from "dayjs/plugin/timezone";
@@ -136,44 +133,38 @@ function CounselModal({ open, onClose, onSuccess }: CounselModalProps) {
             required
           />
 
-          <FormControl fullWidth>
-            <InputLabel>고객 선택</InputLabel>
-            <Select
-              value={selectedCustomer}
-              onChange={(e) => setSelectedCustomer(e.target.value)}
-              label="고객 선택"
-              disabled={isCustomersLoading}
-              required
-            >
-              {isCustomersLoading ? (
-                <MenuItem value="">
-                  <CircularProgress size={20} />
+          <StringSelect
+            value={selectedCustomer}
+            onChange={(e) => setSelectedCustomer(e.target.value)}
+            label="고객 선택"
+            disabled={isCustomersLoading}
+            required
+          >
+            {isCustomersLoading ? (
+              <MenuItem value="">
+                <CircularProgress size={20} />
+              </MenuItem>
+            ) : (
+              customers.map((customer) => (
+                <MenuItem key={customer.uid} value={customer.uid}>
+                  {customer.name}
                 </MenuItem>
-              ) : (
-                customers.map((customer) => (
-                  <MenuItem key={customer.uid} value={customer.uid}>
-                    {customer.name}
-                  </MenuItem>
-                ))
-              )}
-            </Select>
-          </FormControl>
+              ))
+            )}
+          </StringSelect>
 
-          <FormControl fullWidth>
-            <InputLabel>상담 유형</InputLabel>
-            <Select
-              value={counselType}
-              onChange={(e) => setCounselType(e.target.value)}
-              label="상담 유형"
-              required
-            >
-              {Object.entries(CounselCategory).map(([key, value]) => (
-                <MenuItem key={key} value={value}>
-                  {value}
-                </MenuItem>
-              ))}
-            </Select>
-          </FormControl>
+          <StringSelect
+            value={counselType}
+            onChange={(e) => setCounselType(e.target.value)}
+            label="상담 유형"
+            required
+          >
+            {Object.entries(CounselCategory).map(([key, value]) => (
+              <MenuItem key={key} value={value}>
+                {value}
+              </MenuItem>
+            ))}
+          </StringSelect>
 
           <TextField
             label="상담일시"
@@ -194,27 +185,24 @@ function CounselModal({ open, onClose, onSuccess }: CounselModalProps) {
             fullWidth
           />
 
-          <FormControl fullWidth>
-            <InputLabel>관련 매물</InputLabel>
-            <Select
-              value={selectedProperty}
-              onChange={(e) => setSelectedProperty(e.target.value)}
-              label="관련 매물"
-              disabled={isPropertiesLoading}
-            >
-              {isPropertiesLoading ? (
-                <MenuItem value="">
-                  <CircularProgress size={20} />
+          <StringSelect
+            value={selectedProperty}
+            onChange={(e) => setSelectedProperty(e.target.value)}
+            label="관련 매물"
+            disabled={isPropertiesLoading}
+          >
+            {isPropertiesLoading ? (
+              <MenuItem value="">
+                <CircularProgress size={20} />
+              </MenuItem>
+            ) : (
+              properties.map((property) => (
+                <MenuItem key={property.uid} value={property.uid}>
+                  {property.address}
                 </MenuItem>
-              ) : (
-                properties.map((property) => (
-                  <MenuItem key={property.uid} value={property.uid}>
-                    {property.address}
-                  </MenuItem>
-                ))
-              )}
-            </Select>
-          </FormControl>
+              ))
+            )}
+          </StringSelect>
 
           <TextField
             label="상담 내용"

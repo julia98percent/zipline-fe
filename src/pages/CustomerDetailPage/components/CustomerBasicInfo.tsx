@@ -1,14 +1,6 @@
-import {
-  Box,
-  Paper,
-  Typography,
-  TextField,
-  FormControl,
-  Select,
-  MenuItem,
-} from "@mui/material";
+import Select, { MenuItem } from "@components/Select";
+import TextField from "@components/TextField";
 import { formatPhoneNumber } from "@utils/numberUtil";
-import RegionSelect from "@components/RegionSelect/RegionSelect";
 import { Customer } from "@ts/customer";
 
 interface CustomerBasicInfoProps {
@@ -19,7 +11,6 @@ interface CustomerBasicInfoProps {
     field: keyof Customer,
     value: string | number | boolean | null | { uid: number; name: string }[]
   ) => void;
-  onRegionChange: (value: { code: number | null; name: string }) => void;
 }
 
 const CustomerBasicInfo = ({
@@ -27,7 +18,6 @@ const CustomerBasicInfo = ({
   isEditing,
   editedCustomer,
   onInputChange,
-  onRegionChange,
 }: CustomerBasicInfoProps) => {
   const formatBirthDay = (birthday: string | null) => {
     if (!birthday) return "-";
@@ -35,18 +25,11 @@ const CustomerBasicInfo = ({
   };
 
   return (
-    <Paper elevation={0} sx={{ flex: 2, p: 3, borderRadius: 2, mt: 1 }}>
-      <Typography
-        variant="h6"
-        sx={{ mb: 2, color: "#164F9E", fontWeight: "bold" }}
-      >
-        기본 정보
-      </Typography>
-      <Box sx={{ display: "flex", flexWrap: "wrap", gap: 2 }}>
-        <Box sx={{ flex: "0 0 calc(50% - 8px)" }}>
-          <Typography variant="subtitle2" color="textSecondary">
-            이름
-          </Typography>
+    <div className="flex-grow bg-white p-6 rounded-lg mt-2">
+      <h6 className="mb-4 text-[#164F9E] font-bold text-lg">기본 정보</h6>
+      <div className="flex flex-wrap gap-4">
+        <div className="flex-[0_0_calc(50%-8px)]">
+          <div className="text-sm text-gray-600 mb-1">이름</div>
           {isEditing ? (
             <TextField
               fullWidth
@@ -55,13 +38,11 @@ const CustomerBasicInfo = ({
               onChange={(e) => onInputChange("name", e.target.value)}
             />
           ) : (
-            <Typography variant="body1">{customer.name}</Typography>
+            <div className="text-base">{customer.name}</div>
           )}
-        </Box>
-        <Box sx={{ flex: "0 0 calc(50% - 8px)" }}>
-          <Typography variant="subtitle2" color="textSecondary">
-            전화번호
-          </Typography>
+        </div>
+        <div className="flex-[0_0_calc(50%-8px)]">
+          <div className="text-sm text-gray-600 mb-1">전화번호</div>
           {isEditing ? (
             <TextField
               fullWidth
@@ -70,56 +51,62 @@ const CustomerBasicInfo = ({
               onChange={(e) => onInputChange("phoneNo", e.target.value)}
             />
           ) : (
-            <Typography variant="body1">{customer.phoneNo}</Typography>
+            <div className="text-base">{customer.phoneNo}</div>
           )}
-        </Box>
-        <Box sx={{ flex: "0 0 calc(50% - 8px)" }}>
-          <Typography variant="subtitle2" color="textSecondary">
-            통신사
-          </Typography>
+        </div>
+        <div className="flex-[0_0_calc(50%-8px)]">
+          <div className="text-sm text-gray-600 mb-1">통신사</div>
           {isEditing ? (
-            <FormControl fullWidth size="small">
-              <Select
-                value={editedCustomer?.telProvider || ""}
-                onChange={(e) => onInputChange("telProvider", e.target.value)}
-              >
-                <MenuItem value="SKT">SKT</MenuItem>
-                <MenuItem value="KT">KT</MenuItem>
-                <MenuItem value="LGU+">LGU+</MenuItem>
-                <MenuItem value="SKT 알뜰폰">SKT 알뜰폰</MenuItem>
-                <MenuItem value="KT 알뜰폰">KT 알뜰폰</MenuItem>
-                <MenuItem value="LGU+ 알뜰폰">LGU+ 알뜰폰</MenuItem>
-              </Select>
-            </FormControl>
+            <Select
+              value={editedCustomer?.telProvider || ""}
+              onChange={(e) => onInputChange("telProvider", e.target.value)}
+              size="small"
+            >
+              <MenuItem value="SKT">SKT</MenuItem>
+              <MenuItem value="KT">KT</MenuItem>
+              <MenuItem value="LGU+">LGU+</MenuItem>
+              <MenuItem value="SKT 알뜰폰">SKT 알뜰폰</MenuItem>
+              <MenuItem value="KT 알뜰폰">KT 알뜰폰</MenuItem>
+              <MenuItem value="LGU+ 알뜰폰">LGU+ 알뜰폰</MenuItem>
+            </Select>
           ) : (
-            <Typography variant="body1">
-              {customer.telProvider || "-"}
-            </Typography>
+            <div className="text-base">{customer.telProvider || "-"}</div>
           )}
-        </Box>
-        <Box sx={{ flex: "0 0 calc(50% - 8px)" }}>
-          <Typography variant="subtitle2" color="textSecondary">
-            희망 지역
-          </Typography>
+        </div>
+        <div className="flex-[0_0_calc(50%-8px)]">
+          <div className="text-sm text-gray-600 mb-1">희망 지역</div>
           {isEditing ? (
-            <RegionSelect
-              value={{
-                code: editedCustomer?.legalDistrictCode ?? null,
-                name: editedCustomer?.preferredRegion ?? "",
-              }}
-              onChange={onRegionChange}
-              disabled={false}
-            />
+            <Select
+              value={editedCustomer?.preferredRegion || ""}
+              onChange={(e) => onInputChange("preferredRegion", e.target.value)}
+              size="small"
+              showEmptyOption
+              emptyText="희망 지역을 선택하세요"
+            >
+              <MenuItem value="서울">서울</MenuItem>
+              <MenuItem value="부산">부산</MenuItem>
+              <MenuItem value="대구">대구</MenuItem>
+              <MenuItem value="인천">인천</MenuItem>
+              <MenuItem value="광주">광주</MenuItem>
+              <MenuItem value="대전">대전</MenuItem>
+              <MenuItem value="울산">울산</MenuItem>
+              <MenuItem value="세종">세종</MenuItem>
+              <MenuItem value="경기">경기</MenuItem>
+              <MenuItem value="강원">강원</MenuItem>
+              <MenuItem value="충북">충북</MenuItem>
+              <MenuItem value="충남">충남</MenuItem>
+              <MenuItem value="전북">전북</MenuItem>
+              <MenuItem value="전남">전남</MenuItem>
+              <MenuItem value="경북">경북</MenuItem>
+              <MenuItem value="경남">경남</MenuItem>
+              <MenuItem value="제주">제주</MenuItem>
+            </Select>
           ) : (
-            <Typography variant="body1">
-              {customer.preferredRegion || "-"}
-            </Typography>
+            <div className="text-base">{customer.preferredRegion || "-"}</div>
           )}
-        </Box>
-        <Box sx={{ flex: "0 0 calc(50% - 8px)" }}>
-          <Typography variant="subtitle2" color="textSecondary">
-            생년월일
-          </Typography>
+        </div>
+        <div className="flex-[0_0_calc(50%-8px)]">
+          <div className="text-sm text-gray-600 mb-1">생년월일</div>
           {isEditing ? (
             <TextField
               fullWidth
@@ -129,15 +116,11 @@ const CustomerBasicInfo = ({
               placeholder="YYYYMMDD"
             />
           ) : (
-            <Typography variant="body1">
-              {formatBirthDay(customer.birthday)}
-            </Typography>
+            <div className="text-base">{formatBirthDay(customer.birthday)}</div>
           )}
-        </Box>
-        <Box sx={{ flex: "0 0 calc(50% - 8px)" }}>
-          <Typography variant="subtitle2" color="textSecondary">
-            유입 경로
-          </Typography>
+        </div>
+        <div className="flex-[0_0_calc(50%-8px)]">
+          <div className="text-sm text-gray-600 mb-1">유입 경로</div>
           {isEditing ? (
             <TextField
               fullWidth
@@ -146,13 +129,11 @@ const CustomerBasicInfo = ({
               onChange={(e) => onInputChange("trafficSource", e.target.value)}
             />
           ) : (
-            <Typography variant="body1">
-              {customer.trafficSource || "-"}
-            </Typography>
+            <div className="text-base">{customer.trafficSource || "-"}</div>
           )}
-        </Box>
-      </Box>
-    </Paper>
+        </div>
+      </div>
+    </div>
   );
 };
 

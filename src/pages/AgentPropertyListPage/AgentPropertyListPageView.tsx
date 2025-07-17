@@ -1,8 +1,9 @@
-import { CircularProgress, MenuItem, SelectChangeEvent } from "@mui/material";
+import { CircularProgress, SelectChangeEvent } from "@mui/material";
 import FilterListIcon from "@mui/icons-material/FilterList";
-import { Box } from "@mui/material";
 import { useNavigate } from "react-router-dom";
 import PageHeader from "@components/PageHeader/PageHeader";
+import Select, { MenuItem } from "@components/Select";
+import RegionSelector from "@components/RegionSelector";
 import { AgentPropertyTable, AgentPropertyFilterModal } from "./components";
 import PropertyAddModal from "./components/PropertyAddButtonList/PropertyAddModal/PropertyAddModal";
 import { Property } from "@ts/property";
@@ -15,15 +16,9 @@ import {
   FilterButton,
   LoadingContainer,
   TopFilterBar,
-  AddressSelectBox,
-  CategoryButtonGroup,
-  TypeButtonGroup,
-  StyledSelect,
   FilterContainer,
   LeftButtonGroup,
   RightButtonGroup,
-  menuItemStyles,
-  selectMenuProps,
 } from "./styles/PrivatePropertyListPage.styles";
 
 interface CategoryOption {
@@ -50,9 +45,9 @@ interface AgentPropertyListPageViewProps {
   typeOptions: TypeOption[];
   sigunguOptions: Region[];
   dongOptions: Region[];
-  onSidoChange: (event: SelectChangeEvent) => void;
-  onGuChange: (event: SelectChangeEvent) => void;
-  onDongChange: (event: SelectChangeEvent) => void;
+  onSidoChange: (event: SelectChangeEvent<number>) => void;
+  onGuChange: (event: SelectChangeEvent<number>) => void;
+  onDongChange: (event: SelectChangeEvent<number>) => void;
   onCategoryChange: (event: SelectChangeEvent<unknown>) => void;
   onTypeChange: (event: SelectChangeEvent<unknown>) => void;
   onFilterApply: (newFilters: Partial<AgentPropertySearchParams>) => void;
@@ -130,128 +125,77 @@ const AgentPropertyListPageView = ({
         {/* 상단 필터 바 */}
         <TopFilterBar>
           {/* 주소 선택 (시/도/구/군/동) */}
-          <Box sx={{ display: "flex", gap: 12, flexWrap: "wrap" }}>
-            <AddressSelectBox
-              sx={{ background: "#fff", boxShadow: "none", padding: 0 }}
-            >
-              <StyledSelect
-                size="small"
+          <div className="flex gap-3 flex-wrap">
+            <div className="flex items-center gap-2">
+              <RegionSelector
+                label="시/도"
                 value={selectedSido}
-                displayEmpty
-                onChange={(event) => onSidoChange(event as SelectChangeEvent)}
-                sx={{ width: 120, height: 35 }}
-              >
-                <MenuItem value="">시/도</MenuItem>
-                {regions.map((sido: Region) => (
-                  <MenuItem key={sido.cortarNo} value={sido.cortarNo}>
-                    {sido.cortarName}
-                  </MenuItem>
-                ))}
-              </StyledSelect>
+                regions={regions}
+                onChange={onSidoChange}
+              />
 
-              <StyledSelect
-                size="small"
+              <RegionSelector
                 value={selectedGu}
-                displayEmpty
-                onChange={(event) => onGuChange(event as SelectChangeEvent)}
-                sx={{ width: 120, height: 35 }}
+                regions={sigunguOptions}
+                onChange={onGuChange}
                 disabled={!selectedSido}
-              >
-                <MenuItem value="">시/군/구</MenuItem>
-                {sigunguOptions.map((gu: Region) => (
-                  <MenuItem key={gu.cortarNo} value={gu.cortarNo}>
-                    {gu.cortarName}
-                  </MenuItem>
-                ))}
-              </StyledSelect>
+                label="시/군/구"
+              />
 
-              <StyledSelect
-                size="small"
+              <RegionSelector
                 value={selectedDong}
-                displayEmpty
-                onChange={(event) => onDongChange(event as SelectChangeEvent)}
-                sx={{ width: 120, height: 35 }}
+                regions={dongOptions}
+                onChange={onDongChange}
                 disabled={!selectedGu}
-              >
-                <MenuItem value="">동</MenuItem>
-                {dongOptions.map((dong: Region) => (
-                  <MenuItem key={dong.cortarNo} value={dong.cortarNo}>
-                    {dong.cortarName}
-                  </MenuItem>
-                ))}
-              </StyledSelect>
-            </AddressSelectBox>
-          </Box>
+                label="동"
+              />
+            </div>
+          </div>
 
           {/* 카테고리/판매유형/상세필터/새로고침 버튼 */}
           <FilterContainer>
-            <LeftButtonGroup sx={{ gap: 1 }}>
-              <CategoryButtonGroup>
-                <StyledSelect
+            <LeftButtonGroup className="gap-4">
+              <div className="flex gap-2">
+                <Select
                   size="small"
                   value={searchParams.category || ""}
-                  displayEmpty
                   onChange={onCategoryChange}
-                  sx={{ width: 120, height: 35 }}
-                  inputProps={{ "aria-label": "카테고리" }}
-                  MenuProps={selectMenuProps}
+                  displayEmpty
+                  showEmptyOption={false}
+                  aria-label="카테고리"
                 >
-                  <MenuItem value="" sx={menuItemStyles}>
-                    카테고리
-                  </MenuItem>
+                  <MenuItem value="">카테고리</MenuItem>
                   {categoryOptions.map((opt) => (
-                    <MenuItem
-                      key={opt.value}
-                      value={opt.value || ""}
-                      sx={menuItemStyles}
-                    >
+                    <MenuItem key={opt.value} value={opt.value || ""}>
                       {opt.label}
                     </MenuItem>
                   ))}
-                </StyledSelect>
-              </CategoryButtonGroup>
-              <TypeButtonGroup>
-                <StyledSelect
+                </Select>
+              </div>
+              <div className="flex gap-2">
+                <Select
                   size="small"
                   value={searchParams.type || ""}
-                  displayEmpty
                   onChange={onTypeChange}
-                  sx={{ width: 120, height: 35 }}
-                  inputProps={{ "aria-label": "판매유형" }}
-                  MenuProps={selectMenuProps}
+                  displayEmpty
+                  showEmptyOption={false}
+                  aria-label="판매유형"
                 >
-                  <MenuItem value="" sx={menuItemStyles}>
-                    판매유형
-                  </MenuItem>
+                  <MenuItem value="">판매유형</MenuItem>
                   {typeOptions.map((opt) => (
-                    <MenuItem
-                      key={opt.value}
-                      value={opt.value || ""}
-                      sx={menuItemStyles}
-                    >
+                    <MenuItem key={opt.value} value={opt.value || ""}>
                       {opt.label}
                     </MenuItem>
                   ))}
-                </StyledSelect>
-              </TypeButtonGroup>
+                </Select>
+              </div>
               <FilterButtonWrapper>
                 <FilterButton
                   variant="outlined"
                   onClick={onFilterModalToggle}
-                  sx={{
-                    border: "1px solid #164F9E",
-                    color: "#164F9E",
-                    minWidth: "40px",
-                    padding: "5px",
-                    borderRadius: "20px",
-                    width: "117px",
-                    "&:hover": {
-                      backgroundColor: "#F5F5F5",
-                      border: "1px solid #164F9E",
-                    },
-                  }}
+                  className="border border-[#164F9E] text-[#164F9E] min-w-10 p-1 rounded-3xl w-29 hover:bg-gray-100"
                 >
-                  <FilterListIcon sx={{ mr: "8px" }} />
+                  <FilterListIcon className="mr-2" />
                   상세 필터
                 </FilterButton>
               </FilterButtonWrapper>
@@ -261,18 +205,7 @@ const AgentPropertyListPageView = ({
                 <FilterButton
                   variant="contained"
                   onClick={onAddProperty}
-                  sx={{
-                    backgroundColor: "#164F9E",
-                    color: "white",
-                    minWidth: "40px",
-                    padding: "5px",
-                    borderRadius: "20px",
-                    width: "100px",
-                    marginRight: "10px",
-                    "&:hover": {
-                      backgroundColor: "#123d7a",
-                    },
-                  }}
+                  className="bg-[#164F9E] text-white min-w-10 p-1 rounded-3xl w-25 mr-3 hover:bg-[#123d7a]"
                 >
                   매물 추가
                 </FilterButton>
@@ -280,18 +213,7 @@ const AgentPropertyListPageView = ({
               <FilterButton
                 variant="outlined"
                 onClick={onRefresh}
-                sx={{
-                  border: "1px solid #164F9E",
-                  color: "#164F9E",
-                  minWidth: "40px",
-                  padding: "5px",
-                  borderRadius: "20px",
-                  width: "100px",
-                  "&:hover": {
-                    backgroundColor: "#F5F5F5",
-                    border: "1px solid #164F9E",
-                  },
-                }}
+                className="border border-[#164F9E] text-[#164F9E] min-w-10 p-1 rounded-3xl w-25 hover:bg-gray-100"
               >
                 새로고침
               </FilterButton>

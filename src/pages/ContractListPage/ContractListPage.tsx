@@ -12,10 +12,6 @@ interface OutletContext {
 
 function ContractListPage() {
   const { onMobileMenuToggle } = useOutletContext<OutletContext>();
-  const CONTRACT_STATUS_SEARCH_OPTIONS = [
-    { value: "", label: "전체" },
-    ...CONTRACT_STATUS_OPTION_LIST,
-  ];
 
   const periodMapping: Record<string, string> = {
     "6개월 이내 만료 예정": "6개월 이내",
@@ -160,7 +156,7 @@ function ContractListPage() {
       page={page}
       rowsPerPage={rowsPerPage}
       totalElements={totalElements}
-      CONTRACT_STATUS_SEARCH_OPTIONS={CONTRACT_STATUS_SEARCH_OPTIONS}
+      CONTRACT_STATUS_OPTION_LIST={CONTRACT_STATUS_OPTION_LIST}
       periodMapping={periodMapping}
       sortOptions={sortOptions}
       onSortChange={handleSortChange}

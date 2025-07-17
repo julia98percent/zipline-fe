@@ -19,7 +19,7 @@ interface ContractListPageViewProps {
   page: number;
   rowsPerPage: number;
   totalElements: number;
-  CONTRACT_STATUS_SEARCH_OPTIONS: Array<{ value: string; label: string }>;
+  CONTRACT_STATUS_OPTION_LIST: Array<{ value: string; label: string }>;
   periodMapping: Record<string, string>;
   sortOptions: Array<{ value: string; label: string }>;
   onSortChange: (value: string) => void;
@@ -49,7 +49,7 @@ const ContractListPageView = ({
   page,
   rowsPerPage,
   totalElements,
-  CONTRACT_STATUS_SEARCH_OPTIONS,
+  CONTRACT_STATUS_OPTION_LIST,
   periodMapping,
   sortOptions,
   onSortChange,
@@ -100,9 +100,7 @@ const ContractListPageView = ({
               <Select
                 label="상태 선택"
                 value={selectedStatus}
-                onChange={(event) =>
-                  onStatusChange(event.target.value as string)
-                }
+                onChange={(e) => onStatusChange(e.target.value)}
                 options={CONTRACT_STATUS_OPTION_LIST}
               />
 

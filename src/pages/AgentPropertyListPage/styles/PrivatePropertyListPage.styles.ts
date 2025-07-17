@@ -12,18 +12,17 @@ export const ContentContainer = styled(Box)({
 });
 
 export const FilterGroup = styled(Box)({
-    display: "flex",
-    alignItems: "center",
-    gap: "8px",
-    flexWrap: "wrap",
+  display: "flex",
+  alignItems: "center",
+  gap: "8px",
+  flexWrap: "wrap",
 });
 export const ButtonGroup = styled(Box)({
-    display: "flex",
-    alignItems: "center",
-    gap: "8px",
-    marginLeft: "auto",
-  });
-  
+  display: "flex",
+  alignItems: "center",
+  gap: "8px",
+  marginLeft: "auto",
+});
 
 export const FilterButtonCard = styled(Box)({
   display: "flex",
@@ -60,7 +59,7 @@ export const FilterButton = styled(Button)({
   minWidth: "100px",
   boxShadow: "none",
   transition: "background-color 0.2s ease",
-  '&:hover': {
+  "&:hover": {
     backgroundColor: "rgba(25, 118, 210, 0.05)",
     boxShadow: "none",
     border: "1px solid #1976d2",
@@ -138,35 +137,35 @@ export const StyledSelect = styled(Select)({
   fontWeight: 400,
   fontFamily: "'Pretendard', sans-serif",
   background: "#fff",
-  '& .MuiSelect-select': {
+  "& .MuiSelect-select": {
     padding: "8px 28px 8px 12px",
     minHeight: "32px",
     display: "flex",
     alignItems: "center",
   },
-  '& .MuiOutlinedInput-notchedOutline': {
+  "& .MuiOutlinedInput-notchedOutline": {
     border: "none",
   },
-  '& .MuiSvgIcon-root': {
-    right: '8px',
+  "& .MuiSvgIcon-root": {
+    right: "8px",
   },
-  '&:before': {
+  "&:before": {
     content: '""',
-    position: 'absolute',
-    right: '32px',
-    top: '50%',
-    transform: 'translateY(-50%)',
-    height: '16px',
-    width: '1px',
-    backgroundColor: '#E0E0E0',
+    position: "absolute",
+    right: "32px",
+    top: "50%",
+    transform: "translateY(-50%)",
+    height: "16px",
+    width: "1px",
+    backgroundColor: "#E0E0E0",
   },
-  '& .MuiSelect-icon': {
-    color: '#666666',
+  "& .MuiSelect-icon": {
+    color: "#666666",
   },
-  '&:hover': {
+  "&:hover": {
     border: "1.5px solid #1976d2",
   },
-  '&.Mui-focused': {
+  "&.Mui-focused": {
     border: "1.5px solid #1976d2",
   },
 });
@@ -177,13 +176,13 @@ export const menuItemStyles = {
   fontWeight: 400,
   fontFamily: "'Pretendard', sans-serif",
   padding: "8px 16px",
-  '&:hover': {
-    backgroundColor: 'rgba(25, 118, 210, 0.08)',
+  "&:hover": {
+    backgroundColor: "rgba(25, 118, 210, 0.08)",
   },
-  '&.Mui-selected': {
-    backgroundColor: 'rgba(25, 118, 210, 0.12)',
-    '&:hover': {
-      backgroundColor: 'rgba(25, 118, 210, 0.16)',
+  "&.Mui-selected": {
+    backgroundColor: "rgba(25, 118, 210, 0.12)",
+    "&:hover": {
+      backgroundColor: "rgba(25, 118, 210, 0.16)",
     },
   },
 };
@@ -192,12 +191,12 @@ export const menuItemStyles = {
 export const selectMenuProps = {
   PaperProps: {
     sx: {
-      marginTop: '4px',
-      borderRadius: '8px',
-      boxShadow: '0 2px 8px rgba(0,0,0,0.15)',
-      '& .MuiList-root': {
-        padding: '4px 0',
+      marginTop: "4px",
+      borderRadius: "8px",
+      boxShadow: "0 2px 8px rgba(0,0,0,0.15)",
+      "& .MuiList-root": {
+        padding: "4px 0",
       },
     },
   },
-}; 
+};

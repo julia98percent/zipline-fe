@@ -1,17 +1,6 @@
-import {
-  Box,
-  Typography,
-  Select,
-  MenuItem,
-  FormControl,
-  InputLabel,
-} from "@mui/material";
+import { Box, Typography, SelectChangeEvent } from "@mui/material";
+import RegionSelector from "@components/RegionSelector";
 import { RegionState } from "@ts/region";
-
-interface Region {
-  cortarNo: number;
-  cortarName: string;
-}
 
 interface Props {
   region: RegionState;
@@ -29,7 +18,8 @@ const RegionFilters = ({
   onSigunguChange,
 }: Props) => {
   const handleRegionChange =
-    (type: "sido" | "sigungu" | "dong") => (event: any) => {
+    (type: "sido" | "sigungu" | "dong") =>
+    (event: SelectChangeEvent<number>) => {
       const value = Number(event.target.value) || null;
       const updateKey = `selected${
         type.charAt(0).toUpperCase() + type.slice(1)
@@ -54,37 +44,26 @@ const RegionFilters = ({
         지역
       </Typography>
       <Box sx={{ display: "flex", gap: 2 }}>
-        {["sido", "sigungu", "dong"].map((type) => (
-          <FormControl key={type} fullWidth>
-            <InputLabel>
-              {{ sido: "시/도", sigungu: "시/군/구", dong: "동/읍/면" }[type]}
-            </InputLabel>
-            <Select
-              value={
-                region[
-                  `selected${
-                    type.charAt(0).toUpperCase() + type.slice(1)
-                  }` as keyof typeof region
-                ] || ""
-              }
-              onChange={handleRegionChange(type as "sido" | "sigungu" | "dong")}
-              label={
-                { sido: "시/도", sigungu: "시/군/구", dong: "동/읍/면" }[type]
-              }
-            >
-              <MenuItem value="">전체</MenuItem>
-              {region[type as keyof typeof region] &&
-                Array.isArray(region[type as keyof typeof region]) &&
-                (region[type as keyof typeof region] as Region[]).map(
-                  (item: Region) => (
-                    <MenuItem key={item.cortarNo} value={item.cortarNo}>
-                      {item.cortarName}
-                    </MenuItem>
-                  )
-                )}
-            </Select>
-          </FormControl>
-        ))}
+        <RegionSelector
+          label="시/도"
+          value={region.selectedSido || ""}
+          regions={region.sido || []}
+          onChange={handleRegionChange("sido")}
+        />
+        <RegionSelector
+          label="시/군/구"
+          value={region.selectedSigungu || ""}
+          regions={region.sigungu || []}
+          onChange={handleRegionChange("sigungu")}
+          disabled={!region.selectedSido}
+        />
+        <RegionSelector
+          label="동/읍/면"
+          value={region.selectedDong || ""}
+          regions={region.dong || []}
+          onChange={handleRegionChange("dong")}
+          disabled={!region.selectedSigungu}
+        />
       </Box>
     </Box>
   );

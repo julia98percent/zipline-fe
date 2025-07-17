@@ -1,4 +1,4 @@
-import { TextField, MenuItem } from "@mui/material";
+import { MenuItem, StringSelect } from "@components/Select";
 
 interface Customer {
   uid: number;
@@ -8,7 +8,7 @@ interface Customer {
 interface CustomerSelectSectionProps {
   customerUid: number | null;
   customers: Customer[];
-  onCustomerChange: (uid: number) => void;
+  onCustomerChange: (uid: string) => void;
 }
 
 const CustomerSelectSection = ({
@@ -17,20 +17,20 @@ const CustomerSelectSection = ({
   onCustomerChange,
 }: CustomerSelectSectionProps) => {
   return (
-    <TextField
-      select
+    <StringSelect
       label="고객 선택"
       value={customerUid !== null ? customerUid.toString() : ""}
-      onChange={(e) => onCustomerChange(Number(e.target.value))}
+      onChange={(e) => onCustomerChange(e.target.value)}
       fullWidth
-      sx={{ mt: 2 }}
+      className="mt-2"
+      showEmptyOption={true}
     >
       {customers.map((customer) => (
         <MenuItem key={customer.uid} value={customer.uid.toString()}>
           {customer.name}
         </MenuItem>
       ))}
-    </TextField>
+    </StringSelect>
   );
 };
 

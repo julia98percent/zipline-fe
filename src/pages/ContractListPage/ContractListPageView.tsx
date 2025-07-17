@@ -2,8 +2,7 @@ import ContractTable from "./ContractTable";
 import ContractFilterModal from "./ContractFilterModal";
 import PageHeader from "@components/PageHeader/PageHeader";
 import styles from "./styles/ContractListPage.module.css";
-import Select from "react-select";
-import "./styles/reactSelect.css";
+import Select from "@components/Select";
 import ContractAddModal from "./ContractAddButtonList/ContractAddModal";
 import { Button } from "@mui/material";
 import AddIcon from "@mui/icons-material/Add";
@@ -76,33 +75,11 @@ const ContractListPageView = ({
         <div className={styles.controlsContainer}>
           <div className={styles.searchBarRow}>
             <Select
+              label="정렬 기준"
+              value={selectedSort}
+              onChange={(e) => onSortChange(e.target.value)}
               options={sortOptions}
-              value={sortOptions.find((opt) => opt.value === selectedSort)}
-              onChange={(selected) => onSortChange(selected?.value || "")}
-              placeholder="정렬 기준"
-              classNamePrefix="custom-select"
-              menuShouldScrollIntoView={false}
-              styles={{
-                control: (base, state) => ({
-                  ...base,
-                  width: 140,
-                  borderRadius: 14,
-                  border: state.isFocused
-                    ? "1.5px solid #1976d2"
-                    : "1.5px solid #ccc",
-                  fontSize: 13,
-                  minHeight: 36,
-                  paddingLeft: 8,
-                  boxShadow: "none",
-                  "&:hover": { borderColor: "#1976d2" },
-                }),
-                menu: (base) => ({
-                  ...base,
-                  borderRadius: 8,
-                  zIndex: 9999,
-                  maxHeight: "none",
-                }),
-              }}
+              className="w-[140px]"
             />
 
             <div className={styles.searchInputWrapper}>
@@ -121,34 +98,12 @@ const ContractListPageView = ({
           <div className={styles.topFilterRow}>
             <div className={styles.filterGroup}>
               <Select
-                options={CONTRACT_STATUS_SEARCH_OPTIONS}
-                value={CONTRACT_STATUS_SEARCH_OPTIONS.find(
-                  (opt) => opt.value === selectedStatus
-                )}
-                onChange={(selected) => onStatusChange(selected?.value ?? "")}
-                placeholder="상태 선택"
-                classNamePrefix="custom-select"
-                menuShouldScrollIntoView={false}
-                styles={{
-                  control: (base, state) => ({
-                    ...base,
-                    borderRadius: 14,
-                    border: state.isFocused
-                      ? "1.5px solid #1976d2"
-                      : "1.5px solid #ccc",
-                    fontSize: 13,
-                    minHeight: 36,
-                    paddingLeft: 8,
-                    boxShadow: "none",
-                    "&:hover": { borderColor: "#1976d2" },
-                  }),
-                  menu: (base) => ({
-                    ...base,
-                    borderRadius: 8,
-                    zIndex: 9999,
-                    maxHeight: "none",
-                  }),
-                }}
+                label="상태 선택"
+                value={selectedStatus}
+                onChange={(event) =>
+                  onStatusChange(event.target.value as string)
+                }
+                options={CONTRACT_STATUS_OPTION_LIST}
               />
 
               <div className={styles.filterButtons}>
@@ -172,14 +127,7 @@ const ContractListPageView = ({
               variant="contained"
               startIcon={<AddIcon />}
               onClick={onAddModalOpen}
-              sx={{
-                backgroundColor: "#164F9E",
-                boxShadow: "none",
-                "&:hover": { backgroundColor: "#0D3B7A", boxShadow: "none" },
-                height: "36px",
-                fontSize: "13px",
-                padding: "0 16px",
-              }}
+              className="!bg-blue-800 !shadow-none hover:!bg-blue-900 hover:!shadow-none !h-9 !text-xs !px-4"
             >
               계약 등록
             </Button>

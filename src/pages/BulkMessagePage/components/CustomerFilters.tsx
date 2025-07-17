@@ -1,15 +1,9 @@
-import {
-  Box,
-  Typography,
-  TextField,
-  Select,
-  MenuItem,
-  FormControl,
-  Chip,
-} from "@mui/material";
 import { SelectChangeEvent } from "@mui/material";
+import TextField from "@components/TextField";
+import Chip from "@components/Chip";
+import RegionSelector from "@components/RegionSelector";
 import { Label } from "@ts/customer";
-import { Region, RegionState } from "@ts/region";
+import { RegionState } from "@ts/region";
 
 interface CustomerFiltersProps {
   search: string;
@@ -26,7 +20,7 @@ interface CustomerFiltersProps {
   onSearchChange: (value: string) => void;
   onRegionChange: (
     type: "sido" | "sigungu" | "dong"
-  ) => (event: SelectChangeEvent<string>) => void;
+  ) => (event: SelectChangeEvent<number>) => void;
   onRoleFilterChange: (role: string) => void;
   onLabelFilterChange: (labelUid: number) => void;
 }
@@ -37,22 +31,6 @@ const ROLE_LABELS: Record<string, string> = {
   buyer: "매수자",
   seller: "매도자",
   noRole: "역할없음",
-};
-
-const ROLE_COLORS: Record<
-  string,
-  { bg: string; color: string; selectedBg?: string; selectedColor?: string }
-> = {
-  tenant: { bg: "#FEF5EB", color: "#F2994A" },
-  landlord: { bg: "#FDEEEE", color: "#EB5757" },
-  buyer: { bg: "#E9F7EF", color: "#219653" },
-  seller: { bg: "#EBF2FC", color: "#2F80ED" },
-  noRole: {
-    bg: "#F5F5F5",
-    color: "#666666",
-    selectedBg: "#BDBDBD",
-    selectedColor: "#fff",
-  },
 };
 
 const CustomerFilters = ({
@@ -67,158 +45,76 @@ const CustomerFilters = ({
   onLabelFilterChange,
 }: CustomerFiltersProps) => {
   return (
-    <Box sx={{ mb: 3, display: "flex", flexDirection: "column", gap: "28px" }}>
-      <Box
-        sx={{
-          display: "flex",
-          gap: "28px",
-          alignItems: "center",
-          flexWrap: "wrap",
-        }}
-      >
+    <div className="mb-6 flex flex-col gap-7">
+      <div className="flex gap-7 items-center flex-wrap">
         {/* 검색창 */}
         <TextField
           size="small"
           placeholder="이름, 전화번호 검색"
           value={search}
           onChange={(e) => onSearchChange(e.target.value)}
-          sx={{ minWidth: 180 }}
+          className="min-w-[180px]"
         />
 
         {/* 지역 선택 */}
-        <Box sx={{ display: "flex", gap: 2, alignItems: "center" }}>
-          <Typography variant="body2" sx={{ color: "#666666", minWidth: 60 }}>
-            지역
-          </Typography>
-          <Box sx={{ display: "flex", gap: 1 }}>
-            {(["sido", "sigungu", "dong"] as const).map((type) => {
-              const regions = region[type] as Region[];
-              const selectedValue =
-                region[
-                  `selected${type.charAt(0).toUpperCase() + type.slice(1)}`
-                ];
-
-              return (
-                <FormControl key={type} size="small" sx={{ minWidth: 120 }}>
-                  <Select
-                    value={
-                      regions.find((item) => item.cortarNo === selectedValue)
-                        ?.cortarName || ""
-                    }
-                    onChange={onRegionChange(type)}
-                    displayEmpty
-                    disabled={
-                      type !== "sido" &&
-                      !region[`selected${type === "dong" ? "Sigungu" : "Sido"}`]
-                    }
-                    sx={{
-                      backgroundColor: "#fff",
-                      "& .MuiOutlinedInput-notchedOutline": {
-                        borderColor: "#E0E0E0",
-                      },
-                      "&:hover .MuiOutlinedInput-notchedOutline": {
-                        borderColor: "#164F9E",
-                      },
-                      "&.Mui-focused .MuiOutlinedInput-notchedOutline": {
-                        borderColor: "#164F9E",
-                      },
-                    }}
-                  >
-                    <MenuItem value="">
-                      <em>
-                        {type === "sido"
-                          ? "시/도"
-                          : type === "sigungu"
-                          ? "시/군/구"
-                          : "읍/면/동"}
-                      </em>
-                    </MenuItem>
-                    {regions.map((item) => (
-                      <MenuItem key={item.cortarNo} value={item.cortarName}>
-                        {item.cortarName}
-                      </MenuItem>
-                    ))}
-                  </Select>
-                </FormControl>
-              );
-            })}
-          </Box>
-        </Box>
+        <div className="flex gap-4 items-center">
+          <div className="text-sm text-gray-600 min-w-[60px]">지역</div>
+          <div className="flex gap-2">
+            <RegionSelector
+              value={region.selectedSido || ""}
+              regions={region.sido}
+              onChange={onRegionChange("sido")}
+              label="시/도"
+              className="min-w-[120px]"
+            />
+            <RegionSelector
+              value={region.selectedSigungu || ""}
+              regions={region.sigungu}
+              onChange={onRegionChange("sigungu")}
+              disabled={!region.selectedSido}
+              label="시/군/구"
+              className="min-w-[120px]"
+            />
+            <RegionSelector
+              value={region.selectedDong || ""}
+              regions={region.dong}
+              onChange={onRegionChange("dong")}
+              disabled={!region.selectedSigungu}
+              label="읍/면/동"
+              className="min-w-[120px]"
+            />
+          </div>
+        </div>
 
         {/* 역할 필터 */}
-        <Box sx={{ display: "flex", gap: 1, alignItems: "center" }}>
-          <Typography variant="body2" sx={{ color: "#666666", minWidth: 60 }}>
-            고객 역할
-          </Typography>
+        <div className="flex gap-2 items-center">
+          <div className="text-sm text-gray-600 min-w-[60px]">고객 역할</div>
           {(Object.keys(roleFilters) as (keyof typeof roleFilters)[]).map(
             (role) => (
               <Chip
                 key={role}
-                label={ROLE_LABELS[role]}
+                text={ROLE_LABELS[role]}
                 onClick={() => onRoleFilterChange(role)}
-                sx={{
-                  backgroundColor:
-                    role === "noRole"
-                      ? roleFilters[role]
-                        ? ROLE_COLORS.noRole.selectedBg
-                        : ROLE_COLORS.noRole.bg
-                      : roleFilters[role]
-                      ? ROLE_COLORS[role].bg
-                      : "#F8F9FA",
-                  color:
-                    role === "noRole"
-                      ? roleFilters[role]
-                        ? ROLE_COLORS.noRole.selectedColor
-                        : ROLE_COLORS.noRole.color
-                      : roleFilters[role]
-                      ? ROLE_COLORS[role].color
-                      : "#666666",
-                  fontWeight: 500,
-                  borderRadius: "4px",
-                  height: "28px",
-                  fontSize: "13px",
-                  "&:hover": {
-                    backgroundColor:
-                      role === "noRole"
-                        ? roleFilters[role]
-                          ? ROLE_COLORS.noRole.selectedBg
-                          : "#E0E0E0"
-                        : roleFilters[role]
-                        ? ROLE_COLORS[role].bg
-                        : "#E0E0E0",
-                  },
-                }}
+                color={roleFilters[role] ? "primary" : "default"}
               />
             )
           )}
-        </Box>
+        </div>
 
         {/* 라벨 필터 */}
-        <Box sx={{ display: "flex", gap: 1, alignItems: "center" }}>
-          <Typography variant="body2" sx={{ color: "#666666", minWidth: 60 }}>
-            고객 라벨
-          </Typography>
+        <div className="flex gap-2 items-center">
+          <div className="text-sm text-gray-600 min-w-[60px]">고객 라벨</div>
           {labels.map((label) => (
             <Chip
               key={label.uid}
-              label={label.name}
+              text={label.name}
               onClick={() => onLabelFilterChange(label.uid)}
-              sx={{
-                backgroundColor: labelUids.includes(label.uid)
-                  ? "#164F9E"
-                  : "#F8F9FA",
-                color: labelUids.includes(label.uid) ? "#FFFFFF" : "#666666",
-                "&:hover": {
-                  backgroundColor: labelUids.includes(label.uid)
-                    ? "#0D3B7A"
-                    : "#E0E0E0",
-                },
-              }}
+              color={labelUids.includes(label.uid) ? "primary" : "default"}
             />
           ))}
-        </Box>
-      </Box>
-    </Box>
+        </div>
+      </div>
+    </div>
   );
 };
 

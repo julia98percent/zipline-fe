@@ -1,19 +1,9 @@
-import {
-  Box,
-  Typography,
-  TextField,
-  Paper,
-  Select,
-  MenuItem,
-  FormControl,
-  CircularProgress,
-  ListSubheader,
-} from "@mui/material";
 import { SelectChangeEvent } from "@mui/material";
+import Select, { MenuItem } from "@components/Select";
+import TextField from "@components/TextField";
 import { MessageTemplate } from "@ts/message";
 
 interface MessageTemplateSectionProps {
-  templates: MessageTemplate[];
   selectedTemplate: number | "";
   messageContent: string;
   isLoading: boolean;
@@ -22,7 +12,6 @@ interface MessageTemplateSectionProps {
 }
 
 const MessageTemplateSection = ({
-  templates,
   selectedTemplate,
   messageContent,
   isLoading,
@@ -30,83 +19,45 @@ const MessageTemplateSection = ({
   onTemplateChange,
 }: MessageTemplateSectionProps) => {
   return (
-    <Paper
-      sx={{
-        flex: 1,
-        p: 3,
-        borderRadius: "8px",
-        boxShadow: "0 2px 6px rgba(0, 0, 0, 0.05)",
-      }}
-    >
-      <Typography variant="h6" sx={{ mb: 2, color: "#333333" }}>
+    <div className="flex-1 p-6 rounded-lg shadow-[0_2px_6px_rgba(0,0,0,0.05)] bg-white">
+      <h6 className="mb-4 text-gray-800 text-lg font-semibold">
         문자 템플릿 선택
-      </Typography>
-      <FormControl fullWidth sx={{ mb: 2 }}>
-        <Select
-          value={selectedTemplate}
-          onChange={onTemplateChange}
-          displayEmpty
-          disabled={isLoading}
-          renderValue={(selected) => {
-            if (!selected) return <em>템플릿을 선택해주세요</em>;
-            const template = templates.find((t) => t.uid === selected);
-            return template?.name || "";
-          }}
-          sx={{
-            "& .MuiOutlinedInput-notchedOutline": {
-              borderRadius: "20px",
-            },
-          }}
-          MenuProps={{
-            PaperProps: {
-              borderRadius: "20px",
-              sx: {
-                maxHeight: 300,
-                "& .MuiMenuItem-root": {
-                  padding: "8px 16px",
-                },
-                "& .MuiListSubheader-root": {
-                  backgroundColor: "#f5f5f5",
-                  lineHeight: "32px",
-                  fontSize: "0.875rem",
-                },
-              },
-            },
-          }}
-        >
-          <MenuItem value="">
-            <em>템플릿을 선택해주세요</em>
-          </MenuItem>
-          {isLoading ? (
-            <Box sx={{ display: "flex", justifyContent: "center", p: 2 }}>
-              <CircularProgress size={24} />
-            </Box>
-          ) : (
-            Object.entries(groupedTemplates).map(
-              ([category, categoryTemplates]) => [
-                <ListSubheader key={category}>{category}</ListSubheader>,
-                ...categoryTemplates.map((template) => (
-                  <MenuItem
-                    key={template.uid}
-                    value={template.uid}
-                    sx={{
-                      pl: 4,
-                      "&.Mui-selected": {
-                        backgroundColor: "#E3F2FD !important",
-                      },
-                      "&.Mui-selected:hover": {
-                        backgroundColor: "#BBDEFB !important",
-                      },
-                    }}
-                  >
-                    {template.name}
-                  </MenuItem>
-                )),
-              ]
-            )
-          )}
-        </Select>
-      </FormControl>
+      </h6>
+
+      <Select
+        fullWidth
+        value={selectedTemplate}
+        onChange={onTemplateChange}
+        disabled={isLoading}
+        emptyText="템플릿을 선택해주세요"
+        className="mb-4"
+      >
+        {isLoading ? (
+          <div className="flex justify-center p-4">
+            <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-blue-600"></div>
+          </div>
+        ) : (
+          Object.entries(groupedTemplates).map(
+            ([category, categoryTemplates]) => [
+              <div
+                key={category}
+                className="px-4 py-2 text-sm font-medium text-gray-500 bg-gray-50"
+              >
+                {category}
+              </div>,
+              ...categoryTemplates.map((template) => (
+                <MenuItem
+                  key={template.uid}
+                  value={template.uid}
+                  className="pl-8"
+                >
+                  {template.name}
+                </MenuItem>
+              )),
+            ]
+          )
+        )}
+      </Select>
       <TextField
         disabled
         fullWidth
@@ -114,25 +65,8 @@ const MessageTemplateSection = ({
         rows={10}
         value={messageContent}
         onChange={() => {}}
-        sx={{
-          "& .MuiOutlinedInput-notchedOutline": {
-            borderRadius: "20px",
-          },
-          "& .MuiOutlinedInput-root": {
-            backgroundColor: "#FFFFFF",
-            "& fieldset": {
-              borderColor: "#E0E0E0",
-            },
-            "&:hover fieldset": {
-              borderColor: "#164F9E",
-            },
-            "&.Mui-focused fieldset": {
-              borderColor: "#164F9E",
-            },
-          },
-        }}
       />
-    </Paper>
+    </div>
   );
 };
 

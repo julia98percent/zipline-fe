@@ -1,5 +1,6 @@
 import React from "react";
-import { Box, TextField, Button, Paper, Select, MenuItem } from "@mui/material";
+import { TextField, Button, Paper } from "@mui/material";
+import Select, { MenuItem } from "@components/Select";
 import {
   MessageTemplate,
   MessageTemplateList,
@@ -43,54 +44,20 @@ const TemplateEditor: React.FC<TemplateEditorProps> = ({
   onOpenDeleteDialog,
 }) => {
   return (
-    <Paper
-      sx={{
-        flex: 1,
-        p: "20px",
-        borderRadius: "8px",
-        boxShadow: "0 2px 6px rgba(0, 0, 0, 0.05)",
-      }}
-    >
-      <Box sx={{ display: "flex", gap: "28px", mb: 2 }}>
+    <Paper className="flex-1 p-5 rounded-lg shadow-sm">
+      <div className="flex gap-7 mb-4">
         <TextField
           fullWidth
           placeholder="템플릿 제목"
           value={templateTitle}
           onChange={(e) => onTemplateTitleChange(e.target.value)}
-          sx={{
-            backgroundColor: "#FFFFFF",
-            "& .MuiOutlinedInput-root": {
-              "& fieldset": {
-                borderColor: "#E0E0E0",
-                borderRadius: "20px",
-              },
-              "&:hover fieldset": {
-                borderColor: "#164F9E",
-              },
-              "&.Mui-focused fieldset": {
-                borderColor: "#164F9E",
-              },
-            },
-          }}
+          className="bg-white [&_.MuiOutlinedInput-root_fieldset]:border-gray-300 [&_.MuiOutlinedInput-root_fieldset]:rounded-3xl [&_.MuiOutlinedInput-root:hover_fieldset]:border-[#164F9E] [&_.MuiOutlinedInput-root.Mui-focused_fieldset]:border-[#164F9E]"
         />
         <Select
           value={selectedCategory}
-          onChange={(e) => onCategoryChange(e.target.value)}
+          onChange={(e) => onCategoryChange(e.target.value as string)}
           displayEmpty
-          sx={{
-            minWidth: 200,
-            backgroundColor: "#FFFFFF",
-            "& .MuiOutlinedInput-notchedOutline": {
-              borderColor: "#E0E0E0",
-              borderRadius: "20px",
-            },
-            "&:hover .MuiOutlinedInput-notchedOutline": {
-              borderColor: "#164F9E",
-            },
-            "&.Mui-focused .MuiOutlinedInput-notchedOutline": {
-              borderColor: "#164F9E",
-            },
-          }}
+          className="min-w-[200px] bg-white [&_.MuiOutlinedInput-notchedOutline]:border-gray-300 [&_.MuiOutlinedInput-notchedOutline]:rounded-3xl [&:hover_.MuiOutlinedInput-notchedOutline]:border-[#164F9E] [&.Mui-focused_.MuiOutlinedInput-notchedOutline]:border-[#164F9E]"
         >
           <MenuItem value="" disabled>
             카테고리 선택
@@ -101,7 +68,7 @@ const TemplateEditor: React.FC<TemplateEditorProps> = ({
             </MenuItem>
           ))}
         </Select>
-      </Box>
+      </div>
       <TextField
         fullWidth
         multiline
@@ -109,21 +76,7 @@ const TemplateEditor: React.FC<TemplateEditorProps> = ({
         placeholder="템플릿 내용을 입력하세요"
         value={templateContent}
         onChange={(e) => onTemplateContentChange(e.target.value)}
-        sx={{
-          backgroundColor: "#FFFFFF",
-          "& .MuiOutlinedInput-root": {
-            borderRadius: "20px",
-            "& fieldset": {
-              borderColor: "#E0E0E0",
-            },
-            "&:hover fieldset": {
-              borderColor: "#164F9E",
-            },
-            "&.Mui-focused fieldset": {
-              borderColor: "#164F9E",
-            },
-          },
-        }}
+        className="bg-white [&_.MuiOutlinedInput-root]:rounded-3xl [&_.MuiOutlinedInput-root_fieldset]:border-gray-300 [&_.MuiOutlinedInput-root:hover_fieldset]:border-[#164F9E] [&_.MuiOutlinedInput-root.Mui-focused_fieldset]:border-[#164F9E]"
       />
 
       <TemplatePreview
@@ -132,26 +85,12 @@ const TemplateEditor: React.FC<TemplateEditorProps> = ({
         hasBrokenVariable={hasBrokenVariable}
       />
 
-      <Box
-        sx={{
-          display: "flex",
-          justifyContent: "flex-end",
-          gap: "12px",
-          mt: 2,
-        }}
-      >
+      <div className="flex justify-end gap-3 mt-4">
         {selectedTemplate && (
           <Button
             variant="outlined"
             onClick={onAddNewTemplate}
-            sx={{
-              borderColor: "#E0E0E0",
-              color: "#666666",
-              "&:hover": {
-                borderColor: "#999999",
-                backgroundColor: "rgba(0, 0, 0, 0.04)",
-              },
-            }}
+            className="border-gray-300 text-gray-600 hover:border-gray-500 hover:bg-black/[0.04]"
           >
             취소
           </Button>
@@ -162,14 +101,7 @@ const TemplateEditor: React.FC<TemplateEditorProps> = ({
             variant="outlined"
             color="error"
             onClick={onOpenDeleteDialog}
-            sx={{
-              borderColor: "#FF5050",
-              color: "#FF5050",
-              "&:hover": {
-                borderColor: "#FF3333",
-                backgroundColor: "rgba(255, 80, 80, 0.04)",
-              },
-            }}
+            className="border-red-400 text-red-400 hover:border-red-500 hover:bg-red-400/[0.04]"
           >
             삭제하기
           </Button>
@@ -184,22 +116,11 @@ const TemplateEditor: React.FC<TemplateEditorProps> = ({
             !selectedCategory ||
             hasBrokenVariable
           }
-          sx={{
-            backgroundColor: "#164F9E",
-            boxShadow: "none",
-            "&:hover": {
-              boxShadow: "none",
-              backgroundColor: "#0D3B7A",
-            },
-            "&.Mui-disabled": {
-              backgroundColor: "rgba(22, 79, 158, 0.4)",
-              color: "#fff",
-            },
-          }}
+          className="bg-[#164F9E] shadow-none hover:shadow-none hover:bg-[#0D3B7A] disabled:bg-[#164F9E]/40 disabled:text-white"
         >
           {selectedTemplate ? "수정하기" : "저장하기"}
         </Button>
-      </Box>
+      </div>
     </Paper>
   );
 };

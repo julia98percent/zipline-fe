@@ -1,7 +1,7 @@
-import { Box, CircularProgress, TextField, Button } from "@mui/material";
-import { InputAdornment } from "@mui/material";
 import FilterListIcon from "@mui/icons-material/FilterList";
 import SearchIcon from "@mui/icons-material/Search";
+import TextField from "@components/TextField";
+import Button from "@components/Button";
 import PageHeader from "@components/PageHeader/PageHeader";
 import CustomerTable from "./CustomerTable/CustomerTable";
 import CustomerAddButtonList from "./CustomerAddButtonList";
@@ -71,112 +71,38 @@ const CustomerListPageView = ({
 }: CustomerListPageViewProps) => {
   if (loading) {
     return (
-      <Box
-        sx={{
-          flexGrow: 1,
-          height: "calc(100vh - 64px)",
-          overflow: "auto",
-          width: "calc(100% - 240px)",
-          ml: "240px",
-          display: "flex",
-          justifyContent: "center",
-          alignItems: "center",
-        }}
-      >
-        <CircularProgress color="primary" />
-      </Box>
+      <div className="flex-grow h-[calc(100vh-64px)] overflow-auto ml-60 flex justify-center items-center">
+        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
+      </div>
     );
   }
 
   return (
-    <Box
-      sx={{
-        flexGrow: 1,
-        height: "100vh",
-        overflow: "auto",
-        backgroundColor: "#f5f5f5",
-        maxWidth: { xs: "100%", md: "calc(100vw - 240px)" },
-        boxSizing: "border-box",
-      }}
-    >
+    <div className="flex-grow h-screen overflow-auto bg-gray-100 max-w-full box-border">
       <PageHeader title="고객 목록" onMobileMenuToggle={onMobileMenuToggle} />
 
-      <Box
-        sx={{
-          p: "20px",
-          maxWidth: "100%",
-          mx: "auto",
-        }}
-      >
-        <div
-          style={{
-            backgroundColor: "#ffffff",
-            borderRadius: "8px",
-            boxShadow: "0 2px 6px rgba(0, 0, 0, 0.05)",
-            padding: "18px",
-            display: "flex",
-            justifyContent: "space-between",
-            alignItems: "center",
-          }}
-        >
-          <Box
-            sx={{
-              display: "flex",
-              justifyContent: "flex-end",
-              alignItems: "center",
-              gap: 1,
-            }}
-          >
+      <div className="p-5 max-w-full mx-auto">
+        <div className="bg-white rounded-lg shadow-sm p-4 flex justify-between items-center">
+          <div className="flex justify-end items-center gap-2">
             <TextField
               placeholder="전화번호 또는 고객이름으로 검색"
               value={searchTerm}
               onChange={(e) => onSearchChange(e.target.value)}
               size="small"
-              InputProps={{
-                startAdornment: (
-                  <InputAdornment position="start">
-                    <SearchIcon />
-                  </InputAdornment>
-                ),
-              }}
-              sx={{
-                minWidth: 300,
-                "& .MuiOutlinedInput-root": {
-                  borderRadius: "20px",
-                  boxShadow: "0 2px 6px rgba(0, 0, 0, 0.05)",
-                  "&:hover .MuiOutlinedInput-notchedOutline": {
-                    borderColor: "rgba(0, 0, 0, 0.25)",
-                  },
-                },
-              }}
+              startAdornment={<SearchIcon />}
+              className="min-w-[300px]"
             />
             <Button
-              startIcon={<FilterListIcon />}
+              text="상세 필터"
+              variant="outlined"
               onClick={onFilterModalOpen}
-              sx={{
-                height: "40px",
-                ml: 1,
-                minWidth: "120px",
-                border: "1px solid #164F9E",
-                color: "#164F9E",
-                borderRadius: "20px",
-                "&:hover": {
-                  border: "1px solid #164F9E",
-                },
-              }}
-            >
-              상세 필터
-            </Button>
-          </Box>
-          <Box
-            sx={{
-              display: "flex",
-              justifyContent: "flex-start",
-              alignItems: "center",
-            }}
-          >
+              className="h-10 ml-2 min-w-[120px] border border-[#164F9E] text-[#164F9E] rounded-full hover:border-[#164F9E]"
+              startIcon={<FilterListIcon />}
+            />
+          </div>
+          <div className="flex justify-start items-center">
             <CustomerAddButtonList fetchCustomerData={onCustomerCreate} />
-          </Box>
+          </div>
         </div>
         <CustomerTable
           customerList={customerList}
@@ -196,8 +122,8 @@ const CustomerListPageView = ({
           setFilters={onFiltersChange}
           onApply={onFilterApply}
         />
-      </Box>
-    </Box>
+      </div>
+    </div>
   );
 };
 

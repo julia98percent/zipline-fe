@@ -9,14 +9,10 @@ import {
   Typography,
   Slider,
   Divider,
-  Radio,
-  RadioGroup,
-  FormControlLabel,
-  FormControl,
-  FormLabel,
   TextField,
 } from "@mui/material";
 import { SelectChangeEvent } from "@mui/material";
+import Select, { MenuItem } from "@components/Select";
 import { AgentPropertySearchParams } from "@apis/propertyService";
 
 interface AgentPropertyFilterModalProps {
@@ -28,9 +24,9 @@ interface AgentPropertyFilterModalProps {
   selectedSido: string;
   selectedGu: string;
   selectedDong: string;
-  onSidoChange: (event: SelectChangeEvent<string>) => void;
-  onGuChange: (event: SelectChangeEvent<string>) => void;
-  onDongChange: (event: SelectChangeEvent<string>) => void;
+  onSidoChange: (event: SelectChangeEvent<number>) => void;
+  onGuChange: (event: SelectChangeEvent<number>) => void;
+  onDongChange: (event: SelectChangeEvent<number>) => void;
 }
 
 const AgentPropertyFilterModal = ({
@@ -190,16 +186,18 @@ const AgentPropertyFilterModal = ({
     <Dialog open={open} onClose={onClose} maxWidth="md" fullWidth>
       <DialogTitle>상세 필터</DialogTitle>
       <DialogContent dividers>
-        <Box sx={{ minHeight: "400px", pt: 2 }}>
+        <div className="min-h-96 pt-2">
           {/* 건물 특성 */}
           <Typography variant="h6" gutterBottom>
             건물 특성
           </Typography>
-          <Box sx={{ display: "flex", flexDirection: "column", gap: 3, mb: 3 }}>
-            <FormControl component="fieldset">
-              <FormLabel component="legend">엘리베이터</FormLabel>
-              <RadioGroup
-                row
+          <Box className="flex flex-col gap-3 mb-3">
+            <div>
+              <Typography variant="subtitle2" className="mb-2">
+                엘리베이터
+              </Typography>
+              <Select
+                label="엘리베이터"
                 value={hasElevator === null ? "all" : hasElevator.toString()}
                 onChange={(e) => {
                   const value = e.target.value;
@@ -209,29 +207,20 @@ const AgentPropertyFilterModal = ({
                     setHasElevator(value === "true");
                   }
                 }}
+                className="w-full"
               >
-                <FormControlLabel
-                  value="all"
-                  control={<Radio />}
-                  label="전체"
-                />
-                <FormControlLabel
-                  value="false"
-                  control={<Radio />}
-                  label="없음"
-                />
-                <FormControlLabel
-                  value="true"
-                  control={<Radio />}
-                  label="있음"
-                />
-              </RadioGroup>
-            </FormControl>
+                <MenuItem value="all">전체</MenuItem>
+                <MenuItem value="false">없음</MenuItem>
+                <MenuItem value="true">있음</MenuItem>
+              </Select>
+            </div>
 
-            <FormControl component="fieldset">
-              <FormLabel component="legend">반려동물</FormLabel>
-              <RadioGroup
-                row
+            <div>
+              <Typography variant="subtitle2" className="mb-2">
+                반려동물
+              </Typography>
+              <Select
+                label="반려동물"
                 value={petsAllowed === null ? "all" : petsAllowed.toString()}
                 onChange={(e) => {
                   const value = e.target.value;
@@ -241,53 +230,35 @@ const AgentPropertyFilterModal = ({
                     setPetsAllowed(value === "true");
                   }
                 }}
+                className="w-full"
               >
-                <FormControlLabel
-                  value="all"
-                  control={<Radio />}
-                  label="전체"
-                />
-                <FormControlLabel
-                  value="false"
-                  control={<Radio />}
-                  label="불가"
-                />
-                <FormControlLabel
-                  value="true"
-                  control={<Radio />}
-                  label="가능"
-                />
-              </RadioGroup>
-            </FormControl>
+                <MenuItem value="all">전체</MenuItem>
+                <MenuItem value="false">불가</MenuItem>
+                <MenuItem value="true">가능</MenuItem>
+              </Select>
+            </div>
           </Box>
 
-          <Divider sx={{ my: 3 }} />
+          <Divider className="my-6" />
 
           {/* 면적 범위 */}
-          <Box
-            sx={{
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "space-between",
-              mb: 1,
-            }}
-          >
+          <div className="flex items-center justify-between mb-2">
             <Typography variant="h6">면적 범위</Typography>
             <Button
               size="small"
               variant="outlined"
               color="secondary"
               onClick={handleResetArea}
-              sx={{ fontSize: "0.75rem", minWidth: "auto", px: 1.5 }}
+              className="text-xs min-w-0 px-3"
             >
               초기화
             </Button>
-          </Box>
-          <Box sx={{ mb: 3 }}>
+          </div>
+          <div className="mb-6">
             <Typography variant="subtitle2" gutterBottom>
               전용 면적: {minNetArea}m² - {maxNetArea}m²
             </Typography>
-            <Box sx={{ display: "flex", alignItems: "center", gap: 2, mb: 2 }}>
+            <div className="flex items-center gap-2 mb-4">
               <TextField
                 label="최소 (m²)"
                 type="number"
@@ -297,7 +268,7 @@ const AgentPropertyFilterModal = ({
                   const value = Math.max(0, parseInt(e.target.value) || 0);
                   setMinNetArea(Math.min(value, maxNetArea));
                 }}
-                sx={{ width: 120 }}
+                className="w-30"
               />
               <Slider
                 value={[minNetArea, maxNetArea]}
@@ -310,7 +281,7 @@ const AgentPropertyFilterModal = ({
                 min={0}
                 max={200}
                 step={5}
-                sx={{ flex: 1 }}
+                className="flex-1"
               />
               <TextField
                 label="최대 (m²)"
@@ -321,14 +292,14 @@ const AgentPropertyFilterModal = ({
                   const value = Math.min(200, parseInt(e.target.value) || 200);
                   setMaxNetArea(Math.max(value, minNetArea));
                 }}
-                sx={{ width: 120 }}
+                className="w-30"
               />
-            </Box>
+            </div>
 
             <Typography variant="subtitle2" gutterBottom>
               공급 면적: {minTotalArea}m² - {maxTotalArea}m²
             </Typography>
-            <Box sx={{ display: "flex", alignItems: "center", gap: 2 }}>
+            <div className="flex items-center gap-2">
               <TextField
                 label="최소 (m²)"
                 type="number"
@@ -338,7 +309,7 @@ const AgentPropertyFilterModal = ({
                   const value = Math.max(0, parseInt(e.target.value) || 0);
                   setMinTotalArea(Math.min(value, maxTotalArea));
                 }}
-                sx={{ width: 120 }}
+                className="w-30"
               />
               <Slider
                 value={[minTotalArea, maxTotalArea]}
@@ -351,7 +322,7 @@ const AgentPropertyFilterModal = ({
                 min={0}
                 max={300}
                 step={5}
-                sx={{ flex: 1 }}
+                className="flex-1"
               />
               <TextField
                 label="최대 (m²)"
@@ -362,10 +333,10 @@ const AgentPropertyFilterModal = ({
                   const value = Math.min(300, parseInt(e.target.value) || 300);
                   setMaxTotalArea(Math.max(value, minTotalArea));
                 }}
-                sx={{ width: 120 }}
+                className="w-30"
               />
-            </Box>
-          </Box>
+            </div>
+          </div>
 
           <Divider sx={{ my: 3 }} />
 
@@ -674,7 +645,7 @@ const AgentPropertyFilterModal = ({
               />
             </Box>
           </Box>
-        </Box>
+        </div>
       </DialogContent>
       <DialogActions>
         <Button onClick={handleReset} color="secondary">

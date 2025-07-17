@@ -1,18 +1,15 @@
 import {
   TextField,
-  Select,
-  MenuItem,
-  FormControl,
   Checkbox,
   FormControlLabel,
   Chip,
   Box,
   Typography,
 } from "@mui/material";
+import Select, { MenuItem } from "@components/Select";
 import dayjs from "dayjs";
 import styles from "../styles/CounselDetailPage.module.css";
-import { CounselCategoryType } from "@ts/counsel";
-import { Counsel } from "@ts/counsel";
+import { CounselCategoryType, Counsel } from "@ts/counsel";
 
 interface CounselBasicInfoProps {
   data: Counsel;
@@ -20,6 +17,8 @@ interface CounselBasicInfoProps {
   COUNSEL_TYPES: Record<CounselCategoryType, string>;
   onInputChange: (field: keyof Counsel, value: string | boolean) => void;
 }
+
+const StringBooleanSelect = Select<string | boolean>;
 
 const CounselBasicInfo = ({
   data,
@@ -47,18 +46,16 @@ const CounselBasicInfo = ({
         <div className={styles.infoItem}>
           <span className={styles.infoLabel}>상담 유형</span>
           {isEditing ? (
-            <FormControl fullWidth size="small">
-              <Select
-                value={data.type}
-                onChange={(e) => onInputChange("type", e.target.value)}
-              >
-                {Object.entries(COUNSEL_TYPES).map(([key, value]) => (
-                  <MenuItem key={key} value={key}>
-                    {value}
-                  </MenuItem>
-                ))}
-              </Select>
-            </FormControl>
+            <StringBooleanSelect
+              value={data.type}
+              onChange={(e) => onInputChange("type", e.target.value)}
+            >
+              {Object.entries(COUNSEL_TYPES).map(([key, value]) => (
+                <MenuItem key={key} value={key}>
+                  {value}
+                </MenuItem>
+              ))}
+            </StringBooleanSelect>
           ) : (
             <Box sx={{ display: "inline-block" }}>
               <Chip

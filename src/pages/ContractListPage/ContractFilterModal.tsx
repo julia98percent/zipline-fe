@@ -6,11 +6,9 @@ import {
   DialogActions,
   Button,
   Box,
-  MenuItem,
-  Select,
-  FormControl,
-  InputLabel,
 } from "@mui/material";
+import { ContractStatusEnum } from "@constants/contract";
+import Select, { MenuItem, StringSelect } from "@components/Select";
 
 interface ContractFilterModalProps {
   open: boolean;
@@ -18,6 +16,8 @@ interface ContractFilterModalProps {
   onApply: (filter: { period: string; status: string }) => void;
   initialFilter: { period: string; status: string };
 }
+
+const ContractStatusSelect = Select<ContractStatusEnum>;
 
 const ContractFilterModal = ({
   open,
@@ -49,25 +49,21 @@ const ContractFilterModal = ({
       <DialogTitle>계약 필터</DialogTitle>
       <DialogContent>
         <Box display="flex" gap={2} flexDirection="column" mt={2}>
-          {/* 기간 필터 */}
-          <FormControl fullWidth>
-            <InputLabel>기간</InputLabel>
-            <Select
-              value={period}
-              onChange={(e) => setPeriod(e.target.value)}
-              label="기간"
-            >
-              <MenuItem value="">전체</MenuItem>
-              <MenuItem value="1개월 이내">1개월 이내</MenuItem>
-              <MenuItem value="3개월 이내">3개월 이내</MenuItem>
-              <MenuItem value="6개월 이내">6개월 이내</MenuItem>
-            </Select>
-          </FormControl>
+          <StringSelect
+            value={period}
+            onChange={(e) => setPeriod(e.target.value)}
+            label="기간"
+          >
+            <MenuItem value="">전체</MenuItem>
+            <MenuItem value="1개월 이내">1개월 이내</MenuItem>
+            <MenuItem value="3개월 이내">3개월 이내</MenuItem>
+            <MenuItem value="6개월 이내">6개월 이내</MenuItem>
+          </StringSelect>
 
           {/* 상태 필터 */}
           <FormControl fullWidth>
             <InputLabel>계약 상태</InputLabel>
-            <Select
+            <ContractStatusSelect
               value={status}
               onChange={(e) => setStatus(e.target.value)}
               label="계약 상태"
@@ -84,7 +80,7 @@ const ContractFilterModal = ({
               <MenuItem value="MOVED_IN">입주 완료</MenuItem>
               <MenuItem value="TERMINATED">계약 해지</MenuItem>
               <MenuItem value="CLOSED">계약 종료</MenuItem>
-            </Select>
+            </ContractStatusSelect>
           </FormControl>
         </Box>
       </DialogContent>

@@ -7,15 +7,8 @@ import {
   PhoneNumberInput,
   UserIdInput,
 } from "./components";
-import {
-  Box,
-  Typography,
-  FormControl,
-  InputLabel,
-  Select,
-  MenuItem,
-  TextField,
-} from "@mui/material";
+import { Box, Typography, TextField } from "@mui/material";
+import { MenuItem, StringSelect } from "@components/Select";
 import signUpImage from "@assets/sign-up.png";
 
 interface SignUpViewProps {
@@ -147,21 +140,19 @@ const SignUpView = ({
               />
 
               {/* Password Question Fields */}
-              <FormControl fullWidth required>
-                <InputLabel>비밀번호 찾기 질문</InputLabel>
-                <Select
-                  value={passwordQuestionUid}
-                  onChange={(e) => setPasswordQuestionUid(e.target.value)}
-                  label="비밀번호 찾기 질문"
-                  onKeyDown={handleKeyDown}
-                >
-                  {PASSWORD_QUESTIONS.map((q) => (
-                    <MenuItem key={q.uid} value={q.uid}>
-                      {q.question}
-                    </MenuItem>
-                  ))}
-                </Select>
-              </FormControl>
+
+              <StringSelect
+                value={passwordQuestionUid}
+                onChange={(e) => setPasswordQuestionUid(e.target.value)}
+                label="비밀번호 찾기 질문"
+                onKeyDown={handleKeyDown}
+              >
+                {PASSWORD_QUESTIONS.map((q) => (
+                  <MenuItem key={q.uid} value={q.uid}>
+                    {q.question}
+                  </MenuItem>
+                ))}
+              </StringSelect>
 
               <TextField
                 fullWidth

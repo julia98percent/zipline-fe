@@ -1,5 +1,11 @@
-import { CircularProgress, SelectChangeEvent } from "@mui/material";
+import {
+  CircularProgress,
+  SelectChangeEvent,
+  IconButton,
+  Button,
+} from "@mui/material";
 import FilterListIcon from "@mui/icons-material/FilterList";
+import RefreshIcon from "@mui/icons-material/Refresh";
 import { useNavigate } from "react-router-dom";
 import PageHeader from "@components/PageHeader/PageHeader";
 import Select, { MenuItem } from "@components/Select";
@@ -9,17 +15,6 @@ import PropertyAddModal from "./components/PropertyAddButtonList/PropertyAddModa
 import { Property } from "@ts/property";
 import { Region } from "@ts/region";
 import { AgentPropertySearchParams } from "@apis/propertyService";
-import {
-  PageContainer,
-  ContentContainer,
-  FilterButtonWrapper,
-  FilterButton,
-  LoadingContainer,
-  TopFilterBar,
-  FilterContainer,
-  LeftButtonGroup,
-  RightButtonGroup,
-} from "./styles/PrivatePropertyListPage.styles";
 
 interface CategoryOption {
   value: string;
@@ -102,38 +97,38 @@ const AgentPropertyListPageView = ({
 
   if (loading) {
     return (
-      <PageContainer>
+      <div className="flex-grow bg-gray-100 min-h-screen">
         <PageHeader
           title="개인 매물 목록"
           onMobileMenuToggle={onMobileMenuToggle}
         />
-        <LoadingContainer>
+        <div className="flex justify-center p-6">
           <CircularProgress color="primary" />
-        </LoadingContainer>
-      </PageContainer>
+        </div>
+      </div>
     );
   }
 
   return (
-    <PageContainer>
+    <div className="flex-grow bg-gray-100 min-h-screen">
       <PageHeader
         title="개인 매물 목록"
         onMobileMenuToggle={onMobileMenuToggle}
       />
 
-      <ContentContainer>
+      <div className="p-5">
         {/* 상단 필터 바 */}
-        <TopFilterBar>
-          {/* 주소 선택 (시/도/구/군/동) */}
-          <div className="flex gap-3 flex-wrap">
-            <div className="flex items-center gap-2">
+        <div className="flex flex-col gap-4 bg-white rounded-lg p-3 shadow-sm mb-5">
+          {/* 모바일 필터 레이아웃 (md 미만) */}
+          <div className="md:hidden space-y-3">
+            {/* 첫 번째 줄: 주소 선택 (시/도, 시/군/구, 동) */}
+            <div className="grid grid-cols-3 gap-2">
               <RegionSelector
                 label="시/도"
                 value={selectedSido}
                 regions={regions}
                 onChange={onSidoChange}
               />
-
               <RegionSelector
                 value={selectedGu}
                 regions={sigunguOptions}
@@ -141,7 +136,6 @@ const AgentPropertyListPageView = ({
                 disabled={!selectedSido}
                 label="시/군/구"
               />
-
               <RegionSelector
                 value={selectedDong}
                 regions={dongOptions}
@@ -150,76 +144,176 @@ const AgentPropertyListPageView = ({
                 label="동"
               />
             </div>
-          </div>
 
-          {/* 카테고리/판매유형/상세필터/새로고침 버튼 */}
-          <FilterContainer>
-            <LeftButtonGroup className="gap-4">
-              <div className="flex gap-2">
-                <Select
-                  size="small"
-                  value={searchParams.category || ""}
-                  onChange={onCategoryChange}
-                  displayEmpty
-                  showEmptyOption={false}
-                  aria-label="카테고리"
-                >
-                  <MenuItem value="">카테고리</MenuItem>
-                  {categoryOptions.map((opt) => (
-                    <MenuItem key={opt.value} value={opt.value || ""}>
-                      {opt.label}
-                    </MenuItem>
-                  ))}
-                </Select>
-              </div>
-              <div className="flex gap-2">
-                <Select
-                  size="small"
-                  value={searchParams.type || ""}
-                  onChange={onTypeChange}
-                  displayEmpty
-                  showEmptyOption={false}
-                  aria-label="판매유형"
-                >
-                  <MenuItem value="">판매유형</MenuItem>
-                  {typeOptions.map((opt) => (
-                    <MenuItem key={opt.value} value={opt.value || ""}>
-                      {opt.label}
-                    </MenuItem>
-                  ))}
-                </Select>
-              </div>
-              <FilterButtonWrapper>
-                <FilterButton
-                  variant="outlined"
-                  onClick={onFilterModalToggle}
-                  className="border border-[#164F9E] text-[#164F9E] min-w-10 p-1 rounded-3xl w-29 hover:bg-gray-100"
-                >
-                  <FilterListIcon className="mr-2" />
-                  상세 필터
-                </FilterButton>
-              </FilterButtonWrapper>
-            </LeftButtonGroup>
-            <RightButtonGroup>
+            {/* 두 번째 줄: 카테고리, 판매유형, 상세필터 */}
+            <div className="grid grid-cols-3 gap-2">
+              <Select
+                size="small"
+                value={searchParams.category || ""}
+                onChange={onCategoryChange}
+                displayEmpty
+                showEmptyOption={false}
+                aria-label="카테고리"
+              >
+                <MenuItem value="">아파트</MenuItem>
+                {categoryOptions.map((opt) => (
+                  <MenuItem key={opt.value} value={opt.value || ""}>
+                    {opt.label}
+                  </MenuItem>
+                ))}
+              </Select>
+              <Select
+                size="small"
+                value={searchParams.type || ""}
+                onChange={onTypeChange}
+                displayEmpty
+                showEmptyOption={false}
+                aria-label="판매유형"
+              >
+                <MenuItem value="">판매유형</MenuItem>
+                {typeOptions.map((opt) => (
+                  <MenuItem key={opt.value} value={opt.value || ""}>
+                    {opt.label}
+                  </MenuItem>
+                ))}
+              </Select>
+              <Button
+                variant="outlined"
+                onClick={onFilterModalToggle}
+                className="border border-[#164F9E] text-[#164F9E] rounded-lg text-sm px-3 py-2 hover:bg-gray-100"
+              >
+                <FilterListIcon className="mr-1 text-sm" />
+                상세 필터
+              </Button>
+            </div>
+
+            {/* 세 번째 줄: 매물 추가, 새로고침 버튼 */}
+            <div className="flex gap-2">
               {onAddProperty && (
-                <FilterButton
+                <Button
                   variant="contained"
                   onClick={onAddProperty}
-                  className="bg-[#164F9E] text-white min-w-10 p-1 rounded-3xl w-25 mr-3 hover:bg-[#123d7a]"
+                  className="shadow-none bg-[#4E7BD9] text-white rounded-lg text-sm px-4 py-3 hover:bg-[#4169C7] flex-1"
                 >
                   매물 추가
-                </FilterButton>
+                </Button>
               )}
-              <FilterButton
-                variant="outlined"
+              <IconButton
                 onClick={onRefresh}
-                className="border border-[#164F9E] text-[#164F9E] min-w-10 p-1 rounded-3xl w-25 hover:bg-gray-100"
+                className="border border-gray-300 text-gray-600 rounded-lg hover:bg-gray-50 p-3 min-w-[48px]"
+                aria-label="새로고침"
               >
-                새로고침
-              </FilterButton>
-            </RightButtonGroup>
-          </FilterContainer>
-        </TopFilterBar>
+                <RefreshIcon fontSize="small" />
+              </IconButton>
+            </div>
+          </div>
+
+          {/* 데스크톱 필터 레이아웃 (md 이상) */}
+          <div className="hidden md:block space-y-4">
+            {/* 주소 선택 (시/도/구/군/동) */}
+            <div className="flex gap-3 flex-wrap">
+              <div className="flex items-center gap-2">
+                <RegionSelector
+                  label="시/도"
+                  value={selectedSido}
+                  regions={regions}
+                  onChange={onSidoChange}
+                />
+
+                <RegionSelector
+                  value={selectedGu}
+                  regions={sigunguOptions}
+                  onChange={onGuChange}
+                  disabled={!selectedSido}
+                  label="시/군/구"
+                />
+
+                <RegionSelector
+                  value={selectedDong}
+                  regions={dongOptions}
+                  onChange={onDongChange}
+                  disabled={!selectedGu}
+                  label="동"
+                />
+              </div>
+            </div>
+
+            {/* 카테고리/판매유형/상세필터/새로고침 버튼 */}
+            <div className="flex justify-between items-center w-full">
+              <div className="flex items-center gap-4">
+                <div className="flex gap-2">
+                  <Select
+                    size="small"
+                    value={searchParams.category || ""}
+                    onChange={onCategoryChange}
+                    displayEmpty
+                    showEmptyOption={false}
+                    aria-label="카테고리"
+                  >
+                    <MenuItem value="">카테고리</MenuItem>
+                    {categoryOptions.map((opt) => (
+                      <MenuItem key={opt.value} value={opt.value || ""}>
+                        {opt.label}
+                      </MenuItem>
+                    ))}
+                  </Select>
+                </div>
+                <div className="flex gap-2">
+                  <Select
+                    size="small"
+                    value={searchParams.type || ""}
+                    onChange={onTypeChange}
+                    displayEmpty
+                    showEmptyOption={false}
+                    aria-label="판매유형"
+                  >
+                    <MenuItem value="">판매유형</MenuItem>
+                    {typeOptions.map((opt) => (
+                      <MenuItem key={opt.value} value={opt.value || ""}>
+                        {opt.label}
+                      </MenuItem>
+                    ))}
+                  </Select>
+                </div>
+                <div className="flex items-center">
+                  <Button
+                    variant="outlined"
+                    onClick={onFilterModalToggle}
+                    className="border border-[#164F9E] text-[#164F9E] min-w-10 p-1 rounded-3xl w-29 hover:bg-gray-100"
+                  >
+                    <FilterListIcon className="mr-2" />
+                    상세 필터
+                  </Button>
+                </div>
+              </div>
+              <div className="flex items-center gap-2 ml-auto">
+                {onAddProperty && (
+                  <Button
+                    variant="contained"
+                    onClick={onAddProperty}
+                    className="shadow-none border border-[#164F9E] bg-[#164F9E] text-white min-w-10 p-1 rounded-3xl w-25 mr-3 hover:bg-[#123d7a]"
+                  >
+                    매물 추가
+                  </Button>
+                )}
+                <Button
+                  variant="outlined"
+                  onClick={onRefresh}
+                  className="border border-[#164F9E] text-[#164F9E] min-w-10 p-1 rounded-3xl w-25 hover:bg-gray-100"
+                >
+                  새로고침
+                </Button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* 매물 개수 표시 */}
+        <div className="px-2 py-3 border-b border-gray-200">
+          <div className="text-sm text-gray-700 font-medium">
+            총 {totalElements.toLocaleString()}개
+          </div>
+        </div>
 
         {/* 테이블 */}
         <AgentPropertyTable
@@ -254,8 +348,8 @@ const AgentPropertyListPageView = ({
           handleClose={onCloseAddPropertyModal}
           fetchPropertyData={onSaveProperty}
         />
-      </ContentContainer>
-    </PageContainer>
+      </div>
+    </div>
   );
 };
 

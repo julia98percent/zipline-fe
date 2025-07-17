@@ -45,6 +45,7 @@ interface Props<T extends RowData> {
   pagination?: boolean;
   stickyHeader?: boolean;
   maxHeight?: string | number;
+  hidePaginationControls?: boolean;
 }
 
 export const ROWS_PER_PAGE_OPTIONS = [10, 25, 50];
@@ -66,6 +67,7 @@ function Table<T extends RowData>({
   pagination = true,
   stickyHeader = false,
   maxHeight,
+  hidePaginationControls = false,
 }: Props<T>) {
   // columns가 제공되면 우선 사용, 없으면 headerList 사용 (레거시 지원)
   const allColumns: ColumnConfig<T>[] =
@@ -161,6 +163,7 @@ function Table<T extends RowData>({
           onPageChange={handleChangePage}
           onRowsPerPageChange={handleChangeRowsPerPage}
           rowsPerPageOptions={ROWS_PER_PAGE_OPTIONS}
+          hidePaginationControls={hidePaginationControls}
         />
       )}
     </Paper>

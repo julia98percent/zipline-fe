@@ -1,7 +1,10 @@
 import Table, { ColumnConfig, RowData } from "@components/Table/Table";
 import { Property, PropertyCategory } from "@ts/property";
 import { formatDate } from "@utils/dateUtil";
-import { Typography, Chip } from "@mui/material";
+import { Typography, Chip, IconButton } from "@mui/material";
+import ChevronLeftIcon from "@mui/icons-material/ChevronLeft";
+import ChevronRightIcon from "@mui/icons-material/ChevronRight";
+import PropertyCard from "./PropertyCard";
 
 type PropertyRowData = RowData & Property;
 
@@ -132,13 +135,13 @@ const AgentPropertyTable = ({
             </Typography>
           )}
           {row.details ? (
-            <Typography variant="body2" sx={{ mt: 0.5 }}>
+            <Typography variant="body2" className="mt-1">
               {row.details.length > 20
                 ? row.details.slice(0, 20) + "..."
                 : row.details}
             </Typography>
           ) : (
-            <Typography variant="body2" sx={{ mt: 0.5 }} color="text.secondary">
+            <Typography variant="body2" className="mt-1" color="text.secondary">
               -
             </Typography>
           )}
@@ -167,17 +170,91 @@ const AgentPropertyTable = ({
   };
 
   return (
-    <Table
-      columns={columns}
-      bodyList={tableData}
-      totalElements={totalElements}
-      page={page}
-      rowsPerPage={rowsPerPage}
-      handleChangePage={handleChangePage}
-      handleChangeRowsPerPage={handleChangeRowsPerPage}
-      handleRowClick={onRowClick ? handleRowClick : undefined}
-      pagination={true}
-    />
+    <>
+      {/* 모바일 카드 UI (md 미만) */}
+      <div className="md:hidden">
+        {propertyList.length > 0 ? (
+          <>
+            {propertyList.map((property) => (
+              <PropertyCard
+                key={property.uid}
+                property={property}
+                onRowClick={onRowClick}
+              />
+            ))}
+            {/* 모바일용 간단한 페이지네이션 */}
+            <div className="flex justify-center items-center mt-6 gap-1">
+              {/* 이전 페이지 버튼 */}
+              <IconButton
+                size="small"
+                onClick={() => handleChangePage(null, page - 1)}
+                disabled={page === 0}
+                className="w-8 h-8 border border-gray-300 rounded mr-2 disabled:opacity-50"
+              >
+                <ChevronLeftIcon fontSize="small" />
+              </IconButton>
+
+              {/* 페이지 번호들 */}
+              {(() => {
+                const totalPages = Math.ceil(totalElements / rowsPerPage);
+                const currentPage = page;
+                const startPage = Math.max(0, currentPage - 1);
+                const endPage = Math.min(totalPages - 1, currentPage + 1);
+                const pages = [];
+
+                for (let i = startPage; i <= endPage; i++) {
+                  pages.push(i);
+                }
+
+                return pages.map((pageIndex) => (
+                  <div
+                    key={pageIndex}
+                    onClick={() => handleChangePage(null, pageIndex)}
+                    className={`w-8 h-8 flex items-center justify-center border rounded cursor-pointer text-sm ${
+                      page === pageIndex
+                        ? "border-blue-500 bg-blue-500 text-white font-bold hover:bg-blue-600"
+                        : "border-gray-300 bg-transparent text-gray-900 font-normal hover:bg-gray-100"
+                    }`}
+                  >
+                    {pageIndex + 1}
+                  </div>
+                ));
+              })()}
+
+              {/* 다음 페이지 버튼 */}
+              <IconButton
+                size="small"
+                onClick={() => handleChangePage(null, page + 1)}
+                disabled={page >= Math.ceil(totalElements / rowsPerPage) - 1}
+                className="w-8 h-8 border border-gray-300 rounded ml-2 disabled:opacity-50"
+              >
+                <ChevronRightIcon fontSize="small" />
+              </IconButton>
+            </div>
+          </>
+        ) : (
+          <div className="text-center py-8 text-gray-500 text-base">
+            매물이 없습니다.
+          </div>
+        )}
+      </div>
+
+      {/* 데스크톱 테이블 UI (md 이상) */}
+      <div className="hidden md:block">
+        <Table
+          columns={columns}
+          bodyList={tableData}
+          totalElements={totalElements}
+          page={page}
+          rowsPerPage={rowsPerPage}
+          handleChangePage={handleChangePage}
+          handleChangeRowsPerPage={handleChangeRowsPerPage}
+          handleRowClick={onRowClick ? handleRowClick : undefined}
+          pagination={true}
+          hidePaginationControls={true}
+        />
+      </div>
+    </>
   );
 };
 

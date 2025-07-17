@@ -4,7 +4,6 @@ import {
   TablePagination,
   TextField,
   Typography,
-  Tooltip,
 } from "@mui/material";
 import ChevronLeftIcon from "@mui/icons-material/ChevronLeft";
 import ChevronRightIcon from "@mui/icons-material/ChevronRight";
@@ -17,6 +16,7 @@ interface Props {
   onPageChange: (_: unknown, newPage: number) => void;
   onRowsPerPageChange: (event: React.ChangeEvent<HTMLInputElement>) => void;
   rowsPerPageOptions?: number[];
+  hidePaginationControls?: boolean;
 }
 
 const EnhancedPagination = ({
@@ -26,6 +26,7 @@ const EnhancedPagination = ({
   onPageChange,
   onRowsPerPageChange,
   rowsPerPageOptions = [10, 25, 50],
+  hidePaginationControls = false,
 }: Props) => {
   const [pageInput, setPageInput] = useState<string>("");
   const totalPages = Math.ceil(totalElements / rowsPerPage);
@@ -84,96 +85,58 @@ const EnhancedPagination = ({
   const pageNumbers = generatePageNumbers();
 
   return (
-    <Box
-      sx={{
-        display: "flex",
-        alignItems: "center",
-        justifyContent: "space-between",
-        p: 1,
-        borderTop: "1px solid",
-        borderColor: "divider",
-      }}
-    >
-      {/* 왼쪽: 페이지당 행 수와 행 정보 */}
-      <Box sx={{ display: "flex", alignItems: "center", gap: 2 }}>
-        <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
-          <Typography variant="body2" sx={{ color: "text.secondary" }}>
-            페이지당 행 수
-          </Typography>
-          <TablePagination
-            component="div"
-            count={totalElements}
-            page={page}
-            rowsPerPage={rowsPerPage}
-            onPageChange={() => {}}
-            onRowsPerPageChange={onRowsPerPageChange}
-            rowsPerPageOptions={rowsPerPageOptions}
-            labelRowsPerPage=""
-            labelDisplayedRows={() => ""}
-            ActionsComponent={() => null}
-            sx={{
-              "& .MuiTablePagination-toolbar": {
-                minHeight: "auto",
-                paddingLeft: 0,
-                paddingRight: 0,
-              },
-              "& .MuiTablePagination-selectLabel": {
-                display: "none",
-              },
-              "& .MuiTablePagination-displayedRows": {
-                display: "none",
-              },
-              "& .MuiTablePagination-select": {
-                border: "1px solid",
-                borderColor: "divider",
-                borderRadius: 1,
-                paddingLeft: 1,
-                paddingRight: 3,
-                minHeight: "30px",
-                display: "flex",
-                alignItems: "center",
-                "&:focus": {
-                  borderColor: "primary.main",
-                  borderRadius: 1,
-                },
-              },
-            }}
-          />
-        </Box>
-
-        <Typography variant="body2" sx={{ color: "text.secondary" }}>
-          {totalElements > 0
-            ? `${page * rowsPerPage + 1}-${Math.min(
-                (page + 1) * rowsPerPage,
-                totalElements
-              )}개 중 ${totalElements}개`
-            : "0개 중 0-0개"}
+    <Box className="flex items-center justify-between px-6 py-4 border-t border-gray-200 bg-white min-h-[56px]">
+      <Box
+        className={`flex items-center gap-6 ${
+          hidePaginationControls ? "hidden md:flex" : "flex"
+        }`}
+      >
+        <Typography
+          variant="body2"
+          className="text-gray-600 text-sm whitespace-nowrap"
+        >
+          페이지당 행 수
         </Typography>
+        <TablePagination
+          className="[&_.MuiTablePagination-toolbar]:min-h-0
+          [&_.MuiTablePagination-toolbar]:px-0
+          [&_.MuiTablePagination-select:not(.MuiSelect-select)]:border
+          [&_.MuiTablePagination-select]:border-gray-300
+          [&_.MuiTablePagination-select]:rounded
+          [&_.MuiTablePagination-select]:pl-2 [&_.MuiTablePagination-select]:pr-5
+          [&_.MuiTablePagination-select]:w-[60px] [&_.MuiTablePagination-select]:flex
+          [&_.MuiTablePagination-select]:items-center [&_.MuiTablePagination-select]:bg-white
+          [&_.MuiTablePagination-select]:text-sm"
+          component="div"
+          count={totalElements}
+          page={page}
+          rowsPerPage={rowsPerPage}
+          onPageChange={() => {}}
+          onRowsPerPageChange={onRowsPerPageChange}
+          rowsPerPageOptions={rowsPerPageOptions}
+          labelRowsPerPage=""
+          labelDisplayedRows={() => ""}
+          ActionsComponent={() => null}
+        />
+        <Typography
+          variant="body2"
+          className="text-gray-600 text-sm whitespace-nowrap"
+        ></Typography>
       </Box>
 
       {/* 오른쪽: 페이지네이션 컨트롤과 페이지 이동 */}
-      <Box sx={{ display: "flex", alignItems: "center", gap: 2 }}>
+      <Box className="flex items-center gap-8">
         {/* 페이지네이션 컨트롤 */}
-        <Box sx={{ display: "flex", alignItems: "center", gap: 0.5 }}>
+        <Box className="flex items-center gap-2">
           {/* 이전 페이지 */}
-          <Tooltip title="이전 페이지">
-            <span>
-              <IconButton
-                size="small"
-                onClick={handlePreviousPage}
-                disabled={page === 0}
-                sx={{
-                  width: 32,
-                  height: 32,
-                  border: "1px solid",
-                  borderColor: "divider",
-                  borderRadius: 1,
-                }}
-              >
-                <ChevronLeftIcon fontSize="small" />
-              </IconButton>
-            </span>
-          </Tooltip>
+          <IconButton
+            size="small"
+            onClick={handlePreviousPage}
+            disabled={page === 0}
+            className="w-8 h-8 border border-gray-300 rounded bg-white text-gray-900 hover:bg-gray-100 hover:border-blue-500 disabled:bg-white disabled:border-gray-300 disabled:text-gray-400 disabled:opacity-60"
+          >
+            <ChevronLeftIcon fontSize="small" />
+          </IconButton>
 
           {/* 페이지 번호들 */}
           {pageNumbers.map((pageNum) => (
@@ -181,25 +144,11 @@ const EnhancedPagination = ({
               key={pageNum}
               size="small"
               onClick={() => onPageChange(null, pageNum - 1)}
-              sx={{
-                width: 32,
-                height: 32,
-                border: "1px solid",
-                borderColor: pageNum === page + 1 ? "primary.main" : "divider",
-                borderRadius: 1,
-                backgroundColor:
-                  pageNum === page + 1 ? "primary.main" : "transparent",
-                color:
-                  pageNum === page + 1
-                    ? "primary.contrastText"
-                    : "text.primary",
-                fontSize: "14px",
-                fontWeight: pageNum === page + 1 ? "bold" : "normal",
-                "&:hover": {
-                  backgroundColor:
-                    pageNum === page + 1 ? "primary.dark" : "action.hover",
-                },
-              }}
+              className={`w-8 h-8 border rounded text-sm font-normal ${
+                pageNum === page + 1
+                  ? "border-blue-500 bg-blue-500 text-white font-bold hover:bg-blue-600 hover:border-blue-600"
+                  : "border-gray-300 bg-white text-gray-900 hover:bg-gray-100 hover:border-blue-500"
+              }`}
             >
               {pageNum}
             </IconButton>
@@ -209,41 +158,29 @@ const EnhancedPagination = ({
           {page + 3 < totalPages && (
             <Typography
               variant="body2"
-              sx={{
-                mx: 1,
-                color: "text.secondary",
-                display: "flex",
-                alignItems: "center",
-                height: 32,
-              }}
+              className="mx-4 text-gray-600 flex items-center h-8"
             >
               ...
             </Typography>
           )}
 
           {/* 다음 페이지 */}
-          <Tooltip title="다음 페이지">
-            <span>
-              <IconButton
-                size="small"
-                onClick={handleNextPage}
-                disabled={page >= totalPages - 1}
-                sx={{
-                  width: 32,
-                  height: 32,
-                  border: "1px solid",
-                  borderColor: "divider",
-                  borderRadius: 1,
-                }}
-              >
-                <ChevronRightIcon fontSize="small" />
-              </IconButton>
-            </span>
-          </Tooltip>
+          <IconButton
+            size="small"
+            onClick={handleNextPage}
+            disabled={page >= totalPages - 1}
+            className="w-8 h-8 border border-gray-300 rounded bg-white text-gray-900 hover:bg-gray-100 hover:border-blue-500 disabled:bg-white disabled:border-gray-300 disabled:text-gray-400 disabled:opacity-60"
+          >
+            <ChevronRightIcon fontSize="small" />
+          </IconButton>
         </Box>
 
         {/* 페이지 직접 이동 */}
-        <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
+        <Box
+          className={`flex items-center gap-4 ${
+            hidePaginationControls ? "hidden md:flex" : "flex"
+          }`}
+        >
           <TextField
             size="small"
             type="number"
@@ -255,22 +192,12 @@ const EnhancedPagination = ({
               }
             }}
             placeholder={`1-${totalPages}`}
-            sx={{
-              width: "80px",
-              "& .MuiOutlinedInput-root": {
-                height: "32px",
-              },
-              "& input": {
-                padding: "0px 8px",
-                "&::-webkit-inner-spin-button, &::-webkit-outer-spin-button": {
-                  WebkitAppearance: "none",
-                  margin: 0,
-                },
-                MozAppearance: "textfield",
-              },
-            }}
+            className="w-[70px] [&_.MuiOutlinedInput-root]:h-8 [&_.MuiOutlinedInput-root]:rounded [&_.MuiOutlinedInput-root]:bg-white [&_.MuiOutlinedInput-root:hover_.MuiOutlinedInput-notchedOutline]:border-blue-500 [&_input]:px-2 [&_input]:py-0 [&_input]:text-sm [&_input]:text-center [&_input::-webkit-inner-spin-button]:appearance-none [&_input::-webkit-outer-spin-button]:appearance-none [&_input]:[appearance:textfield]"
           />
-          <Typography variant="body2" sx={{ color: "text.secondary" }}>
+          <Typography
+            variant="body2"
+            className="text-gray-600 text-sm whitespace-nowrap"
+          >
             페이지로 이동
           </Typography>
         </Box>

@@ -1,7 +1,10 @@
 import Table, { ColumnConfig, RowData } from "@components/Table/Table";
 import { Property, PropertyCategory } from "@ts/property";
 import { formatDate } from "@utils/dateUtil";
-import { Typography, Chip } from "@mui/material";
+import { Typography, Chip, Box, IconButton } from "@mui/material";
+import ChevronLeftIcon from "@mui/icons-material/ChevronLeft";
+import ChevronRightIcon from "@mui/icons-material/ChevronRight";
+import PropertyCard from "./PropertyCard";
 
 type PropertyRowData = RowData & Property;
 
@@ -167,17 +170,139 @@ const AgentPropertyTable = ({
   };
 
   return (
-    <Table
-      columns={columns}
-      bodyList={tableData}
-      totalElements={totalElements}
-      page={page}
-      rowsPerPage={rowsPerPage}
-      handleChangePage={handleChangePage}
-      handleChangeRowsPerPage={handleChangeRowsPerPage}
-      handleRowClick={onRowClick ? handleRowClick : undefined}
-      pagination={true}
-    />
+    <>
+      {/* 모바일 카드 UI (md 미만) */}
+      <Box className="md:hidden">
+        {propertyList.length > 0 ? (
+          <>
+            {propertyList.map((property) => (
+              <PropertyCard
+                key={property.uid}
+                property={property}
+                onRowClick={onRowClick}
+              />
+            ))}
+            {/* 모바일용 간단한 페이지네이션 */}
+            <Box
+              sx={{
+                display: "flex",
+                justifyContent: "center",
+                alignItems: "center",
+                mt: 3,
+                gap: 0.5,
+              }}
+            >
+              {/* 이전 페이지 버튼 */}
+              <IconButton
+                size="small"
+                onClick={() => handleChangePage(null, page - 1)}
+                disabled={page === 0}
+                sx={{
+                  width: 32,
+                  height: 32,
+                  border: "1px solid",
+                  borderColor: "divider",
+                  borderRadius: 1,
+                  mr: 0.5,
+                }}
+              >
+                <ChevronLeftIcon fontSize="small" />
+              </IconButton>
+
+              {/* 페이지 번호들 */}
+              {(() => {
+                const totalPages = Math.ceil(totalElements / rowsPerPage);
+                const currentPage = page;
+                const startPage = Math.max(0, currentPage - 1);
+                const endPage = Math.min(totalPages - 1, currentPage + 1);
+                const pages = [];
+
+                for (let i = startPage; i <= endPage; i++) {
+                  pages.push(i);
+                }
+
+                return pages.map((pageIndex) => (
+                  <Box
+                    key={pageIndex}
+                    onClick={() => handleChangePage(null, pageIndex)}
+                    sx={{
+                      width: 32,
+                      height: 32,
+                      display: "flex",
+                      alignItems: "center",
+                      justifyContent: "center",
+                      border: "1px solid",
+                      borderColor:
+                        page === pageIndex ? "primary.main" : "divider",
+                      borderRadius: 1,
+                      backgroundColor:
+                        page === pageIndex ? "primary.main" : "transparent",
+                      color:
+                        page === pageIndex
+                          ? "primary.contrastText"
+                          : "text.primary",
+                      cursor: "pointer",
+                      fontSize: "14px",
+                      fontWeight: page === pageIndex ? "bold" : "normal",
+                      "&:hover": {
+                        backgroundColor:
+                          page === pageIndex ? "primary.dark" : "action.hover",
+                      },
+                    }}
+                  >
+                    {pageIndex + 1}
+                  </Box>
+                ));
+              })()}
+
+              {/* 다음 페이지 버튼 */}
+              <IconButton
+                size="small"
+                onClick={() => handleChangePage(null, page + 1)}
+                disabled={page >= Math.ceil(totalElements / rowsPerPage) - 1}
+                sx={{
+                  width: 32,
+                  height: 32,
+                  border: "1px solid",
+                  borderColor: "divider",
+                  borderRadius: 1,
+                  ml: 0.5,
+                }}
+              >
+                <ChevronRightIcon fontSize="small" />
+              </IconButton>
+            </Box>
+          </>
+        ) : (
+          <Box
+            sx={{
+              textAlign: "center",
+              py: 4,
+              color: "text.secondary",
+              fontSize: "16px",
+            }}
+          >
+            매물이 없습니다.
+          </Box>
+        )}
+      </Box>
+
+      {/* 데스크톱 테이블 UI (md 이상) */}
+      <Box className="hidden md:block">
+        <Table
+          columns={columns}
+          bodyList={tableData}
+          totalElements={totalElements}
+          page={page}
+          rowsPerPage={rowsPerPage}
+          handleChangePage={handleChangePage}
+          handleChangeRowsPerPage={handleChangeRowsPerPage}
+          handleRowClick={onRowClick ? handleRowClick : undefined}
+          pagination={true}
+          hidePaginationControls={true}
+        />
+      </Box>
+    </>
   );
 };
 

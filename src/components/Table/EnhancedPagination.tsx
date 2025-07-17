@@ -17,6 +17,7 @@ interface Props {
   onPageChange: (_: unknown, newPage: number) => void;
   onRowsPerPageChange: (event: React.ChangeEvent<HTMLInputElement>) => void;
   rowsPerPageOptions?: number[];
+  hidePaginationControls?: boolean;
 }
 
 const EnhancedPagination = ({
@@ -26,6 +27,7 @@ const EnhancedPagination = ({
   onPageChange,
   onRowsPerPageChange,
   rowsPerPageOptions = [10, 25, 50],
+  hidePaginationControls = false,
 }: Props) => {
   const [pageInput, setPageInput] = useState<string>("");
   const totalPages = Math.ceil(totalElements / rowsPerPage);
@@ -95,7 +97,14 @@ const EnhancedPagination = ({
       }}
     >
       {/* 왼쪽: 페이지당 행 수와 행 정보 */}
-      <Box sx={{ display: "flex", alignItems: "center", gap: 2 }}>
+      <Box
+        sx={{
+          display: "flex",
+          alignItems: "center",
+          gap: 2,
+        }}
+        className={hidePaginationControls ? "hidden md:flex" : "flex"}
+      >
         <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
           <Typography variant="body2" sx={{ color: "text.secondary" }}>
             페이지당 행 수
@@ -152,7 +161,16 @@ const EnhancedPagination = ({
       </Box>
 
       {/* 오른쪽: 페이지네이션 컨트롤과 페이지 이동 */}
-      <Box sx={{ display: "flex", alignItems: "center", gap: 2 }}>
+      <Box
+        sx={{
+          display: "flex",
+          alignItems: "center",
+          gap: 2,
+          marginLeft: hidePaginationControls ? 0 : "auto",
+          justifyContent: hidePaginationControls ? "center" : "flex-end",
+          width: hidePaginationControls ? "100%" : "auto",
+        }}
+      >
         {/* 페이지네이션 컨트롤 */}
         <Box sx={{ display: "flex", alignItems: "center", gap: 0.5 }}>
           {/* 이전 페이지 */}
@@ -243,7 +261,14 @@ const EnhancedPagination = ({
         </Box>
 
         {/* 페이지 직접 이동 */}
-        <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
+        <Box
+          sx={{
+            display: "flex",
+            alignItems: "center",
+            gap: 1,
+          }}
+          className={hidePaginationControls ? "hidden md:flex" : "flex"}
+        >
           <TextField
             size="small"
             type="number"

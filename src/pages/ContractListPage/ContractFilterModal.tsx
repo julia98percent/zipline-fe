@@ -7,8 +7,11 @@ import {
   Button,
   Box,
 } from "@mui/material";
-import { ContractStatusEnum } from "@constants/contract";
 import Select, { MenuItem, StringSelect } from "@components/Select";
+import {
+  ContractStatusEnum,
+  CONTRACT_STATUS_OPTION_LIST,
+} from "@constants/contract";
 
 interface ContractFilterModalProps {
   open: boolean;
@@ -23,7 +26,7 @@ const ContractFilterModal = ({
   open,
   onClose,
   onApply,
-  initialFilter = { period: "", status: "" }, // ✅ 기본값 부여
+  initialFilter = { period: "", status: "" },
 }: ContractFilterModalProps) => {
   const [period, setPeriod] = useState(initialFilter.period);
   const [status, setStatus] = useState(initialFilter.status);
@@ -60,28 +63,19 @@ const ContractFilterModal = ({
             <MenuItem value="6개월 이내">6개월 이내</MenuItem>
           </StringSelect>
 
-          {/* 상태 필터 */}
-          <FormControl fullWidth>
-            <InputLabel>계약 상태</InputLabel>
-            <ContractStatusSelect
-              value={status}
-              onChange={(e) => setStatus(e.target.value)}
-              label="계약 상태"
-            >
-              <MenuItem value="">전체</MenuItem>
-              <MenuItem value="LISTED">매물 등록됨</MenuItem>
-              <MenuItem value="NEGOTIATING">협상 중</MenuItem>
-              <MenuItem value="INTENT_SIGNED">가계약</MenuItem>
-              <MenuItem value="CANCELLED">계약 취소</MenuItem>
-              <MenuItem value="CONTRACTED">계약 체결</MenuItem>
-              <MenuItem value="IN_PROGRESS">계약 진행 중</MenuItem>
-              <MenuItem value="PAID_COMPLETE">잔금 지급 완료</MenuItem>
-              <MenuItem value="REGISTERED">등기 완료</MenuItem>
-              <MenuItem value="MOVED_IN">입주 완료</MenuItem>
-              <MenuItem value="TERMINATED">계약 해지</MenuItem>
-              <MenuItem value="CLOSED">계약 종료</MenuItem>
-            </ContractStatusSelect>
-          </FormControl>
+          <ContractStatusSelect
+            value={status}
+            onChange={(e) => setStatus(e.target.value)}
+            label="계약 상태"
+          >
+            <MenuItem value="">전체</MenuItem>
+            <MenuItem value="">전체</MenuItem>
+            {CONTRACT_STATUS_OPTION_LIST.map(({ value, label }) => (
+              <MenuItem key={value} value={value}>
+                {label}
+              </MenuItem>
+            ))}
+          </ContractStatusSelect>
         </Box>
       </DialogContent>
 

@@ -1,7 +1,7 @@
 import Table, { ColumnConfig, RowData } from "@components/Table/Table";
 import { Property, PropertyCategory } from "@ts/property";
 import { formatDate } from "@utils/dateUtil";
-import { Typography, Chip, Box, IconButton } from "@mui/material";
+import { Typography, Chip, IconButton } from "@mui/material";
 import ChevronLeftIcon from "@mui/icons-material/ChevronLeft";
 import ChevronRightIcon from "@mui/icons-material/ChevronRight";
 import PropertyCard from "./PropertyCard";
@@ -135,13 +135,13 @@ const AgentPropertyTable = ({
             </Typography>
           )}
           {row.details ? (
-            <Typography variant="body2" sx={{ mt: 0.5 }}>
+            <Typography variant="body2" className="mt-1">
               {row.details.length > 20
                 ? row.details.slice(0, 20) + "..."
                 : row.details}
             </Typography>
           ) : (
-            <Typography variant="body2" sx={{ mt: 0.5 }} color="text.secondary">
+            <Typography variant="body2" className="mt-1" color="text.secondary">
               -
             </Typography>
           )}
@@ -172,7 +172,7 @@ const AgentPropertyTable = ({
   return (
     <>
       {/* 모바일 카드 UI (md 미만) */}
-      <Box className="md:hidden">
+      <div className="md:hidden">
         {propertyList.length > 0 ? (
           <>
             {propertyList.map((property) => (
@@ -183,28 +183,13 @@ const AgentPropertyTable = ({
               />
             ))}
             {/* 모바일용 간단한 페이지네이션 */}
-            <Box
-              sx={{
-                display: "flex",
-                justifyContent: "center",
-                alignItems: "center",
-                mt: 3,
-                gap: 0.5,
-              }}
-            >
+            <div className="flex justify-center items-center mt-6 gap-1">
               {/* 이전 페이지 버튼 */}
               <IconButton
                 size="small"
                 onClick={() => handleChangePage(null, page - 1)}
                 disabled={page === 0}
-                sx={{
-                  width: 32,
-                  height: 32,
-                  border: "1px solid",
-                  borderColor: "divider",
-                  borderRadius: 1,
-                  mr: 0.5,
-                }}
+                className="w-8 h-8 border border-gray-300 rounded mr-2 disabled:opacity-50"
               >
                 <ChevronLeftIcon fontSize="small" />
               </IconButton>
@@ -222,36 +207,17 @@ const AgentPropertyTable = ({
                 }
 
                 return pages.map((pageIndex) => (
-                  <Box
+                  <div
                     key={pageIndex}
                     onClick={() => handleChangePage(null, pageIndex)}
-                    sx={{
-                      width: 32,
-                      height: 32,
-                      display: "flex",
-                      alignItems: "center",
-                      justifyContent: "center",
-                      border: "1px solid",
-                      borderColor:
-                        page === pageIndex ? "primary.main" : "divider",
-                      borderRadius: 1,
-                      backgroundColor:
-                        page === pageIndex ? "primary.main" : "transparent",
-                      color:
-                        page === pageIndex
-                          ? "primary.contrastText"
-                          : "text.primary",
-                      cursor: "pointer",
-                      fontSize: "14px",
-                      fontWeight: page === pageIndex ? "bold" : "normal",
-                      "&:hover": {
-                        backgroundColor:
-                          page === pageIndex ? "primary.dark" : "action.hover",
-                      },
-                    }}
+                    className={`w-8 h-8 flex items-center justify-center border rounded cursor-pointer text-sm ${
+                      page === pageIndex
+                        ? "border-blue-500 bg-blue-500 text-white font-bold hover:bg-blue-600"
+                        : "border-gray-300 bg-transparent text-gray-900 font-normal hover:bg-gray-100"
+                    }`}
                   >
                     {pageIndex + 1}
-                  </Box>
+                  </div>
                 ));
               })()}
 
@@ -260,35 +226,21 @@ const AgentPropertyTable = ({
                 size="small"
                 onClick={() => handleChangePage(null, page + 1)}
                 disabled={page >= Math.ceil(totalElements / rowsPerPage) - 1}
-                sx={{
-                  width: 32,
-                  height: 32,
-                  border: "1px solid",
-                  borderColor: "divider",
-                  borderRadius: 1,
-                  ml: 0.5,
-                }}
+                className="w-8 h-8 border border-gray-300 rounded ml-2 disabled:opacity-50"
               >
                 <ChevronRightIcon fontSize="small" />
               </IconButton>
-            </Box>
+            </div>
           </>
         ) : (
-          <Box
-            sx={{
-              textAlign: "center",
-              py: 4,
-              color: "text.secondary",
-              fontSize: "16px",
-            }}
-          >
+          <div className="text-center py-8 text-gray-500 text-base">
             매물이 없습니다.
-          </Box>
+          </div>
         )}
-      </Box>
+      </div>
 
       {/* 데스크톱 테이블 UI (md 이상) */}
-      <Box className="hidden md:block">
+      <div className="hidden md:block">
         <Table
           columns={columns}
           bodyList={tableData}
@@ -301,7 +253,7 @@ const AgentPropertyTable = ({
           pagination={true}
           hidePaginationControls={true}
         />
-      </Box>
+      </div>
     </>
   );
 };

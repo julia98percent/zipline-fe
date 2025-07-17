@@ -115,22 +115,17 @@ const AgentPropertyFilterModal = ({
     } else if (petsAllowed === "false") {
       cleanedFilters.petsAllowed = false;
     } else {
-      // "all"인 경우 undefined로 설정하여 필터 제거
       cleanedFilters.petsAllowed = undefined;
     }
 
-    // 범위 필터들
-    // 전용 면적
     if (netAreaRange[0] > 0 || netAreaRange[1] < 200) {
       cleanedFilters.minNetArea = netAreaRange[0];
       cleanedFilters.maxNetArea = netAreaRange[1];
     } else {
-      // 기본값인 경우 undefined로 설정하여 필터 제거
       cleanedFilters.minNetArea = undefined;
       cleanedFilters.maxNetArea = undefined;
     }
 
-    // 공급 면적
     if (totalAreaRange[0] > 0 || totalAreaRange[1] < 300) {
       cleanedFilters.minTotalArea = totalAreaRange[0];
       cleanedFilters.maxTotalArea = totalAreaRange[1];
@@ -139,7 +134,6 @@ const AgentPropertyFilterModal = ({
       cleanedFilters.maxTotalArea = undefined;
     }
 
-    // 매매가
     if (priceRange[0] > 0 || priceRange[1] < 100000) {
       cleanedFilters.minPrice = priceRange[0];
       cleanedFilters.maxPrice = priceRange[1];
@@ -148,7 +142,6 @@ const AgentPropertyFilterModal = ({
       cleanedFilters.maxPrice = undefined;
     }
 
-    // 보증금
     if (depositRange[0] > 0 || depositRange[1] < 50000) {
       cleanedFilters.minDeposit = depositRange[0];
       cleanedFilters.maxDeposit = depositRange[1];
@@ -180,7 +173,6 @@ const AgentPropertyFilterModal = ({
       formatted = `${value}만원`;
     }
 
-    // 최대값일 때 "~" 추가
     if (isMaxValue) {
       formatted += "~";
     }
@@ -188,7 +180,6 @@ const AgentPropertyFilterModal = ({
     return formatted;
   };
 
-  // 슬라이더용 포맷 함수 (최대값 체크 포함)
   const formatPriceForSlider = (value: number, max?: number) => {
     let formatted = "";
     if (value >= 10000) {
@@ -199,7 +190,6 @@ const AgentPropertyFilterModal = ({
       formatted = `${value}만원`;
     }
 
-    // 최대값일 때 "~" 추가
     if (max && value === max) {
       formatted += "~";
     }
@@ -207,7 +197,6 @@ const AgentPropertyFilterModal = ({
     return formatted;
   };
 
-  // 가격 범위에 따른 동적 step 계산
   const getPriceStep = (value: number) => {
     if (value <= 1000) return 100; // 1천만원까지는 100만원 단위
     if (value <= 5000) return 500; // 5천만원까지는 500만원 단위
@@ -215,28 +204,24 @@ const AgentPropertyFilterModal = ({
     return 5000; // 1억 이후는 5천만원 단위
   };
 
-  // 가격 슬라이더 변경 시 step에 맞춰 값 조정
   const handlePriceRangeChange = (newValue: number | number[]) => {
     const range = Array.isArray(newValue) ? newValue : [newValue, newValue];
     const [min, max] = range;
     const minStep = getPriceStep(min);
     const maxStep = getPriceStep(max);
 
-    // 각 값을 해당 구간의 step에 맞춰 반올림
     const adjustedMin = Math.round(min / minStep) * minStep;
     const adjustedMax = Math.round(max / maxStep) * maxStep;
 
     setPriceRange([adjustedMin, adjustedMax]);
   };
 
-  // 보증금 슬라이더 변경 시 step에 맞춰 값 조정
   const handleDepositRangeChange = (newValue: number | number[]) => {
     const range = Array.isArray(newValue) ? newValue : [newValue, newValue];
     const [min, max] = range;
     const minStep = getPriceStep(min);
     const maxStep = getPriceStep(max);
 
-    // 각 값을 해당 구간의 step에 맞춰 반올림
     const adjustedMin = Math.round(min / minStep) * minStep;
     const adjustedMax = Math.round(max / maxStep) * maxStep;
 
@@ -360,7 +345,7 @@ const AgentPropertyFilterModal = ({
                 setNetAreaRange([0, 200]);
                 setTotalAreaRange([0, 300]);
               }}
-              sx={{ color: "primary.main", fontSize: "12px" }}
+              sx={{ color: "primary.main", p: 0 }}
             >
               초기화
             </Button>
@@ -456,7 +441,7 @@ const AgentPropertyFilterModal = ({
         </Box>
 
         {/* 가격 범위 */}
-        <Box sx={{ mb: 4 }}>
+        <Box>
           <Box
             sx={{
               display: "flex",
@@ -475,7 +460,7 @@ const AgentPropertyFilterModal = ({
                 setPriceRange([0, 100000]);
                 setDepositRange([0, 50000]);
               }}
-              sx={{ color: "primary.main", fontSize: "12px" }}
+              sx={{ color: "primary.main", p: 0 }}
             >
               초기화
             </Button>
@@ -561,7 +546,7 @@ const AgentPropertyFilterModal = ({
         </Box>
       </DialogContent>
 
-      <DialogActions sx={{ p: 5, gap: 2 }}>
+      <DialogActions sx={{ p: 2, pt: 1, gap: 2 }}>
         <Button
           variant="outlined"
           onClick={handleReset}

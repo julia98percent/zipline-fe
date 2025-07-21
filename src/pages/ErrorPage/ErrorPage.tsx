@@ -1,5 +1,6 @@
-import { Box, Button, Typography } from "@mui/material";
+import { Box, Typography } from "@mui/material";
 import { useNavigate } from "react-router-dom";
+import Button from "@components/Button";
 
 function ErrorPage() {
   const navigate = useNavigate();
@@ -28,13 +29,7 @@ function ErrorPage() {
       </Typography>
       <Button
         onClick={handleGoHome}
-        sx={{
-          backgroundColor: "#164F9E",
-          color: "white",
-          px: 3,
-          py: 1,
-          borderRadius: "8px",
-        }}
+        className="bg-[#164F9E] text-white hover:bg-[#0D3B7A] px-3 py-1 rounded"
       >
         홈으로 돌아가기
       </Button>

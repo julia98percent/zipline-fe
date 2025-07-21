@@ -166,30 +166,14 @@ const SignUpView = ({
             </div>
 
             <Button
-              text="가입하기"
               onClick={handleSubmit}
               disabled={!isFormValid}
-              sx={{
-                marginTop: "20px",
-                width: "100%",
-                color: "white",
-                minHeight: "40px",
-                backgroundColor: "#164F9E",
-                borderRadius: "8px",
-                fontSize: "16px",
-                fontWeight: "bold",
-                transition: "all 0.2s ease-in-out",
-                "&:hover": {
-                  backgroundColor: "#0D3B7D",
-                  transform: "translateY(-1px)",
-                },
-                "&:disabled": {
-                  backgroundColor: "#E5E7EB",
-                  color: "#9CA3AF",
-                  transform: "none",
-                },
-              }}
-            />
+              color="primary"
+              fullWidth
+              className="mt-5 h-[46px] rounded-lg text-base transition-all duration-200 ease-in-out disabled:transform-none"
+            >
+              가입하기
+            </Button>
 
             <Box
               sx={{
@@ -204,20 +188,9 @@ const SignUpView = ({
                 이미 회원이신가요?
               </Typography>
               <Link to="/sign-in" className="flex items-center">
-                <Button
-                  text="로그인"
-                  sx={{
-                    color: "#164F9E",
-                    backgroundColor: "transparent",
-                    border: "none",
-                    padding: "0",
-                    fontWeight: "bold",
-                    "&:hover": {
-                      backgroundColor: "transparent",
-                      textDecoration: "underline",
-                    },
-                  }}
-                />
+                <Button variant="text" className="m-0 p-0 font-bold">
+                  로그인
+                </Button>
               </Link>
             </Box>
           </div>

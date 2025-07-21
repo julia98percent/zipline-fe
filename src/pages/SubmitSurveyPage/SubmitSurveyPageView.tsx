@@ -146,7 +146,8 @@ const SubmitSurveyPageView = ({
                       선택된 파일: {answers[questionIndex].file?.name}
                     </Typography>
                     <Button
-                      text="파일 변경"
+                      color="primary"
+                      variant="outlined"
                       onClick={() => {
                         const fileInput = document.createElement("input");
                         fileInput.type = "file";
@@ -158,27 +159,17 @@ const SubmitSurveyPageView = ({
                         };
                         fileInput.click();
                       }}
-                      sx={{
-                        ml: 2,
-                        backgroundColor: "#164F9E",
-                        color: "white",
-                        "&:hover": {
-                          backgroundColor: "#0d3b7e",
-                        },
-                      }}
-                    />
+                      className="ml-2"
+                    >
+                      파일 변경
+                    </Button>
                     <Button
-                      text="제거"
                       onClick={() => onFileRemove(questionIndex)}
-                      sx={{
-                        ml: 1,
-                        backgroundColor: "#f44336",
-                        color: "white",
-                        "&:hover": {
-                          backgroundColor: "#d32f2f",
-                        },
-                      }}
-                    />
+                      color="error"
+                      className="ml-1"
+                    >
+                      제거
+                    </Button>
                   </Box>
                 )}
               </Box>
@@ -229,14 +220,7 @@ const SubmitSurveyPageView = ({
         );
       })}
 
-      <Button
-        text="답변 제출"
-        onClick={onSubmit}
-        sx={{
-          backgroundColor: "#164F9E",
-          color: "white",
-        }}
-      />
+      <Button onClick={onSubmit}>답변 제출</Button>
     </Box>
   );
 };

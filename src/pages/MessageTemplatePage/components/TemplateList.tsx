@@ -7,9 +7,10 @@ import {
   ListItem,
   ListItemText,
   Divider,
-  Button,
 } from "@mui/material";
 import { MessageTemplate, MessageTemplateList } from "@ts/message";
+import Button from "@components/Button";
+
 interface TemplateListProps {
   templateList: MessageTemplateList[];
   selectedTemplate: MessageTemplate | null;
@@ -91,18 +92,8 @@ const TemplateList: React.FC<TemplateListProps> = ({
         ))}
       </List>
       <Button
-        variant="outlined"
-        fullWidth
         onClick={onAddNewTemplate}
-        sx={{
-          mt: 2,
-          borderColor: "#164F9E",
-          color: "#164F9E",
-          "&:hover": {
-            borderColor: "#0D3B7A",
-            backgroundColor: "rgba(22, 79, 158, 0.04)",
-          },
-        }}
+        className="w-full mt-2 border border-[#164F9E] bg-white text-[#164F9E] rounded px-4 py-2 hover:border-[#0D3B7A] hover:bg-[rgba(22,79,158,0.04)] transition-colors"
       >
         템플릿 추가하기
       </Button>

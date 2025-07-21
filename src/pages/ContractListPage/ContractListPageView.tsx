@@ -4,7 +4,7 @@ import PageHeader from "@components/PageHeader/PageHeader";
 import styles from "./styles/ContractListPage.module.css";
 import Select from "@components/Select";
 import ContractAddModal from "./ContractAddButtonList/ContractAddModal";
-import { Button } from "@mui/material";
+import Button from "@components/Button";
 import AddIcon from "@mui/icons-material/Add";
 import { Contract } from "@ts/contract";
 
@@ -106,8 +106,9 @@ const ContractListPageView = ({
 
               <div className={styles.filterButtons}>
                 {Object.keys(periodMapping).map((label) => (
-                  <button
+                  <Button
                     key={label}
+                    variant="text"
                     className={
                       periodMapping[label] === selectedPeriod
                         ? `${styles.filterButton} ${styles.filterButtonActive}`
@@ -116,17 +117,17 @@ const ContractListPageView = ({
                     onClick={() => onPeriodClick(label)}
                   >
                     {label}
-                  </button>
+                  </Button>
                 ))}
               </div>
             </div>
 
             <Button
               variant="contained"
-              startIcon={<AddIcon />}
               onClick={onAddModalOpen}
-              className="!bg-blue-800 !shadow-none hover:!bg-blue-900 hover:!shadow-none !h-9 !text-xs !px-4"
+              className="bg-blue-800 shadow-none hover:bg-blue-900 hover:shadow-none h-9 text-xs px-4 flex items-center gap-2"
             >
+              <AddIcon fontSize="small" />
               계약 등록
             </Button>
           </div>

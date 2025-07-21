@@ -2,40 +2,64 @@ import React from "react";
 import { Button as MuiButton } from "@mui/material";
 
 interface ButtonType {
-  text: string;
   className?: string;
   onClick?: React.MouseEventHandler<HTMLButtonElement>;
   disabled?: boolean;
   rightElement?: React.ReactNode;
   size?: "small" | "medium" | "large";
+  variant?: "text" | "outlined" | "contained";
   onMouseEnter?: React.MouseEventHandler<HTMLButtonElement>;
   onMouseLeave?: React.MouseEventHandler<HTMLButtonElement>;
   id?: string;
-  sx?: object;
-  [key: string]: any;
+  children?: React.ReactNode;
+  color?:
+    | "inherit"
+    | "primary"
+    | "secondary"
+    | "success"
+    | "error"
+    | "info"
+    | "warning";
+  startIcon?: React.ReactNode;
+  endIcon?: React.ReactNode;
+  fullWidth?: boolean;
 }
 
 const Button = ({
-  text,
   className,
   onClick,
+  variant = "contained",
   disabled = false,
   onMouseEnter,
   onMouseLeave,
   id,
+  children,
+  color = "primary",
+  startIcon,
+  endIcon,
+  fullWidth,
   ...props
 }: ButtonType) => {
+  const classNameWithVariant =
+    `${variant == "outlined" && " bg-white "}` +
+    `${variant == "text" && " hover:bg-black/5 "}`;
+
   return (
     <MuiButton
       id={id}
       disabled={disabled}
-      className={className}
+      className={`${classNameWithVariant} shadow-none hover:shadow-none h-[40px] ${className}`}
       onClick={onClick}
       onMouseEnter={onMouseEnter}
       onMouseLeave={onMouseLeave}
+      variant={variant}
+      color={color}
+      startIcon={startIcon}
+      endIcon={endIcon}
+      fullWidth={fullWidth}
       {...props}
     >
-      <span>{text}</span>
+      {children}
     </MuiButton>
   );
 };

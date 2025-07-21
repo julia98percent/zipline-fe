@@ -3,9 +3,9 @@ import {
   DialogTitle,
   DialogContent,
   DialogActions,
-  Button,
   Typography,
 } from "@mui/material";
+import Button from "@components/Button";
 
 interface CounselDeleteDialogProps {
   open: boolean;

@@ -68,10 +68,12 @@ function NotificationList({
         <div className="flex items-center justify-between text-gray-900 font-semibold mb-3 pb-2 border-b border-gray-200">
           <Typography variant="h6">알림</Typography>
           <Button
-            text="모두 읽음 표시"
-            className="p-0!"
+            variant="text"
+            color="primary"
             onClick={handleReadAllNotifications}
-          />
+          >
+            모두 읽음 표시
+          </Button>
         </div>
         <List
           sx={{

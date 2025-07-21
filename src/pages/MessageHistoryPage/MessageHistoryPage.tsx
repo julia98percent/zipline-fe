@@ -1,8 +1,9 @@
 import { useState, useEffect } from "react";
 import { useOutletContext } from "react-router-dom";
-import { Box, Paper, Button } from "@mui/material";
+import { Box, Paper } from "@mui/material";
 import RefreshIcon from "@mui/icons-material/Refresh";
 import PageHeader from "@components/PageHeader/PageHeader";
+import Button from "@components/Button";
 import dayjs from "dayjs";
 import MessageDetailModal from "./MessageDetailModal";
 import { translateMessageStatusToKorean } from "@utils/messageUtil";
@@ -102,23 +103,10 @@ const MessageHistoryPage = () => {
         >
           <Button
             variant="outlined"
-            startIcon={<RefreshIcon />}
             onClick={handleRefresh}
-            sx={{
-              borderRadius: "4px",
-              height: "36px",
-              fontSize: "13px",
-              padding: "0 16px",
-              borderColor: "#164F9E",
-              background: "white",
-              color: "#164F9E",
-              "&:hover": {
-                borderColor: "#0D3B7A",
-                color: "#0D3B7A",
-                backgroundColor: "rgba(22, 79, 158, 0.04)",
-              },
-            }}
+            className="rounded border-[#164F9E] bg-white text-[#164F9E] h-9 text-xs px-4 hover:border-[#0D3B7A] hover:text-[#0D3B7A] hover:bg-[rgba(22,79,158,0.04)] flex items-center gap-2"
           >
+            <RefreshIcon fontSize="small" />
             새로고침
           </Button>
         </Box>

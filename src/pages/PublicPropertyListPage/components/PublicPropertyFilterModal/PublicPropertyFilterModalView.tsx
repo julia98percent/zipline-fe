@@ -1,6 +1,5 @@
 import {
   Box,
-  Button,
   Dialog,
   DialogActions,
   DialogContent,
@@ -14,15 +13,16 @@ import RegionFilterSection from "./components/RegionFilterSection";
 import PropertyTypeFilterSection from "./components/PropertyTypeFilterSection";
 import PriceRangeSection from "./components/PriceRangeSection";
 import AreaRangeSection from "./components/AreaRangeSection";
+import Button from "@components/Button";
 
 interface PublicPropertyFilterModalViewProps {
   open: boolean;
   onClose: () => void;
   localFilters: PublicPropertySearchParams;
   region: RegionState;
-  onSidoChange: (event: SelectChangeEvent<string>) => void;
-  onGuChange: (event: SelectChangeEvent<string>) => void;
-  onDongChange: (event: SelectChangeEvent<string>) => void;
+  onSidoChange: (event: SelectChangeEvent<number>) => void;
+  onGuChange: (event: SelectChangeEvent<number>) => void;
+  onDongChange: (event: SelectChangeEvent<number>) => void;
   onSliderChange: (
     field: string
   ) => (_: Event, newValue: number | number[]) => void;

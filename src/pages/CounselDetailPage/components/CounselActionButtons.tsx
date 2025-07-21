@@ -1,4 +1,4 @@
-import { Button } from "@mui/material";
+import Button from "@components/Button";
 import EditIcon from "@mui/icons-material/Edit";
 import DeleteOutlineIcon from "@mui/icons-material/DeleteOutline";
 import SaveIcon from "@mui/icons-material/Save";
@@ -35,7 +35,6 @@ const CounselActionButtons = ({
             color="primary"
             startIcon={<EditIcon />}
             onClick={onEdit}
-            sx={{ backgroundColor: "white" }}
           >
             수정
           </Button>
@@ -44,7 +43,6 @@ const CounselActionButtons = ({
             color="error"
             startIcon={<DeleteOutlineIcon />}
             onClick={onDeleteClick}
-            sx={{ backgroundColor: "white" }}
           >
             삭제
           </Button>
@@ -56,7 +54,6 @@ const CounselActionButtons = ({
             color="inherit"
             startIcon={<CloseIcon />}
             onClick={onCancelEdit}
-            sx={{ backgroundColor: "white" }}
           >
             취소
           </Button>
@@ -65,7 +62,6 @@ const CounselActionButtons = ({
             color="primary"
             startIcon={<SaveIcon />}
             onClick={onSave}
-            sx={{ backgroundColor: "white" }}
           >
             저장
           </Button>

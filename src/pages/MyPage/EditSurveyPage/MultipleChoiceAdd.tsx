@@ -77,12 +77,9 @@ function MultipleChoiceAdd({
           </IconButton>
         </Box>
       ))}
-      <Button
-        fullWidth
-        text="선택지 추가"
-        variant="outlined"
-        onClick={() => handleAddChoice(questionIndex)}
-      />
+      <Button fullWidth onClick={() => handleAddChoice(questionIndex)}>
+        선택지 추가
+      </Button>
     </Box>
   );
 }

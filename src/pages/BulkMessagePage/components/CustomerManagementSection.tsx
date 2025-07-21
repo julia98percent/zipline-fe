@@ -1,6 +1,7 @@
-import { Box, Typography, Button, Paper, IconButton } from "@mui/material";
+import { Box, Typography, Paper, IconButton } from "@mui/material";
 import CloseIcon from "@mui/icons-material/Close";
 import { Customer } from "@ts/customer";
+import Button from "@components/Button";
 
 interface CustomerManagementSectionProps {
   customers: Customer[];
@@ -18,54 +19,21 @@ const CustomerManagementSection = ({
   onSendMessage,
 }: CustomerManagementSectionProps) => {
   return (
-    <Box sx={{ width: "400px" }}>
-      <Paper
-        sx={{
-          p: 3,
-          mb: 2,
-          borderRadius: "8px",
-          boxShadow: "0 2px 6px rgba(0, 0, 0, 0.05)",
-        }}
-      >
-        <Box
-          sx={{
-            display: "flex",
-            justifyContent: "space-between",
-            alignItems: "center",
-            mb: 2,
-          }}
-        >
-          <Typography variant="h6" sx={{ color: "#333333" }}>
+    <Box className="w-[400px]">
+      <Paper className="p-6 mb-4 rounded-lg shadow-sm">
+        <Box className="flex justify-between items-center mb-4">
+          <Typography variant="h6" className="text-gray-900">
             고객 추가
           </Typography>
-          <Button
-            variant="contained"
-            onClick={onAddCustomer}
-            sx={{
-              backgroundColor: "#164F9E",
-              boxShadow: "none",
-              "&:hover": {
-                backgroundColor: "#0D3B7A",
-                boxShadow: "none",
-              },
-            }}
-          >
+          <Button variant="contained" color="primary" onClick={onAddCustomer}>
             고객 선택하기
           </Button>
         </Box>
-        <Box sx={{ maxHeight: "300px", overflowY: "auto" }}>
+        <Box className="max-h-[300px] overflow-y-auto">
           {customers.map((customer, index) => (
             <Box
               key={index}
-              sx={{
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "space-between",
-                p: 1,
-                mb: "28px",
-                backgroundColor: "#F8F9FA",
-                borderRadius: "4px",
-              }}
+              className="flex items-center justify-between p-2 mb-7 bg-gray-50 rounded"
             >
               <Box>
                 <Typography variant="body1">{customer.name}</Typography>
@@ -84,19 +52,9 @@ const CustomerManagementSection = ({
       <Button
         fullWidth
         variant="contained"
+        color="primary"
         onClick={onSendMessage}
         disabled={customers.length === 0 || !selectedTemplate}
-        sx={{
-          height: "48px",
-          backgroundColor: "#164F9E",
-          "&:hover": {
-            backgroundColor: "#0D3B7A",
-          },
-          "&.Mui-disabled": {
-            backgroundColor: "#E0E0E0",
-            color: "#9E9E9E",
-          },
-        }}
       >
         {customers.length === 0
           ? "고객을 추가해주세요"

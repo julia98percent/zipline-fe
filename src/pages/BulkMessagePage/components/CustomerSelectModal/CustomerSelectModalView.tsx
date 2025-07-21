@@ -1,6 +1,5 @@
 import {
   Typography,
-  Button,
   Dialog,
   DialogTitle,
   DialogContent,
@@ -11,6 +10,7 @@ import { Customer, Label, CustomerRoleFilters } from "@ts/customer";
 import { RegionState } from "@ts/region";
 import { CustomerList, CustomerFilters } from "../../components";
 import { CustomerTabsSection, CustomerPaginationSection } from "./components";
+import Button from "@components/Button";
 
 interface CustomerSelectModalViewProps {
   open: boolean;
@@ -72,18 +72,16 @@ export default function CustomerSelectModalView({
       maxWidth="md"
       fullWidth
       PaperProps={{
-        sx: {
-          borderRadius: "8px",
-        },
+        className: "rounded-lg",
       }}
     >
-      <DialogTitle sx={{ pb: 1 }}>
-        <Typography variant="h6" sx={{ fontWeight: "bold" }}>
+      <DialogTitle className="pb-2">
+        <Typography variant="h6" className="font-bold">
           단체 문자 발송 대상 선택
         </Typography>
       </DialogTitle>
 
-      <DialogContent sx={{ pb: 0 }}>
+      <DialogContent className="pb-0">
         <CustomerFilters
           search={search}
           region={region}
@@ -119,31 +117,11 @@ export default function CustomerSelectModalView({
         />
       </DialogContent>
 
-      <DialogActions sx={{ p: 2 }}>
-        <Button
-          onClick={onClose}
-          variant="outlined"
-          sx={{
-            borderColor: "#666666",
-            color: "#666666",
-            "&:hover": {
-              borderColor: "#333333",
-              backgroundColor: "rgba(102, 102, 102, 0.04)",
-            },
-          }}
-        >
+      <DialogActions className="p-4">
+        <Button onClick={onClose} variant="outlined" color="info">
           취소
         </Button>
-        <Button
-          onClick={onConfirm}
-          variant="contained"
-          sx={{
-            backgroundColor: "#164F9E",
-            "&:hover": {
-              backgroundColor: "#0D3B7A",
-            },
-          }}
-        >
+        <Button onClick={onConfirm} variant="contained" color="primary">
           확인 ({selectedCustomers.length}명)
         </Button>
       </DialogActions>

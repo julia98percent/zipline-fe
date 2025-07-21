@@ -1,6 +1,7 @@
-import { Box, Button } from "@mui/material";
+import { Box } from "@mui/material";
 import EditIcon from "@mui/icons-material/Edit";
 import DeleteIcon from "@mui/icons-material/Delete";
+import Button from "@components/Button";
 
 interface CustomerActionButtonsProps {
   isEditing: boolean;
@@ -18,21 +19,14 @@ const CustomerActionButtons = ({
   onDeleteClick,
 }: CustomerActionButtonsProps) => {
   return (
-    <Box sx={{ display: "flex", justifyContent: "flex-end", mb: 2 }}>
+    <Box className="flex justify-end mb-4">
       {isEditing ? (
-        <div style={{ marginTop: "16px", display: "flex" }}>
+        <div className="mt-4 flex">
           <Button
             variant="outlined"
             color="inherit"
             onClick={onCancelEdit}
-            sx={{
-              mr: 1,
-              backgroundColor: "white",
-              minWidth: "81px",
-              "&:hover": {
-                backgroundColor: "#F5F5F5",
-              },
-            }}
+            className="mr-2 bg-white min-w-[81px] hover:bg-gray-50"
           >
             취소
           </Button>
@@ -40,52 +34,29 @@ const CustomerActionButtons = ({
             variant="contained"
             color="primary"
             onClick={onSaveEdit}
-            sx={{
-              boxShadow: "none",
-              backgroundColor: "#164F9E",
-              minWidth: "81px",
-              "&:hover": {
-                backgroundColor: "#164F9E",
-                opacity: 0.9,
-                boxShadow: "none",
-              },
-            }}
+            className="shadow-none bg-[#164F9E] min-w-[81px] hover:bg-[#164F9E] hover:opacity-90 hover:shadow-none"
           >
             저장
           </Button>
         </div>
       ) : (
-        <div
-          style={{
-            display: "flex",
-            justifyContent: "flex-end",
-            marginTop: "16px",
-          }}
-        >
+        <div className="flex justify-end mt-4">
           <Button
             variant="outlined"
             color="primary"
-            startIcon={<EditIcon />}
             onClick={onEditClick}
-            sx={{
-              mr: 1,
-              color: "#164F9E",
-              minHeight: "32px",
-              marginLeft: "12px",
-              backgroundColor: "white",
-            }}
+            className="mr-2 text-[#164F9E] min-h-[32px] ml-3 bg-white border-[#164F9E] hover:bg-blue-50 flex items-center gap-2"
           >
+            <EditIcon fontSize="small" />
             수정
           </Button>
           <Button
             variant="outlined"
             color="error"
-            startIcon={<DeleteIcon />}
             onClick={onDeleteClick}
-            sx={{
-              backgroundColor: "white",
-            }}
+            className="bg-white border-red-600 text-red-600 hover:bg-red-50 flex items-center gap-2"
           >
+            <DeleteIcon fontSize="small" />
             삭제
           </Button>
         </div>

@@ -118,6 +118,7 @@ function PropertyEditModal({
       )
         setHasElevator(initialData.hasElevator);
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [open, initialData]);
 
   useEffect(() => {
@@ -234,26 +235,13 @@ function PropertyEditModal({
 
   return (
     <Modal open={open} onClose={handleClose}>
-      <Box
-        sx={{
-          position: "absolute",
-          top: "50%",
-          left: "50%",
-          transform: "translate(-50%, -50%)",
-          width: "50vw",
-          bgcolor: "white",
-          p: 4,
-          borderRadius: 2,
-          maxHeight: "80vh",
-          overflowY: "auto",
-        }}
-      >
+      <Box className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-[50vw] bg-white p-8 rounded-lg max-h-[80vh] overflow-y-auto">
         <Typography variant="h6">매물 수정</Typography>
 
         <CustomerSelectSection
           customerUid={customerUid}
           customers={custoemrUid}
-          onCustomerChange={setCustomerUid}
+          onCustomerChange={(uid: string) => setCustomerUid(Number(uid))}
         />
 
         <AddressSection
@@ -306,19 +294,9 @@ function PropertyEditModal({
           onDetailsChange={(e) => setDetails(e.target.value)}
         />
 
-        <Button
-          text="수정"
-          onClick={handleSubmit}
-          sx={{
-            mt: 4,
-            color: "white !important",
-            backgroundColor: "#164F9E",
-            "&:disabled": {
-              backgroundColor: "lightgray",
-              color: "white",
-            },
-          }}
-        />
+        <Button onClick={handleSubmit} color="primary" className="mt-8">
+          수정
+        </Button>
       </Box>
     </Modal>
   );

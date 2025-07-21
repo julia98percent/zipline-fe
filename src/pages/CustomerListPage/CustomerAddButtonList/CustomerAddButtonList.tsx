@@ -3,7 +3,6 @@ import Button from "@components/Button";
 import CustomerAddModal from "./CustomerAddModal";
 import CustomerBulkUploadModal from "./CustomerBulkUploadModal";
 import AddIcon from "@mui/icons-material/Add";
-import { Button as MuiButton } from "@mui/material";
 
 interface Props {
   fetchCustomerData: () => void;
@@ -21,37 +20,22 @@ function CustomerAddButtonList({ fetchCustomerData }: Props) {
   return (
     <>
       <div>
-        <MuiButton
+        <Button
           variant="contained"
-          startIcon={<AddIcon />}
           onClick={handleOpen}
-          sx={{
-            backgroundColor: "#164F9E",
-            boxShadow: "none",
-            "&:hover": { backgroundColor: "#0D3B7A", boxShadow: "none" },
-            height: "36px",
-            fontSize: "13px",
-            padding: "0 16px",
-          }}
+          className="bg-[#164F9E] shadow-none hover:bg-[#0D3B7A] hover:shadow-none h-9 text-xs px-4 flex items-center gap-2"
         >
+          <AddIcon fontSize="small" />
           고객 등록
-        </MuiButton>
+        </Button>
 
         <Button
-          text="고객 데이터 일괄 등록(.csv)"
           variant="outlined"
           onClick={handleOpenBulkUpload}
-          sx={{
-            color: "#164F9E",
-            minHeight: "32px",
-            borderColor: "#164F9E",
-            marginLeft: "12px",
-            "&:hover": {
-              borderColor: "#0D3B7A",
-              color: "#0D3B7A",
-            },
-          }}
-        />
+          className="text-[#164F9E] min-h-[32px] border-[#164F9E] ml-3 hover:border-[#0D3B7A] hover:text-[#0D3B7A]"
+        >
+          고객 데이터 일괄 등록(.csv)
+        </Button>
       </div>
       <CustomerAddModal
         open={open}

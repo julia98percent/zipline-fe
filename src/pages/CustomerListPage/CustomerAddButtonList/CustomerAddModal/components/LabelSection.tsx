@@ -39,11 +39,12 @@ export default function LabelSection({
           라벨 선택
         </Typography>
         <Button
-          text="라벨 추가"
+          className="bg-[#164F9E]"
           startIcon={<AddIcon />}
-          sx={{ color: "#164F9E" }}
           onClick={() => onSetIsAddingLabel(true)}
-        />
+        >
+          라벨 추가
+        </Button>
       </Box>
 
       {/* 라벨 추가 입력 필드 */}
@@ -57,28 +58,21 @@ export default function LabelSection({
             fullWidth
           />
           <Button
-            text="추가"
             onClick={onAddLabel}
-            sx={{
-              backgroundColor: "#164F9E",
-              color: "white",
-              "&:hover": {
-                backgroundColor: "#0D3B7A",
-              },
-            }}
-          />
+            className="bg-[#164F9E] text-white hover:bg-[#0D3B7A]"
+          >
+            추가
+          </Button>
           <Button
-            text="취소"
             onClick={() => {
               onSetIsAddingLabel(false);
               onSetNewLabelName("");
             }}
-            sx={{
-              color: "#164F9E",
-              borderColor: "#164F9E",
-            }}
+            className="border-[#164F9E] text-[#164F9E]"
             variant="outlined"
-          />
+          >
+            취소
+          </Button>
         </Box>
       )}
 

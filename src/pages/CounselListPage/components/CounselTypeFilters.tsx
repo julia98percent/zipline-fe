@@ -1,5 +1,6 @@
 import { CounselCategory } from "@ts/counsel";
 import styles from "../styles/CounselListPage.module.css";
+import Button from "@components/Button";
 
 interface Props {
   selectedType: string | null;
@@ -22,8 +23,9 @@ const CounselTypeFilters = ({
   return (
     <div className={styles.typeFilterRow}>
       {COUNSEL_TYPES.map((type) => (
-        <button
+        <Button
           key={type.value}
+          variant="text"
           className={`${styles.filterButton} ${
             selectedType === type.value ? styles.filterButtonActive : ""
           }`}
@@ -32,10 +34,11 @@ const CounselTypeFilters = ({
           }}
         >
           {type.label}
-        </button>
+        </Button>
       ))}
       <span className={styles.filterDivider}>|</span>
-      <button
+      <Button
+        variant="text"
         className={`${styles.filterButton} ${
           selectedCompleted === false ? styles.filterButtonActive : ""
         }`}
@@ -44,8 +47,9 @@ const CounselTypeFilters = ({
         }}
       >
         의뢰 진행중
-      </button>
-      <button
+      </Button>
+      <Button
+        variant="text"
         className={`${styles.filterButton} ${
           selectedCompleted === true ? styles.filterButtonActive : ""
         }`}
@@ -54,7 +58,7 @@ const CounselTypeFilters = ({
         }}
       >
         의뢰 마감
-      </button>
+      </Button>
     </div>
   );
 };

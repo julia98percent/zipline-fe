@@ -93,12 +93,13 @@ const CustomerListPageView = ({
               className="min-w-[300px]"
             />
             <Button
-              text="상세 필터"
               variant="outlined"
               onClick={onFilterModalOpen}
               className="h-10 ml-2 min-w-[120px] border border-[#164F9E] text-[#164F9E] rounded-full hover:border-[#164F9E]"
               startIcon={<FilterListIcon />}
-            />
+            >
+              상세 필터
+            </Button>
           </div>
           <div className="flex justify-start items-center">
             <CustomerAddButtonList fetchCustomerData={onCustomerCreate} />

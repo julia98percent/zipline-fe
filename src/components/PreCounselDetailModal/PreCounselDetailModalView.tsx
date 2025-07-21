@@ -3,7 +3,6 @@ import {
   DialogTitle,
   DialogContent,
   DialogActions,
-  Button,
   Typography,
   Box,
   CircularProgress,
@@ -13,6 +12,7 @@ import {
 } from "@mui/material";
 import { formatDate } from "@utils/dateUtil";
 import { PreCounselDetail } from "@ts/counsel";
+import Button from "@components/Button";
 
 interface PreCounselDetailModalProps {
   open: boolean;
@@ -38,101 +38,74 @@ const PreCounselDetailModal = ({
       maxWidth="md"
       fullWidth
       PaperProps={{
-        sx: {
-          borderRadius: "12px",
-        },
+        className: "rounded-xl",
       }}
     >
-      <DialogTitle sx={{ pb: 1, color: "#164F9E", fontWeight: 700 }}>
+      <DialogTitle className="pb-2 text-[#164F9E] font-bold">
         사전 상담 상세
       </DialogTitle>
-      <DialogContent sx={{ pt: "16px !important" }}>
+      <DialogContent className="pt-4">
         {isLoading ? (
-          <Box sx={{ display: "flex", justifyContent: "center", p: 3 }}>
+          <Box className="flex justify-center p-6">
             <CircularProgress />
           </Box>
         ) : preCounselDetail ? (
-          <Box sx={{ display: "flex", flexDirection: "column", gap: 3 }}>
-            <Paper
-              elevation={0}
-              sx={{
-                p: 2,
-                backgroundColor: "#f8f9fa",
-                borderRadius: "8px",
-              }}
-            >
-              <Box sx={{ display: "flex", flexDirection: "column", gap: 1 }}>
-                <Box sx={{ display: "flex", gap: 2 }}>
-                  <Typography
-                    variant="body2"
-                    sx={{ color: "#666", width: 100 }}
-                  >
+          <Box className="flex flex-col gap-6">
+            <Paper elevation={0} className="p-4 bg-gray-50 rounded-lg">
+              <Box className="flex flex-col gap-2">
+                <Box className="flex gap-4">
+                  <Typography variant="body2" className="text-gray-600 w-24">
                     사전 상담 이름
                   </Typography>
-                  <Typography variant="body2" sx={{ fontWeight: 500 }}>
+                  <Typography variant="body2" className="font-medium">
                     {preCounselDetail.title}
                   </Typography>
                 </Box>
-                <Box sx={{ display: "flex", gap: 2 }}>
-                  <Typography
-                    variant="body2"
-                    sx={{ color: "#666", width: 100 }}
-                  >
+                <Box className="flex gap-4">
+                  <Typography variant="body2" className="text-gray-600 w-24">
                     제출일시
                   </Typography>
-                  <Typography variant="body2" sx={{ fontWeight: 500 }}>
+                  <Typography variant="body2" className="font-medium">
                     {formatDate(preCounselDetail.submittedAt)}
                   </Typography>
                 </Box>
               </Box>
             </Paper>
 
-            <Box sx={{ display: "flex", flexDirection: "column", gap: 2 }}>
+            <Box className="flex flex-col gap-4">
               {preCounselDetail.answers.map((item, index) => (
                 <Paper
                   key={item.questionUid}
                   elevation={0}
-                  sx={{
-                    p: 2,
-                    border: "1px solid #e0e0e0",
-                    borderRadius: "8px",
-                  }}
+                  className="p-4 border border-gray-200 rounded-lg"
                 >
-                  <Box
-                    sx={{ display: "flex", flexDirection: "column", gap: 1 }}
-                  >
-                    <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
+                  <Box className="flex flex-col gap-2">
+                    <Box className="flex items-center gap-2">
                       <Typography
                         variant="body1"
-                        sx={{ color: "#333", fontWeight: 500 }}
+                        className="text-gray-900 font-medium"
                       >
                         {index + 1}. {item.questionTitle}
                       </Typography>
                       {item.required && (
                         <Typography
                           variant="caption"
-                          sx={{
-                            color: "#d32f2f",
-                            fontSize: "0.75rem",
-                          }}
+                          className="text-red-600 text-xs"
                         >
                           (필수)
                         </Typography>
                       )}
                     </Box>
                     {item.description && (
-                      <Typography variant="body2" sx={{ color: "#666", mb: 1 }}>
+                      <Typography
+                        variant="body2"
+                        className="text-gray-600 mb-2"
+                      >
                         {item.description}
                       </Typography>
                     )}
-                    <Divider sx={{ my: 1 }} />
-                    <Box
-                      sx={{
-                        p: 2,
-                        backgroundColor: "#f8f9fa",
-                        borderRadius: "4px",
-                      }}
-                    >
+                    <Divider className="my-2" />
+                    <Box className="p-4 bg-gray-50 rounded">
                       <Typography variant="body2">
                         {item.questionType === "SINGLE_CHOICE"
                           ? item.choices.find(
@@ -156,13 +129,7 @@ const PreCounselDetailModal = ({
                                 href={item.answer}
                                 target="_blank"
                                 rel="noopener noreferrer"
-                                sx={{
-                                  color: "#164F9E",
-                                  textDecoration: "none",
-                                  "&:hover": {
-                                    textDecoration: "underline",
-                                  },
-                                }}
+                                className="text-[#164F9E] no-underline hover:underline"
                               >
                                 {item.fileName || "파일 다운로드"}
                               </Link>
@@ -178,44 +145,22 @@ const PreCounselDetailModal = ({
         ) : (
           <Typography
             variant="body2"
-            sx={{ color: "#666", textAlign: "center", py: 3 }}
+            className="text-gray-600 text-center py-6"
           >
             사전 상담 내용을 불러올 수 없습니다.
           </Typography>
         )}
       </DialogContent>
-      <DialogActions sx={{ p: 2, gap: 1, justifyContent: "flex-end" }}>
+      <DialogActions className="p-4 gap-2 justify-end">
         <Button
           onClick={onRegisterCustomer}
           variant="outlined"
+          color="primary"
           disabled={isRegistering || !preCounselDetail}
-          sx={{
-            borderColor: "#164F9E",
-            color: "#164F9E",
-            "&:hover": {
-              borderColor: "#0D3B7A",
-              backgroundColor: "rgba(22, 79, 158, 0.04)",
-            },
-            "&:disabled": {
-              borderColor: "#ccc",
-              color: "#ccc",
-            },
-          }}
         >
           {isRegistering ? "등록 중..." : "고객 등록하기"}
         </Button>
-        <Button
-          onClick={onClose}
-          variant="contained"
-          sx={{
-            backgroundColor: "#164F9E",
-            boxShadow: "none",
-            "&:hover": {
-              backgroundColor: "#0D3B7A",
-              boxShadow: "none",
-            },
-          }}
-        >
+        <Button onClick={onClose} variant="contained" color="primary">
           닫기
         </Button>
       </DialogActions>

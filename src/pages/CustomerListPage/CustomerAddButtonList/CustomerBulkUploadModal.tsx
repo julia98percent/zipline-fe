@@ -4,7 +4,6 @@ import {
   DialogTitle,
   DialogContent,
   DialogActions,
-  Button,
   Box,
   Typography,
   Paper,
@@ -14,7 +13,9 @@ import { useDropzone } from "react-dropzone";
 import { uploadCustomersBulk } from "@apis/customerService";
 import { Link } from "react-router-dom";
 import { AxiosError } from "axios";
-import { showToast } from "@components/Toast/Toast";
+import { showToast } from "@components/Toast";
+import Button from "@components/Button";
+
 interface Props {
   open: boolean;
   handleClose: () => void;

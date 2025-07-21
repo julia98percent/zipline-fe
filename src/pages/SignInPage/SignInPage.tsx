@@ -93,30 +93,14 @@ const SignInPage = () => {
             </div>
 
             <Button
-              text="로그인"
+              color="primary"
+              fullWidth
               onClick={handleClickSignInButton}
               disabled={isSignInButtonDisabled}
-              sx={{
-                marginTop: "32px",
-                width: "100%",
-                color: "white",
-                minHeight: "40px",
-                backgroundColor: "#164F9E",
-                borderRadius: "8px",
-                fontSize: "16px",
-                fontWeight: "bold",
-                transition: "all 0.2s ease-in-out",
-                "&:hover": {
-                  backgroundColor: "#0D3B7D",
-                  transform: "translateY(-1px)",
-                },
-                "&:disabled": {
-                  backgroundColor: "#E5E7EB",
-                  color: "#9CA3AF",
-                  transform: "none",
-                },
-              }}
-            />
+              className="mt-8 h-[46px] rounded-lg text-base transition-all duration-200 ease-in-out"
+            >
+              로그인
+            </Button>
 
             <Box
               sx={{
@@ -158,20 +142,9 @@ const SignInPage = () => {
                 회원이 아니신가요?
               </Typography>
               <Link to="/sign-up" className="flex items-center">
-                <Button
-                  text="회원가입"
-                  sx={{
-                    color: "#164F9E",
-                    backgroundColor: "transparent",
-                    border: "none",
-                    padding: "0",
-                    fontWeight: "bold",
-                    "&:hover": {
-                      backgroundColor: "transparent",
-                      textDecoration: "underline",
-                    },
-                  }}
-                />
+                <Button variant="text" className="m-0 p-0 font-bold">
+                  회원가입
+                </Button>
               </Link>
             </Box>
           </div>

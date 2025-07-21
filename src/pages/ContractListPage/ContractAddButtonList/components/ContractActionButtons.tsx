@@ -8,16 +8,12 @@ interface Props {
 const ContractActionButtons = ({ handleSubmit, disabled = false }: Props) => {
   return (
     <Button
-      text="등록"
       disabled={disabled}
       onClick={handleSubmit}
-      sx={{
-        mt: 2,
-        color: "white !important",
-        backgroundColor: "#164F9E",
-        "&:disabled": { backgroundColor: "lightgray", color: "white" },
-      }}
-    />
+      className="mt-4 text-white bg-[#164F9E] disabled:bg-gray-400 disabled:text-white"
+    >
+      등록
+    </Button>
   );
 };
 

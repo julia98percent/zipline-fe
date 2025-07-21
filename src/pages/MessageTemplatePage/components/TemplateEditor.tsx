@@ -1,5 +1,5 @@
 import React from "react";
-import { TextField, Button, Paper } from "@mui/material";
+import { TextField, Paper } from "@mui/material";
 import Select, { MenuItem } from "@components/Select";
 import {
   MessageTemplate,
@@ -7,6 +7,7 @@ import {
   AllowedVariable,
 } from "@ts/message";
 import TemplatePreview from "./TemplatePreview";
+import Button from "@components/Button";
 
 interface TemplateEditorProps {
   templateTitle: string;
@@ -95,7 +96,6 @@ const TemplateEditor: React.FC<TemplateEditorProps> = ({
             취소
           </Button>
         )}
-        {/* 일반 템플릿이고 선택된 템플릿이 있을 때만 삭제 버튼 표시 */}
         {selectedTemplate && selectedTemplate.category === "GENERAL" && (
           <Button
             variant="outlined"

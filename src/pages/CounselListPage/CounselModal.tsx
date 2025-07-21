@@ -5,7 +5,6 @@ import {
   DialogContent,
   DialogActions,
   TextField,
-  Button,
   Box,
   CircularProgress,
 } from "@mui/material";
@@ -19,6 +18,7 @@ import {
   createCounsel,
 } from "@apis/counselService";
 import { CounselCategory } from "@ts/counsel";
+import Button from "@components/Button";
 
 dayjs.extend(utc);
 dayjs.extend(timezone);

@@ -12,7 +12,7 @@ interface DaumPostcodeData {
   bname: string;
 }
 
-function DaumPost({ setAddress}: Props) {
+function DaumPost({ setAddress }: Props) {
   const open = useDaumPostcodePopup();
 
   const handleComplete = (data: DaumPostcodeData) => {
@@ -22,7 +22,11 @@ function DaumPost({ setAddress}: Props) {
   const handleClick = () => {
     open({ onComplete: handleComplete });
   };
-  return <Button text="주소 찾기" onClick={handleClick} />;
+  return (
+    <Button variant="text" color="primary" onClick={handleClick}>
+      주소 찾기
+    </Button>
+  );
 }
 
 export default DaumPost;

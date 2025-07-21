@@ -1,4 +1,4 @@
-import { Modal, Box, Typography, Button } from "@mui/material";
+import { Modal, Box, Typography } from "@mui/material";
 import { useState, useEffect, useCallback } from "react";
 import { fetchLabels } from "@apis/customerService";
 import { fetchSido, fetchSigungu, fetchDong } from "@apis/regionService";
@@ -8,6 +8,7 @@ import RoleFilters from "./RoleFilters";
 import RegionFilters from "./RegionFilters";
 import PriceFilters from "./PriceFilters";
 import LabelFilters from "./LabelFilters";
+import Button from "@components/Button";
 
 interface CustomerFilterModalProps {
   open: boolean;

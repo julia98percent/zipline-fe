@@ -4,7 +4,6 @@ import {
   Card,
   CardContent,
   Chip,
-  Button,
   IconButton,
 } from "@mui/material";
 import EditIcon from "@mui/icons-material/Edit";
@@ -17,6 +16,7 @@ import {
   ContractHistory,
 } from "@ts/contract";
 import Table, { ColumnConfig } from "@components/Table";
+import Button from "@components/Button";
 
 interface CustomerInfo {
   name: string;
@@ -313,14 +313,13 @@ const ContractDetailContentView = ({
                     <Button
                       variant="outlined"
                       size="small"
-                      component="a"
-                      href={doc.fileUrl}
-                      download={doc.fileName}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      sx={{ minWidth: "auto", px: 1 }}
+                      // TODO
+                      // download={doc.fileName}
+                      // target="_blank"
+                      // rel="noopener noreferrer"
+                      className={"min-w-auto, px-1"}
                     >
-                      다운로드
+                      <a href={doc.fileUrl}>다운로드</a>
                     </Button>
                   </Box>
                 ))}

@@ -3,11 +3,11 @@ import {
   DialogTitle,
   DialogContent,
   DialogActions,
-  Button,
   IconButton,
   Typography,
 } from "@mui/material";
 import CloseIcon from "@mui/icons-material/Close";
+import Button from "@components/Button";
 
 interface DeleteConfirmModalProps {
   open: boolean;
@@ -71,15 +71,16 @@ const DeleteConfirmModal = ({
           onClick={onConfirm}
           variant="contained"
           color={confirmColor}
-          sx={{
-            minWidth: 100,
-            boxShadow: "none",
-            "&:hover": { boxShadow: "none" },
-          }}
+          className="min-w-[100px]"
         >
           {confirmText}
         </Button>
-        <Button onClick={onCancel} variant="outlined" sx={{ minWidth: 100 }}>
+        <Button
+          onClick={onCancel}
+          variant="outlined"
+          color="primary"
+          className="min-w-[100px]"
+        >
           취소
         </Button>
       </DialogActions>

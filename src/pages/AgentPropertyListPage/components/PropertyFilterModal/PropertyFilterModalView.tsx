@@ -5,12 +5,12 @@ import {
   DialogActions,
   Box,
   TextField,
-  Button,
   Switch,
   FormControlLabel,
   Alert,
 } from "@mui/material";
 import { AgentPropertyFilterParams } from "@ts/property";
+import Button from "@components/Button";
 
 interface PriceInputs {
   minPrice: string;

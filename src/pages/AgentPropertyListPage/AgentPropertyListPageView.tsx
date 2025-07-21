@@ -1,9 +1,4 @@
-import {
-  CircularProgress,
-  SelectChangeEvent,
-  IconButton,
-  Button,
-} from "@mui/material";
+import { CircularProgress, SelectChangeEvent, IconButton } from "@mui/material";
 import FilterListIcon from "@mui/icons-material/FilterList";
 import RefreshIcon from "@mui/icons-material/Refresh";
 import { useNavigate } from "react-router-dom";
@@ -15,6 +10,7 @@ import PropertyAddModal from "./components/PropertyAddButtonList/PropertyAddModa
 import { Property } from "@ts/property";
 import { Region } from "@ts/region";
 import { AgentPropertySearchParams } from "@apis/propertyService";
+import Button from "@components/Button";
 
 interface CategoryOption {
   value: string;
@@ -180,7 +176,7 @@ const AgentPropertyListPageView = ({
               <Button
                 variant="outlined"
                 onClick={onFilterModalToggle}
-                className="border border-[#164F9E] text-[#164F9E] rounded-lg text-sm px-3 py-2 hover:bg-gray-100"
+                className="text-sm px-3 py-2"
               >
                 <FilterListIcon className="mr-1 text-sm" />
                 상세 필터
@@ -193,7 +189,7 @@ const AgentPropertyListPageView = ({
                 <Button
                   variant="contained"
                   onClick={onAddProperty}
-                  className="shadow-none bg-[#4E7BD9] text-white rounded-lg text-sm px-4 py-3 hover:bg-[#4169C7] flex-1"
+                  className="rounded-lg text-sm px-4 py-3 flex-1 h-[46px]"
                 >
                   매물 추가
                 </Button>
@@ -286,20 +282,22 @@ const AgentPropertyListPageView = ({
                   </Button>
                 </div>
               </div>
-              <div className="flex items-center gap-2 ml-auto">
+              <div className="flex items-center gap-1 ml-auto">
                 {onAddProperty && (
                   <Button
                     variant="contained"
+                    color="secondary"
                     onClick={onAddProperty}
-                    className="shadow-none border border-[#164F9E] bg-[#164F9E] text-white min-w-10 p-1 rounded-3xl w-25 mr-3 hover:bg-[#123d7a]"
+                    className="min-w-10 mr-3"
                   >
                     매물 추가
                   </Button>
                 )}
                 <Button
                   variant="outlined"
+                  color="secondary"
                   onClick={onRefresh}
-                  className="border border-[#164F9E] text-[#164F9E] min-w-10 p-1 rounded-3xl w-25 hover:bg-gray-100"
+                  className="min-w-10"
                 >
                   새로고침
                 </Button>

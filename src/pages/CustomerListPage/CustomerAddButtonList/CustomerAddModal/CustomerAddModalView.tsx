@@ -125,18 +125,20 @@ export default function CustomerAddModalView({
 
       <DialogActions sx={{ p: 3, borderTop: "1px solid #E0E0E0" }}>
         <Button
-          text="취소"
           onClick={onClose}
           variant="outlined"
-          sx={{ color: "#164F9E", borderColor: "#164F9E" }}
-        />
+          className={"text-[#164F9E] border-[#164F9E]"}
+        >
+          취소
+        </Button>
         <Button
-          text="확인"
           onClick={onSubmit}
           variant="contained"
-          sx={{ bgcolor: "#164F9E" }}
+          className="bg-[#164F9E]  "
           disabled={isSubmitButtonDisabled}
-        />
+        >
+          확인
+        </Button>
       </DialogActions>
     </Dialog>
   );

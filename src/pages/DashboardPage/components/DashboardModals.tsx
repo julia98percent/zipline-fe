@@ -4,7 +4,6 @@ import {
   DialogTitle,
   DialogContent,
   DialogActions,
-  Button,
 } from "@mui/material";
 import dayjs from "dayjs";
 import Table, { ColumnConfig } from "@components/Table";
@@ -15,6 +14,7 @@ import RecentContractsModal from "../components/statisticsModal/RecentContractsM
 import OngoingContractsModal from "../components/statisticsModal/OngoingContractsModal";
 import CompletedContractsModal from "../components/statisticsModal/CompletedContractsModal";
 import { Schedule } from "@ts/schedule";
+import Button from "@components/Button";
 
 interface DashboardModalsProps {
   // 일정 모달

@@ -1,12 +1,6 @@
 import { ChangeEvent } from "react";
 import { Link } from "react-router-dom";
-import {
-  Box,
-  TextField,
-  Typography,
-  Collapse,
-  Button as MuiButton,
-} from "@mui/material";
+import { Box, TextField, Typography, Collapse } from "@mui/material";
 import AccountCircleIcon from "@mui/icons-material/AccountCircle";
 import AccessTimeIcon from "@mui/icons-material/AccessTime";
 import Button from "@components/Button";
@@ -112,16 +106,12 @@ const MyPageView = ({
               </Typography>
             </Box>
             <Button
-              text={editOpen ? "닫기" : "수정"}
-              size="small"
-              sx={{
-                backgroundColor: "#2E5D9F",
-                color: "white",
-                height: 32,
-                fontSize: 14,
-              }}
               onClick={onToggleEdit}
-            />
+              variant="outlined"
+              className="text-sm px-3 py-1"
+            >
+              {editOpen ? "닫기" : "수정하기"}
+            </Button>
           </Box>
           <Collapse in={editOpen}>
             <Box
@@ -149,10 +139,11 @@ const MyPageView = ({
                 size="small"
               />
               <Button
-                text="수정하기"
                 onClick={onInfoUpdate}
-                sx={{ alignSelf: "flex-end" }}
-              />
+                className="px-4 py-2 h-[46px] max-w-fit self-end"
+              >
+                설정 저장하기
+              </Button>
             </Box>
           </Collapse>
         </Box>
@@ -172,7 +163,6 @@ const MyPageView = ({
               display: "flex",
               alignItems: "center",
               justifyContent: "space-between",
-              mb: 1,
             }}
           >
             <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
@@ -182,16 +172,12 @@ const MyPageView = ({
               </Typography>
             </Box>
             <Button
-              text={noticeOpen ? "닫기" : "수정"}
-              size="small"
-              sx={{
-                backgroundColor: "#2E5D9F",
-                color: "white",
-                height: 32,
-                fontSize: 14,
-              }}
               onClick={onToggleNoticeEdit}
-            />
+              variant="outlined"
+              className="text-sm px-3 py-1"
+            >
+              {noticeOpen ? "닫기" : "수정하기"}
+            </Button>
           </Box>
           <Collapse in={noticeOpen}>
             <Box
@@ -216,10 +202,11 @@ const MyPageView = ({
                 inputProps={{ step: 60 }}
               />
               <Button
-                text="설정 저장"
                 onClick={onNoticeUpdate}
-                sx={{ alignSelf: "flex-end" }}
-              />
+                className="px-4 py-2 h-[46px] max-w-fit self-end"
+              >
+                설정 저장하기
+              </Button>
             </Box>
           </Collapse>
         </Box>
@@ -272,13 +259,12 @@ const MyPageView = ({
                 size="small"
                 InputProps={{ readOnly: true }}
               />
-              <MuiButton
-                variant="outlined"
+              <Button
                 onClick={onCopyUrl}
-                sx={{ minWidth: "40px", height: "40px" }}
+                className="min-w-10 h-10 border border-gray-300 bg-white hover:bg-gray-50 rounded transition-colors"
               >
                 📋
-              </MuiButton>
+              </Button>
             </Box>
           </Box>
         </Box>
@@ -294,7 +280,7 @@ const MyPageView = ({
             backgroundColor: "white",
           }}
         >
-          <Box>
+          <Box sx={{ alignItems: "center" }}>
             <Typography variant="h6" sx={{ fontWeight: "bold" }}>
               {user?.surveyTitle || "기본 설문지"}
             </Typography>
@@ -304,10 +290,9 @@ const MyPageView = ({
             </Typography>
           </Box>
           <Link to="edit-survey">
-            <Button
-              text="수정"
-              sx={{ backgroundColor: "#2E5D9F", color: "white" }}
-            />
+            <Button variant="outlined" className="px-4 py-2">
+              수정하기
+            </Button>
           </Link>
         </Box>
       </Box>

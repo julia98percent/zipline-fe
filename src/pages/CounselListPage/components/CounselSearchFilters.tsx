@@ -4,6 +4,7 @@ import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import dayjs from "dayjs";
 import styles from "../styles/CounselListPage.module.css";
+import Button from "@components/Button";
 
 interface Props {
   search: string;
@@ -36,12 +37,20 @@ const CounselSearchFilters = ({
           value={search}
           onChange={(e) => onSearchChange(e.target.value)}
         />
-        <button className={styles.searchButton} onClick={onSearchClick}>
+        <Button
+          variant="contained"
+          className={styles.searchButton}
+          onClick={onSearchClick}
+        >
           검색
-        </button>
-        <button className={styles.resetButton} onClick={onResetClick}>
+        </Button>
+        <Button
+          variant="outlined"
+          className={styles.resetButton}
+          onClick={onResetClick}
+        >
           초기화
-        </button>
+        </Button>
       </div>
 
       <div className={styles.dateFilterRow}>

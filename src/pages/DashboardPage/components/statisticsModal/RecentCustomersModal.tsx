@@ -3,14 +3,13 @@ import {
   DialogTitle,
   DialogContent,
   DialogActions,
-  Button,
 } from "@mui/material";
 import { useState, useEffect, useCallback } from "react";
 import { formatDate } from "@utils/dateUtil";
 import { PreCounsel } from "@ts/counsel";
 import { fetchSubmittedSurveyResponses } from "@apis/preCounselService";
 import Table, { ColumnConfig } from "@components/Table";
-
+import Button from "@components/Button";
 interface RecentCustomersModalProps {
   open: boolean;
   onClose: () => void;
@@ -138,14 +137,9 @@ const RecentCustomersModal = ({
         <Button
           onClick={handleClose}
           variant="contained"
-          sx={{
-            backgroundColor: "#164F9E",
-            boxShadow: "none",
-            "&:hover": {
-              backgroundColor: "#0D3B7A",
-              boxShadow: "none",
-            },
-          }}
+          className={
+            "bg-[#164F9E] shadow-none hover:bg-[#0D3B7A] hover:shadow-none"
+          }
         >
           닫기
         </Button>

@@ -3,7 +3,6 @@ import {
   DialogTitle,
   DialogContent,
   DialogActions,
-  Button,
   Box,
   TextField,
   Autocomplete,
@@ -11,6 +10,7 @@ import {
   Checkbox,
 } from "@mui/material";
 import { Schedule } from "@ts/schedule";
+import Button from "@components/Button";
 
 interface Customer {
   uid: number;
@@ -328,7 +328,7 @@ const ScheduleDetailModalView = ({
         </Box>
       </DialogContent>
       <DialogActions>
-        <Button onClick={onClose} color="inherit">
+        <Button onClick={onClose} color="primary" variant="outlined">
           {isEditMode ? "취소" : "닫기"}
         </Button>
         {isEditMode ? (

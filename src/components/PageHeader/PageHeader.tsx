@@ -1,7 +1,6 @@
 import {
   Box,
   Typography,
-  Button,
   Menu,
   MenuItem,
   IconButton,
@@ -21,6 +20,7 @@ import useNotificationStore from "@stores/useNotificationStore";
 import { fetchNotifications } from "@apis/notificationService";
 import { logoutUser } from "@apis/userService";
 import { clearAllAuthState } from "@utils/authUtil";
+import Button from "@components/Button";
 
 interface PageHeaderProps {
   title: string;
@@ -182,13 +182,8 @@ const PageHeader = ({ title, onMobileMenuToggle }: PageHeaderProps) => {
 
         <Button
           onClick={handleUserMenuClick}
-          sx={{
-            color: "#222222",
-            textTransform: "none",
-            "&:hover": {
-              backgroundColor: "rgba(0, 0, 0, 0.04)",
-            },
-          }}
+          variant="text"
+          className="text-neutral-900 flex items-center gap-2"
           startIcon={<AccountCircleIcon />}
         >
           {user?.name || "사용자"}

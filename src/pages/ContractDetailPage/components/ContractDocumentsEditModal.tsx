@@ -4,7 +4,6 @@ import {
   DialogTitle,
   DialogContent,
   DialogActions,
-  Button,
   Box,
   Typography,
   List,
@@ -19,6 +18,7 @@ import UploadFileIcon from "@mui/icons-material/UploadFile";
 import { ContractDetail } from "@ts/contract";
 import { updateContract, ContractRequest } from "@apis/contractService";
 import { showToast } from "@components/Toast";
+import Button from "@components/Button";
 
 interface ContractDocumentsEditModalProps {
   open: boolean;
@@ -299,9 +299,8 @@ const ContractDocumentsEditModal = ({
             <label htmlFor="file-upload">
               <Button
                 variant="outlined"
-                component="span"
                 startIcon={<UploadFileIcon />}
-                sx={{ minWidth: 200 }}
+                className={"min-w-[200px]"}
                 disabled={isLoading}
               >
                 파일 추가

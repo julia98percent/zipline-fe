@@ -384,19 +384,9 @@ const PropertyAddModalView = ({
           fullWidth
         />
         {/* 등록 버튼 */}
-        <Button
-          text="등록"
-          onClick={onSubmit}
-          sx={{
-            mt: 4,
-            color: "white !important",
-            backgroundColor: "#164F9E",
-            "&:disabled": {
-              backgroundColor: "lightgray",
-              color: "white",
-            },
-          }}
-        />
+        <Button onClick={onSubmit} className="mt-4" color="primary">
+          등록
+        </Button>
       </Box>
     </Modal>
   );

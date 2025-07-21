@@ -3,7 +3,7 @@ import { Box, Typography, Stack } from "@mui/material";
 import { MessageDetail as MessageDetailType } from "@ts/message";
 import { getStatusMessage, getErrorMessage } from "@utils/messageUtil";
 import { formatDate } from "@utils/dateUtil";
-import { Button } from "@mui/material";
+import Button from "@components/Button";
 import { NavigateBefore, NavigateNext } from "@mui/icons-material";
 
 function MessageDetail({ messageList }: { messageList: MessageDetailType[] }) {

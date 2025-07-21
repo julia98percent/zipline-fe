@@ -4,7 +4,6 @@ import {
   DialogTitle,
   DialogContent,
   DialogActions,
-  Button,
   Box,
   Typography,
   Paper,
@@ -15,6 +14,7 @@ import { uploadPropertiesBulk } from "@apis/propertyService";
 import { Link } from "react-router-dom";
 import { AxiosError } from "axios";
 import { showToast } from "@components/Toast/Toast";
+import Button from "@components/Button";
 
 interface Props {
   open: boolean;
@@ -235,7 +235,8 @@ function BulkUploadModal({ open, handleClose, fetchPropertyData }: Props) {
         <Button
           onClick={handleClose}
           disabled={isLoading}
-          sx={{ color: "#164F9E" }}
+          variant="outlined"
+          color="primary"
         >
           취소
         </Button>

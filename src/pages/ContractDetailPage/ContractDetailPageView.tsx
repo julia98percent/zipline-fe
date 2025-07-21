@@ -1,4 +1,4 @@
-import { CircularProgress, Button, Box, LinearProgress } from "@mui/material";
+import { CircularProgress, Box, LinearProgress } from "@mui/material";
 import PageHeader from "@components/PageHeader";
 import {
   ContractDetailContent,
@@ -9,6 +9,7 @@ import styles from "@pages/ContractListPage/styles/ContractListPage.module.css";
 import DeleteConfirmModal from "@components/DeleteConfirm";
 import DeleteIcon from "@mui/icons-material/Delete";
 import { ContractDetail, ContractHistory } from "@ts/contract";
+import Button from "@components/Button";
 
 interface ContractDetailPageViewProps {
   contract: ContractDetail | null;
@@ -153,7 +154,6 @@ const ContractDetailPageView = ({
               color="primary"
               onClick={onNavigateToList}
               disabled={isUpdating}
-              sx={{ backgroundColor: "white" }}
             >
               목록으로
             </Button>
@@ -164,7 +164,6 @@ const ContractDetailPageView = ({
               startIcon={<DeleteIcon />}
               onClick={onDelete}
               disabled={isUpdating}
-              sx={{ backgroundColor: "white" }}
             >
               삭제
             </Button>

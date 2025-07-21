@@ -1,4 +1,4 @@
-import { Box, Paper, Button } from "@mui/material";
+import { Box, Paper } from "@mui/material";
 import dayjs from "dayjs";
 import AddIcon from "@mui/icons-material/Add";
 import FullCalendar from "@fullcalendar/react";
@@ -10,6 +10,7 @@ import PageHeader from "@components/PageHeader/PageHeader";
 import ScheduleDetailModal from "@components/ScheduleDetailModal/ScheduleDetailModal";
 import { Schedule } from "@ts/schedule";
 import AddScheduleModal from "./AddScheduleModal";
+import Button from "@components/Button";
 
 interface ScheduleFormData {
   startDateTime: string;
@@ -101,14 +102,6 @@ const ScheduleView = ({
           variant="contained"
           startIcon={<AddIcon />}
           onClick={handleAddSchedule}
-          sx={{
-            backgroundColor: "#164F9E",
-            boxShadow: "none",
-            "&:hover": {
-              backgroundColor: "#0D3B7A",
-              boxShadow: "none",
-            },
-          }}
         >
           일정 등록
         </Button>

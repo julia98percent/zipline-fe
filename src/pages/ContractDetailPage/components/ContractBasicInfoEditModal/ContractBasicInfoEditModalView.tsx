@@ -4,7 +4,6 @@ import {
   DialogContent,
   DialogActions,
   TextField,
-  Button,
   Box,
   Typography,
   Autocomplete,
@@ -14,7 +13,7 @@ import { MenuItem, StringSelect } from "@components/Select";
 import { ContractCategory, ContractCategoryType } from "@ts/contract";
 import { CONTRACT_STATUS_OPTION_LIST } from "@constants/contract";
 import { AgentPropertyResponse, CustomerResponse } from "@apis/contractService";
-
+import Button from "@components/Button";
 interface ContractBasicInfoEditModalViewProps {
   // Dialog props
   open: boolean;
@@ -269,7 +268,12 @@ const ContractBasicInfoEditModalView = ({
         </Box>
       </DialogContent>
       <DialogActions>
-        <Button onClick={onClose} color="inherit" disabled={isLoading}>
+        <Button
+          onClick={onClose}
+          variant="outlined"
+          color="info"
+          disabled={isLoading}
+        >
           취소
         </Button>
         <Button

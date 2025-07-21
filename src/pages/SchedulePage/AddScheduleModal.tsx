@@ -4,7 +4,6 @@ import {
   DialogTitle,
   DialogContent,
   DialogActions,
-  Button,
   Box,
   TextField,
   FormControl,
@@ -20,6 +19,7 @@ import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import dayjs from "dayjs";
 import { fetchCustomerList } from "@apis/customerService";
 import { Customer } from "@ts/customer";
+import Button from "@components/Button";
 
 interface ScheduleFormData {
   customerId: number | null;
@@ -367,21 +367,10 @@ function AddScheduleModal({ open, onClose, onSubmit }: AddScheduleModalProps) {
             {errorMessage}
           </Typography>
         )}
-        <Button onClick={handleClose} sx={{ color: "#164F9E" }}>
+        <Button onClick={handleClose} variant="outlined">
           취소
         </Button>
-        <Button
-          onClick={handleSubmit}
-          variant="contained"
-          sx={{
-            backgroundColor: "#164F9E",
-            boxShadow: "none",
-            "&:hover": {
-              backgroundColor: "#0D3B7A",
-              boxShadow: "none",
-            },
-          }}
-        >
+        <Button onClick={handleSubmit} variant="contained">
           저장
         </Button>
       </DialogActions>

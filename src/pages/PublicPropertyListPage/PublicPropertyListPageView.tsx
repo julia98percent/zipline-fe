@@ -1,7 +1,6 @@
 import FilterListIcon from "@mui/icons-material/FilterList";
 import {
   Box,
-  Button,
   CircularProgress,
   Paper,
   SelectChangeEvent,
@@ -16,6 +15,7 @@ import PageHeader from "@components/PageHeader/PageHeader";
 import SearchIcon from "@mui/icons-material/Search";
 import IOSSwitch from "@components/Switch";
 import { PublicPropertyItem, PublicPropertySearchParams } from "@ts/property";
+import Button from "@components/Button";
 
 interface PublicPropertyListPageViewProps {
   loading: boolean;
@@ -113,21 +113,21 @@ const PublicPropertyListPageView = ({
             boxShadow: "0 2px 8px rgba(0,0,0,0.04)",
           }}
         >
-          <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
+          <Box sx={{ display: "flex", alignItems: "center", gap: 1, mb: 2 }}>
             <Button
+              color="info"
               variant="outlined"
               size="small"
               onClick={onSortReset}
-              sx={{ height: "32px" }}
             >
               필터 초기화
             </Button>
             <Button
               startIcon={<FilterListIcon />}
-              color={showFilterModal ? "primary" : "inherit"}
-              variant={showFilterModal ? "contained" : "outlined"}
+              className="ml-1"
+              color={"primary"}
+              variant={"contained"}
               onClick={onFilterModalToggle}
-              sx={{ height: "32px", ml: 1 }}
             >
               상세 필터
             </Button>

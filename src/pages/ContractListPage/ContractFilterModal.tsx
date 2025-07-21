@@ -4,7 +4,6 @@ import {
   DialogTitle,
   DialogContent,
   DialogActions,
-  Button,
   Box,
 } from "@mui/material";
 import Select, { MenuItem, StringSelect } from "@components/Select";
@@ -12,6 +11,7 @@ import {
   ContractStatusEnum,
   CONTRACT_STATUS_OPTION_LIST,
 } from "@constants/contract";
+import Button from "@components/Button";
 
 interface ContractFilterModalProps {
   open: boolean;

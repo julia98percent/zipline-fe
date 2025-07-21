@@ -82,12 +82,12 @@ function SingleChoiceAdd({
           ))}
         </RadioGroup>
         <Button
-          text="선택지 추가"
-          variant="outlined"
           onClick={() => {
             handleAddChoice(questionIndex);
           }}
-        />
+        >
+          선택지 추가
+        </Button>
       </FormControl>
     </Box>
   );

@@ -97,25 +97,19 @@ const EditSurveyPageView = ({
           padding: "16px 32px",
           borderBottom: "1px solid #e0e0e0",
           boxShadow: "0 2px 4px rgba(0,0,0,0.05)",
+          gap: 2,
         }}
       >
         <Button
-          text="질문 추가"
           onClick={onAddQuestion}
-          sx={{
-            mr: 2,
-            border: "1px solid #164F9E",
-            color: "#164F9E",
-          }}
-        />
-        <Button
-          text="설문 저장"
-          onClick={onUpdateSurvey}
-          sx={{
-            backgroundColor: "#164F9E",
-            color: "white",
-          }}
-        />
+          variant="outlined"
+          className="px-4 py-2"
+        >
+          질문 추가
+        </Button>
+        <Button onClick={onUpdateSurvey} className="px-4 py-2">
+          설문 저장
+        </Button>
       </Box>
 
       {/* Content */}
@@ -246,38 +240,20 @@ const EditSurveyPageView = ({
               </>
             )}
 
-            <Box sx={{ display: "flex", justifyContent: "flex-end" }}>
+            <Box sx={{ display: "flex", justifyContent: "flex-end", mt: 2 }}>
               {isQuestionDeletable(questionIndex) ? (
                 <Button
-                  text="질문 삭제"
                   color="error"
                   onClick={() => onDeleteQuestion(questionIndex)}
-                  sx={{
-                    mt: 2,
-                    backgroundColor: "#f8f8f8",
-                    color: "#d32f2f",
-                    "&:hover": {
-                      backgroundColor: "#ffebee",
-                    },
-                  }}
-                />
+                  className="px-4 py-2"
+                >
+                  질문 삭제
+                </Button>
               ) : (
                 <Tooltip title="기본 질문은 삭제할 수 없습니다">
-                  <span>
-                    <Button
-                      text="질문 삭제"
-                      color="error"
-                      disabled
-                      sx={{
-                        mt: 2,
-                        backgroundColor: "#f8f8f8",
-                        color: "rgba(0, 0, 0, 0.26)",
-                        "&:hover": {
-                          backgroundColor: "#f8f8f8",
-                        },
-                      }}
-                    />
-                  </span>
+                  <Button color="info" disabled className="px-4 py-2">
+                    질문 삭제
+                  </Button>
                 </Tooltip>
               )}
             </Box>

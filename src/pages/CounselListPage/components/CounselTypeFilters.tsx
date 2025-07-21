@@ -1,5 +1,4 @@
 import { CounselCategory } from "@ts/counsel";
-import styles from "../styles/CounselListPage.module.css";
 import Button from "@components/Button";
 
 interface Props {

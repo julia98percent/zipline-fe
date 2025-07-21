@@ -7,7 +7,6 @@ import {
   CounselActionButtons,
   CounselTable,
 } from "./components";
-import styles from "./styles/CounselListPage.module.css";
 import { Counsel } from "@ts/counsel";
 
 interface CounselListPageViewProps {

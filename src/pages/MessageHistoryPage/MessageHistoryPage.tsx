@@ -10,7 +10,7 @@ import { translateMessageStatusToKorean } from "@utils/messageUtil";
 import Status from "@components/Status";
 import { MessageHistory } from "@ts/message";
 import { fetchMessages } from "@apis/messageService";
-import Table from "@components/Table";
+import Table, { ColumnConfig } from "@components/Table";
 import { DEFAULT_ROWS_PER_PAGE } from "@components/Table/Table";
 
 interface OutletContext {
@@ -20,7 +20,7 @@ interface OutletContext {
 interface TableRowData {
   id: string;
   dateCreated: string;
-  status: React.ReactElement;
+  status: string;
   dateCompleted: string;
 }
 
@@ -35,6 +35,36 @@ const MessageHistoryPage = () => {
   const [totalElements, setTotalElements] = useState(0);
 
   const [detailModalOpen, setDetailModalOpen] = useState(false);
+
+  const columns: ColumnConfig<TableRowData>[] = [
+    {
+      key: "dateCreated",
+      label: "발송 요청일",
+      align: "left",
+    },
+    {
+      key: "status",
+      label: "상태",
+      align: "left",
+      render: (_, row) => (
+        <Status
+          text={translateMessageStatusToKorean(row.status as string)}
+          color={
+            row.status === "COMPLETE"
+              ? "GREEN"
+              : row.status === "FAILED"
+              ? "RED"
+              : "GRAY"
+          }
+        />
+      ),
+    },
+    {
+      key: "dateCompleted",
+      label: "발송 완료일",
+      align: "left",
+    },
+  ];
 
   const handleRowClick = (rowData: TableRowData) => {
     const originalMessage = messages.find((msg) => msg.groupId === rowData.id);
@@ -120,23 +150,11 @@ const MessageHistoryPage = () => {
         >
           <Table
             isLoading={isLoading}
-            headerList={["발송 요청일", "상태", "발송 완료일"]}
+            columns={columns}
             bodyList={messages.map((message) => ({
               id: message.groupId,
               dateCreated: formatDate(message.dateCreated),
-              status: (
-                <Status
-                  text={translateMessageStatusToKorean(message.status)}
-                  color={
-                    message.status === "COMPLETE"
-                      ? "GREEN"
-                      : message.status === "FAILED"
-                      ? "RED"
-                      : "GRAY"
-                  }
-                />
-              ),
-
+              status: message.status,
               dateCompleted: message.dateCompleted
                 ? formatDate(message.dateCompleted)
                 : "-",

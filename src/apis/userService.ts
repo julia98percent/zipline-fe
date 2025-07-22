@@ -89,6 +89,68 @@ export const updateUserInfo = async (
   }
 };
 
+export interface FindIdRequest {
+  name: string;
+  email: string;
+}
+
+export interface FindIdResponse {
+  id: string;
+}
+
+export const findUserId = async (data: FindIdRequest): Promise<string> => {
+  try {
+    const response = await apiClient.post<ApiResponse<FindIdResponse>>(
+      "/users/find-id",
+      data
+    );
+    return handleApiResponse(response.data, USER_ERROR_MESSAGES.FIND_ID_FAILED)
+      .id;
+  } catch (error) {
+    return handleApiError(error, "finding user ID");
+  }
+};
+
+export interface VerifyUserForPasswordResetRequest {
+  userId: string;
+  name: string;
+  email: string;
+  phoneNo: string;
+}
+
+export interface ResetPasswordRequest {
+  userId: string;
+  newPassword: string;
+}
+
+export const verifyUserForPasswordReset = async (
+  data: VerifyUserForPasswordResetRequest
+): Promise<void> => {
+  try {
+    const response = await apiClient.post<ApiResponse<void>>(
+      "/users/verify-for-password-reset",
+      data
+    );
+    return handleApiResponse(response.data, "사용자 인증에 실패했습니다.");
+  } catch (error) {
+    return handleApiError(error, "verifying user for password reset");
+  }
+};
+
+export const resetPassword = async (
+  data: ResetPasswordRequest
+): Promise<void> => {
+  try {
+    const response = await apiClient.post<ApiResponse<void>>(
+      "/users/reset-password",
+      data
+    );
+    return handleApiResponse(response.data, "비밀번호 변경에 실패했습니다.");
+  } catch (error) {
+    return handleApiError(error, "resetting password");
+  }
+};
+
 export const logoutUser = async (): Promise<void> => {
   try {
     await apiClient.post("/users/logout", {}, { withCredentials: true });

@@ -1,8 +1,8 @@
 import { AxiosError } from "axios";
-import { Link, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { loginUser } from "@apis/userService";
 import useInput from "@hooks/useInput";
-import { Header, UserIdInput, PasswordInput } from "./components";
+import { Header, UserIdInput, PasswordInput, AuthLinks } from "./components";
 import Button from "@components/Button";
 import { Box, Typography } from "@mui/material";
 import signInImage from "@assets/sign-up.png";
@@ -134,18 +134,11 @@ const SignInPage = () => {
                 display: "flex",
                 justifyContent: "center",
                 alignItems: "center",
-                mt: 3,
+                mt: 2,
                 gap: 1,
               }}
             >
-              <Typography variant="body2" color="text.secondary">
-                회원이 아니신가요?
-              </Typography>
-              <Link to="/sign-up" className="flex items-center">
-                <Button variant="text" className="m-0 p-0 font-bold">
-                  회원가입
-                </Button>
-              </Link>
+              <AuthLinks />
             </Box>
           </div>
         </div>

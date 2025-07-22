@@ -36,8 +36,6 @@ const EditSurveyPage = () => {
       if (surveyData) {
         setSurvey(surveyData);
       }
-    } catch (error) {
-      console.log(error);
     } finally {
       setLoading(false);
     }
@@ -138,8 +136,7 @@ const EditSurveyPage = () => {
       setTimeout(() => {
         window.location.reload();
       }, 100);
-    } catch (error) {
-      console.log(error);
+    } catch {
       alert("설문 수정 중 오류가 발생했습니다.");
     }
   };

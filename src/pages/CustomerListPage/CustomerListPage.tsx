@@ -35,6 +35,7 @@ const CustomerListPage = () => {
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(DEFAULT_ROWS_PER_PAGE);
   const [searchTerm, setSearchTerm] = useState("");
+  const [searchQuery, setSearchQuery] = useState(""); // 실제 검색에 사용되는 값
   const [filterModalOpen, setFilterModalOpen] = useState(false);
   const [filters, setFilters] = useState<CustomerFilter>(INITIAL_FILTERS);
 
@@ -46,8 +47,8 @@ const CustomerListPage = () => {
           pageSize: rowsPerPage,
         };
 
-        if (searchTerm) {
-          params.searchTerm = searchTerm;
+        if (searchQuery) {
+          params.searchTerm = searchQuery;
         }
 
         if (filters.tenant) params.tenant = true;
@@ -93,7 +94,7 @@ const CustomerListPage = () => {
         setLoading(false);
       }
     },
-    [page, rowsPerPage, searchTerm, filters]
+    [page, rowsPerPage, searchQuery, filters]
   );
 
   const handleCustomerUpdate = async (updatedCustomer: Customer) => {
@@ -137,24 +138,58 @@ const CustomerListPage = () => {
     }
   };
 
-  const handleFilterApply = (appliedFilters: CustomerFilter) => {
-    setFilters(appliedFilters);
-    setFilterModalOpen(false);
-    fetchCustomerList(true);
-  };
+  const handleFiltersChange = useCallback((newFilters: CustomerFilter) => {
+    setFilters(newFilters);
+  }, []);
 
-  const handlePageChange = (newPage: number) => {
+  const handleFilterApply = useCallback(
+    (appliedFilters: CustomerFilter) => {
+      setFilters(appliedFilters);
+      setFilterModalOpen(false);
+      fetchCustomerList(true);
+    },
+    [fetchCustomerList]
+  );
+
+  const handleSearchSubmit = useCallback(() => {
+    setSearchQuery(searchTerm);
+    setPage(0);
+  }, [searchTerm]);
+
+  const handlePageChange = useCallback((newPage: number) => {
     setPage(newPage);
-  };
+  }, []);
 
-  const handleRowsPerPageChange = (newRowsPerPage: number) => {
+  const handleRowsPerPageChange = useCallback((newRowsPerPage: number) => {
     setRowsPerPage(newRowsPerPage);
     setPage(0);
-  };
+  }, []);
 
+  const handleFilterModalOpen = useCallback(() => setFilterModalOpen(true), []);
+  const handleFilterModalClose = useCallback(
+    () => setFilterModalOpen(false),
+    []
+  );
+  const handleRefresh = useCallback(
+    () => fetchCustomerList(false),
+    [fetchCustomerList]
+  );
+  const handleCustomerCreate = useCallback(
+    () => fetchCustomerList(true),
+    [fetchCustomerList]
+  );
+
+  const handleFilterReset = useCallback(() => {
+    setFilters(INITIAL_FILTERS);
+    setSearchTerm("");
+    setSearchQuery("");
+    setPage(0);
+  }, []);
+
+  // 컴포넌트 마운트 시 초기 로드, searchQuery 변경 시 검색
   useEffect(() => {
-    fetchCustomerList(false);
-  }, [fetchCustomerList]);
+    fetchCustomerList(!!searchQuery && searchQuery.trim() !== "");
+  }, [fetchCustomerList, searchQuery]);
 
   return (
     <CustomerListPageView
@@ -167,15 +202,17 @@ const CustomerListPage = () => {
       filterModalOpen={filterModalOpen}
       filters={filters}
       onSearchChange={setSearchTerm}
-      onFilterModalOpen={() => setFilterModalOpen(true)}
-      onFilterModalClose={() => setFilterModalOpen(false)}
-      onFiltersChange={setFilters}
+      onFilterModalOpen={handleFilterModalOpen}
+      onFilterModalClose={handleFilterModalClose}
+      onFiltersChange={handleFiltersChange}
       onFilterApply={handleFilterApply}
       onPageChange={handlePageChange}
       onRowsPerPageChange={handleRowsPerPageChange}
       onCustomerUpdate={handleCustomerUpdate}
-      onRefresh={() => fetchCustomerList(false)}
-      onCustomerCreate={() => fetchCustomerList(true)}
+      onRefresh={handleRefresh}
+      onCustomerCreate={handleCustomerCreate}
+      onSearchSubmit={handleSearchSubmit}
+      onFilterReset={handleFilterReset}
       onMobileMenuToggle={onMobileMenuToggle}
     />
   );

@@ -24,7 +24,7 @@ interface DashboardModalsProps {
   handleSaveSchedule: (updatedSchedule: Schedule) => Promise<void>;
   handleScheduleClick: (schedule: Schedule) => void;
 
-  // 신규 설문 상세 모달
+  // 신규 사전 상담 상세 모달
   selectedSurveyId: number | null;
   isSurveyDetailModalOpen: boolean;
   handleCloseSurveyDetailModal: () => void;
@@ -115,7 +115,7 @@ const DashboardModals: React.FC<DashboardModalsProps> = ({
           onSave={handleSaveSchedule}
         />
       )}
-      {/* 신규 설문 상세 모달 */}
+      {/* 신규 사전 상담 상세 모달 */}
       <PreCounselDetailModal
         open={isSurveyDetailModalOpen}
         onClose={handleCloseSurveyDetailModal}

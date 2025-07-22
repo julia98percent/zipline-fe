@@ -172,11 +172,12 @@ const AgentPropertyFilterModalView = ({
               면적 범위
             </Typography>
             <Button
+              variant="text"
               onClick={() => {
                 setNetAreaRange([0, 200]);
                 setTotalAreaRange([0, 300]);
               }}
-              className="p-0 text-sm text-blue-600 hover:text-blue-800"
+              className="p-0"
             >
               초기화
             </Button>
@@ -285,11 +286,12 @@ const AgentPropertyFilterModalView = ({
               가격 범위 (만원)
             </Typography>
             <Button
+              variant="text"
               onClick={() => {
                 handlePriceRangeChange([0, 100000]);
                 handleDepositRangeChange([0, 50000]);
               }}
-              className="p-0 text-sm text-blue-600 hover:text-blue-800"
+              className="p-0"
             >
               초기화
             </Button>
@@ -378,14 +380,13 @@ const AgentPropertyFilterModalView = ({
       <DialogActions sx={{ p: 2, pt: 1, gap: 2 }}>
         <Button
           onClick={onReset}
-          className="w-full py-3 border border-gray-300 text-gray-700 rounded hover:bg-gray-50"
+          variant="outlined"
+          color="info"
+          className="w-full py-3"
         >
           전체 필터 초기화
         </Button>
-        <Button
-          onClick={onApply}
-          className="w-full py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
-        >
+        <Button onClick={onApply} className="w-full py-3">
           적용
         </Button>
       </DialogActions>

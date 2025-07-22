@@ -5,6 +5,7 @@ import { ContractCategory, Contract } from "@ts/contract";
 import { CONTRACT_STATUS_TYPES } from "@constants/contract";
 import { fetchCompletedContractsForDashboard } from "@apis/contractService";
 import Table, { ColumnConfig } from "@components/Table";
+import { getPropertyTypeColors } from "@constants/property";
 
 interface CompletedContractsModalProps {
   open: boolean;
@@ -100,18 +101,14 @@ const CompletedContractsModal = ({
     if (!category || category === "null") return "-";
     const label =
       ContractCategory[category as keyof typeof ContractCategory] ?? category;
-    const colorMap: Record<string, string> = {
-      SALE: "#4caf50",
-      DEPOSIT: "#2196f3",
-      MONTHLY: "#ff9800",
-    };
+    const colors = getPropertyTypeColors(category);
+
     return (
       <Chip
         label={label}
-        variant="outlined"
         sx={{
-          color: colorMap[category],
-          borderColor: colorMap[category],
+          backgroundColor: colors.background,
+          color: colors.text,
           fontWeight: 500,
           height: 26,
           fontSize: 13,

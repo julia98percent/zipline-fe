@@ -174,16 +174,6 @@ export const renderRolesColumn = (
           sx={{ backgroundColor: "#EBF2FC", color: "#2F80ED" }}
         />
       )}
-      {!customer.tenant &&
-        !customer.landlord &&
-        !customer.buyer &&
-        !customer.seller && (
-          <Chip
-            label="없음"
-            size="small"
-            sx={{ backgroundColor: "#F5F5F5", color: "#757575" }}
-          />
-        )}
     </Box>
   );
 };
@@ -406,22 +396,16 @@ export const renderLabelsColumn = (
 
   return (
     <Box sx={{ display: "flex", flexWrap: "wrap", gap: 1 }}>
-      {customer.labels && customer.labels.length > 0 ? (
-        customer.labels.map((label) => (
-          <Chip
-            key={label.uid}
-            label={label.name}
-            size="small"
-            variant="outlined"
-          />
-        ))
-      ) : (
-        <Chip
-          label="없음"
-          size="small"
-          sx={{ backgroundColor: "#F5F5F5", color: "#757575" }}
-        />
-      )}
+      {customer.labels && customer.labels.length > 0
+        ? customer.labels.map((label) => (
+            <Chip
+              key={label.uid}
+              label={label.name}
+              size="small"
+              variant="outlined"
+            />
+          ))
+        : null}
     </Box>
   );
 };

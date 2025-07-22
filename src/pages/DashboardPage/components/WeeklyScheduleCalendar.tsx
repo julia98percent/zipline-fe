@@ -35,12 +35,12 @@ const WeeklyScheduleCalendar: React.FC<WeeklyScheduleCalendarProps> = ({
       {/* Header */}
       <div className="p-4 border-b border-gray-200 flex items-center justify-between">
         <div className="flex items-center gap-2 h-full">
-          <h2 className="text-lg font-semibold text-blue-700">주간 일정</h2>
+          <h2 className="text-xl font-semibold text-primary">주간 일정</h2>
           <Button
             variant="outlined"
             size="small"
             onClick={onViewAllSchedules}
-            className="hidden md:inline-flex px-3 py-1 text-xs border border-gray-300 rounded hover:bg-gray-50 transition-colors hover:cursor-pointer"
+            className="hidden md:inline-flex hover:cursor-pointer"
           >
             전체 일정 보기
           </Button>
@@ -85,7 +85,7 @@ const WeeklyScheduleCalendar: React.FC<WeeklyScheduleCalendarProps> = ({
                   border rounded p-2 h-full min-h-0 flex flex-col
                   ${
                     isToday
-                      ? "border-2 border-blue-600 bg-blue-50"
+                      ? "border-2 border-primary bg-blue-50"
                       : "border border-gray-200"
                   }
                   ${!hasSchedules && !isToday ? "bg-gray-50" : "bg-white"}

@@ -1,6 +1,6 @@
 export function translateNotificationCategory(category: string): string {
   const categoryMap: Record<string, string> = {
-    NEW_SURVEY: "신규 설문",
+    NEW_SURVEY: "신규 사전 상담",
     BIRTHDAY_MSG: "문자 발송",
     CONTRACT_EXPIRED_MSG: "문자 발송",
     SCHEDULE: "일정",

@@ -5,6 +5,7 @@ import { Typography, Chip, IconButton } from "@mui/material";
 import ChevronLeftIcon from "@mui/icons-material/ChevronLeft";
 import ChevronRightIcon from "@mui/icons-material/ChevronRight";
 import PropertyCard from "./PropertyCard";
+import { getPropertyTypeColors } from "@constants/property";
 
 type PropertyRowData = RowData & Property;
 
@@ -51,12 +52,20 @@ const AgentPropertyTable = ({
     } else if (property.type === "DEPOSIT") {
       return property.deposit ? formatCurrency(property.deposit) : "-";
     } else {
-      const deposit = property.deposit ? formatCurrency(property.deposit) : "0";
+      const deposit = property.deposit ? formatCurrency(property.deposit) : "-";
       const monthly = property.monthlyRent
         ? formatCurrency(property.monthlyRent)
-        : "0";
+        : "-";
       return `${deposit}/${monthly}`;
     }
+  };
+
+  const getTypeChipColor = (type: string) => {
+    return getPropertyTypeColors(type).background;
+  };
+
+  const getTypeTextColor = (type: string) => {
+    return getPropertyTypeColors(type).text;
   };
 
   // 컬럼 정의
@@ -82,13 +91,15 @@ const AgentPropertyTable = ({
         <Chip
           label={getPropertyTypeText(row.type)}
           size="small"
-          color={
-            row.type === "SALE"
-              ? "error"
-              : row.type === "DEPOSIT"
-              ? "warning"
-              : "success"
-          }
+          sx={{
+            backgroundColor: getTypeChipColor(row.type),
+            color: getTypeTextColor(row.type),
+            fontSize: "12px",
+            height: "24px",
+            "& .MuiChip-label": {
+              padding: "0 8px",
+            },
+          }}
         />
       ),
     },

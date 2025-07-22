@@ -65,48 +65,57 @@ function MessageTemplatePageView({
     >
       <PageHeader title="문자 템플릿" onMobileMenuToggle={onMobileMenuToggle} />
 
-      <Box sx={{ p: 3, display: "flex", gap: "28px" }}>
-        {/* 왼쪽 영역: 템플릿 목록과 변수 목록 */}
-        <Box
-          sx={{
-            width: "300px",
-            display: "flex",
-            flexDirection: "column",
-            gap: "28px",
-          }}
-        >
-          <TemplateList
-            templateList={templateList}
-            selectedTemplate={selectedTemplate}
-            onTemplateSelect={onTemplateSelect}
-            onAddNewTemplate={onAddNewTemplate}
-          />
+      <Box sx={{ p: 3 }}>
+        <div className="flex flex-col lg:flex-row gap-7">
+          {/* 데스크톱: 왼쪽 영역 (템플릿 목록 + 변수 목록) / 모바일: 템플릿 목록 */}
+          <div className="lg:w-80 flex flex-col gap-7">
+            <TemplateList
+              templateList={templateList}
+              selectedTemplate={selectedTemplate}
+              onTemplateSelect={onTemplateSelect}
+              onAddNewTemplate={onAddNewTemplate}
+            />
 
-          <VariableList
-            allowedVariables={allowedVariables}
-            templateContent={templateContent}
-            onTemplateContentChange={onTemplateContentChange}
-          />
-        </Box>
+            {/* 데스크톱에서만 변수 목록 표시 */}
+            <div className="hidden lg:block">
+              <VariableList
+                allowedVariables={allowedVariables}
+                templateContent={templateContent}
+                onTemplateContentChange={onTemplateContentChange}
+              />
+            </div>
+          </div>
 
-        {/* 오른쪽 영역: 템플릿 작성 */}
-        <TemplateEditor
-          templateTitle={templateTitle}
-          templateContent={templateContent}
-          selectedTemplate={selectedTemplate}
-          selectedCategory={selectedCategory}
-          templateList={templateList}
-          isLoading={isLoading}
-          hasBrokenVariable={hasBrokenVariable}
-          allowedVariables={allowedVariables}
-          onTemplateTitleChange={onTemplateTitleChange}
-          onTemplateContentChange={onTemplateContentChange}
-          onCategoryChange={onCategoryChange}
-          onAddNewTemplate={onAddNewTemplate}
-          onCreateTemplate={onCreateTemplate}
-          onUpdateTemplate={onUpdateTemplate}
-          onOpenDeleteDialog={onOpenDeleteDialog}
-        />
+          {/* 템플릿 작성 영역 */}
+          <div className="flex-1">
+            <TemplateEditor
+              templateTitle={templateTitle}
+              templateContent={templateContent}
+              selectedTemplate={selectedTemplate}
+              selectedCategory={selectedCategory}
+              templateList={templateList}
+              isLoading={isLoading}
+              hasBrokenVariable={hasBrokenVariable}
+              allowedVariables={allowedVariables}
+              onTemplateTitleChange={onTemplateTitleChange}
+              onTemplateContentChange={onTemplateContentChange}
+              onCategoryChange={onCategoryChange}
+              onAddNewTemplate={onAddNewTemplate}
+              onCreateTemplate={onCreateTemplate}
+              onUpdateTemplate={onUpdateTemplate}
+              onOpenDeleteDialog={onOpenDeleteDialog}
+            />
+          </div>
+
+          {/* 모바일에서만 변수 목록 표시 (맨 아래) */}
+          <div className="lg:hidden">
+            <VariableList
+              allowedVariables={allowedVariables}
+              templateContent={templateContent}
+              onTemplateContentChange={onTemplateContentChange}
+            />
+          </div>
+        </div>
       </Box>
 
       <DeleteConfirmModal

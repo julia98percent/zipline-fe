@@ -130,7 +130,7 @@ const RecentCustomersModal = ({
             handleRowsPerPageChange(parseInt(event.target.value, 10))
           }
           isLoading={loading}
-          noDataMessage="신규 설문이 없습니다"
+          noDataMessage="신규 사전 상담이 없습니다"
         />
       </DialogContent>
       <DialogActions sx={{ p: 2 }}>

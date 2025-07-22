@@ -1,9 +1,14 @@
-import { Box, Typography } from "@mui/material";
+import {
+  Typography,
+  TextField as MuiTextField,
+  InputAdornment,
+  IconButton,
+} from "@mui/material";
 import { DatePicker } from "@mui/x-date-pickers/DatePicker";
 import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
+import SearchIcon from "@mui/icons-material/Search";
 import dayjs from "dayjs";
-import Button from "@components/Button";
 
 interface Props {
   search: string;
@@ -13,7 +18,6 @@ interface Props {
   onStartDateChange: (startDate: string | null) => void;
   onEndDateChange: (endDate: string | null) => void;
   onSearchClick: () => void;
-  onResetClick: () => void;
 }
 
 const CounselSearchFilters = ({
@@ -24,55 +28,45 @@ const CounselSearchFilters = ({
   onStartDateChange,
   onEndDateChange,
   onSearchClick,
-  onResetClick,
 }: Props) => {
   return (
-    <div className={styles.counselListPage}>
-      <div className={styles.searchFilterRow}>
-        <input
-          type="text"
-          className={styles.searchInput}
+    <div className="space-y-5">
+      <div className="flex flex-col sm:flex-row gap-3 items-start sm:items-center">
+        <MuiTextField
+          fullWidth
+          size="small"
           placeholder="제목으로 검색"
           value={search}
           onChange={(e) => onSearchChange(e.target.value)}
+          onKeyDown={(e) => {
+            if (e.key === "Enter") {
+              e.preventDefault();
+              onSearchClick();
+            }
+          }}
+          className="flex-1"
+          InputProps={{
+            endAdornment: (
+              <InputAdornment position="end">
+                <IconButton size="small" onClick={onSearchClick}>
+                  <SearchIcon fontSize="small" />
+                </IconButton>
+              </InputAdornment>
+            ),
+          }}
         />
-        <Button
-          variant="contained"
-          className={styles.searchButton}
-          onClick={onSearchClick}
-        >
-          검색
-        </Button>
-        <Button
-          variant="outlined"
-          className={styles.resetButton}
-          onClick={onResetClick}
-        >
-          초기화
-        </Button>
       </div>
 
-      <div className={styles.dateFilterRow}>
+      <div className="flex flex-col sm:flex-row gap-3 items-start sm:items-center">
         <LocalizationProvider dateAdapter={AdapterDayjs}>
-          <Box
-            sx={{
-              display: "flex",
-              flexDirection: "row",
-              alignItems: "center",
-              gap: 1,
-            }}
-          >
+          <div className="flex flex-col sm:flex-row items-start sm:items-center gap-3">
             <Typography
               variant="subtitle2"
-              sx={{
-                color: "#333333",
-                fontWeight: 500,
-                mr: 1,
-              }}
+              className="text-gray-700 font-medium"
             >
               상담일
             </Typography>
-            <Box sx={{ display: "flex", alignItems: "center" }}>
+            <div className="flex items-center gap-2">
               <DatePicker
                 value={startDate ? dayjs(startDate) : null}
                 onChange={(newValue) => {
@@ -84,13 +78,13 @@ const CounselSearchFilters = ({
                 slotProps={{
                   textField: {
                     size: "small",
+
                     sx: {
                       backgroundColor: "white",
                       width: "170px",
                       "& .MuiOutlinedInput-root": {
                         "& fieldset": {
                           borderColor: "#E0E0E0",
-                          borderRadius: "20px",
                         },
                         "&:hover fieldset": {
                           borderColor: "#164F9E",
@@ -103,9 +97,7 @@ const CounselSearchFilters = ({
                   },
                 }}
               />
-              <Box component="span" sx={{ mx: 1 }}>
-                ~
-              </Box>
+              <span className="mx-1 text-gray-500">~</span>
               <DatePicker
                 value={endDate ? dayjs(endDate) : null}
                 onChange={(newValue) => {
@@ -123,7 +115,6 @@ const CounselSearchFilters = ({
                       "& .MuiOutlinedInput-root": {
                         "& fieldset": {
                           borderColor: "#E0E0E0",
-                          borderRadius: "20px",
                         },
                         "&:hover fieldset": {
                           borderColor: "#164F9E",
@@ -136,8 +127,8 @@ const CounselSearchFilters = ({
                   },
                 }}
               />
-            </Box>
-          </Box>
+            </div>
+          </div>
         </LocalizationProvider>
       </div>
     </div>

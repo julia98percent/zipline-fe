@@ -8,6 +8,7 @@ import {
 import { CONTRACT_STATUS_TYPES } from "@constants/contract";
 import dayjs from "dayjs";
 import { ContractCategory, ContractCategoryType } from "@ts/contract";
+import { getPropertyTypeColors } from "@constants/property";
 
 interface PropertyHistorySectionProps {
   contractHistories: ContractHistoryItem[];
@@ -65,18 +66,14 @@ const PropertyHistorySection = ({
   const getCategoryChip = (category: ContractCategoryType | null) => {
     if (!category) return "-";
     const label = ContractCategory[category] ?? category;
-    const colorMap: Record<string, string> = {
-      SALE: "#4caf50",
-      DEPOSIT: "#2196f3",
-      MONTHLY: "#ff9800",
-    };
+    const colors = getPropertyTypeColors(category);
+
     return (
       <Chip
         label={label}
-        variant="outlined"
         sx={{
-          color: colorMap[category],
-          borderColor: colorMap[category],
+          backgroundColor: colors.background,
+          color: colors.text,
           fontWeight: 500,
           height: 26,
           fontSize: 13,

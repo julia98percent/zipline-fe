@@ -19,11 +19,11 @@ function PropertyAddButtonList({ fetchPropertyData }: Props) {
 
   return (
     <>
-      <div>
+      <div className="flex flex-col sm:flex-row gap-2 sm:gap-0">
         <Button
           variant="contained"
           onClick={handleOpen}
-          className="bg-[#164F9E] shadow-none h-9 text-xs px-4 hover:bg-[#0D3B7A] hover:shadow-none flex items-center gap-2"
+          className="w-full sm:w-auto"
         >
           <AddIcon fontSize="small" />
           매물 등록
@@ -32,7 +32,7 @@ function PropertyAddButtonList({ fetchPropertyData }: Props) {
         <Button
           variant="outlined"
           onClick={handleOpenBulkUpload}
-          className="text-[#164F9E] min-h-[32px] border-[#164F9E] ml-3 hover:border-[#0D3B7A] hover:text-[#0D3B7A] hover:bg-[rgba(22,79,158,0.08)]"
+          className="text-[#164F9E] min-h-[32px] border-[#164F9E] sm:ml-3 hover:border-[#0D3B7A] hover:text-[#0D3B7A] hover:bg-[rgba(22,79,158,0.08)] w-full sm:w-auto"
         >
           매물 데이터 일괄 등록(.csv)
         </Button>

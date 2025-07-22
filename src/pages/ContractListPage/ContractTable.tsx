@@ -3,6 +3,7 @@ import { Contract } from "@ts/contract";
 import { CONTRACT_STATUS_TYPES } from "@constants/contract";
 import { ContractCategory, ContractCategoryType } from "@ts/contract";
 import Table, { ColumnConfig, RowData } from "@components/Table/Table";
+import { getPropertyTypeColors } from "@constants/property";
 
 interface Props {
   contractList: Contract[];
@@ -87,18 +88,14 @@ const ContractTable = ({
       ? ContractCategory[category]
       : category;
 
-    const colorMap: Record<string, string> = {
-      SALE: "#4caf50",
-      DEPOSIT: "#2196f3",
-      MONTHLY: "#ff9800",
-    };
+    const colors = getPropertyTypeColors(category);
+
     return (
       <Chip
         label={label}
-        variant="outlined"
         sx={{
-          color: colorMap[category],
-          borderColor: colorMap[category],
+          backgroundColor: colors.background,
+          color: colors.text,
           fontWeight: 500,
           height: 26,
           fontSize: 13,

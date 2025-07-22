@@ -1,11 +1,16 @@
 import ContractTable from "./ContractTable";
 import ContractFilterModal from "./ContractFilterModal";
 import PageHeader from "@components/PageHeader/PageHeader";
-import styles from "./styles/ContractListPage.module.css";
 import Select from "@components/Select";
 import ContractAddModal from "./ContractAddButtonList/ContractAddModal";
 import Button from "@components/Button";
 import AddIcon from "@mui/icons-material/Add";
+import SearchIcon from "@mui/icons-material/Search";
+import {
+  TextField as MuiTextField,
+  InputAdornment,
+  IconButton,
+} from "@mui/material";
 import { Contract } from "@ts/contract";
 
 interface ContractListPageViewProps {
@@ -68,35 +73,47 @@ const ContractListPageView = ({
   onMobileMenuToggle,
 }: ContractListPageViewProps) => {
   return (
-    <div className={styles.container}>
+    <div className="bg-gray-100 min-h-screen">
       <PageHeader title="계약 목록" onMobileMenuToggle={onMobileMenuToggle} />
 
-      <div className={styles.contents}>
-        <div className={styles.controlsContainer}>
-          <div className={styles.searchBarRow}>
+      <div className="p-5">
+        <div className="bg-white p-4 rounded-lg shadow-sm mb-5">
+          <div className="flex gap-3 items-center mb-5">
             <Select
               label="정렬 기준"
               value={selectedSort}
               onChange={(e) => onSortChange(e.target.value)}
               options={sortOptions}
-              className="w-[140px]"
             />
 
-            <div className={styles.searchInputWrapper}>
-              <input
-                className={styles.searchInput}
-                placeholder="검색어를 입력해주세요"
+            <div className="flex flex-1 relative">
+              <MuiTextField
+                fullWidth
+                size="small"
+                placeholder="고객 이름 또는 매물 주소를 입력해주세요"
                 value={searchKeyword}
                 onChange={(e) => onSearchKeywordChange(e.target.value)}
-                onKeyDown={(e) => {
-                  if (e.key === "Enter") onSearchSubmit();
+                onKeyDown={(e: React.KeyboardEvent) => {
+                  if (e.key === "Enter") {
+                    e.preventDefault();
+                    onSearchSubmit();
+                  }
+                }}
+                InputProps={{
+                  endAdornment: (
+                    <InputAdornment position="end">
+                      <IconButton size="small" onClick={onSearchSubmit}>
+                        <SearchIcon fontSize="small" />
+                      </IconButton>
+                    </InputAdornment>
+                  ),
                 }}
               />
             </div>
           </div>
 
-          <div className={styles.topFilterRow}>
-            <div className={styles.filterGroup}>
+          <div className="flex justify-between items-start flex-wrap gap-3">
+            <div className="flex items-center gap-3">
               <Select
                 label="상태 선택"
                 value={selectedStatus}
@@ -104,15 +121,19 @@ const ContractListPageView = ({
                 options={CONTRACT_STATUS_OPTION_LIST}
               />
 
-              <div className={styles.filterButtons}>
+              <div className="flex flex-wrap gap-2">
                 {Object.keys(periodMapping).map((label) => (
                   <Button
                     key={label}
-                    variant="text"
-                    className={
+                    variant={
                       periodMapping[label] === selectedPeriod
-                        ? `${styles.filterButton} ${styles.filterButtonActive}`
-                        : styles.filterButton
+                        ? "contained"
+                        : "outlined"
+                    }
+                    color={
+                      periodMapping[label] === selectedPeriod
+                        ? "secondary"
+                        : "primary"
                     }
                     onClick={() => onPeriodClick(label)}
                   >
@@ -121,15 +142,12 @@ const ContractListPageView = ({
                 ))}
               </div>
             </div>
-
-            <Button
-              variant="contained"
-              onClick={onAddModalOpen}
-              className="bg-blue-800 shadow-none hover:bg-blue-900 hover:shadow-none h-9 text-xs px-4 flex items-center gap-2"
-            >
-              <AddIcon fontSize="small" />
-              계약 등록
-            </Button>
+            <div className="flex justify-end w-full">
+              <Button variant="contained" onClick={onAddModalOpen}>
+                <AddIcon fontSize="small" />
+                계약 등록
+              </Button>
+            </div>
           </div>
         </div>
 

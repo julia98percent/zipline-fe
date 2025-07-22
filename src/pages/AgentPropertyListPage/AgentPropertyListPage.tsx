@@ -49,7 +49,6 @@ function AgentPropertyListPage() {
     DEFAULT_SEARCH_PARAMS
   );
   const [showFilterModal, setShowFilterModal] = useState(false);
-  const [showAddPropertyModal, setShowAddPropertyModal] = useState(false);
 
   // 지역 관련 상태
   const [regions, setRegions] = useState<Region[]>([]);
@@ -274,18 +273,9 @@ function AgentPropertyListPage() {
     fetchProperties(searchParams);
   }, [fetchProperties, searchParams]);
 
-  const handleAddProperty = useCallback(() => {
-    setShowAddPropertyModal(true);
-  }, []);
-
-  const handleCloseAddPropertyModal = useCallback(() => {
-    setShowAddPropertyModal(false);
-  }, []);
-
   const handleSaveProperty = useCallback(() => {
     // 매물 저장 후 목록 새로고침
     fetchProperties(searchParams);
-    setShowAddPropertyModal(false);
   }, [fetchProperties, searchParams]);
 
   // 초기 데이터 로드
@@ -320,9 +310,6 @@ function AgentPropertyListPage() {
       onFilterModalToggle={handleFilterModalToggle}
       onFilterModalClose={handleFilterModalClose}
       onRefresh={handleRefresh}
-      onAddProperty={handleAddProperty}
-      showAddPropertyModal={showAddPropertyModal}
-      onCloseAddPropertyModal={handleCloseAddPropertyModal}
       onSaveProperty={handleSaveProperty}
       onMobileMenuToggle={onMobileMenuToggle}
     />

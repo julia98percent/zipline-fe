@@ -5,7 +5,7 @@ import {
   ContractDocumentsEditModal,
   ContractBasicInfoEditModal,
 } from "./components";
-import styles from "@pages/ContractListPage/styles/ContractListPage.module.css";
+// import styles from "@pages/ContractListPage/styles/ContractListPage.module.css";
 import DeleteConfirmModal from "@components/DeleteConfirm";
 import DeleteIcon from "@mui/icons-material/Delete";
 import { ContractDetail, ContractHistory } from "@ts/contract";
@@ -80,7 +80,7 @@ const ContractDetailPageView = ({
   }
 
   return (
-    <div className={styles.container}>
+    <div className="flex-grow bg-gray-100 min-h-screen">
       <PageHeader
         title="계약 상세 조회"
         onMobileMenuToggle={onMobileMenuToggle}
@@ -100,7 +100,7 @@ const ContractDetailPageView = ({
         </Box>
       )}
 
-      <div className={styles.contents}>
+      <div className="p-5 max-w-full mx-auto">
         {infoModalOpen && contract && (
           <ContractBasicInfoEditModal
             open={infoModalOpen}
@@ -141,14 +141,8 @@ const ContractDetailPageView = ({
           confirmColor="warning"
         />
 
-        <div className={styles.contents2}>
-          <Box
-            display="flex"
-            justifyContent="space-between"
-            alignItems="center"
-            width="100%"
-            mb={2}
-          >
+        <div className="space-y-6">
+          <div className="flex justify-between items-center">
             <Button
               variant="outlined"
               color="primary"
@@ -167,7 +161,7 @@ const ContractDetailPageView = ({
             >
               삭제
             </Button>
-          </Box>
+          </div>
 
           <ContractDetailContent
             contract={contract}

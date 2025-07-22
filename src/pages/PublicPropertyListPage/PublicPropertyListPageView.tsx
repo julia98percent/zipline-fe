@@ -2,7 +2,6 @@ import FilterListIcon from "@mui/icons-material/FilterList";
 import {
   Box,
   CircularProgress,
-  Paper,
   SelectChangeEvent,
   FormControlLabel,
   TextField,
@@ -91,49 +90,18 @@ const PublicPropertyListPageView = ({
   }
 
   return (
-    <>
+    <div className="flex-grow bg-gray-100 min-h-screen">
       <PageHeader
         title="공개 매물 목록"
         onMobileMenuToggle={onMobileMenuToggle}
       />
-      <Box
-        sx={{
-          padding: "20px",
-          paddingTop: "20px",
-          backgroundColor: "#f5f5f5",
-          minHeight: "100vh",
-        }}
-      >
-        {/* 상단 필터 바 컨테이너 */}
-        <Paper
-          sx={{
-            p: 3,
-            mb: "28px",
-            borderRadius: "8px",
-            boxShadow: "0 2px 8px rgba(0,0,0,0.04)",
-          }}
-        >
-          <Box sx={{ display: "flex", alignItems: "center", gap: 1, mb: 2 }}>
-            <Button
-              color="info"
-              variant="outlined"
-              size="small"
-              onClick={onSortReset}
-            >
-              필터 초기화
-            </Button>
-            <Button
-              startIcon={<FilterListIcon />}
-              className="ml-1"
-              color={"primary"}
-              variant={"contained"}
-              onClick={onFilterModalToggle}
-            >
-              상세 필터
-            </Button>
-          </Box>
 
-          <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
+      <div className="p-5">
+        {/* 상단 필터 바 */}
+        <div className="flex flex-col gap-4 bg-white rounded-lg p-3 shadow-sm mb-5">
+          {/* 모바일 필터 레이아웃 (md 미만) */}
+          <div className="md:hidden space-y-3">
+            {/* 주소 검색 */}
             <TextField
               fullWidth
               size="small"
@@ -156,20 +124,79 @@ const PublicPropertyListPageView = ({
                 ),
               }}
             />
-          </Box>
-        </Paper>
 
-        {/* 단위/주소 스위치: 두 컨테이너 사이로 이동 */}
-        <Box
-          sx={{
-            display: "flex",
-            alignItems: "center",
-            gap: 2,
-            mb: "3px",
-            mt: "5px",
-            ml: "8px",
-          }}
-        >
+            <div className="flex gap-2">
+              <Button
+                variant="outlined"
+                onClick={onFilterModalToggle}
+                className="text-sm px-3 py-2"
+              >
+                <FilterListIcon className="mr-1 text-sm" />
+                상세 필터
+              </Button>
+              <Button
+                variant="text"
+                onClick={onSortReset}
+                className="text-sm px-3 py-2"
+              >
+                필터 초기화
+              </Button>
+            </div>
+          </div>
+
+          {/* 데스크톱/태블릿 필터 레이아웃 (md 이상) */}
+          <div className="hidden md:block space-y-4">
+            {/* 첫 번째 줄: 주소 검색 */}
+            <div className="flex items-center gap-2">
+              <TextField
+                fullWidth
+                size="small"
+                placeholder="주소 검색 (예: 강남구, 도산대로)"
+                value={searchAddress}
+                onChange={onAddressSearch}
+                onKeyDown={(e) => {
+                  if (e.key === "Enter") {
+                    e.preventDefault();
+                    onAddressSearchSubmit();
+                  }
+                }}
+                InputProps={{
+                  endAdornment: (
+                    <InputAdornment position="end">
+                      <IconButton size="small" onClick={onAddressSearchSubmit}>
+                        <SearchIcon fontSize="small" />
+                      </IconButton>
+                    </InputAdornment>
+                  ),
+                }}
+              />
+            </div>
+
+            {/* 두 번째 줄: 필터 초기화, 상세 필터 */}
+            <div className="flex justify-between items-center">
+              <div className="flex items-center gap-2">
+                <Button
+                  variant="outlined"
+                  onClick={onFilterModalToggle}
+                  className="min-w-10 px-3 rounded-3xl"
+                >
+                  <FilterListIcon className="mr-2" />
+                  상세 필터
+                </Button>
+                <Button
+                  variant="text"
+                  onClick={onSortReset}
+                  className="min-w-10"
+                >
+                  필터 초기화
+                </Button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* 단위 스위치 */}
+        <div className="flex items-center mb-5">
           <FormControlLabel
             control={
               <IOSSwitch
@@ -182,35 +209,26 @@ const PublicPropertyListPageView = ({
             label={useMetric ? "제곱미터(m²)" : "평(py)"}
             sx={{ "& .MuiFormControlLabel-label": { fontSize: "13px" } }}
           />
-        </Box>
+        </div>
 
-        {/* 매물 리스트 컨테이너 */}
-        <Paper
-          sx={{
-            p: 3,
-            borderRadius: "8px",
-            boxShadow: "0 2px 8px rgba(0,0,0,0.04)",
-          }}
-        >
-          <PublicPropertyTable
-            propertyList={publicPropertyList}
-            hasMore={hasNext}
-            isLoading={loading}
-            loadMore={onLoadMore}
-            onSort={onSort}
-            sortField={
-              searchParams && "sortField" in searchParams
-                ? searchParams.sortField
-                : undefined
-            }
-            isAscending={
-              searchParams && "isAscending" in searchParams
-                ? searchParams.isAscending
-                : undefined
-            }
-            useMetric={useMetric}
-          />
-        </Paper>
+        <PublicPropertyTable
+          propertyList={publicPropertyList}
+          hasMore={hasNext}
+          isLoading={loading}
+          loadMore={onLoadMore}
+          onSort={onSort}
+          sortField={
+            searchParams && "sortField" in searchParams
+              ? searchParams.sortField
+              : undefined
+          }
+          isAscending={
+            searchParams && "isAscending" in searchParams
+              ? searchParams.isAscending
+              : undefined
+          }
+          useMetric={useMetric}
+        />
 
         <PublicPropertyFilterModal
           open={showFilterModal}
@@ -224,8 +242,8 @@ const PublicPropertyListPageView = ({
           onGuChange={onGuChange}
           onDongChange={onDongChange}
         />
-      </Box>
-    </>
+      </div>
+    </div>
   );
 };
 

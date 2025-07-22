@@ -45,7 +45,7 @@ const CounselTable = ({
       key: "dueDate",
       label: "희망 의뢰 마감일",
       render: (value) =>
-        value ? dayjs(value as string).format("YYYY-MM-DD") : "-",
+        value ? dayjs(value as string).format("YYYY-MM-DD") : "없음",
     },
     {
       key: "completed",

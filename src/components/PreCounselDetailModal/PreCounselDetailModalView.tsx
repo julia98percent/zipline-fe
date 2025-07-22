@@ -41,7 +41,7 @@ const PreCounselDetailModal = ({
         className: "rounded-xl",
       }}
     >
-      <DialogTitle className="pb-2 text-[#164F9E] font-bold">
+      <DialogTitle className="pb-2 text-primary font-bold">
         사전 상담 상세
       </DialogTitle>
       <DialogContent className="pt-4">
@@ -129,7 +129,7 @@ const PreCounselDetailModal = ({
                                 href={item.answer}
                                 target="_blank"
                                 rel="noopener noreferrer"
-                                className="text-[#164F9E] no-underline hover:underline"
+                                className="text-primary no-underline hover:underline"
                               >
                                 {item.fileName || "파일 다운로드"}
                               </Link>

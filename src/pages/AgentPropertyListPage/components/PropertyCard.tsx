@@ -1,6 +1,10 @@
 import { Property, PropertyCategory } from "@ts/property";
 import { formatDate } from "@utils/dateUtil";
 import { Typography, Chip, Box, Card, CardContent } from "@mui/material";
+import {
+  getPropertyTypeColors,
+  getPropertyCategoryColors,
+} from "@constants/property";
 
 interface PropertyCardProps {
   property: Property;
@@ -40,29 +44,15 @@ const PropertyCard = ({ property, onRowClick }: PropertyCardProps) => {
   };
 
   const getTypeChipColor = (type: string) => {
-    switch (type) {
-      case "SALE":
-        return "#FF6B6B"; // 빨간색 계열
-      case "DEPOSIT":
-        return "#FFB84D"; // 주황색 계열
-      case "MONTHLY":
-        return "#4ECDC4"; // 민트색 계열
-      default:
-        return "#6C7CE7"; // 보라색 계열
-    }
+    return getPropertyTypeColors(type).background;
+  };
+
+  const getTypeTextColor = (type: string) => {
+    return getPropertyTypeColors(type).text;
   };
 
   const getCategoryChipColor = (category: string) => {
-    switch (category) {
-      case "APARTMENT":
-        return "#E8F4FD"; // 연한 파란색
-      case "OFFICETEL":
-        return "#E8F5E8"; // 연한 초록색
-      case "VILLA":
-        return "#FFF3E0"; // 연한 주황색
-      default:
-        return "#F3E5F5"; // 연한 보라색
-    }
+    return getPropertyCategoryColors(category).background;
   };
 
   const handleClick = () => {
@@ -105,7 +95,7 @@ const PropertyCard = ({ property, onRowClick }: PropertyCardProps) => {
             size="small"
             sx={{
               backgroundColor: getTypeChipColor(property.type),
-              color: "white",
+              color: getTypeTextColor(property.type),
               fontSize: "12px",
               height: "24px",
               "& .MuiChip-label": {

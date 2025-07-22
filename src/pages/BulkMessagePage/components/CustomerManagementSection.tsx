@@ -19,7 +19,7 @@ const CustomerManagementSection = ({
   onSendMessage,
 }: CustomerManagementSectionProps) => {
   return (
-    <Box className="w-[400px]">
+    <Box className="w-full">
       <Paper className="p-6 mb-4 rounded-lg shadow-sm">
         <Box className="flex justify-between items-center mb-4">
           <Typography variant="h6" className="text-gray-900">

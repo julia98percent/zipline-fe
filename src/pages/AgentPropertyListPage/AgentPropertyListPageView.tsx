@@ -6,7 +6,7 @@ import PageHeader from "@components/PageHeader/PageHeader";
 import Select, { MenuItem } from "@components/Select";
 import RegionSelector from "@components/RegionSelector";
 import { AgentPropertyTable, AgentPropertyFilterModal } from "./components";
-import PropertyAddModal from "./components/PropertyAddButtonList/PropertyAddModal/PropertyAddModal";
+import PropertyAddButtonList from "./components/PropertyAddButtonList/PropertyAddButtonList";
 import { Property } from "@ts/property";
 import { Region } from "@ts/region";
 import { AgentPropertySearchParams } from "@apis/propertyService";
@@ -47,9 +47,6 @@ interface AgentPropertyListPageViewProps {
   onFilterModalToggle: () => void;
   onFilterModalClose: () => void;
   onRefresh: () => void;
-  onAddProperty?: () => void;
-  showAddPropertyModal: boolean;
-  onCloseAddPropertyModal: () => void;
   onSaveProperty: () => void;
   onMobileMenuToggle?: () => void;
 }
@@ -79,9 +76,6 @@ const AgentPropertyListPageView = ({
   onFilterModalToggle,
   onFilterModalClose,
   onRefresh,
-  onAddProperty,
-  showAddPropertyModal,
-  onCloseAddPropertyModal,
   onSaveProperty,
   onMobileMenuToggle,
 }: AgentPropertyListPageViewProps) => {
@@ -183,17 +177,10 @@ const AgentPropertyListPageView = ({
               </Button>
             </div>
 
-            {/* 세 번째 줄: 매물 추가, 새로고침 버튼 */}
-            <div className="flex gap-2">
-              {onAddProperty && (
-                <Button
-                  variant="contained"
-                  onClick={onAddProperty}
-                  className="rounded-lg text-sm px-4 py-3 flex-1 h-[46px]"
-                >
-                  매물 추가
-                </Button>
-              )}
+            <div className="flex gap-4">
+              <div className="flex-1">
+                <PropertyAddButtonList fetchPropertyData={onSaveProperty} />
+              </div>
               <IconButton
                 onClick={onRefresh}
                 className="border border-gray-300 text-gray-600 rounded-lg hover:bg-gray-50 p-3 min-w-[48px]"
@@ -204,113 +191,89 @@ const AgentPropertyListPageView = ({
             </div>
           </div>
 
-          {/* 데스크톱 필터 레이아웃 (md 이상) */}
+          {/* 데스크톱/태블릿 필터 레이아웃 (md 이상) */}
           <div className="hidden md:block space-y-4">
-            {/* 주소 선택 (시/도/구/군/동) */}
-            <div className="flex gap-3 flex-wrap">
-              <div className="flex items-center gap-2">
-                <RegionSelector
-                  label="시/도"
-                  value={selectedSido}
-                  regions={regions}
-                  onChange={onSidoChange}
-                />
+            {/* 첫 번째 줄: 지역 선택, 카테고리, 판매유형 */}
+            <div className="flex items-center gap-2">
+              <RegionSelector
+                label="시/도"
+                value={selectedSido}
+                regions={regions}
+                onChange={onSidoChange}
+              />
 
-                <RegionSelector
-                  value={selectedGu}
-                  regions={sigunguOptions}
-                  onChange={onGuChange}
-                  disabled={!selectedSido}
-                  label="시/군/구"
-                />
+              <RegionSelector
+                value={selectedGu}
+                regions={sigunguOptions}
+                onChange={onGuChange}
+                disabled={!selectedSido}
+                label="시/군/구"
+              />
 
-                <RegionSelector
-                  value={selectedDong}
-                  regions={dongOptions}
-                  onChange={onDongChange}
-                  disabled={!selectedGu}
-                  label="동"
-                />
-              </div>
+              <RegionSelector
+                value={selectedDong}
+                regions={dongOptions}
+                onChange={onDongChange}
+                disabled={!selectedGu}
+                label="동"
+              />
+
+              <Select
+                size="small"
+                value={searchParams.category || ""}
+                onChange={onCategoryChange}
+                displayEmpty
+                showEmptyOption={false}
+                aria-label="카테고리"
+              >
+                <MenuItem value="">카테고리</MenuItem>
+                {categoryOptions.map((opt) => (
+                  <MenuItem key={opt.value} value={opt.value || ""}>
+                    {opt.label}
+                  </MenuItem>
+                ))}
+              </Select>
+
+              <Select
+                size="small"
+                value={searchParams.type || ""}
+                onChange={onTypeChange}
+                displayEmpty
+                showEmptyOption={false}
+                aria-label="판매유형"
+              >
+                <MenuItem value="">판매유형</MenuItem>
+                {typeOptions.map((opt) => (
+                  <MenuItem key={opt.value} value={opt.value || ""}>
+                    {opt.label}
+                  </MenuItem>
+                ))}
+              </Select>
             </div>
 
-            {/* 카테고리/판매유형/상세필터/새로고침 버튼 */}
-            <div className="flex justify-between items-center w-full">
-              <div className="flex items-center gap-4">
-                <div className="flex gap-2">
-                  <Select
-                    size="small"
-                    value={searchParams.category || ""}
-                    onChange={onCategoryChange}
-                    displayEmpty
-                    showEmptyOption={false}
-                    aria-label="카테고리"
-                  >
-                    <MenuItem value="">카테고리</MenuItem>
-                    {categoryOptions.map((opt) => (
-                      <MenuItem key={opt.value} value={opt.value || ""}>
-                        {opt.label}
-                      </MenuItem>
-                    ))}
-                  </Select>
-                </div>
-                <div className="flex gap-2">
-                  <Select
-                    size="small"
-                    value={searchParams.type || ""}
-                    onChange={onTypeChange}
-                    displayEmpty
-                    showEmptyOption={false}
-                    aria-label="판매유형"
-                  >
-                    <MenuItem value="">판매유형</MenuItem>
-                    {typeOptions.map((opt) => (
-                      <MenuItem key={opt.value} value={opt.value || ""}>
-                        {opt.label}
-                      </MenuItem>
-                    ))}
-                  </Select>
-                </div>
-                <div className="flex items-center">
-                  <Button
-                    variant="outlined"
-                    onClick={onFilterModalToggle}
-                    className="border border-[#164F9E] text-[#164F9E] min-w-10 p-1 rounded-3xl w-29 hover:bg-gray-100"
-                  >
-                    <FilterListIcon className="mr-2" />
-                    상세 필터
-                  </Button>
-                </div>
-              </div>
-              <div className="flex items-center gap-1 ml-auto">
-                {onAddProperty && (
-                  <Button
-                    variant="contained"
-                    color="secondary"
-                    onClick={onAddProperty}
-                    className="min-w-10 mr-3"
-                  >
-                    매물 추가
-                  </Button>
-                )}
+            {/* 두 번째 줄: 필터 초기화, 상세 필터, 매물 등록 버튼들 */}
+            <div className="flex justify-between items-center">
+              <div className="flex items-center gap-2">
                 <Button
                   variant="outlined"
-                  color="secondary"
-                  onClick={onRefresh}
-                  className="min-w-10"
+                  onClick={onFilterModalToggle}
+                  className="min-w-10 px-3 rounded-3xl"
                 >
-                  새로고침
+                  <FilterListIcon className="mr-2" />
+                  상세 필터
+                </Button>
+                <Button variant="text" onClick={onRefresh} className="min-w-10">
+                  필터 초기화
                 </Button>
               </div>
+              <PropertyAddButtonList fetchPropertyData={onSaveProperty} />
             </div>
           </div>
         </div>
 
         {/* 매물 개수 표시 */}
-        <div className="px-2 py-3 border-b border-gray-200">
-          <div className="text-sm text-gray-700 font-medium">
-            총 {totalElements.toLocaleString()}개
-          </div>
+        <div className="px-2 mb-5 text-sm text-gray-700 font-medium">
+          총 {totalElements.toLocaleString()}개
         </div>
 
         {/* 테이블 */}
@@ -338,13 +301,6 @@ const AgentPropertyListPageView = ({
           onSidoChange={onSidoChange}
           onGuChange={onGuChange}
           onDongChange={onDongChange}
-        />
-
-        {/* 매물 추가 모달 */}
-        <PropertyAddModal
-          open={showAddPropertyModal}
-          handleClose={onCloseAddPropertyModal}
-          fetchPropertyData={onSaveProperty}
         />
       </div>
     </div>

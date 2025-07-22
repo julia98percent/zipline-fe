@@ -232,8 +232,8 @@ const NavigationContent = ({ onItemClick }: NavigationContentProps) => {
                               currentPath === sub.to
                                 ? "rgba(22, 79, 158, 0.04)"
                                 : "transparent",
-                            justifyContent: { xs: "center", md: "flex-start" },
-                            px: { xs: 0, md: 2 },
+                            justifyContent: "flex-start",
+                            px: 2,
                             ml: 4,
                             py: 0.5,
                             mb: 0.25,

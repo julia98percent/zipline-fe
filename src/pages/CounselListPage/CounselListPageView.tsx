@@ -1,12 +1,12 @@
-import { Box } from "@mui/material";
 import PageHeader from "@components/PageHeader/PageHeader";
 import CounselModal from "./CounselModal";
 import {
   CounselSearchFilters,
   CounselTypeFilters,
-  CounselActionButtons,
   CounselTable,
 } from "./components";
+import Button from "@components/Button";
+import AddIcon from "@mui/icons-material/Add";
 import { Counsel } from "@ts/counsel";
 
 interface CounselListPageViewProps {
@@ -65,44 +65,39 @@ function CounselListPageView({
   onMobileMenuToggle,
 }: CounselListPageViewProps) {
   return (
-    <Box
-      sx={{
-        padding: "20px",
-        paddingTop: "20px",
-        backgroundColor: "#f5f5f5",
-        minHeight: "100vh",
-      }}
-    >
+    <>
       <PageHeader title="상담 내역" onMobileMenuToggle={onMobileMenuToggle} />
 
-      <Box
-        sx={{
-          display: "flex",
-          flexDirection: "column",
-          gap: 2,
-          mt: 2,
-        }}
-      >
-        <div className={styles.filterContainer}>
-          <CounselSearchFilters
-            search={search}
-            startDate={startDate}
-            endDate={endDate}
-            onSearchChange={onSearchChange}
-            onStartDateChange={onStartDateChange}
-            onEndDateChange={onEndDateChange}
-            onSearchClick={onSearchClick}
-            onResetClick={onResetClick}
-          />
+      <div className="p-5 pt-5 bg-gray-100 min-h-screen">
+        {/* 상단 검색/필터 영역 */}
+        <div className="p-6 mb-7 rounded-lg bg-white shadow-sm">
+          <div className="space-y-5">
+            <CounselSearchFilters
+              search={search}
+              startDate={startDate}
+              endDate={endDate}
+              onSearchChange={onSearchChange}
+              onStartDateChange={onStartDateChange}
+              onEndDateChange={onEndDateChange}
+              onSearchClick={onSearchClick}
+            />
 
-          <div className={styles.typeAndActionRow}>
             <CounselTypeFilters
               selectedType={selectedType}
               selectedCompleted={selectedCompleted}
               onTypeChange={onTypeChange}
               onCompletedChange={onCompletedChange}
             />
-            <CounselActionButtons onModalOpen={onModalOpen} />
+
+            <div className="flex justify-between items-center">
+              <Button variant="text" onClick={onResetClick}>
+                필터 초기화
+              </Button>
+              <Button variant="contained" onClick={onModalOpen}>
+                <AddIcon fontSize="small" />
+                상담 등록
+              </Button>
+            </div>
           </div>
         </div>
 
@@ -116,14 +111,14 @@ function CounselListPageView({
           onRowsPerPageChange={onRowsPerPageChange}
           onRowClick={onRowClick}
         />
-      </Box>
 
-      <CounselModal
-        open={isModalOpen}
-        onClose={onModalClose}
-        onSuccess={onModalSuccess}
-      />
-    </Box>
+        <CounselModal
+          open={isModalOpen}
+          onClose={onModalClose}
+          onSuccess={onModalSuccess}
+        />
+      </div>
+    </>
   );
 }
 

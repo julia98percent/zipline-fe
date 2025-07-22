@@ -62,7 +62,7 @@ const DashboardPage = () => {
               />
             </div>
 
-            {/* 오른쪽 - 신규 설문 목록 */}
+            {/* 오른쪽 - 신규 사전 상담 목록 */}
             <div className="flex-1 lg:flex-1 flex flex-col min-h-[400px]">
               <SurveyList
                 surveyResponses={dashboardData.surveyResponses}

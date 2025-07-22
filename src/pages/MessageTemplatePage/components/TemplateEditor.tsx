@@ -49,16 +49,16 @@ const TemplateEditor: React.FC<TemplateEditorProps> = ({
       <div className="flex gap-7 mb-4">
         <TextField
           fullWidth
+          size="small"
           placeholder="템플릿 제목"
           value={templateTitle}
           onChange={(e) => onTemplateTitleChange(e.target.value)}
-          className="bg-white [&_.MuiOutlinedInput-root_fieldset]:border-gray-300 [&_.MuiOutlinedInput-root_fieldset]:rounded-3xl [&_.MuiOutlinedInput-root:hover_fieldset]:border-[#164F9E] [&_.MuiOutlinedInput-root.Mui-focused_fieldset]:border-[#164F9E]"
         />
         <Select
           value={selectedCategory}
           onChange={(e) => onCategoryChange(e.target.value as string)}
           displayEmpty
-          className="min-w-[200px] bg-white [&_.MuiOutlinedInput-notchedOutline]:border-gray-300 [&_.MuiOutlinedInput-notchedOutline]:rounded-3xl [&:hover_.MuiOutlinedInput-notchedOutline]:border-[#164F9E] [&.Mui-focused_.MuiOutlinedInput-notchedOutline]:border-[#164F9E]"
+          className="min-w-[200px]"
         >
           <MenuItem value="" disabled>
             카테고리 선택
@@ -77,7 +77,6 @@ const TemplateEditor: React.FC<TemplateEditorProps> = ({
         placeholder="템플릿 내용을 입력하세요"
         value={templateContent}
         onChange={(e) => onTemplateContentChange(e.target.value)}
-        className="bg-white [&_.MuiOutlinedInput-root]:rounded-3xl [&_.MuiOutlinedInput-root_fieldset]:border-gray-300 [&_.MuiOutlinedInput-root:hover_fieldset]:border-[#164F9E] [&_.MuiOutlinedInput-root.Mui-focused_fieldset]:border-[#164F9E]"
       />
 
       <TemplatePreview

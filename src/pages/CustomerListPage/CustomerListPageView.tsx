@@ -1,6 +1,6 @@
 import FilterListIcon from "@mui/icons-material/FilterList";
 import SearchIcon from "@mui/icons-material/Search";
-import TextField from "@components/TextField";
+import { TextField, InputAdornment, IconButton } from "@mui/material";
 import Button from "@components/Button";
 import PageHeader from "@components/PageHeader/PageHeader";
 import CustomerTable from "./CustomerTable/CustomerTable";
@@ -45,6 +45,8 @@ interface CustomerListPageViewProps {
   onCustomerUpdate: (customer: Customer) => void;
   onRefresh: () => void;
   onCustomerCreate: () => void;
+  onSearchSubmit: () => void;
+  onFilterReset: () => void;
   onMobileMenuToggle?: () => void;
 }
 
@@ -67,6 +69,8 @@ const CustomerListPageView = ({
   onCustomerUpdate,
   onRefresh,
   onCustomerCreate,
+  onSearchSubmit,
+  onFilterReset,
   onMobileMenuToggle,
 }: CustomerListPageViewProps) => {
   if (loading) {
@@ -82,27 +86,50 @@ const CustomerListPageView = ({
       <PageHeader title="고객 목록" onMobileMenuToggle={onMobileMenuToggle} />
 
       <div className="p-5 max-w-full mx-auto">
-        <div className="bg-white rounded-lg shadow-sm p-4 flex justify-between items-center">
-          <div className="flex justify-end items-center gap-2">
+        <div className="bg-white rounded-lg shadow-sm p-3">
+          <div className="flex flex-col gap-4">
             <TextField
-              placeholder="전화번호 또는 고객이름으로 검색"
+              fullWidth
+              size="small"
+              placeholder="전화번호 또는 고객 이름으로 검색"
               value={searchTerm}
               onChange={(e) => onSearchChange(e.target.value)}
-              size="small"
-              startAdornment={<SearchIcon />}
-              className="min-w-[300px]"
+              onKeyDown={(e) => {
+                if (e.key === "Enter") {
+                  e.preventDefault();
+                  onSearchSubmit();
+                }
+              }}
+              InputProps={{
+                endAdornment: (
+                  <InputAdornment position="end">
+                    <IconButton size="small" onClick={onSearchSubmit}>
+                      <SearchIcon fontSize="small" />
+                    </IconButton>
+                  </InputAdornment>
+                ),
+              }}
             />
-            <Button
-              variant="outlined"
-              onClick={onFilterModalOpen}
-              className="h-10 ml-2 min-w-[120px] border border-[#164F9E] text-[#164F9E] rounded-full hover:border-[#164F9E]"
-              startIcon={<FilterListIcon />}
-            >
-              상세 필터
-            </Button>
-          </div>
-          <div className="flex justify-start items-center">
-            <CustomerAddButtonList fetchCustomerData={onCustomerCreate} />
+
+            <div className="flex items-center justify-between gap-2">
+              <div>
+                <Button
+                  variant="outlined"
+                  onClick={onFilterModalOpen}
+                  startIcon={<FilterListIcon />}
+                >
+                  상세 필터
+                </Button>
+                <Button
+                  variant="text"
+                  onClick={onFilterReset}
+                  className="min-w-10"
+                >
+                  필터 초기화
+                </Button>
+              </div>
+              <CustomerAddButtonList fetchCustomerData={onCustomerCreate} />
+            </div>
           </div>
         </div>
         <CustomerTable

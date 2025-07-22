@@ -3,6 +3,7 @@ import { CONTRACT_STATUS_TYPES } from "@constants/contract";
 import Table, { ColumnConfig } from "@components/Table";
 import { ContractRowData } from "./CustomerInfoTabPanel";
 import { Contract } from "@ts/contract";
+import { getPropertyTypeColors } from "@constants/property";
 
 interface ContractTableProps {
   contractList: Contract[];
@@ -75,17 +76,17 @@ function ContractTable({
     const typeInfo = PROPERTY_TYPES.find((type) => type.value === category);
     if (!typeInfo) return category;
 
+    const colors = getPropertyTypeColors(category);
+
     return (
       <Chip
         label={typeInfo.name}
-        variant="outlined"
         sx={{
-          color: typeInfo.color,
-          borderColor: typeInfo.color,
+          backgroundColor: colors.background,
+          color: colors.text,
           fontWeight: 500,
           height: 28,
           fontSize: 13,
-          backgroundColor: `${typeInfo.color}10`,
         }}
       />
     );

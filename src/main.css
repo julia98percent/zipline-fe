@@ -3,4 +3,10 @@
 @tailwind components;
 @tailwind utilities;
 
-body {}
+body {
+}
+
+@theme {
+  --color-primary: #164f9e;
+  --color-primary-dark: #154c98;
+}

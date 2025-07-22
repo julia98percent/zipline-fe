@@ -67,7 +67,7 @@ const SurveyList: React.FC<SurveyListProps> = ({
           variant="h6"
           sx={{ fontWeight: 600, pb: 1, color: "#164f9e" }}
         >
-          신규 설문
+          신규 사전 상담
         </Typography>
       </Box>
       <Box sx={{ flex: 1, overflow: "auto" }}>
@@ -78,7 +78,7 @@ const SurveyList: React.FC<SurveyListProps> = ({
             handleSurveyClick(survey.surveyResponseUid)
           }
           pagination={false}
-          noDataMessage="신규 설문이 없습니다"
+          noDataMessage="신규 사전 상담이 없습니다"
           sx={{
             "& .MuiTableCell-head": {
               fontSize: "13px",

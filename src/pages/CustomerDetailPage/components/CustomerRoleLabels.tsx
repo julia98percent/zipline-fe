@@ -124,15 +124,7 @@ const CustomerRoleLabels = ({
               {!customer.tenant &&
                 !customer.landlord &&
                 !customer.buyer &&
-                !customer.seller && (
-                  <Chip
-                    label="없음"
-                    sx={{
-                      backgroundColor: "#F5F5F5",
-                      color: "#757575",
-                    }}
-                  />
-                )}
+                !customer.seller && <div>없음</div>}
             </>
           )}
         </Box>

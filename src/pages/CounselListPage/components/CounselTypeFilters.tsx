@@ -20,14 +20,12 @@ const CounselTypeFilters = ({
   onCompletedChange,
 }: Props) => {
   return (
-    <div className={styles.typeFilterRow}>
+    <div className="flex flex-wrap gap-2 items-center">
       {COUNSEL_TYPES.map((type) => (
         <Button
           key={type.value}
-          variant="text"
-          className={`${styles.filterButton} ${
-            selectedType === type.value ? styles.filterButtonActive : ""
-          }`}
+          variant={selectedType === type.value ? "contained" : "outlined"}
+          color={selectedType === type.value ? "primary" : "info"}
           onClick={() => {
             onTypeChange(selectedType === type.value ? null : type.value);
           }}
@@ -35,12 +33,10 @@ const CounselTypeFilters = ({
           {type.label}
         </Button>
       ))}
-      <span className={styles.filterDivider}>|</span>
+      <span className="text-gray-300 mx-1 font-light">|</span>
       <Button
-        variant="text"
-        className={`${styles.filterButton} ${
-          selectedCompleted === false ? styles.filterButtonActive : ""
-        }`}
+        variant={selectedCompleted === false ? "contained" : "outlined"}
+        color={selectedCompleted === false ? "primary" : "info"}
         onClick={() => {
           onCompletedChange(selectedCompleted === false ? null : false);
         }}
@@ -48,10 +44,8 @@ const CounselTypeFilters = ({
         의뢰 진행중
       </Button>
       <Button
-        variant="text"
-        className={`${styles.filterButton} ${
-          selectedCompleted === true ? styles.filterButtonActive : ""
-        }`}
+        variant={selectedCompleted ? "contained" : "outlined"}
+        color={selectedCompleted ? "primary" : "info"}
         onClick={() => {
           onCompletedChange(selectedCompleted === true ? null : true);
         }}

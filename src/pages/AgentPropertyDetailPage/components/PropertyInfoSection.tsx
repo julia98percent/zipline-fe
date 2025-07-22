@@ -6,32 +6,14 @@ import {
   InfoValue,
 } from "../styles/AgentPropertyDetailPage.styles";
 import { AgentPropertyDetail } from "@apis/propertyService";
+import {
+  getPropertyTypeColors,
+  getPropertyCategoryColors,
+} from "@constants/property";
 
 interface PropertyInfoSectionProps {
   property: AgentPropertyDetail;
 }
-
-const categoryColors: Record<
-  AgentPropertyDetail["realCategory"],
-  "primary" | "secondary" | "default" | "success" | "error" | "warning" | "info"
-> = {
-  ONE_ROOM: "primary",
-  TWO_ROOM: "primary",
-  APARTMENT: "success",
-  VILLA: "info",
-  HOUSE: "warning",
-  OFFICETEL: "secondary",
-  COMMERCIAL: "error",
-};
-
-const typeColors: Record<
-  AgentPropertyDetail["type"],
-  "default" | "primary" | "secondary" | "success" | "error" | "warning" | "info"
-> = {
-  SALE: "error",
-  DEPOSIT: "warning",
-  MONTHLY: "success",
-};
 
 const PropertyInfoSection = ({ property }: PropertyInfoSectionProps) => {
   const getCategoryName = (category: string) => {
@@ -54,6 +36,22 @@ const PropertyInfoSection = ({ property }: PropertyInfoSectionProps) => {
       MONTHLY: "월세",
     };
     return types[type] || type;
+  };
+
+  const getTypeChipColor = (type: string) => {
+    return getPropertyTypeColors(type).background;
+  };
+
+  const getTypeTextColor = (type: string) => {
+    return getPropertyTypeColors(type).text;
+  };
+
+  const getCategoryChipColor = (category: string) => {
+    return getPropertyCategoryColors(category).background;
+  };
+
+  const getCategoryTextColor = (category: string) => {
+    return getPropertyCategoryColors(category).text;
   };
 
   const formatPrice = (price: number | null) => {
@@ -82,10 +80,13 @@ const PropertyInfoSection = ({ property }: PropertyInfoSectionProps) => {
             <InfoValue>
               <Chip
                 label={getTransactionType(property.type)}
-                color={typeColors[property.type] || "default"}
-                variant="filled"
                 size="small"
-                sx={{ fontWeight: 500, fontSize: 13 }}
+                sx={{
+                  backgroundColor: getTypeChipColor(property.type),
+                  color: getTypeTextColor(property.type),
+                  fontWeight: 500,
+                  fontSize: 13,
+                }}
               />
             </InfoValue>
           </InfoItem>
@@ -98,10 +99,13 @@ const PropertyInfoSection = ({ property }: PropertyInfoSectionProps) => {
             <InfoValue>
               <Chip
                 label={getCategoryName(property.realCategory)}
-                color={categoryColors[property.realCategory] || "default"}
-                variant="outlined"
                 size="small"
-                sx={{ fontWeight: 500, fontSize: 13 }}
+                sx={{
+                  backgroundColor: getCategoryChipColor(property.realCategory),
+                  color: getCategoryTextColor(property.realCategory),
+                  fontWeight: 500,
+                  fontSize: 13,
+                }}
               />
             </InfoValue>
           </InfoItem>

@@ -105,11 +105,20 @@ const CustomerFilterModal = ({
 
   useEffect(() => {
     if (open) {
-      fetchLabelsData();
-      setFiltersTemp({ ...filters });
+      // labels가 없을 때만 fetchLabelsData 호출
+      if (labels.length === 0) {
+        fetchLabelsData();
+      }
       handleOpen();
     }
-  }, [open, filters, fetchLabelsData, handleOpen]);
+  }, [open, fetchLabelsData, handleOpen, labels.length]);
+
+  // filters가 변경될 때만 filtersTemp 업데이트
+  useEffect(() => {
+    if (open) {
+      setFiltersTemp({ ...filters });
+    }
+  }, [open, filters]);
 
   useEffect(() => {
     if (open && filters.labelUids?.length > 0 && labels.length > 0) {

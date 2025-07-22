@@ -5,6 +5,7 @@ import { Contract } from "@ts/contract";
 import { CONTRACT_STATUS_TYPES } from "@constants/contract";
 import { fetchOngoingContractsForDashboard } from "@apis/contractService";
 import Table, { ColumnConfig } from "@components/Table";
+import { getPropertyTypeColors } from "@constants/property";
 
 interface OngoingContractsModalProps {
   open: boolean;
@@ -102,18 +103,14 @@ const OngoingContractsModal = ({
   const getCategoryChip = (category: string | null) => {
     if (!category || category === "null") return "-";
     const label = categoryKoreanMap[category] ?? category;
-    const colorMap: Record<string, string> = {
-      SALE: "#4caf50",
-      DEPOSIT: "#2196f3",
-      MONTHLY: "#ff9800",
-    };
+    const colors = getPropertyTypeColors(category);
+
     return (
       <Chip
         label={label}
-        variant="outlined"
         sx={{
-          color: colorMap[category],
-          borderColor: colorMap[category],
+          backgroundColor: colors.background,
+          color: colors.text,
           fontWeight: 500,
           height: 26,
           fontSize: 13,

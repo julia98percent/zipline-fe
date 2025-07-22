@@ -5,6 +5,7 @@ import { CONTRACT_STATUS_TYPES } from "@constants/contract";
 import { fetchRecentContractsForDashboard } from "@apis/contractService";
 import { Contract } from "@ts/contract";
 import Table, { ColumnConfig } from "@components/Table";
+import { getPropertyTypeColors } from "@constants/property";
 
 interface RecentContractsModalProps {
   open: boolean;
@@ -125,20 +126,18 @@ const RecentContractsModal = ({ open, onClose }: RecentContractsModalProps) => {
           DEPOSIT: "전세",
           MONTHLY: "월세",
         };
-        const colorMap: Record<string, string> = {
-          SALE: "#4caf50",
-          DEPOSIT: "#2196f3",
-          MONTHLY: "#ff9800",
-        };
+
         if (!contract.category || !categoryKoreanMap[contract.category])
           return "-";
+
+        const colors = getPropertyTypeColors(contract.category);
+
         return (
           <Chip
             label={categoryKoreanMap[contract.category]}
-            variant="outlined"
             sx={{
-              color: colorMap[contract.category],
-              borderColor: colorMap[contract.category],
+              backgroundColor: colors.background,
+              color: colors.text,
               fontWeight: 500,
               height: 26,
               fontSize: 13,

@@ -11,7 +11,6 @@ import {
 } from "./components";
 
 interface BulkMessagePageProps {
-  templates: MessageTemplate[];
   messageContent: string;
   customers: Customer[];
   isCustomerModalOpen: boolean;
@@ -28,7 +27,6 @@ interface BulkMessagePageProps {
 }
 
 const BulkMessagePage = ({
-  templates,
   selectedTemplate,
   messageContent,
   customers,
@@ -63,25 +61,30 @@ const BulkMessagePage = ({
         onMobileMenuToggle={onMobileMenuToggle}
       />
 
-      <Box sx={{ p: 3, display: "flex", gap: "28px" }}>
-        {/* 왼쪽 영역: 문자 템플릿 선택 및 내용 */}
-        <MessageTemplateSection
-          templates={templates}
-          selectedTemplate={selectedTemplate}
-          messageContent={messageContent}
-          isLoading={isLoading}
-          groupedTemplates={groupedTemplates}
-          onTemplateChange={onTemplateChange}
-        />
+      <Box sx={{ p: 3 }}>
+        <div className="flex flex-col lg:flex-row gap-7">
+          {/* 왼쪽 영역: 문자 템플릿 선택 및 내용 */}
+          <div className="flex-1">
+            <MessageTemplateSection
+              selectedTemplate={selectedTemplate}
+              messageContent={messageContent}
+              isLoading={isLoading}
+              groupedTemplates={groupedTemplates}
+              onTemplateChange={onTemplateChange}
+            />
+          </div>
 
-        {/* 오른쪽 영역: 고객 추가 */}
-        <CustomerManagementSection
-          customers={customers}
-          selectedTemplate={selectedTemplate}
-          onAddCustomer={onAddCustomer}
-          onRemoveCustomer={onRemoveCustomer}
-          onSendMessage={onSendMessage}
-        />
+          {/* 오른쪽 영역: 고객 추가 */}
+          <div className="flex-1 lg:max-w-md">
+            <CustomerManagementSection
+              customers={customers}
+              selectedTemplate={selectedTemplate}
+              onAddCustomer={onAddCustomer}
+              onRemoveCustomer={onRemoveCustomer}
+              onSendMessage={onSendMessage}
+            />
+          </div>
+        </div>
       </Box>
 
       <CustomerSelectModal

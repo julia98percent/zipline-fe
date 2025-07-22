@@ -133,7 +133,7 @@ const EnhancedPagination = ({
             size="small"
             onClick={handlePreviousPage}
             disabled={page === 0}
-            className="w-8 h-8 border border-gray-300 rounded bg-white text-gray-900 hover:bg-gray-100 hover:border-blue-500 disabled:bg-white disabled:border-gray-300 disabled:text-gray-400 disabled:opacity-60"
+            className="w-8 h-8 border border-gray-300 rounded bg-white text-gray-900 hover:bg-gray-100 hover:border-primary disabled:bg-white disabled:border-gray-300 disabled:text-gray-400 disabled:opacity-60"
           >
             <ChevronLeftIcon fontSize="small" />
           </IconButton>
@@ -146,8 +146,8 @@ const EnhancedPagination = ({
               onClick={() => onPageChange(null, pageNum - 1)}
               className={`w-8 h-8 border rounded text-sm font-normal ${
                 pageNum === page + 1
-                  ? "border-blue-500 bg-blue-500 text-white font-bold hover:bg-blue-600 hover:border-blue-600"
-                  : "border-gray-300 bg-white text-gray-900 hover:bg-gray-100 hover:border-blue-500"
+                  ? "border-primary bg-primary text-white font-bold hover:bg-primary-dark hover:border-primary-dark"
+                  : "border-gray-300 bg-white text-gray-900 hover:bg-gray-100 hover:border-primary"
               }`}
             >
               {pageNum}
@@ -169,7 +169,7 @@ const EnhancedPagination = ({
             size="small"
             onClick={handleNextPage}
             disabled={page >= totalPages - 1}
-            className="w-8 h-8 border border-gray-300 rounded bg-white text-gray-900 hover:bg-gray-100 hover:border-blue-500 disabled:bg-white disabled:border-gray-300 disabled:text-gray-400 disabled:opacity-60"
+            className="w-8 h-8 border border-gray-300 rounded bg-white text-gray-900 hover:bg-gray-100 hover:border-primary-dark disabled:bg-white disabled:border-gray-300 disabled:text-gray-400 disabled:opacity-60"
           >
             <ChevronRightIcon fontSize="small" />
           </IconButton>
@@ -192,7 +192,7 @@ const EnhancedPagination = ({
               }
             }}
             placeholder={`1-${totalPages}`}
-            className="w-[70px] [&_.MuiOutlinedInput-root]:h-8 [&_.MuiOutlinedInput-root]:rounded [&_.MuiOutlinedInput-root]:bg-white [&_.MuiOutlinedInput-root:hover_.MuiOutlinedInput-notchedOutline]:border-blue-500 [&_input]:px-2 [&_input]:py-0 [&_input]:text-sm [&_input]:text-center [&_input::-webkit-inner-spin-button]:appearance-none [&_input::-webkit-outer-spin-button]:appearance-none [&_input]:[appearance:textfield]"
+            className="w-[70px] [&_.MuiOutlinedInput-root]:h-8 [&_.MuiOutlinedInput-root]:rounded [&_.MuiOutlinedInput-root]:bg-white [&_.MuiOutlinedInput-root:hover_.MuiOutlinedInput-notchedOutline]:border-primary-dark [&_input]:px-2 [&_input]:py-0 [&_input]:text-sm [&_input]:text-center [&_input::-webkit-inner-spin-button]:appearance-none [&_input::-webkit-outer-spin-button]:appearance-none [&_input]:[appearance:textfield]"
           />
           <Typography
             variant="body2"

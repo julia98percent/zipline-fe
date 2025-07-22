@@ -19,21 +19,13 @@ function CustomerAddButtonList({ fetchCustomerData }: Props) {
 
   return (
     <>
-      <div>
-        <Button
-          variant="contained"
-          onClick={handleOpen}
-          className="bg-[#164F9E] shadow-none hover:bg-[#0D3B7A] hover:shadow-none h-9 text-xs px-4 flex items-center gap-2"
-        >
+      <div className="flex gap-2">
+        <Button variant="contained" onClick={handleOpen}>
           <AddIcon fontSize="small" />
           고객 등록
         </Button>
 
-        <Button
-          variant="outlined"
-          onClick={handleOpenBulkUpload}
-          className="text-[#164F9E] min-h-[32px] border-[#164F9E] ml-3 hover:border-[#0D3B7A] hover:text-[#0D3B7A]"
-        >
+        <Button variant="outlined" onClick={handleOpenBulkUpload}>
           고객 데이터 일괄 등록(.csv)
         </Button>
       </div>

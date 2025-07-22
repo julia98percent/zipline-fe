@@ -217,7 +217,9 @@ function CounselModal({ open, onClose, onSuccess }: CounselModalProps) {
         </Box>
       </DialogContent>
       <DialogActions>
-        <Button onClick={onClose}>취소</Button>
+        <Button variant="outlined" onClick={onClose} className="px-4 py-2">
+          취소
+        </Button>
         <Button
           onClick={handleSubmit}
           variant="contained"

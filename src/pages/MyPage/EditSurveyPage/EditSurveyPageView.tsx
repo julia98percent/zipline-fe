@@ -251,7 +251,7 @@ const EditSurveyPageView = ({
                 </Button>
               ) : (
                 <Tooltip title="기본 질문은 삭제할 수 없습니다">
-                  <Button color="info" disabled className="px-4 py-2">
+                  <Button color="info" disabled>
                     질문 삭제
                   </Button>
                 </Tooltip>

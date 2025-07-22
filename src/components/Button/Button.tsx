@@ -48,7 +48,7 @@ const Button = ({
     <MuiButton
       id={id}
       disabled={disabled}
-      className={`${classNameWithVariant} shadow-none hover:shadow-none h-[40px] ${className}`}
+      className={`${classNameWithVariant} shadow-none hover:shadow-none h-[40px] px-4 py-2 rounded-3xl ${className}`}
       onClick={onClick}
       onMouseEnter={onMouseEnter}
       onMouseLeave={onMouseLeave}

@@ -5,6 +5,7 @@ import PrivateRoute from "./components/layout/PrivateRoute";
 import GuestRoute from "./components/layout/GuestRoute";
 import SignUpPage from "@pages/SignUpPage";
 import SignInPage from "@pages/SignInPage";
+import FindAccountPage from "@pages/FindAccountPage";
 import CustomerListPage from "@pages/CustomerListPage";
 import AgentPropertyListPage from "@pages/AgentPropertyListPage";
 import MyPage from "@pages/MyPage";
@@ -93,6 +94,7 @@ const App = () => {
         <Route element={<GuestRoute />}>
           <Route path="sign-up" element={<SignUpPage />} />
           <Route path="sign-in" element={<SignInPage />} />
+          <Route path="find-account" element={<FindAccountPage />} />
         </Route>
 
         <Route path="error" element={<ErrorPage />} />

@@ -6,7 +6,7 @@ import TextField from "@components/TextField";
 import { showToast } from "@components/Toast/Toast";
 import { findUserId, FindIdRequest } from "@apis/userService";
 import { formatPhoneNumber } from "@utils/numberUtil";
-import { hasErrorData } from "@utils/apiUtil";
+import { API_ERROR_MESSAGES } from "@ts/apiResponse";
 
 // 전화번호 유효성 검사 함수
 const isValidPhoneNumber = (phoneNo: string) =>
@@ -70,13 +70,10 @@ const FindIdTab = ({ isActive, onSwitchToPasswordTab }: FindIdTabProps) => {
         type: "success",
       });
     } catch (e) {
-      console.log(e);
+      const axiosError = e as API_ERROR_MESSAGES;
       const errorMessage =
-        e instanceof Error && hasErrorData(e)
-          ? e.response.data.message
-          : e instanceof Error
-          ? e.message
-          : "일치하는 사용자 정보를 찾을 수 없습니다.";
+        axiosError?.response?.data.message ||
+        "일치하는 사용자 정보를 찾을 수 없습니다.";
       showToast({
         message: errorMessage,
         type: "error",

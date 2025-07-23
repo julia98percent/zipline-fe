@@ -7,8 +7,7 @@ import {
   PhoneNumberInput,
   UserIdInput,
 } from "./components";
-import { Box, Typography, TextField } from "@mui/material";
-import { MenuItem, StringSelect } from "@components/Select";
+import { Box, Typography } from "@mui/material";
 import signUpImage from "@assets/sign-up.png";
 
 interface SignUpViewProps {
@@ -19,8 +18,6 @@ interface SignUpViewProps {
     phoneNumber: string;
     password: string;
     passwordCheck: string;
-    passwordQuestionUid: string;
-    questionAnswer: string;
   };
   handlers: {
     handleChangeName: (e: React.ChangeEvent<HTMLInputElement>) => void;
@@ -29,16 +26,12 @@ interface SignUpViewProps {
     handleChangePhoneNumber: (e: React.ChangeEvent<HTMLInputElement>) => void;
     handleChangePassword: (e: React.ChangeEvent<HTMLInputElement>) => void;
     handleChangePasswordCheck: (e: React.ChangeEvent<HTMLInputElement>) => void;
-    setPasswordQuestionUid: (value: string) => void;
-    setQuestionAnswer: (value: string) => void;
   };
   eventHandlers: {
     handleBlur: (field: string, value: string) => void;
-    handleKeyDown: (e: React.KeyboardEvent) => void;
     handleSubmit: () => void;
   };
   isFormValid: boolean;
-  PASSWORD_QUESTIONS: Array<{ uid: number; question: string }>;
 }
 
 const SignUpView = ({
@@ -46,18 +39,9 @@ const SignUpView = ({
   handlers,
   eventHandlers,
   isFormValid,
-  PASSWORD_QUESTIONS,
 }: SignUpViewProps) => {
-  const {
-    name,
-    userId,
-    email,
-    phoneNumber,
-    password,
-    passwordCheck,
-    passwordQuestionUid,
-    questionAnswer,
-  } = formData;
+  const { name, userId, email, phoneNumber, password, passwordCheck } =
+    formData;
 
   const {
     handleChangeName,
@@ -66,11 +50,9 @@ const SignUpView = ({
     handleChangePhoneNumber,
     handleChangePassword,
     handleChangePasswordCheck,
-    setPasswordQuestionUid,
-    setQuestionAnswer,
   } = handlers;
 
-  const { handleBlur, handleKeyDown, handleSubmit } = eventHandlers;
+  const { handleBlur, handleSubmit } = eventHandlers;
 
   return (
     <div className="h-screen bg-gray-50">
@@ -137,31 +119,6 @@ const SignUpView = ({
                 phoneNumber={phoneNumber}
                 handleChangePhoneNumber={handleChangePhoneNumber}
                 onBlur={() => handleBlur("phoneNumber", phoneNumber)}
-              />
-
-              {/* Password Question Fields */}
-
-              <StringSelect
-                value={passwordQuestionUid}
-                onChange={(e) => setPasswordQuestionUid(e.target.value)}
-                label="비밀번호 찾기 질문"
-                onKeyDown={handleKeyDown}
-              >
-                {PASSWORD_QUESTIONS.map((q) => (
-                  <MenuItem key={q.uid} value={q.uid}>
-                    {q.question}
-                  </MenuItem>
-                ))}
-              </StringSelect>
-
-              <TextField
-                fullWidth
-                required
-                label="비밀번호 찾기 답변"
-                value={questionAnswer}
-                onChange={(e) => setQuestionAnswer(e.target.value)}
-                placeholder="질문에 대한 답변을 입력해주세요"
-                onKeyDown={handleKeyDown}
               />
             </div>
 

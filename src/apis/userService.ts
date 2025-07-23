@@ -38,8 +38,6 @@ export const signupUser = async ({
   userId,
   password,
   passwordCheck,
-  passwordQuestionUid,
-  questionAnswer,
   name,
   phoneNumber,
   email,
@@ -51,8 +49,6 @@ export const signupUser = async ({
         id: userId,
         password,
         passwordCheck,
-        passwordQuestionUid: Number(passwordQuestionUid),
-        questionAnswer,
         name,
         phoneNo: phoneNumber,
         email,
@@ -91,7 +87,9 @@ export const updateUserInfo = async (
 
 export interface FindIdRequest {
   name: string;
-  email: string;
+  email?: string;
+  phoneNo?: string;
+  verificationType: "EMAIL" | "PHONE";
 }
 
 export interface FindIdResponse {
@@ -114,13 +112,15 @@ export const findUserId = async (data: FindIdRequest): Promise<string> => {
 export interface VerifyUserForPasswordResetRequest {
   userId: string;
   name: string;
-  email: string;
-  phoneNo: string;
+  verificationType: "EMAIL" | "PHONE";
+  phoneNo?: string;
+  email?: string;
 }
 
 export interface ResetPasswordRequest {
   userId: string;
   newPassword: string;
+  newPasswordCheck: string;
 }
 
 export const verifyUserForPasswordReset = async (
@@ -128,7 +128,7 @@ export const verifyUserForPasswordReset = async (
 ): Promise<void> => {
   try {
     const response = await apiClient.post<ApiResponse<void>>(
-      "/users/verify-for-password-reset",
+      "/users/send-code",
       data
     );
     return handleApiResponse(response.data, "사용자 인증에 실패했습니다.");
@@ -148,6 +148,44 @@ export const resetPassword = async (
     return handleApiResponse(response.data, "비밀번호 변경에 실패했습니다.");
   } catch (error) {
     return handleApiError(error, "resetting password");
+  }
+};
+
+export interface VerifyCodeRequest {
+  userId: string;
+  code: string;
+}
+
+export const verifyCode = async (data: VerifyCodeRequest): Promise<void> => {
+  try {
+    const response = await apiClient.post<ApiResponse<void>>(
+      "/users/verify-code",
+      data
+    );
+    return handleApiResponse(response.data, "인증 코드 검증에 실패했습니다.");
+  } catch (error) {
+    return handleApiError(error, "verifying code");
+  }
+};
+
+export interface RemainingTimeResponse {
+  remainingSeconds: number; // 남은 시간(초)
+  serverTimestamp: number; // 서버 타임스탬프
+  active: boolean; // 인증번호 활성 상태
+}
+
+export const getRemainingTime = async (userId: string): Promise<number> => {
+  try {
+    const response = await apiClient.get<ApiResponse<RemainingTimeResponse>>(
+      `/users/remaining-time/${userId}`
+    );
+    const data = handleApiResponse(
+      response.data,
+      "남은 시간 조회에 실패했습니다."
+    );
+    return data.remainingSeconds;
+  } catch (error) {
+    return handleApiError(error, "getting remaining time");
   }
 };
 

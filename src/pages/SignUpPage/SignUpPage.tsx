@@ -1,4 +1,3 @@
-import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { signupUser } from "@apis/userService";
 import useInput from "@hooks/useInput";
@@ -24,17 +23,6 @@ const isValidEmail = (email: string) =>
 const isValidPhoneNumber = (phone: string) =>
   /^01[0|1|6|7|8|9]-\d{3,4}-\d{4}$/.test(phone);
 
-const PASSWORD_QUESTIONS = [
-  { uid: 1, question: "당신이 태어난 도시는 어디인가요?" },
-  { uid: 2, question: "당신이 처음 다닌 학교의 이름은 무엇인가요?" },
-  { uid: 3, question: "기억에 남는 선생님의 성함은 무엇인가요?" },
-  { uid: 4, question: "당신이 가장 좋아하는 음식은 무엇인가요?" },
-  { uid: 5, question: "당신이 처음 키운 반려동물의 이름은 무엇인가요?" },
-  { uid: 6, question: "어릴 적 가장 친했던 친구의 이름은 무엇인가요?" },
-  { uid: 7, question: "당신이 가장 좋아하는 영화는 무엇인가요?" },
-  { uid: 8, question: "어릴 적 장래희망은 무엇이었나요?" },
-];
-
 const SignUpPage = () => {
   const navigate = useNavigate();
 
@@ -44,8 +32,6 @@ const SignUpPage = () => {
   const [phoneNumber, handleChangePhoneNumber] = useInput("");
   const [password, handleChangePassword] = useInput("");
   const [passwordCheck, handleChangePasswordCheck] = useInput("");
-  const [passwordQuestionUid, setPasswordQuestionUid] = useState("1");
-  const [questionAnswer, setQuestionAnswer] = useState("");
 
   const isFormValid = () => {
     return (
@@ -55,7 +41,6 @@ const SignUpPage = () => {
       password &&
       passwordCheck &&
       phoneNumber &&
-      questionAnswer &&
       isValidName(name) &&
       isValidUserId(userId) &&
       isValidEmail(email) &&
@@ -140,12 +125,6 @@ const SignUpPage = () => {
     }
   };
 
-  const handleKeyDown = (e: React.KeyboardEvent) => {
-    if (e.key === "Enter" && isFormValid()) {
-      handleSubmit();
-    }
-  };
-
   const handleSubmit = async () => {
     if (!validateField("name", name)) return;
     if (!validateField("userId", userId)) return;
@@ -153,15 +132,12 @@ const SignUpPage = () => {
     if (!validateField("password", password)) return;
     if (!validateField("passwordCheck", passwordCheck)) return;
     if (!validateField("phoneNumber", phoneNumber)) return;
-    if (!validateField("questionAnswer", questionAnswer)) return;
 
     try {
       const res = await signupUser({
         userId,
         password,
         passwordCheck,
-        passwordQuestionUid: Number(passwordQuestionUid),
-        questionAnswer,
         name,
         phoneNumber,
         email,
@@ -206,8 +182,6 @@ const SignUpPage = () => {
       phoneNumber,
       password,
       passwordCheck,
-      passwordQuestionUid,
-      questionAnswer,
     },
 
     handlers: {
@@ -217,19 +191,14 @@ const SignUpPage = () => {
       handleChangePhoneNumber,
       handleChangePassword,
       handleChangePasswordCheck,
-      setPasswordQuestionUid,
-      setQuestionAnswer,
     },
 
     eventHandlers: {
       handleBlur,
-      handleKeyDown,
       handleSubmit,
     },
 
     isFormValid: Boolean(isFormValid()),
-
-    PASSWORD_QUESTIONS,
   };
 
   return <SignUpView {...viewProps} />;

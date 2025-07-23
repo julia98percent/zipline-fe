@@ -17,8 +17,6 @@ export interface SignUpInput {
   userId: string;
   password: string;
   passwordCheck: string;
-  passwordQuestionUid: number;
-  questionAnswer: string;
   name: string;
   phoneNumber: string;
   email: string;

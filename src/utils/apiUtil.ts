@@ -1,18 +1,28 @@
 import { ApiResponse } from "@ts/apiResponse";
 
-export const handleApiResponse = <T>(
+export function handleApiResponse<T>(
   response: ApiResponse<T>,
   errorMessage: string
-): T => {
-  if (
-    response.success &&
-    response.data !== undefined &&
-    response.data !== null
-  ) {
-    return response.data;
+): T;
+
+// void 응답용
+export function handleApiResponse(
+  response: ApiResponse<void>,
+  errorMessage: string
+): void;
+
+export function handleApiResponse<T>(
+  response: ApiResponse<T>,
+  errorMessage: string
+): T {
+  if (response.success) {
+    return response.data as T;
   }
-  throw new Error(response.message || errorMessage);
-};
+
+  const serverMessage = response.message || errorMessage;
+
+  throw new Error(serverMessage);
+}
 
 export const handleApiError = (error: unknown, context: string): never => {
   console.error(`Error ${context}:`, error);

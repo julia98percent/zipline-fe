@@ -8,6 +8,7 @@ import {
 } from "@apis/preCounselService";
 import useAuthStore from "@stores/useAuthStore";
 import EditSurveyPageView from "./EditSurveyPageView";
+import { showToast } from "@components/Toast";
 
 const DEFAULT_QUESTION_TEMPLATE: QuestionType = {
   id: 0,
@@ -131,13 +132,20 @@ const EditSurveyPage = () => {
   const requestUpdateSurvey = async () => {
     try {
       await updateSurvey(survey);
-      alert("설문을 변경했습니다!");
+      showToast({
+        message: "설문을 변경했습니다.",
+        type: "success",
+      });
+
       navigate("/my", { replace: true });
       setTimeout(() => {
         window.location.reload();
       }, 100);
     } catch {
-      alert("설문 수정 중 오류가 발생했습니다.");
+      showToast({
+        message: "설문 수정 중 오류가 발생했습니다.",
+        type: "error",
+      });
     }
   };
 

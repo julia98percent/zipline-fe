@@ -10,8 +10,8 @@ import {
   CounselPropertyInfo,
   CounselDetailsContent,
   CounselActionButtons,
-  CounselDeleteDialog,
 } from "./components";
+import DeleteConfirmModal from "@components/DeleteConfirm/DeleteConfirmModal";
 
 interface CounselDetailPageViewProps {
   counselData: Counsel | null;
@@ -102,11 +102,11 @@ const CounselDetailPageView = ({
           isEditing={isEditing}
           onDetailChange={onDetailChange}
         />
-
-        <CounselDeleteDialog
+        <DeleteConfirmModal
           open={deleteDialogOpen}
-          onClose={onDeleteCancel}
+          onCancel={onDeleteCancel}
           onConfirm={onDeleteConfirm}
+          category="상담"
         />
       </Box>
     </Box>

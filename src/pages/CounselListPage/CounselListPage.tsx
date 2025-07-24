@@ -64,7 +64,10 @@ function CounselListPage() {
 
   const handleSearchClick = () => {
     if (startDate && endDate && startDate > endDate) {
-      alert("시작일은 종료일보다 빠르거나 같아야 합니다.");
+      showToast({
+        message: "시작일은 종료일보다 빠르거나 같아야 합니다.",
+        type: "error",
+      });
       return;
     }
 

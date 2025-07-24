@@ -19,6 +19,7 @@ import {
 } from "@apis/counselService";
 import { CounselCategory } from "@ts/counsel";
 import Button from "@components/Button";
+import { showToast } from "@components/Toast";
 
 dayjs.extend(utc);
 dayjs.extend(timezone);
@@ -93,12 +94,18 @@ function CounselModal({ open, onClose, onSuccess }: CounselModalProps) {
 
   const handleSubmit = async () => {
     if (!selectedCustomer || !counselType || !title || !counselDateTime) {
-      alert("고객, 상담 유형, 제목, 상담일시는 필수 입력 항목입니다.");
+      showToast({
+        message: "고객, 상담 유형, 제목, 상담일시는 필수 입력 항목입니다.",
+        type: "error",
+      });
       return;
     }
 
     if (!counselContent.trim()) {
-      alert("상담 내용을 입력해주세요.");
+      showToast({
+        message: "상담 내용을 입력해주세요.",
+        type: "error",
+      });
       return;
     }
 

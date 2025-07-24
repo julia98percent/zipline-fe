@@ -1,8 +1,8 @@
 import { useState } from "react";
-import { toast } from "react-toastify";
 import useAuthStore from "@stores/useAuthStore";
 import { updateUserInfo, UpdateUserInfoRequest } from "@apis/userService";
 import MyPageView from "./MyPageView";
+import { showToast } from "@components/Toast";
 
 const MyPage = () => {
   const { user } = useAuthStore();
@@ -21,11 +21,19 @@ const MyPage = () => {
   const handleUpdateUserInfo = async (data: UpdateUserInfoRequest) => {
     try {
       await updateUserInfo(data);
-      toast.success("수정되었습니다.");
+
+      showToast({
+        message: "정보가 성공적으로 업데이트되었습니다.",
+        type: "success",
+      });
     } catch (err: unknown) {
       const errorMessage =
         err instanceof Error ? err.message : "알 수 없는 오류가 발생했습니다.";
-      toast.error("수정 실패: " + errorMessage);
+
+      showToast({
+        message: errorMessage,
+        type: "error",
+      });
     }
   };
 
@@ -49,9 +57,15 @@ const MyPage = () => {
       navigator.clipboard.writeText(
         `${import.meta.env.VITE_CLIENT_URL}/${user?.url}`
       );
-      toast("URL이 복사되었습니다.");
+      showToast({
+        message: "URL을 복사했습니다.",
+        type: "success",
+      });
     } else {
-      toast.error("복사할 URL이 없습니다.");
+      showToast({
+        message: "복사할 URL이 없습니다.",
+        type: "error",
+      });
     }
   };
 

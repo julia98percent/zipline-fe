@@ -53,12 +53,9 @@ const PropertyFilterModalView = ({
   return (
     <Dialog open={open} onClose={onClose} maxWidth="sm" fullWidth>
       <DialogTitle>필터</DialogTitle>
-      <DialogContent
-        dividers
-        sx={{ display: "flex", flexDirection: "column", gap: 2, mt: 1 }}
-      >
+      <DialogContent dividers className="flex flex-col gap-4 mt-2">
         {/* 엘리베이터, 반려동물 */}
-        <Box display="flex" gap={2}>
+        <Box className="flex gap-4">
           <FormControlLabel
             control={
               <Switch
@@ -80,7 +77,7 @@ const PropertyFilterModalView = ({
         </Box>
 
         {/* 면적 */}
-        <Box display="flex" gap={2}>
+        <Box className="flex gap-4">
           <TextField
             label="최소 전용 면적"
             type="number"
@@ -100,7 +97,7 @@ const PropertyFilterModalView = ({
         </Box>
 
         {/* 공급면적 */}
-        <Box display="flex" gap={2}>
+        <Box className="flex gap-4">
           <TextField
             label="최소 공급 면적"
             type="number"
@@ -120,7 +117,7 @@ const PropertyFilterModalView = ({
         </Box>
 
         {/* 가격 범위 */}
-        <Box display="flex" gap={2}>
+        <Box className="flex gap-4">
           <TextField
             label="최소 매매가"
             type="text"
@@ -138,7 +135,7 @@ const PropertyFilterModalView = ({
         </Box>
 
         {/* 보증금/월세 범위 */}
-        <Box display="flex" gap={2}>
+        <Box className="flex gap-4">
           <TextField
             label="최소 보증금"
             type="text"
@@ -155,7 +152,7 @@ const PropertyFilterModalView = ({
           />
         </Box>
 
-        <Box display="flex" gap={2}>
+        <Box className="flex gap-4">
           <TextField
             label="최소 월세"
             type="text"
@@ -173,7 +170,7 @@ const PropertyFilterModalView = ({
         </Box>
 
         {/* 층수, 주차, 건축연도 */}
-        <Box display="flex" gap={2}>
+        <Box className="flex gap-4">
           <TextField
             label="최소 층수"
             type="number"
@@ -190,7 +187,7 @@ const PropertyFilterModalView = ({
           />
         </Box>
 
-        <Box display="flex" gap={2}>
+        <Box className="flex gap-4">
           <TextField
             label="최소 주차가능수"
             type="number"
@@ -209,7 +206,7 @@ const PropertyFilterModalView = ({
           />
         </Box>
 
-        <Box display="flex" gap={2}>
+        <Box className="flex gap-4">
           <TextField
             label="최소 건축연도"
             type="number"
@@ -228,7 +225,7 @@ const PropertyFilterModalView = ({
 
         {/* 경고 메시지 표시 */}
         {error && (
-          <Alert severity="error" sx={{ mt: 2 }}>
+          <Alert severity="error" className="mt-4">
             {error}
           </Alert>
         )}

@@ -110,31 +110,12 @@ const PageHeader = ({ title, onMobileMenuToggle }: PageHeaderProps) => {
   }, [notificationList, setNotificationList]);
 
   return (
-    <Box
-      sx={{
-        backgroundColor: "#FFFFFF",
-        borderBottom: "1px solid #E0E0E0",
-        display: "flex",
-        alignItems: "center",
-        justifyContent: "space-between",
-        height: "70px",
-        px: 2,
-        position: "sticky",
-        top: 0,
-        zIndex: 1000,
-        boxShadow: "0px 2px 4px rgba(0, 0, 0, 0.05)",
-      }}
-    >
-      <Box sx={{ display: "flex", alignItems: "center", gap: 2 }}>
+    <Box className="bg-white border-b border-gray-300 flex items-center justify-between h-18 px-4 sticky top-0 z-50 shadow-sm">
+      <Box className="flex items-center gap-4">
         {isMobile && (
           <IconButton
             onClick={onMobileMenuToggle}
-            sx={{
-              color: "#222222",
-              "&:hover": {
-                backgroundColor: "rgba(0, 0, 0, 0.04)",
-              },
-            }}
+            className="text-gray-800 hover:bg-gray-50"
           >
             <MenuIcon />
           </IconButton>
@@ -142,29 +123,23 @@ const PageHeader = ({ title, onMobileMenuToggle }: PageHeaderProps) => {
         <Typography
           variant="h5"
           component="h1"
-          sx={{
-            fontWeight: "bold",
-            color: "#222222",
-            ...(isMobile && {
-              position: "absolute",
-              left: "50%",
-              transform: "translateX(-50%)",
-            }),
-          }}
+          className={`font-bold text-gray-800 ${
+            isMobile ? "absolute left-1/2 transform -translate-x-1/2" : ""
+          }`}
         >
           {title}
         </Typography>
       </Box>
 
-      <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
-        <Box ref={notificationRef} sx={{ position: "relative" }}>
+      <Box className="flex items-center gap-2">
+        <Box ref={notificationRef} className="relative">
           <IconButton
             onClick={handleNotificationToggle}
-            sx={{
-              color: isNotificationOpen ? "primary.main" : "inherit",
-              "&:hover": {
-                backgroundColor: "rgba(0, 0, 0, 0.04)",
-              },
+            className="hover:bg-gray-50"
+            style={{
+              color: isNotificationOpen
+                ? theme.palette.primary.main
+                : "inherit",
             }}
           >
             <Badge badgeContent={unreadCount} color="error">
@@ -202,18 +177,13 @@ const PageHeader = ({ title, onMobileMenuToggle }: PageHeaderProps) => {
             horizontal: "right",
           }}
           PaperProps={{
-            sx: {
-              mt: 1,
-              boxShadow: "0px 2px 4px rgba(0, 0, 0, 0.1)",
-              borderRadius: "8px",
-              minWidth: "150px",
-            },
+            className: "mt-2 shadow-md rounded-lg min-w-38",
           }}
         >
           <Link to="/my" style={{ textDecoration: "none", color: "inherit" }}>
             <MenuItem onClick={handleUserMenuClose}>마이페이지</MenuItem>
           </Link>
-          <MenuItem onClick={handleLogout} sx={{ color: "#d32f2f" }}>
+          <MenuItem onClick={handleLogout} className="text-red-600">
             로그아웃
           </MenuItem>
         </Menu>

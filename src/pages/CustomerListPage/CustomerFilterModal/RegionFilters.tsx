@@ -39,11 +39,11 @@ const RegionFilters = ({
     };
 
   return (
-    <Box sx={{ mb: 3 }}>
-      <Typography variant="h6" sx={{ mb: 2, fontWeight: 600 }}>
+    <Box className="mb-6">
+      <Typography variant="h6" className="mb-4 font-semibold">
         지역
       </Typography>
-      <Box sx={{ display: "flex", gap: 2 }}>
+      <Box className="flex gap-4">
         <RegionSelector
           label="시/도"
           value={region.selectedSido || ""}

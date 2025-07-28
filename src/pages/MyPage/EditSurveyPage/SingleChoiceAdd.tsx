@@ -32,25 +32,17 @@ function SingleChoiceAdd({
   questionIndex,
 }: Props) {
   return (
-    <Box sx={{ width: "100%", maxWidth: "600px" }}>
+    <Box className="w-full max-w-xl">
       <FormControl fullWidth>
-        <Typography sx={{ mb: 2, color: "#164F9E", fontWeight: 500 }}>
+        <Typography className="mb-4 font-medium text-primary">
           단일 선택 옵션
         </Typography>
         <RadioGroup>
           {question.choices?.map((choice, choiceIndex) => (
-            <Box
-              key={choiceIndex}
-              sx={{
-                display: "flex",
-                alignItems: "center",
-                gap: 2,
-                mb: 1,
-              }}
-            >
+            <Box key={choiceIndex} className="flex items-center gap-4 mb-2">
               <FormControlLabel
+                className="w-full"
                 sx={{
-                  width: "100%",
                   "& span:nth-of-type(2)": {
                     width: "100%",
                   },
@@ -60,7 +52,7 @@ function SingleChoiceAdd({
                 label={
                   <TextField
                     fullWidth
-                    sx={{ mb: 1 }}
+                    className="mb-2"
                     value={choice.text}
                     onChange={(event) =>
                       handleChoiceChange(

@@ -15,15 +15,10 @@ const MobileNavigationBar = ({ open, onClose }: MobileNavigationBarProps) => {
       ModalProps={{
         keepMounted: true,
       }}
-      sx={{
-        display: { xs: "block", md: "none" },
-        "& .MuiDrawer-paper": {
-          width: 240,
-          boxSizing: "border-box",
-          backgroundColor: "#FFFFFF",
-          color: "#222222",
-          borderRight: "1px solid rgba(0, 0, 0, 0.12)",
-        },
+      className="block md:hidden"
+      classes={{
+        paper:
+          "w-60 box-border bg-white text-gray-800 border-r border-gray-200",
       }}
     >
       <NavigationContent onItemClick={onClose} />

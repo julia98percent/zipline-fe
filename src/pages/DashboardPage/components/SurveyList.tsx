@@ -44,33 +44,13 @@ const SurveyList: React.FC<SurveyListProps> = ({
     : [];
 
   return (
-    <Card
-      sx={{
-        flex: 1,
-        display: "flex",
-        flexDirection: "column",
-        boxShadow: "0 2px 6px rgba(0, 0, 0, 0.05)",
-        borderRadius: "6px",
-        backgroundColor: "#fff",
-        p: 2,
-      }}
-    >
-      <Box
-        sx={{
-          borderBottom: "1px solid #e0e0e0",
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "space-between",
-        }}
-      >
-        <Typography
-          variant="h6"
-          sx={{ fontWeight: 600, pb: 1, color: "#164f9e" }}
-        >
+    <Card className="flex-1 flex flex-col rounded-md bg-white shadow-lg p-4">
+      <Box className="flex items-center justify-between border-b border-[#e0e0e0]">
+        <Typography variant="h6" className="font-semibold pb-2 text-primary">
           신규 사전 상담
         </Typography>
       </Box>
-      <Box sx={{ flex: 1, overflow: "auto" }}>
+      <Box className="flex-1 overflow-auto">
         <Table
           columns={columns}
           bodyList={tableData}
@@ -88,9 +68,6 @@ const SurveyList: React.FC<SurveyListProps> = ({
             "& .MuiTableCell-body": {
               fontSize: "12px",
               padding: "8px 16px",
-            },
-            "& .MuiTableRow-root:hover": {
-              backgroundColor: "rgba(22, 79, 158, 0.04)",
             },
           }}
         />

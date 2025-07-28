@@ -65,12 +65,10 @@ const ContractDetailContentView = ({
         <Chip
           label={getStatusLabel(value as string)}
           variant="outlined"
-          sx={{
+          className="font-medium text-xs h-7"
+          style={{
             color: getStatusColor(value as string),
             borderColor: getStatusColor(value as string),
-            fontWeight: 500,
-            fontSize: 13,
-            height: 28,
           }}
         />
       ),
@@ -82,12 +80,10 @@ const ContractDetailContentView = ({
         <Chip
           label={getStatusLabel(value as string)}
           variant="outlined"
-          sx={{
+          className="font-medium text-xs h-7"
+          style={{
             color: getStatusColor(value as string),
             borderColor: getStatusColor(value as string),
-            fontWeight: 500,
-            fontSize: 13,
-            height: 28,
           }}
         />
       ),
@@ -126,12 +122,10 @@ const ContractDetailContentView = ({
       <Chip
         label={categoryLabel}
         variant="outlined"
-        sx={{
-          height: 26,
+        className="h-6 font-medium text-xs"
+        style={{
           color: categoryColor,
           borderColor: categoryColor,
-          fontWeight: 500,
-          fontSize: 13,
         }}
       />
     );
@@ -142,19 +136,17 @@ const ContractDetailContentView = ({
       <Chip
         label={getStatusLabel(contract.status)}
         variant="outlined"
-        sx={{
+        className="font-medium text-xs h-7"
+        style={{
           color: getStatusColor(contract.status),
           borderColor: getStatusColor(contract.status),
-          fontWeight: 500,
-          fontSize: 13,
-          height: 28,
         }}
       />
     );
   };
 
   return (
-    <Box display="flex" flexDirection="column" gap={3}>
+    <Box className="flex flex-col gap-6">
       <ContractStatusStepper
         currentStatus={contract.status}
         contractHistory={histories}
@@ -162,43 +154,25 @@ const ContractDetailContentView = ({
         onQuickStatusChange={onQuickStatusChange}
       />
 
-      <Box display="flex" gap={3}>
-        <Card
-          sx={{
-            flex: 2,
-            borderRadius: 2,
-            display: "flex",
-            flexDirection: "column",
-            minHeight: 400,
-          }}
-        >
-          <CardContent
-            sx={{ flex: 1, display: "flex", flexDirection: "column", p: 3 }}
-          >
-            <Box
-              display="flex"
-              justifyContent="space-between"
-              alignItems="center"
-              mb={2}
-            >
-              <Typography variant="h6" fontWeight="bold">
+      <Box className="flex gap-6">
+        <Card className="flex-2 rounded-lg bg-white shadow-sm flex flex-col min-h-96">
+          <CardContent className="flex-1 flex flex-col p-6">
+            <Box className="flex justify-between items-center mb-4">
+              <Typography className="text-xl font-bold text-primary">
                 계약 기본 정보
               </Typography>
               <IconButton
                 onClick={onEditBasicInfo}
                 size="small"
-                sx={{
-                  backgroundColor: "#f5f5f5",
-                  "&:hover": { backgroundColor: "#e0e0e0" },
-                }}
+                className="bg-gray-100 hover:bg-gray-300"
                 title="계약 정보 수정"
               >
                 <EditIcon fontSize="small" />
               </IconButton>
             </Box>
-            <Box sx={{ flex: 1, overflowY: "auto" }}>
-              <Box display="flex" gap={4} mb={2}>
-                <Box flex={1}>
+            <Box className="flex-1 overflow-y-auto">
+              <Box className="flex gap-8 mb-4">
+                <Box className="flex-1">
                   <InfoRow label="상태" value={renderStatusChip()} />
                   <InfoRow label="카테고리" value={renderCategoryChip()} />
                   <InfoRow
@@ -221,7 +195,7 @@ const ContractDetailContentView = ({
                   />
                   <InfoRow label="기타" value={contract.other ?? "-"} />
                 </Box>
-                <Box flex={1}>
+                <Box className="flex-1">
                   <InfoRow label="매물 주소" value={contract.propertyAddress} />
                   <InfoRow
                     label="보증금"
@@ -246,78 +220,40 @@ const ContractDetailContentView = ({
           </CardContent>
         </Card>
 
-        <Card
-          sx={{
-            flex: 1,
-            borderRadius: 2,
-            display: "flex",
-            flexDirection: "column",
-            minHeight: 400,
-          }}
-        >
-          <CardContent
-            sx={{ flex: 1, display: "flex", flexDirection: "column", p: 3 }}
-          >
-            <Box
-              display="flex"
-              justifyContent="space-between"
-              alignItems="center"
-              mb={2}
-            >
-              <Typography variant="h6" fontWeight="bold">
+        <Card className="flex-1 rounded-lg shadow-sm flex flex-col min-h-96">
+          <CardContent className="flex-1 flex flex-col p-6">
+            <Box className="flex justify-between items-center mb-4">
+              <Typography className="text-xl font-bold text-primary">
                 첨부 문서
               </Typography>
               <IconButton
                 onClick={onEditDocuments}
                 size="small"
-                sx={{
-                  backgroundColor: "#f5f5f5",
-                  "&:hover": { backgroundColor: "#e0e0e0" },
-                }}
+                className="bg-gray-100 hover:bg-gray-300"
               >
                 <EditIcon fontSize="small" />
               </IconButton>
             </Box>
             {contract.documents.length > 0 ? (
-              <Box sx={{ flex: 1, overflowY: "auto" }}>
+              <Box className="flex-1 overflow-y-auto">
                 {contract.documents.map((doc, idx) => (
                   <Box
                     key={idx}
-                    display="flex"
-                    alignItems="center"
-                    justifyContent="space-between"
-                    sx={{
-                      border: "1px solid #ddd",
-                      borderRadius: 1,
-                      px: 2,
-                      py: 1,
-                      mb: 1,
-                      transition: "background-color 0.2s",
-                      "&:hover": {
-                        backgroundColor: "#f5f5f5",
-                      },
-                    }}
+                    className="flex items-center justify-between border border-gray-300 rounded px-4 py-2 mb-2 transition-colors hover:bg-gray-100"
                   >
                     <Typography
-                      sx={{
-                        flex: 1,
-                        whiteSpace: "nowrap",
-                        overflow: "hidden",
-                        textOverflow: "ellipsis",
-                        mr: 1,
-                      }}
+                      className="flex-1 whitespace-nowrap overflow-hidden text-ellipsis mr-2"
                       title={doc.fileName}
                     >
                       📎 {doc.fileName}
                     </Typography>
                     <Button
+                      download={doc.fileName}
+                      target="_blank"
+                      rel="noopener"
                       variant="outlined"
                       size="small"
-                      // TODO
-                      // download={doc.fileName}
-                      // target="_blank"
-                      // rel="noopener noreferrer"
-                      className={"min-w-auto, px-1"}
+                      className="min-w-auto px-2"
                     >
                       <a href={doc.fileUrl}>다운로드</a>
                     </Button>
@@ -325,14 +261,7 @@ const ContractDetailContentView = ({
                 ))}
               </Box>
             ) : (
-              <Box
-                sx={{
-                  flex: 1,
-                  display: "flex",
-                  justifyContent: "center",
-                  alignItems: "center",
-                }}
-              >
+              <Box className="flex-1 flex justify-center items-center">
                 <Typography color="text.secondary">첨부 문서 없음</Typography>
               </Box>
             )}
@@ -341,9 +270,9 @@ const ContractDetailContentView = ({
       </Box>
 
       {/* 하단: 상태 변경 이력 */}
-      <Card sx={{ borderRadius: 2 }}>
+      <Card className="rounded-lg bg-white shadow-sm">
         <CardContent>
-          <Typography variant="h6" fontWeight="bold" gutterBottom>
+          <Typography className="text-xl font-bold text-primary mb-4">
             계약 상태 변경 이력
           </Typography>
           {histories.length > 0 ? (
@@ -352,8 +281,8 @@ const ContractDetailContentView = ({
               bodyList={historyTableData}
               pagination={false}
               noDataMessage="히스토리 없음"
+              className="shadow-none"
               sx={{
-                boxShadow: "none",
                 "& .MuiTableContainer-root": {
                   maxHeight: "300px",
                   overflowY: "auto",
@@ -361,14 +290,7 @@ const ContractDetailContentView = ({
               }}
             />
           ) : (
-            <Box
-              sx={{
-                display: "flex",
-                justifyContent: "center",
-                alignItems: "center",
-                height: "120px",
-              }}
-            >
+            <Box className="flex justify-center items-center h-30">
               <Typography color="text.secondary">히스토리 없음</Typography>
             </Box>
           )}
@@ -385,19 +307,14 @@ const InfoRow = ({
   label: string;
   value: React.ReactNode;
 }) => (
-  <Box display="flex" flexDirection="column" mb={1.5} sx={{ minHeight: 40 }}>
+  <Box className="flex flex-col mb-3 min-h-10">
     <Typography
       color="text.secondary"
-      sx={{
-        fontSize: 13,
-        fontWeight: 500,
-        mb: 0.5,
-        lineHeight: 1.2,
-      }}
+      className="text-xs font-medium mb-1 leading-tight"
     >
       {label}
     </Typography>
-    <Box sx={{ fontWeight: 500, fontSize: 14, lineHeight: 1.3 }}>{value}</Box>
+    <Box className="font-medium text-sm leading-tight">{value}</Box>
   </Box>
 );
 

@@ -109,28 +109,14 @@ const MessageHistoryPage = () => {
   }, [page]);
 
   return (
-    <Box
-      sx={{
-        flexGrow: 1,
-        backgroundColor: "#f5f5f5",
-        minHeight: "100vh",
-      }}
-    >
+    <Box className="grow bg-gray-100 min-h-screen">
       <PageHeader
         title="문자 발송 내역"
         onMobileMenuToggle={onMobileMenuToggle}
       />
 
-      <Box sx={{ p: "20px" }}>
-        <Box
-          sx={{
-            mb: "28px",
-            display: "flex",
-            gap: 1,
-            alignItems: "center",
-            justifyContent: "flex-end",
-          }}
-        >
+      <Box className="p-[20px]">
+        <Box className="mb-[28px] flex justify-end items-center gap-2">
           <Button
             variant="outlined"
             onClick={handleRefresh}
@@ -141,13 +127,7 @@ const MessageHistoryPage = () => {
           </Button>
         </Box>
 
-        <Paper
-          sx={{
-            width: "100%",
-            borderRadius: "8px",
-            boxShadow: "none",
-          }}
-        >
+        <Paper className="w-full rounded-lg shadow-none">
           <Table
             isLoading={isLoading}
             columns={columns}

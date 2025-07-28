@@ -87,15 +87,7 @@ const ContractDetailPageView = ({
       />
 
       {isUpdating && (
-        <Box
-          sx={{
-            width: "100%",
-            position: "fixed",
-            top: 0,
-            left: 0,
-            zIndex: 9999,
-          }}
-        >
+        <Box className="w-full fixed top-0 left-0 z-50">
           <LinearProgress />
         </Box>
       )}

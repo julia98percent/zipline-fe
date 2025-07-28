@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import {
   Dialog,
   DialogTitle,
@@ -36,6 +36,7 @@ const ContractDocumentsEditModal = ({
   const [documents, setDocuments] = useState<ContractDetail["documents"]>([]);
   const [newFiles, setNewFiles] = useState<File[]>([]);
   const [isLoading, setIsLoading] = useState(false);
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
     if (open && contract) {
@@ -59,6 +60,10 @@ const ContractDocumentsEditModal = ({
     }
 
     setNewFiles((prev) => [...prev, ...files]);
+  };
+
+  const handleFileInputClick = () => {
+    fileInputRef.current?.click();
   };
 
   const handleRemoveExistingDocument = (index: number) => {
@@ -220,12 +225,10 @@ const ContractDocumentsEditModal = ({
   return (
     <Dialog open={open} onClose={handleClose} maxWidth="sm" fullWidth>
       <DialogTitle>
-        <Typography variant="h6" fontWeight="bold">
-          첨부 문서 수정
-        </Typography>
+        <Typography className="text-lg font-bold">첨부 문서 수정</Typography>
       </DialogTitle>
       <DialogContent>
-        <Box sx={{ mt: 2 }}>
+        <Box className="mt-4">
           {/* 기존 문서 목록 */}
           {documents.length > 0 && (
             <>
@@ -251,7 +254,7 @@ const ContractDocumentsEditModal = ({
                   </ListItem>
                 ))}
               </List>
-              <Divider sx={{ my: 2 }} />
+              <Divider className="my-4" />
             </>
           )}
 
@@ -282,47 +285,40 @@ const ContractDocumentsEditModal = ({
                   </ListItem>
                 ))}
               </List>
-              <Divider sx={{ my: 2 }} />
+              <Divider className="my-4" />
             </>
           )}
 
           {/* 파일 업로드 버튼 */}
-          <Box sx={{ textAlign: "center", mt: 2 }}>
+          <Box className="text-center mt-4">
             <input
+              ref={fileInputRef}
               accept="*/*"
               style={{ display: "none" }}
-              id="file-upload"
               type="file"
               multiple
               onChange={handleFileUpload}
             />
-            <label htmlFor="file-upload">
-              <Button
-                variant="outlined"
-                startIcon={<UploadFileIcon />}
-                className={"min-w-[200px]"}
-                disabled={isLoading}
-              >
-                파일 추가
-              </Button>
-            </label>
+            <Button
+              variant="outlined"
+              startIcon={<UploadFileIcon />}
+              className={"min-w-[200px]"}
+              disabled={isLoading}
+              onClick={handleFileInputClick}
+            >
+              파일 추가
+            </Button>
             <Typography
               variant="caption"
               display="block"
-              sx={{ mt: 1, color: "text.secondary" }}
+              className="mt-2 text-primary"
             >
               파일당 최대 10MB까지 업로드 가능합니다.
             </Typography>
           </Box>
 
           {documents.length === 0 && newFiles.length === 0 && (
-            <Box
-              sx={{
-                textAlign: "center",
-                py: 4,
-                color: "text.secondary",
-              }}
-            >
+            <Box className="text-center py-8 text-gray-500">
               <Typography>첨부된 문서가 없습니다.</Typography>
             </Box>
           )}

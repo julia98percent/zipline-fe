@@ -26,20 +26,13 @@ const ContractInfoSection = ({ contractInfo }: ContractInfoSectionProps) => {
   };
 
   return (
-    <InfoCard>
-      <Typography variant="h6" fontWeight="bold" gutterBottom>
+    <InfoCard className="rounded-lg bg-white shadow-sm">
+      <Typography className="text-xl font-bold text-primary" gutterBottom>
         계약 정보
       </Typography>
 
       {!contractInfo || contractInfo?.contractUid === null ? (
-        <Box
-          sx={{
-            display: "flex",
-            justifyContent: "center",
-            alignItems: "center",
-            minHeight: "200px",
-          }}
-        >
+        <Box className="flex justify-center items-center min-h-[200px]">
           <Typography color="text.secondary">첨부 문서 없음</Typography>
         </Box>
       ) : (

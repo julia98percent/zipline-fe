@@ -14,8 +14,8 @@ interface FacilityInfoSectionProps {
 
 const FacilityInfoSection = ({ property }: FacilityInfoSectionProps) => {
   return (
-    <InfoCard>
-      <Typography variant="h6" fontWeight="bold" gutterBottom>
+    <InfoCard className="rounded-lg bg-white shadow-sm">
+      <Typography className="text-xl font-bold text-primary" gutterBottom>
         시설 정보
       </Typography>
 
@@ -29,7 +29,7 @@ const FacilityInfoSection = ({ property }: FacilityInfoSectionProps) => {
                 color={property.hasElevator ? "success" : "error"}
                 variant="outlined"
                 size="small"
-                sx={{ fontWeight: 600, fontSize: 13 }}
+                className="font-semibold text-sm"
               />
             </InfoValue>
           </InfoItem>
@@ -55,7 +55,7 @@ const FacilityInfoSection = ({ property }: FacilityInfoSectionProps) => {
                 color={property.petsAllowed ? "success" : "error"}
                 variant="outlined"
                 size="small"
-                sx={{ fontWeight: 600, fontSize: 13 }}
+                className="font-semibold text-sm"
               />
             </InfoValue>
           </InfoItem>

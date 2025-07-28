@@ -74,15 +74,7 @@ const PublicPropertyListPageView = ({
           title="공개 매물 목록"
           onMobileMenuToggle={onMobileMenuToggle}
         />
-        <Box
-          sx={{
-            display: "flex",
-            justifyContent: "center",
-            alignItems: "center",
-            height: "100vh",
-            paddingTop: "80px",
-          }}
-        >
+        <Box className="flex justify-center items-center h-screen pt-20">
           <CircularProgress color="primary" />
         </Box>
       </>
@@ -200,6 +192,7 @@ const PublicPropertyListPageView = ({
           <FormControlLabel
             control={
               <IOSSwitch
+                className="ml-4 mr-2"
                 checked={useMetric}
                 onChange={onMetricToggle}
                 color="primary"

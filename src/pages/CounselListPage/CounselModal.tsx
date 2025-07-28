@@ -131,7 +131,7 @@ function CounselModal({ open, onClose, onSuccess }: CounselModalProps) {
     <Dialog open={open} onClose={onClose} maxWidth="md" fullWidth>
       <DialogTitle>상담 등록</DialogTitle>
       <DialogContent>
-        <Box sx={{ display: "flex", flexDirection: "column", gap: 3, mt: 2 }}>
+        <Box className="flex flex-col gap-3 mt-4">
           <TextField
             label="상담 제목"
             value={title}

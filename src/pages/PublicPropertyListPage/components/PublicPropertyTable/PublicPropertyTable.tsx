@@ -57,7 +57,7 @@ const PublicPropertyTable = ({
   }, [handleIntersection]);
 
   return (
-    <Box ref={scrollRef} sx={{ width: "100%" }}>
+    <Box ref={scrollRef} className="w-full">
       <PublicPropertyTableView
         propertyList={propertyList}
         onSort={onSort}
@@ -68,16 +68,9 @@ const PublicPropertyTable = ({
 
       {/* 로딩 인디케이터 */}
       {isLoading && (
-        <Box
-          sx={{
-            display: "flex",
-            justifyContent: "center",
-            alignItems: "center",
-            padding: "20px",
-          }}
-        >
+        <Box className="flex items-center justify-center p-[20px]">
           <CircularProgress size={24} />
-          <Typography variant="body2" sx={{ ml: 2 }}>
+          <Typography variant="body2" className="ml-4">
             매물을 불러오는 중...
           </Typography>
         </Box>
@@ -97,14 +90,7 @@ const PublicPropertyTable = ({
 
       {/* 모든 데이터 로드 완료 메시지 */}
       {!hasMore && propertyList.length > 0 && (
-        <Box
-          sx={{
-            display: "flex",
-            justifyContent: "center",
-            padding: "20px",
-            color: "text.secondary",
-          }}
-        >
+        <Box className="flex justify-center p-4 text-primary">
           <Typography variant="body2">모든 매물을 불러왔습니다.</Typography>
         </Box>
       )}

@@ -282,7 +282,7 @@ const CustomerTable = ({
   };
 
   return (
-    <Box sx={{ width: "100%", mt: "28px" }}>
+    <Box className="w-full mt-[28px]">
       <Table
         columns={columns}
         bodyList={customerList.map((customer) => ({

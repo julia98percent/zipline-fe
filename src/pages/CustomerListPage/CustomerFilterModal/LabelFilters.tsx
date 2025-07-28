@@ -34,11 +34,11 @@ const LabelFilters = ({
   };
 
   return (
-    <Box sx={{ mb: 3 }}>
-      <Typography variant="h6" sx={{ mb: 2, fontWeight: 600 }}>
+    <Box className="mb-6">
+      <Typography variant="h6" className="mb-4 font-semibold">
         라벨
       </Typography>
-      <Box sx={{ display: "flex", flexWrap: "wrap", gap: 1 }}>
+      <Box className="flex flex-wrap gap-2">
         {labels.map((label) => (
           <Chip
             key={label.uid}

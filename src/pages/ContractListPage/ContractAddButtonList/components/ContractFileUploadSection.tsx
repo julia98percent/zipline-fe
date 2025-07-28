@@ -8,13 +8,18 @@ interface Props {
 const ContractFileUploadSection = ({ files, handleFileChange }: Props) => {
   return (
     <>
-      <MuiButton variant="outlined" component="label" sx={{ my: 2 }} fullWidth>
+      <MuiButton
+        variant="outlined"
+        component="label"
+        className="my-4"
+        fullWidth
+      >
         파일 업로드
         <input type="file" hidden multiple onChange={handleFileChange} />
       </MuiButton>
 
       {files.length > 0 && (
-        <Box sx={{ mb: 2 }}>
+        <Box className="mb-4">
           <Typography variant="body2">업로드된 파일:</Typography>
           <ul>
             {files.map((file, idx) => (

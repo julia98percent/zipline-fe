@@ -18,13 +18,13 @@ export default function AreaRangeSection({
   onSliderChange,
 }: AreaRangeSectionProps) {
   return (
-    <Box sx={{ mb: 3 }}>
-      <Typography variant="subtitle1" gutterBottom sx={{ mb: 2 }}>
+    <Box className="mb-6">
+      <Typography variant="subtitle1" gutterBottom className="mb-4">
         면적 범위
       </Typography>
 
       {/* Exclusive Area Range */}
-      <Box sx={{ mb: 3 }}>
+      <Box className="mb-6">
         <Typography gutterBottom>전용면적 (㎡)</Typography>
         <Slider
           value={[minNetArea || 0, maxNetArea || 200]}
@@ -38,7 +38,7 @@ export default function AreaRangeSection({
       </Box>
 
       {/* Supply Area Range */}
-      <Box sx={{ mb: 3 }}>
+      <Box className="mb-6">
         <Typography gutterBottom>공급면적 (㎡)</Typography>
         <Slider
           value={[minTotalArea || 0, maxTotalArea || 200]}

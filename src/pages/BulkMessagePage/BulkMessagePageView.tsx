@@ -48,20 +48,13 @@ const BulkMessagePage = ({
   }>({ open: false, message: "", severity: "success" });
 
   return (
-    <Box
-      sx={{
-        p: 0,
-        pb: 3,
-        minHeight: "100vh",
-        backgroundColor: "#f5f5f5",
-      }}
-    >
+    <Box className="p-0 pb-6 min-h-screen bg-gray-100">
       <PageHeader
         title="단체 문자 발송"
         onMobileMenuToggle={onMobileMenuToggle}
       />
 
-      <Box sx={{ p: 3 }}>
+      <Box className="p-6">
         <div className="flex flex-col lg:flex-row gap-7">
           {/* 왼쪽 영역: 문자 템플릿 선택 및 내용 */}
           <div className="flex-1">
@@ -98,21 +91,17 @@ const BulkMessagePage = ({
         autoHideDuration={2000}
         onClose={() => setToast({ ...toast, open: false })}
         anchorOrigin={{ vertical: "bottom", horizontal: "center" }}
-        sx={{ bottom: "24px !important" }}
+        className="!bottom-6"
       >
         <Alert
           onClose={() => setToast({ ...toast, open: false })}
           severity={toast.severity}
+          className={`w-full min-w-60 rounded-lg border ${
+            toast.severity === "success"
+              ? "bg-blue-50 text-blue-700 border-blue-700"
+              : "bg-red-50 text-red-700 border-red-700"
+          }`}
           sx={{
-            width: "100%",
-            minWidth: "240px",
-            borderRadius: "8px",
-            backgroundColor:
-              toast.severity === "success" ? "#F6F8FF" : "#FFF5F5",
-            color: toast.severity === "success" ? "#164F9E" : "#D32F2F",
-            border: `1px solid ${
-              toast.severity === "success" ? "#164F9E" : "#D32F2F"
-            }`,
             "& .MuiAlert-icon": {
               color: toast.severity === "success" ? "#164F9E" : "#D32F2F",
             },

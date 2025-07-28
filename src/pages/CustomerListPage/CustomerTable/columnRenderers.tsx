@@ -75,7 +75,7 @@ export const renderRolesColumn = (
 
   if (editingCustomer?.isEditing) {
     return (
-      <Box sx={{ display: "flex", flexWrap: "wrap", gap: 1 }}>
+      <Box className="flex flex-wrap gap-2">
         <Chip
           label="임차인"
           size="small"
@@ -83,10 +83,10 @@ export const renderRolesColumn = (
             e.stopPropagation();
             onEditChange(customer.uid, "tenant", !editingCustomer.tenant);
           }}
+          className="cursor-pointer"
           sx={{
             backgroundColor: editingCustomer.tenant ? "#FCE8D4" : "#F5F5F5",
             color: editingCustomer.tenant ? "#E67E00" : "#757575",
-            cursor: "pointer",
             "&:hover": {
               backgroundColor: editingCustomer.tenant ? "#FCE8D4" : "#E0E0E0",
             },
@@ -99,10 +99,10 @@ export const renderRolesColumn = (
             e.stopPropagation();
             onEditChange(customer.uid, "landlord", !editingCustomer.landlord);
           }}
+          className="cursor-pointer"
           sx={{
             backgroundColor: editingCustomer.landlord ? "#FCDADA" : "#F5F5F5",
             color: editingCustomer.landlord ? "#D63939" : "#757575",
-            cursor: "pointer",
             "&:hover": {
               backgroundColor: editingCustomer.landlord ? "#FCDADA" : "#E0E0E0",
             },
@@ -115,10 +115,10 @@ export const renderRolesColumn = (
             e.stopPropagation();
             onEditChange(customer.uid, "buyer", !editingCustomer.buyer);
           }}
+          className="cursor-pointer"
           sx={{
             backgroundColor: editingCustomer.buyer ? "#D4EDDC" : "#F5F5F5",
             color: editingCustomer.buyer ? "#0E8A3E" : "#757575",
-            cursor: "pointer",
             "&:hover": {
               backgroundColor: editingCustomer.buyer ? "#D4EDDC" : "#E0E0E0",
             },
@@ -131,10 +131,10 @@ export const renderRolesColumn = (
             e.stopPropagation();
             onEditChange(customer.uid, "seller", !editingCustomer.seller);
           }}
+          className="cursor-pointer"
           sx={{
             backgroundColor: editingCustomer.seller ? "#D6E6F9" : "#F5F5F5",
             color: editingCustomer.seller ? "#1B64C2" : "#757575",
-            cursor: "pointer",
             "&:hover": {
               backgroundColor: editingCustomer.seller ? "#D6E6F9" : "#E0E0E0",
             },
@@ -145,33 +145,33 @@ export const renderRolesColumn = (
   }
 
   return (
-    <Box sx={{ display: "flex", gap: 1 }}>
+    <Box className="flex gap-1">
       {customer.tenant && (
         <Chip
           label="임차인"
           size="small"
-          sx={{ backgroundColor: "#FEF5EB", color: "#F2994A" }}
+          className="bg-[#FEF5EB] text-[#F2994A]"
         />
       )}
       {customer.landlord && (
         <Chip
           label="임대인"
           size="small"
-          sx={{ backgroundColor: "#FDEEEE", color: "#EB5757" }}
+          className="bg-[#FDEEEE] text-[#EB5757]"
         />
       )}
       {customer.buyer && (
         <Chip
           label="매수자"
           size="small"
-          sx={{ backgroundColor: "#E9F7EF", color: "#219653" }}
+          className="bg-[#E9F7EF] text-[#219653]"
         />
       )}
       {customer.seller && (
         <Chip
           label="매도자"
           size="small"
-          sx={{ backgroundColor: "#EBF2FC", color: "#2F80ED" }}
+          className="bg-[#EBF2FC] text-[#2F80ED]"
         />
       )}
     </Box>
@@ -376,7 +376,7 @@ export const renderLabelsColumn = (
         renderOption={(props, option) => (
           <Box component="li" {...props}>
             {option.uid === NEW_LABEL_TEMP_UID ? (
-              <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
+              <Box className="flex items-center gap-1">
                 <span>"{option.name}" 새 라벨 생성</span>
                 <Chip
                   label="NEW"
@@ -395,7 +395,7 @@ export const renderLabelsColumn = (
   }
 
   return (
-    <Box sx={{ display: "flex", flexWrap: "wrap", gap: 1 }}>
+    <Box className="flex flex-wrap gap-1">
       {customer.labels && customer.labels.length > 0
         ? customer.labels.map((label) => (
             <Chip
@@ -421,7 +421,7 @@ export const renderActionsColumn = (
   const editingCustomer = editingCustomers[customer.uid];
 
   return (
-    <Box sx={{ display: "flex", gap: 1, justifyContent: "center" }}>
+    <Box className="flex gap-2 justify-center">
       {editingCustomer?.isEditing ? (
         <>
           <IconButton
@@ -430,9 +430,9 @@ export const renderActionsColumn = (
               onEditSave(customer.uid);
             }}
             size="small"
-            sx={{ zIndex: 10 }}
+            className="z-10"
           >
-            <DoneIcon sx={{ color: "#219653" }} />
+            <DoneIcon style={{ color: "#219653" }} />
           </IconButton>
           <IconButton
             onClick={(e) => {
@@ -440,9 +440,9 @@ export const renderActionsColumn = (
               onEditCancel(customer.uid);
             }}
             size="small"
-            sx={{ zIndex: 10 }}
+            className="z-10"
           >
-            <CloseIcon sx={{ color: "#EB5757" }} />
+            <CloseIcon style={{ color: "#EB5757" }} />
           </IconButton>
         </>
       ) : (
@@ -453,9 +453,9 @@ export const renderActionsColumn = (
               onEditStart(customer);
             }}
             size="small"
-            sx={{ zIndex: 100 }}
+            className="z-50"
           >
-            <EditIcon sx={{ color: "#164F9E" }} />
+            <EditIcon style={{ color: "#164F9E" }} />
           </IconButton>
           <IconButton
             onClick={(e) => {
@@ -463,9 +463,9 @@ export const renderActionsColumn = (
               onDelete(customer);
             }}
             size="small"
-            sx={{ zIndex: 100 }}
+            className="z-50"
           >
-            <DeleteIcon sx={{ color: "#E53535" }} />
+            <DeleteIcon style={{ color: "#E53535" }} />
           </IconButton>
         </>
       )}

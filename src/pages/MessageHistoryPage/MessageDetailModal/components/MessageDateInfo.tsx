@@ -20,9 +20,9 @@ function MessageDateInfo({
 
   return (
     <>
-      <Stack sx={{ display: "grid", gridAutoFlow: "column" }}>
+      <Stack className="grid grid-flow-col">
         {dateInfo.map(({ label, value }) => (
-          <Stack key={label} sx={{ alignItems: "center" }} spacing={1}>
+          <Stack key={label} className="items-center" spacing={1}>
             <Typography variant="body2">{label}</Typography>
             <Typography variant="body2">{value}</Typography>
           </Stack>

@@ -1,7 +1,12 @@
+import { useState, useEffect } from "react";
 import Select, { MenuItem } from "@components/Select";
 import TextField from "@components/TextField";
+import RegionSelector from "@components/RegionSelector";
+import { SelectChangeEvent } from "@mui/material";
 import { formatPhoneNumber } from "@utils/numberUtil";
 import { Customer } from "@ts/customer";
+import { Region } from "@ts/region";
+import { fetchSido, fetchSigungu, fetchDong } from "@apis/regionService";
 
 interface CustomerBasicInfoProps {
   customer: Customer;
@@ -19,14 +24,98 @@ const CustomerBasicInfo = ({
   editedCustomer,
   onInputChange,
 }: CustomerBasicInfoProps) => {
+  const [regions, setRegions] = useState<Region[]>([]);
+  const [sigunguOptions, setSigunguOptions] = useState<Region[]>([]);
+  const [dongOptions, setDongOptions] = useState<Region[]>([]);
+  const [selectedSido, setSelectedSido] = useState<number>(0);
+  const [selectedGu, setSelectedGu] = useState<number>(0);
+  const [selectedDong, setSelectedDong] = useState<number>(0);
+
+  useEffect(() => {
+    const loadRegions = async () => {
+      try {
+        const sidoData = await fetchSido();
+        setRegions(sidoData);
+      } catch (error) {
+        console.error("시/도 데이터 로드 실패:", error);
+      }
+    };
+    loadRegions();
+  }, []);
+
+  useEffect(() => {
+    if (selectedSido) {
+      const loadSigungu = async () => {
+        try {
+          const sigunguData = await fetchSigungu(selectedSido);
+          setSigunguOptions(sigunguData);
+          setSelectedGu(0);
+          setDongOptions([]);
+        } catch (error) {
+          console.error("시/군/구 데이터 로드 실패:", error);
+        }
+      };
+      loadSigungu();
+    } else {
+      setSigunguOptions([]);
+      setDongOptions([]);
+      setSelectedGu(0);
+    }
+  }, [selectedSido]);
+
+  useEffect(() => {
+    if (selectedGu) {
+      const loadDong = async () => {
+        try {
+          const dongData = await fetchDong(selectedGu);
+          setDongOptions(dongData);
+          setSelectedDong(0);
+        } catch (error) {
+          console.error("동 데이터 로드 실패:", error);
+        }
+      };
+      loadDong();
+    } else {
+      setDongOptions([]);
+      setSelectedDong(0);
+    }
+  }, [selectedGu]);
+
+  const handleSidoChange = (event: SelectChangeEvent<number>) => {
+    const value = Number(event.target.value);
+    setSelectedSido(value);
+    const selectedRegion = regions.find((r) => r.cortarNo === value);
+    if (selectedRegion) {
+      onInputChange("preferredRegion", selectedRegion.cortarName);
+    }
+  };
+
+  const handleGuChange = (event: SelectChangeEvent<number>) => {
+    const value = Number(event.target.value);
+    setSelectedGu(value);
+    const selectedRegion = sigunguOptions.find((r) => r.cortarNo === value);
+    if (selectedRegion) {
+      onInputChange("preferredRegion", selectedRegion.cortarName);
+    }
+  };
+
+  const handleDongChange = (event: SelectChangeEvent<number>) => {
+    const value = Number(event.target.value);
+    setSelectedDong(value);
+    const selectedRegion = dongOptions.find((r) => r.cortarNo === value);
+    if (selectedRegion) {
+      onInputChange("preferredRegion", selectedRegion.cortarName);
+    }
+  };
+
   const formatBirthDay = (birthday: string | null) => {
     if (!birthday) return "-";
     return birthday.replace(/(\d{4})(\d{2})(\d{2})/, "$1.$2.$3");
   };
 
   return (
-    <div className="flex-grow bg-white p-6 rounded-lg mt-2">
-      <h6 className="mb-4 text-[#164F9E] font-bold text-lg">기본 정보</h6>
+    <div className="flex-grow p-6 rounded-lg bg-white shadow-sm mt-2">
+      <h6 className="mb-4 font-bold text-xl text-primary">기본 정보</h6>
       <div className="flex flex-wrap gap-4">
         <div className="flex-[0_0_calc(50%-8px)]">
           <div className="text-sm text-gray-600 mb-1">이름</div>
@@ -73,34 +162,31 @@ const CustomerBasicInfo = ({
             <div className="text-base">{customer.telProvider || "-"}</div>
           )}
         </div>
-        <div className="flex-[0_0_calc(50%-8px)]">
+        <div className="flex-[0_0_calc(100%)]">
           <div className="text-sm text-gray-600 mb-1">희망 지역</div>
           {isEditing ? (
-            <Select
-              value={editedCustomer?.preferredRegion || ""}
-              onChange={(e) => onInputChange("preferredRegion", e.target.value)}
-              size="small"
-              showEmptyOption
-              emptyText="희망 지역을 선택하세요"
-            >
-              <MenuItem value="서울">서울</MenuItem>
-              <MenuItem value="부산">부산</MenuItem>
-              <MenuItem value="대구">대구</MenuItem>
-              <MenuItem value="인천">인천</MenuItem>
-              <MenuItem value="광주">광주</MenuItem>
-              <MenuItem value="대전">대전</MenuItem>
-              <MenuItem value="울산">울산</MenuItem>
-              <MenuItem value="세종">세종</MenuItem>
-              <MenuItem value="경기">경기</MenuItem>
-              <MenuItem value="강원">강원</MenuItem>
-              <MenuItem value="충북">충북</MenuItem>
-              <MenuItem value="충남">충남</MenuItem>
-              <MenuItem value="전북">전북</MenuItem>
-              <MenuItem value="전남">전남</MenuItem>
-              <MenuItem value="경북">경북</MenuItem>
-              <MenuItem value="경남">경남</MenuItem>
-              <MenuItem value="제주">제주</MenuItem>
-            </Select>
+            <div className="grid grid-cols-3 gap-2">
+              <RegionSelector
+                label="시/도"
+                value={selectedSido}
+                regions={regions}
+                onChange={handleSidoChange}
+              />
+              <RegionSelector
+                label="시/군/구"
+                value={selectedGu}
+                regions={sigunguOptions}
+                onChange={handleGuChange}
+                disabled={!selectedSido}
+              />
+              <RegionSelector
+                label="동"
+                value={selectedDong}
+                regions={dongOptions}
+                onChange={handleDongChange}
+                disabled={!selectedGu}
+              />
+            </div>
           ) : (
             <div className="text-base">{customer.preferredRegion || "-"}</div>
           )}

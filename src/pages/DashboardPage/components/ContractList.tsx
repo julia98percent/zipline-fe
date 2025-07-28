@@ -8,9 +8,10 @@ import {
   CircularProgress,
   Tooltip,
 } from "@mui/material";
+import { useNavigate } from "react-router-dom";
 import { formatDate } from "@utils/dateUtil";
 import { Contract } from "@ts/contract";
-import Table, { ColumnConfig } from "@components/Table";
+import Table, { ColumnConfig, RowData } from "@components/Table";
 import HelpOutlineIcon from "@mui/icons-material/HelpOutline";
 import dayjs from "dayjs";
 
@@ -30,6 +31,12 @@ const ContractList = ({
   contractLoading,
   handleContractTabChange,
 }: ContractListProps) => {
+  const navigate = useNavigate();
+
+  const handleRowClick = (rowData: RowData) => {
+    navigate(`/contracts/${rowData.id}`);
+  };
+
   const filteredAndSortedContracts = useMemo(() => {
     if (!currentContractList || currentContractList.length === 0) {
       return [];
@@ -105,69 +112,44 @@ const ContractList = ({
 
   const getNoDataMessage = () => {
     if (contractTab === "expiring") {
-      return "6개월 이내 만료 예정인 계약이 없습니다";
+      return "6개월 이내 만료 예정인 계약이 없습니다.";
     } else {
-      return "최근 계약이 없습니다";
+      return "최근 계약이 없습니다.";
     }
   };
 
   return (
-    <Card
-      sx={{
-        display: "flex",
-        flexDirection: "column",
-        borderRadius: "6px",
-        backgroundColor: "#fff",
-        minHeight: "400px",
-        height: "fit-content",
-        boxShadow: "none",
-      }}
-    >
-      <Box
-        sx={{
-          p: 2,
-          borderBottom: "1px solid #e0e0e0",
-        }}
-      >
-        <Box
-          sx={{
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "space-between",
-            mb: 1,
-          }}
-        >
-          <Typography variant="h6" sx={{ fontWeight: 600, color: "#164f9e" }}>
+    <Card className="flex flex-col rounded-md bg-white min-h-96 h-fit shadow-sm">
+      <Box className="p-4 border-b border-gray-300">
+        <Box className="flex items-center justify-between mb-2 ">
+          <Typography variant="h6" className="font-semibold text-primary">
             계약 목록
           </Typography>
         </Box>
         <Tabs
           value={contractTab}
           onChange={handleContractTabChange}
+          className="min-h-auto"
           sx={{
-            minHeight: "auto",
             "& .MuiTab-root": {
               minHeight: "32px",
               fontSize: "14px",
               padding: "6px 12px",
             },
-            "& .MuiTabs-indicator": {
-              backgroundColor: "primary.main",
-            },
           }}
         >
           <Tab
+            className="text-sm"
             label={
               <div className="flex items-center gap-1">
-                <p style={{ color: "inherit" }}>만료 예정 계약</p>
+                <p className="text-inherit">만료 예정 계약</p>
                 <Tooltip title="6개월 이내 만료 예정인 계약이 표시됩니다.">
-                  <HelpOutlineIcon sx={{ fontSize: 16, color: "inherit" }} />
+                  <HelpOutlineIcon className="text-inherit text-base" />
                 </Tooltip>
               </div>
             }
             value="expiring"
             sx={{
-              fontSize: "13px",
               "&.Mui-selected": {
                 color: "primary.main",
               },
@@ -176,8 +158,8 @@ const ContractList = ({
           <Tab
             label="최근 계약"
             value="recent"
+            className="text-sm"
             sx={{
-              fontSize: "13px",
               "&.Mui-selected": {
                 color: "primary.main",
               },
@@ -185,24 +167,19 @@ const ContractList = ({
           />
         </Tabs>
       </Box>
-      <Box sx={{ flex: 1, overflow: "auto" }}>
+      <Box className="flex-1 overflow-auto">
         {contractLoading ? (
-          <Box
-            sx={{
-              display: "flex",
-              justifyContent: "center",
-              alignItems: "center",
-              height: "200px",
-            }}
-          >
+          <Box className="flex justify-center items-center h-[200px]">
             <CircularProgress />
           </Box>
         ) : (
           <Table
             columns={columns}
             bodyList={tableData}
+            handleRowClick={handleRowClick}
             pagination={false}
             noDataMessage={getNoDataMessage()}
+            className="shadow-none!"
             sx={{
               "& .MuiTableCell-head": {
                 fontSize: "13px",
@@ -213,10 +190,6 @@ const ContractList = ({
                 fontSize: "12px",
                 padding: "8px 16px",
               },
-              "& .MuiTableRow-root:hover": {
-                backgroundColor: "rgba(22, 79, 158, 0.04)",
-              },
-              boxShadow: "none",
             }}
           />
         )}

@@ -135,25 +135,8 @@ const PropertyAddModalView = ({
 }: PropertyAddModalViewProps) => {
   return (
     <Modal open={open} onClose={onClose}>
-      <Box
-        sx={{
-          position: "absolute",
-          top: "50%",
-          left: "50%",
-          transform: "translate(-50%, -50%)",
-          width: "50vw",
-          backgroundColor: "white",
-          boxShadow: 24,
-          borderRadius: 2,
-          p: 4,
-          maxHeight: "80vh",
-          overflowY: "auto",
-        }}
-      >
-        <Typography
-          variant="h6"
-          sx={{ color: "#164F9E", fontWeight: "bold", mb: 1.5 }}
-        >
+      <Box className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-1/2 bg-white shadow-2xl rounded-lg p-4 max-h-4/5 overflow-y-auto">
+        <Typography variant="h6" className="text-primary font-bold mb-6">
           매물 등록
         </Typography>
         {/* 고객 선택 */}
@@ -163,7 +146,7 @@ const PropertyAddModalView = ({
           value={customerUid !== null ? customerUid.toString() : ""}
           onChange={(e) => onCustomerChange(Number(e.target.value))}
           fullWidth
-          sx={{ mt: 2 }}
+          className="mt-4"
         >
           {customerOptions.map((customer) => (
             <MenuItem key={customer.uid} value={customer.uid.toString()}>
@@ -178,7 +161,7 @@ const PropertyAddModalView = ({
           variant="outlined"
           disabled
           fullWidth
-          sx={{ mt: 2 }}
+          className="mt-4"
         />{" "}
         <DaumPost setAddress={onDaumPostAddressChange} />
         <TextField
@@ -198,10 +181,10 @@ const PropertyAddModalView = ({
             />
           }
           label="계약 자동 생성하기"
-          sx={{ mt: 2 }}
+          className="mt-4"
         />
         {/* 거래 유형 */}
-        <Typography variant="subtitle1" sx={{ mt: 2 }}>
+        <Typography variant="subtitle1" className="mt-4">
           거래 유형
         </Typography>
         <RadioGroup
@@ -219,7 +202,7 @@ const PropertyAddModalView = ({
             label="매매 가격"
             value={price ?? ""}
             onChange={onPriceChange}
-            sx={{ mt: 2 }}
+            className="mt-4"
             fullWidth
             placeholder="숫자만 입력하세요"
             error={!!priceError}
@@ -231,7 +214,7 @@ const PropertyAddModalView = ({
             label="보증금"
             value={deposit ?? ""}
             onChange={onDepositChange}
-            sx={{ mt: 2 }}
+            className="mt-4"
             fullWidth
           />
         )}
@@ -241,20 +224,20 @@ const PropertyAddModalView = ({
               label="보증금"
               value={deposit ?? ""}
               onChange={onDepositChange}
-              sx={{ mt: 2 }}
+              className="mt-4"
               fullWidth
             />
             <TextField
               label="월세"
               value={monthlyRent ?? ""}
               onChange={onMonthlyRentChange}
-              sx={{ mt: 2 }}
+              className="mt-4"
               fullWidth
             />
           </>
         )}
         {/* 부동산 유형 */}
-        <Typography variant="subtitle1" sx={{ mt: 2 }}>
+        <Typography variant="subtitle1" className="mt-4">
           부동산 유형 선택
         </Typography>
         <RadioGroup
@@ -287,7 +270,7 @@ const PropertyAddModalView = ({
           label="공급 면적"
           value={totalArea}
           onChange={onTotalAreaChange}
-          sx={{ mt: 2 }}
+          className="mt-4"
           fullWidth
           placeholder="숫자만 입력하세요"
           error={!!totalAreaError}
@@ -297,7 +280,7 @@ const PropertyAddModalView = ({
           label="전용 면적"
           value={netArea ?? ""}
           onChange={onNetAreaChange}
-          sx={{ mt: 2 }}
+          className="mt-4"
           fullWidth
           placeholder="숫자만 입력하세요"
           error={!!netAreaError}
@@ -307,14 +290,14 @@ const PropertyAddModalView = ({
           label="층수"
           value={floor ?? ""}
           onChange={onFloorChange}
-          sx={{ mt: 2 }}
+          className="mt-4"
           fullWidth
           placeholder="숫자만 입력하세요"
           error={!!floorError}
           helperText={floorError ?? undefined}
         />
         {/* 반려동물 여부 */}
-        <Typography variant="subtitle1" sx={{ mt: 2 }}>
+        <Typography variant="subtitle1" className="mt-4">
           반려동물 여부
         </Typography>
         <RadioGroup
@@ -326,7 +309,7 @@ const PropertyAddModalView = ({
           <FormControlLabel value="false" control={<Radio />} label="불가" />
         </RadioGroup>
         {/* 엘리베이터 여부 */}
-        <Typography variant="subtitle1" sx={{ mt: 2 }}>
+        <Typography variant="subtitle1" className="mt-4">
           건물 엘리베이터 여부
         </Typography>
         <RadioGroup
@@ -358,7 +341,7 @@ const PropertyAddModalView = ({
           label="건축년도"
           value={constructionYear ?? ""}
           onChange={onConstructionYearChange}
-          sx={{ mt: 2 }}
+          className="mt-4"
           fullWidth
           placeholder="숫자만 입력하세요 ex)2010"
           error={!!constructionYearError}
@@ -369,7 +352,7 @@ const PropertyAddModalView = ({
           label="주차 가능 대수"
           value={parkingCapacity}
           onChange={onParkingCapacityChange}
-          sx={{ mt: 2 }}
+          className="mt-4"
           fullWidth
           placeholder="숫자만 입력하세요"
           error={!!parkingCapacityError}
@@ -380,7 +363,7 @@ const PropertyAddModalView = ({
           label="특이사항"
           value={details ?? ""}
           onChange={onDetailsChange}
-          sx={{ mt: 2 }}
+          className="mt-4"
           fullWidth
         />
         {/* 등록 버튼 */}

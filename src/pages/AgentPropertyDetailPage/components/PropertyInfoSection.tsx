@@ -59,8 +59,8 @@ const PropertyInfoSection = ({ property }: PropertyInfoSectionProps) => {
   };
 
   return (
-    <InfoCard>
-      <Typography variant="h6" fontWeight="bold" gutterBottom>
+    <InfoCard className="rounded-lg bg-white shadow-sm">
+      <Typography className="text-xl font-bold text-primary" gutterBottom>
         매물 정보
       </Typography>
 
@@ -81,11 +81,10 @@ const PropertyInfoSection = ({ property }: PropertyInfoSectionProps) => {
               <Chip
                 label={getTransactionType(property.type)}
                 size="small"
+                className="font-medium text-sm"
                 sx={{
                   backgroundColor: getTypeChipColor(property.type),
                   color: getTypeTextColor(property.type),
-                  fontWeight: 500,
-                  fontSize: 13,
                 }}
               />
             </InfoValue>
@@ -100,11 +99,10 @@ const PropertyInfoSection = ({ property }: PropertyInfoSectionProps) => {
               <Chip
                 label={getCategoryName(property.realCategory)}
                 size="small"
+                className="font-medium text-sm"
                 sx={{
                   backgroundColor: getCategoryChipColor(property.realCategory),
                   color: getCategoryTextColor(property.realCategory),
-                  fontWeight: 500,
-                  fontSize: 13,
                 }}
               />
             </InfoValue>

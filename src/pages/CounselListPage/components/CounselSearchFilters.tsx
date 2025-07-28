@@ -78,19 +78,12 @@ const CounselSearchFilters = ({
                 slotProps={{
                   textField: {
                     size: "small",
-
                     sx: {
                       backgroundColor: "white",
                       width: "170px",
                       "& .MuiOutlinedInput-root": {
                         "& fieldset": {
                           borderColor: "#E0E0E0",
-                        },
-                        "&:hover fieldset": {
-                          borderColor: "#164F9E",
-                        },
-                        "&.Mui-focused fieldset": {
-                          borderColor: "#164F9E",
                         },
                       },
                     },
@@ -115,12 +108,6 @@ const CounselSearchFilters = ({
                       "& .MuiOutlinedInput-root": {
                         "& fieldset": {
                           borderColor: "#E0E0E0",
-                        },
-                        "&:hover fieldset": {
-                          borderColor: "#164F9E",
-                        },
-                        "&.Mui-focused fieldset": {
-                          borderColor: "#164F9E",
                         },
                       },
                     },

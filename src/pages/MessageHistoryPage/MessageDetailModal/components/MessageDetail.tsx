@@ -1,9 +1,8 @@
 import { useState } from "react";
-import { Box, Typography, Stack } from "@mui/material";
+import { Box, Typography, Stack, IconButton } from "@mui/material";
 import { MessageDetail as MessageDetailType } from "@ts/message";
 import { getStatusMessage, getErrorMessage } from "@utils/messageUtil";
 import { formatDate } from "@utils/dateUtil";
-import Button from "@components/Button";
 import { NavigateBefore, NavigateNext } from "@mui/icons-material";
 
 function MessageDetail({ messageList }: { messageList: MessageDetailType[] }) {
@@ -19,14 +18,7 @@ function MessageDetail({ messageList }: { messageList: MessageDetailType[] }) {
 
   return (
     <>
-      <Box
-        sx={{
-          padding: 2,
-          border: "1px solid #ddd",
-          borderRadius: 1,
-          backgroundColor: "#f9f9f9",
-        }}
-      >
+      <Box className="p-4 bg-white rounded-lg shadow-md">
         <Stack spacing={1}>
           {messageList.length > 0 && (
             <>
@@ -71,30 +63,20 @@ function MessageDetail({ messageList }: { messageList: MessageDetailType[] }) {
           )}
         </Stack>
       </Box>
-      <Box
-        sx={{
-          display: "flex",
-          justifyContent: "space-between",
-          alignItems: "center",
-        }}
-      >
-        <Button
-          startIcon={<NavigateBefore />}
-          onClick={handlePrevious}
-          disabled={currentIndex === 0}
-        >
-          이전
-        </Button>
+      <Box className="flex justify-between items-center">
+        <IconButton onClick={handlePrevious} disabled={currentIndex === 0}>
+          <NavigateBefore />
+        </IconButton>
+
         <Typography variant="body2">
           {currentIndex + 1} / {messageList.length}
         </Typography>
-        <Button
-          endIcon={<NavigateNext />}
+        <IconButton
           onClick={handleNext}
           disabled={currentIndex === messageList.length - 1}
         >
-          다음
-        </Button>
+          <NavigateNext />
+        </IconButton>
       </Box>
     </>
   );

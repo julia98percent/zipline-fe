@@ -160,7 +160,7 @@ const PreCounselDetailModal = ({
         >
           {isRegistering ? "등록 중..." : "고객 등록하기"}
         </Button>
-        <Button onClick={onClose} variant="contained" color="primary">
+        <Button onClick={onClose} color="info" variant="outlined">
           닫기
         </Button>
       </DialogActions>

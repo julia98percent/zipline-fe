@@ -26,16 +26,9 @@ export default function LabelSection({
   onSetNewLabelName,
 }: LabelSectionProps) {
   return (
-    <Box sx={{ mb: 4 }}>
-      <Box
-        sx={{
-          display: "flex",
-          justifyContent: "space-between",
-          alignItems: "center",
-          mb: 2,
-        }}
-      >
-        <Typography variant="h6" sx={{ fontWeight: "bold" }}>
+    <Box className="mb-8">
+      <Box className="flex justify-between items-center mb-4">
+        <Typography variant="h6" className="font-bold">
           라벨 선택
         </Typography>
         <Button
@@ -49,7 +42,7 @@ export default function LabelSection({
 
       {/* 라벨 추가 입력 필드 */}
       {isAddingLabel && (
-        <Box sx={{ display: "flex", gap: 1, mb: 2 }}>
+        <Box className="flex gap-2 mb-4">
           <TextField
             size="small"
             value={newLabelName}
@@ -77,7 +70,7 @@ export default function LabelSection({
       )}
 
       {/* 라벨 목록 */}
-      <Box sx={{ display: "flex", flexWrap: "wrap", gap: 1 }}>
+      <Box className="flex flex-wrap gap-2">
         {labels.map((label) => (
           <Chip
             key={label.uid}

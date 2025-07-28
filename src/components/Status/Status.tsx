@@ -1,45 +1,26 @@
-import { Box } from "@mui/material";
-
 interface Props {
   color?: "GRAY" | "GREEN" | "RED";
   text?: string;
 }
 
-const getStatusColor = (status: string) => {
+const getStatusStyle = (status: string) => {
   switch (status) {
     case "GREEN":
-      return {
-        bg: "#E8F5E9",
-        text: "#2E7D32",
-      };
+      return "bg-green-50 text-green-800";
     case "RED":
-      return {
-        bg: "#FFEBEE",
-        text: "#C62828",
-      };
+      return "bg-red-50 text-red-700";
     case "GRAY":
     default:
-      return {
-        bg: "#FFF3E0",
-        text: "#E65100",
-      };
+      return "bg-orange-50 text-orange-700";
   }
 };
 
 function Status({ color = "GRAY", text }: Props) {
   return (
-    <Box
-      sx={{
-        color: getStatusColor(color).text,
-        backgroundColor: getStatusColor(color).bg,
-        py: 0.5,
-        px: 1,
-        borderRadius: 1,
-        display: "inline-block",
-      }}
-    >
-      <span>{text}</span>
-    </Box>
+    <span className={`py-1 px-2 rounded inline-block ${getStatusStyle(color)}`}>
+      {text}
+    </span>
   );
 }
+
 export default Status;

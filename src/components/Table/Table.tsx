@@ -42,6 +42,7 @@ interface Props<T extends RowData> {
   >;
   noDataMessage?: string;
   sx?: SxProps;
+  className?: string;
   pagination?: boolean;
   stickyHeader?: boolean;
   maxHeight?: string | number;
@@ -64,6 +65,7 @@ function Table<T extends RowData>({
   handleChangeRowsPerPage,
   noDataMessage = "데이터가 없습니다.",
   sx,
+  className,
   pagination = true,
   stickyHeader = false,
   maxHeight,
@@ -92,14 +94,8 @@ function Table<T extends RowData>({
   };
 
   return (
-    <Paper
-      sx={{
-        borderRadius: "8px",
-        boxShadow: "0 2px 6px rgba(0, 0, 0, 0.05)",
-        ...sx,
-      }}
-    >
-      <TableContainer sx={{ maxHeight: maxHeight }}>
+    <Paper className={`rounded-lg shadow-sm ${className || ""}`} sx={sx}>
+      <TableContainer style={{ maxHeight: maxHeight }}>
         <MuiTable stickyHeader={stickyHeader}>
           <TableHead>
             <TableRow>
@@ -107,7 +103,7 @@ function Table<T extends RowData>({
                 <TableCell
                   key={column.key}
                   align={column.align}
-                  sx={{
+                  style={{
                     width: column.width,
                     minWidth: column.minWidth,
                   }}
@@ -123,7 +119,7 @@ function Table<T extends RowData>({
                 <TableCell
                   colSpan={finalColumns.length}
                   align="center"
-                  sx={{ py: 3 }}
+                  className="py-6"
                 >
                   <CircularProgress size={24} />
                 </TableCell>
@@ -142,7 +138,9 @@ function Table<T extends RowData>({
                   onClick={(event) => {
                     handleRowClick?.(rowData, index, event);
                   }}
-                  sx={{ cursor: handleRowClick ? "pointer" : "default" }}
+                  className={
+                    handleRowClick ? "cursor-pointer" : "cursor-default"
+                  }
                 >
                   {finalColumns.map((column) => (
                     <TableCell key={column.key} align={column.align}>

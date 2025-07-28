@@ -109,8 +109,8 @@ const AgentPropertyListPageView = ({
       <div className="p-5">
         {/* 상단 필터 바 */}
         <div className="flex flex-col gap-4 bg-white rounded-lg p-3 shadow-sm mb-5">
-          {/* 모바일 필터 레이아웃 (md 미만) */}
-          <div className="md:hidden space-y-3">
+          {/* 모바일 필터 레이아웃 (lg: 미만) */}
+          <div className="lg:hidden space-y-3">
             {/* 첫 번째 줄: 주소 선택 (시/도, 시/군/구, 동) */}
             <div className="grid grid-cols-3 gap-2">
               <RegionSelector
@@ -142,10 +142,8 @@ const AgentPropertyListPageView = ({
                 value={searchParams.category || ""}
                 onChange={onCategoryChange}
                 displayEmpty
-                showEmptyOption={false}
                 aria-label="카테고리"
               >
-                <MenuItem value="">아파트</MenuItem>
                 {categoryOptions.map((opt) => (
                   <MenuItem key={opt.value} value={opt.value || ""}>
                     {opt.label}
@@ -191,32 +189,34 @@ const AgentPropertyListPageView = ({
             </div>
           </div>
 
-          {/* 데스크톱/태블릿 필터 레이아웃 (md 이상) */}
-          <div className="hidden md:block space-y-4">
+          {/* 데스크톱/태블릿 필터 레이아웃 (lg 이상) */}
+          <div className="hidden lg:block space-y-4">
             {/* 첫 번째 줄: 지역 선택, 카테고리, 판매유형 */}
             <div className="flex items-center gap-2">
-              <RegionSelector
-                label="시/도"
-                value={selectedSido}
-                regions={regions}
-                onChange={onSidoChange}
-              />
+              <div className="flex items-center gap-2 pr-4 border-r border-gray-300">
+                <RegionSelector
+                  label="시/도"
+                  value={selectedSido}
+                  regions={regions}
+                  onChange={onSidoChange}
+                />
 
-              <RegionSelector
-                value={selectedGu}
-                regions={sigunguOptions}
-                onChange={onGuChange}
-                disabled={!selectedSido}
-                label="시/군/구"
-              />
+                <RegionSelector
+                  value={selectedGu}
+                  regions={sigunguOptions}
+                  onChange={onGuChange}
+                  disabled={!selectedSido}
+                  label="시/군/구"
+                />
 
-              <RegionSelector
-                value={selectedDong}
-                regions={dongOptions}
-                onChange={onDongChange}
-                disabled={!selectedGu}
-                label="동"
-              />
+                <RegionSelector
+                  value={selectedDong}
+                  regions={dongOptions}
+                  onChange={onDongChange}
+                  disabled={!selectedGu}
+                  label="동"
+                />
+              </div>
 
               <Select
                 size="small"

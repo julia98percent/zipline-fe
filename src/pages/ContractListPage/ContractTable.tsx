@@ -65,12 +65,10 @@ const ContractTable = ({
       <Chip
         label={statusInfo.name}
         variant="outlined"
+        className="text-sm font-medium h-7"
         sx={{
           color: getColor(statusInfo.color),
           borderColor: getColor(statusInfo.color),
-          fontWeight: 500,
-          height: 28,
-          fontSize: 13,
         }}
       />
     );
@@ -93,12 +91,10 @@ const ContractTable = ({
     return (
       <Chip
         label={label}
+        className="text-sm font-medium h-7"
         sx={{
           backgroundColor: colors.background,
           color: colors.text,
-          fontWeight: 500,
-          height: 26,
-          fontSize: 13,
         }}
       />
     );
@@ -177,7 +173,7 @@ const ContractTable = ({
   };
 
   return (
-    <Box sx={{ width: "100%", mt: "28px" }}>
+    <Box className="w-full mt-[28px]">
       <Table<ContractRowData>
         columns={columns}
         bodyList={rows}
@@ -188,8 +184,8 @@ const ContractTable = ({
         rowsPerPage={rowsPerPage}
         handleChangeRowsPerPage={onRowsPerPageChange}
         noDataMessage="계약 데이터가 없습니다"
+        className="min-w[650px]"
         sx={{
-          minWidth: 650,
           "& .MuiTableCell-root": {
             minHeight: "60px",
             paddingTop: "12px",

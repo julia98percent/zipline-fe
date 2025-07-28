@@ -74,80 +74,47 @@ const StatisticsCards: React.FC<StatisticsCardsProps> = ({
   ];
 
   return (
-    <Box
-      sx={{
-        display: "flex",
-        flexWrap: "wrap",
-        gap: 1.5,
-        mb: 2,
-        mt: 2,
-      }}
-    >
+    <Box className="flex flex-wrap gap-3 mb-4 mt-4">
       {cards.map((card, index) => {
         const IconComponent = card.icon;
         return (
           <Box
             key={index}
-            sx={{
-              flex: {
-                xs: "1 1 100%",
-                md: "1 1 calc(50% - 12px)",
-                lg: "1 1 calc(25% - 12px)",
-              },
-              height: "84px",
-            }}
+            className="h-21 flex-[1_1_100%] md:flex-[1_1_calc(50%-12px)] lg:flex-[1_1_calc(25%-12px)]"
           >
-            <Card
-              sx={{
-                height: "100%",
-                display: "flex",
-                flexDirection: "column",
-                boxShadow: "0 2px 6px rgba(0, 0, 0, 0.05)",
-                borderRadius: "6px",
-                backgroundColor: "#fff",
-                transition: "background-color 0.2s ease",
-                "&:hover": {
-                  backgroundColor: "#f8f9fa",
-                  cursor: card.clickable ? "pointer" : "default",
-                },
-              }}
-            >
+            <Card className="h-full flex flex-col shadow-sm rounded-md bg-white transition-colors duration-200 hover:bg-gray-50">
               <CardContent
-                sx={{
-                  height: "100%",
-                  p: 2,
-                  "&:last-child": { pb: 2 },
-                  display: "flex",
-                  alignItems: "center",
-                  gap: 2,
+                className="h-full p-4 flex items-center gap-4"
+                style={{
                   cursor: card.clickable ? "pointer" : "default",
+                }}
+                sx={{
+                  "&:last-child": { pb: 2 },
                 }}
                 onClick={card.clickable ? card.onClick : undefined}
               >
                 <Box
-                  sx={{
-                    width: 48,
-                    height: 48,
-                    borderRadius: "50%",
+                  className="w-12 h-12 rounded-full flex items-center justify-center"
+                  style={{
                     backgroundColor: card.backgroundColor,
-                    display: "flex",
-                    alignItems: "center",
-                    justifyContent: "center",
                   }}
                 >
-                  <IconComponent sx={{ fontSize: 24, color: card.color }} />
+                  <IconComponent
+                    className="text-2xl"
+                    style={{ color: card.color }}
+                  />
                 </Box>
-                <Box sx={{ flex: 1 }}>
+                <Box className="flex-1">
                   <Typography
                     variant="body2"
                     color="text.secondary"
-                    sx={{ fontSize: "13px", mb: 0.5 }}
+                    className="text-xs mb-1"
                   >
                     {card.title}
                   </Typography>
                   <Typography
                     variant="h5"
-                    sx={{ fontWeight: 600, fontSize: "24px", lineHeight: 1 }}
+                    className="font-semibold text-2xl leading-none"
                   >
                     {isLoading ? <CircularProgress size={20} /> : card.value}
                   </Typography>

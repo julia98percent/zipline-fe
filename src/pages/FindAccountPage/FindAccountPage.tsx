@@ -20,7 +20,7 @@ function TabPanel(props: TabPanelProps) {
       aria-labelledby={`account-tab-${index}`}
       {...other}
     >
-      {value === index && <Box sx={{ pt: 3 }}>{children}</Box>}
+      {value === index && <Box className="pt-6">{children}</Box>}
     </div>
   );
 }
@@ -47,19 +47,14 @@ const FindAccountPage = () => {
           <Typography
             variant="h5"
             component="h2"
-            sx={{
-              fontWeight: "bold",
-              color: "#164F9E",
-              mb: 2,
-              textAlign: "center",
-            }}
+            className="font-bold text-primary mb-4 text-center"
           >
             계정 정보 찾기
           </Typography>
         </div>
 
         <div>
-          <Box sx={{ borderBottom: 1, borderColor: "divider", mb: 2 }}>
+          <Box className="border-b border-gray-800 mb-4">
             <Tabs
               value={activeTab}
               onChange={handleTabChange}

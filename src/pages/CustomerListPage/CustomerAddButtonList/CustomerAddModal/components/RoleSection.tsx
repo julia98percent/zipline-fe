@@ -16,11 +16,11 @@ export default function RoleSection({
   onFieldChange,
 }: RoleSectionProps) {
   return (
-    <Box sx={{ mb: 4 }}>
-      <Typography variant="h6" sx={{ mb: 2, fontWeight: "bold" }}>
+    <Box className="mb-8">
+      <Typography variant="h6" className="mb-4 font-bold">
         역할
       </Typography>
-      <Box sx={{ display: "flex", gap: 4 }}>
+      <Box className="flex gap-8">
         <FormControlLabel
           control={
             <Checkbox name="seller" checked={seller} onChange={onFieldChange} />

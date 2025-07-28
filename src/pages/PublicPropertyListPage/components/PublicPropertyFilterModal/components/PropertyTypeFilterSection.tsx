@@ -1,6 +1,5 @@
 import { SelectChangeEvent } from "@mui/material";
 import Select, { MenuItem } from "@components/Select";
-import TextField from "@components/TextField";
 
 const BUILDING_TYPES = [
   "단독/다가구",
@@ -29,52 +28,42 @@ const BUILDING_TYPES = [
 interface PropertyTypeFilterSectionProps {
   category: string;
   buildingType: string;
-  buildingName: string;
   onCategoryChange: (event: SelectChangeEvent<string>) => void;
   onBuildingTypeChange: (event: SelectChangeEvent<string>) => void;
-  onBuildingNameChange: (event: React.ChangeEvent<HTMLInputElement>) => void;
 }
 
 export default function PropertyTypeFilterSection({
   category,
   buildingType,
-  buildingName,
   onCategoryChange,
   onBuildingTypeChange,
-  onBuildingNameChange,
 }: PropertyTypeFilterSectionProps) {
   return (
-    <>
-      <Select
-        value={category || ""}
-        onChange={onCategoryChange}
-        label="매물 유형"
-      >
-        <MenuItem value="SALE">매매</MenuItem>
-        <MenuItem value="MONTHLY">월세</MenuItem>
-        <MenuItem value="DEPOSIT">전세</MenuItem>
-      </Select>
+    <div>
+      <h6 className="text-base font-medium mb-2">유형</h6>
+      <div className="flex gap-4 flex-col md:flex-row max-w-fit">
+        <Select
+          value={category || ""}
+          onChange={onCategoryChange}
+          label="매물 유형"
+        >
+          <MenuItem value="SALE">매매</MenuItem>
+          <MenuItem value="MONTHLY">월세</MenuItem>
+          <MenuItem value="DEPOSIT">전세</MenuItem>
+        </Select>
 
-      {/* Building Type */}
-      <Select
-        value={buildingType || ""}
-        onChange={onBuildingTypeChange}
-        label="건물 유형"
-      >
-        {BUILDING_TYPES.map((type) => (
-          <MenuItem key={type} value={type}>
-            {type}
-          </MenuItem>
-        ))}
-      </Select>
-
-      {/* Building Name */}
-      <TextField
-        value={buildingName || ""}
-        onChange={onBuildingNameChange}
-        label="건물명"
-        fullWidth
-      />
-    </>
+        <Select
+          value={buildingType || ""}
+          onChange={onBuildingTypeChange}
+          label="건물 유형"
+        >
+          {BUILDING_TYPES.map((type) => (
+            <MenuItem key={type} value={type}>
+              {type}
+            </MenuItem>
+          ))}
+        </Select>
+      </div>
+    </div>
   );
 }

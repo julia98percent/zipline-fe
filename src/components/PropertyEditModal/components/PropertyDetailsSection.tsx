@@ -23,21 +23,21 @@ const PropertyDetailsSection = ({
         label="공급 면적"
         value={totalArea}
         onChange={onTotalAreaChange}
-        sx={{ mt: 2 }}
+        className="mt-4"
         fullWidth
       />
       <TextField
         label="전용 면적"
         value={netArea}
         onChange={onNetAreaChange}
-        sx={{ mt: 2 }}
+        className="mt-4"
         fullWidth
       />
       <TextField
         label="층수"
         value={floor}
         onChange={onFloorChange}
-        sx={{ mt: 2 }}
+        className="mt-4"
         fullWidth
       />
     </>

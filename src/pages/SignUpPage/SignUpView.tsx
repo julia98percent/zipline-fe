@@ -65,14 +65,10 @@ const SignUpView = ({
               alt="공인중개사 CRM 서비스"
               className="w-96 mx-auto mb-8"
             />
-            <Typography
-              variant="h4"
-              component="h1"
-              sx={{ fontWeight: "bold", mb: 1 }}
-            >
+            <Typography variant="h4" component="h1" className="font-bold mb-2">
               Zip-line
             </Typography>
-            <Typography variant="h6" sx={{ opacity: 0.9 }}>
+            <Typography variant="h6" className="opacity-90">
               흩어진 중개 업무, 여기서 전부 관리해요!
             </Typography>
           </div>
@@ -84,12 +80,7 @@ const SignUpView = ({
             <Typography
               variant="h5"
               component="h2"
-              sx={{
-                fontWeight: "bold",
-                color: "#164F9E",
-                mb: 2,
-                textAlign: "center",
-              }}
+              className="font-bold mb-4 text-center text-primary"
             >
               회원가입
             </Typography>
@@ -132,15 +123,7 @@ const SignUpView = ({
               가입하기
             </Button>
 
-            <Box
-              sx={{
-                display: "flex",
-                justifyContent: "center",
-                alignItems: "center",
-                mt: 2,
-                gap: 1,
-              }}
-            >
+            <Box className="flex justify-center items-center mt-4 gap-2">
               <Typography variant="body2" color="text.secondary">
                 이미 회원이신가요?
               </Typography>

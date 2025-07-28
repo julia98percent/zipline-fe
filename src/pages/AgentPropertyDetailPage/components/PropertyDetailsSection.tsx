@@ -14,16 +14,8 @@ const PropertyDetailsSection = ({ details }: PropertyDetailsSectionProps) => {
   if (!details) return null;
 
   return (
-    <InfoCard
-      sx={{
-        flex: 4,
-        display: "flex",
-        flexDirection: "column",
-        height: "100%",
-        minHeight: "230px",
-      }}
-    >
-      <Typography variant="h6" fontWeight="bold" gutterBottom>
+    <InfoCard className="flex-[4] flex flex-col h-full min-h-58">
+      <Typography variant="h6" className="font-bold mb-2">
         상세 정보
       </Typography>
       <InfoItem>

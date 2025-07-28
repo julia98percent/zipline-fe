@@ -23,7 +23,7 @@ const AddressSection = ({
         variant="outlined"
         disabled
         fullWidth
-        sx={{ mt: 2 }}
+        className="mt-4"
       />
       <DaumPost setAddress={onAddressChange} />
       <TextField
@@ -33,7 +33,7 @@ const AddressSection = ({
         disabled={!address}
         variant="outlined"
         fullWidth
-        sx={{ mt: 2 }}
+        className="mt-4"
       />
     </>
   );

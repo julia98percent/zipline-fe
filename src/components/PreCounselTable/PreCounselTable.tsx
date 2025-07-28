@@ -59,10 +59,7 @@ const PreCounselTable = ({
       handleChangeRowsPerPage={onRowsPerPageChange}
       noDataMessage="사전 상담 요청이 없습니다."
       pagination={true}
-      sx={{
-        borderRadius: "8px",
-        boxShadow: "0 2px 6px rgba(0, 0, 0, 0.05)",
-      }}
+      className="rounded-lg shadow-sm"
     />
   );
 };

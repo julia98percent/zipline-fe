@@ -43,7 +43,7 @@ const ContractDateSection = ({
           },
         }}
       />
-      <Box sx={{ display: "flex", gap: 2, my: 2 }}>
+      <Box className="flex gap-2 my-4">
         <DesktopDatePicker
           label="시작일"
           value={contractStartDate}

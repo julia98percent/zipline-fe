@@ -69,13 +69,11 @@ export default function CustomerAddModalView({
         },
       }}
     >
-      <DialogTitle
-        sx={{ borderBottom: "1px solid #E0E0E0", pb: 2, fontWeight: "bold" }}
-      >
+      <DialogTitle className="border-b font-bold border-[#E0E0E0]">
         고객 등록
       </DialogTitle>
 
-      <DialogContent sx={{ mt: 2 }}>
+      <DialogContent className="mt-4">
         <BasicInfoSection
           name={formData.name}
           phoneNo={formData.phoneNo}
@@ -123,7 +121,7 @@ export default function CustomerAddModalView({
         />
       </DialogContent>
 
-      <DialogActions sx={{ p: 3, borderTop: "1px solid #E0E0E0" }}>
+      <DialogActions className="p-6 border-t border-[#E0E0E0]">
         <Button
           onClick={onClose}
           variant="outlined"

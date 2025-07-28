@@ -18,16 +18,16 @@ const PriceFilters = ({ filtersTemp, setFiltersTemp }: FilterSectionProps) => {
   ];
 
   return (
-    <Box sx={{ mb: 3 }}>
-      <Typography variant="h6" sx={{ mb: 2, fontWeight: 600 }}>
+    <Box className="mb-6">
+      <Typography variant="h6" className="mb-4 font-semibold">
         금액 조건
       </Typography>
       {priceCategories.map((category) => (
-        <Box key={category.label} sx={{ mb: 2 }}>
-          <Typography variant="subtitle2" sx={{ mb: 1 }}>
+        <Box key={category.label} className="mb-4">
+          <Typography variant="subtitle2" className="mb-2">
             {category.label}
           </Typography>
-          <Box sx={{ display: "flex", gap: 2, alignItems: "center" }}>
+          <Box className="flex gap-4 items-center">
             <TextField
               label="최소"
               type="text"

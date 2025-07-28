@@ -35,7 +35,7 @@ const CustomerPriceInfo = ({
     value: number | null | undefined,
     editedValue: number | null | undefined
   ) => (
-    <Box sx={{ flex: "0 0 calc(50% - 8px)" }}>
+    <div className="flex-[0_0_calc(50%-8px)]">
       <Typography variant="subtitle2" color="textSecondary">
         {label}
       </Typography>
@@ -54,28 +54,22 @@ const CustomerPriceInfo = ({
             placeholder="숫자만 입력"
             inputProps={{ maxLength: MAX_PRICE_LENGTH }}
           />
-          <Typography
-            variant="caption"
-            sx={{ color: "text.secondary", mt: 0.5, display: "block" }}
-          >
+          <Typography variant="caption" className="text-gray-600 mt-1 block">
             {formatSafePrice(editedValue)}
           </Typography>
         </>
       ) : (
         <Typography variant="body1">{formatSafePrice(value)}</Typography>
       )}
-    </Box>
+    </div>
   );
 
   return (
-    <Paper elevation={0} sx={{ p: 3, borderRadius: 2, mb: 3 }}>
-      <Typography
-        variant="h6"
-        sx={{ mb: 2, color: "#164F9E", fontWeight: "bold" }}
-      >
+    <Paper elevation={0} className="p-6 rounded-lg mb-6 shadow-none bg-white">
+      <Typography variant="h6" className="mb-4 text-primary font-bold">
         희망 거래 가격
       </Typography>
-      <Box sx={{ display: "flex", flexWrap: "wrap", gap: 2 }}>
+      <Box className="flex flex-wrap gap-4">
         {renderPriceField(
           "최소 매매가",
           "minPrice",

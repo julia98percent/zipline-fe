@@ -49,7 +49,7 @@ const AdditionalInfoSection = ({
         label="건축년도"
         value={constructionYear}
         onChange={onConstructionYearChange}
-        sx={{ mt: 2 }}
+        className="mt-4"
         fullWidth
         placeholder="숫자만 입력하세요 ex)2010"
       />
@@ -58,7 +58,7 @@ const AdditionalInfoSection = ({
         label="주차 가능 대수"
         value={parkingCapacity}
         onChange={onParkingCapacityChange}
-        sx={{ mt: 2 }}
+        className="mt-4"
         fullWidth
       />
 
@@ -67,7 +67,7 @@ const AdditionalInfoSection = ({
         label="특이사항"
         value={details ?? ""}
         onChange={onDetailsChange}
-        sx={{ mt: 2 }}
+        className="mt-4"
         fullWidth
       />
     </>

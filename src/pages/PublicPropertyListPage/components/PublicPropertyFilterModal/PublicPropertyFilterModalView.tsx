@@ -14,6 +14,7 @@ import PropertyTypeFilterSection from "./components/PropertyTypeFilterSection";
 import PriceRangeSection from "./components/PriceRangeSection";
 import AreaRangeSection from "./components/AreaRangeSection";
 import Button from "@components/Button";
+import TextField from "@components/TextField";
 
 interface PublicPropertyFilterModalViewProps {
   open: boolean;
@@ -50,28 +51,37 @@ export default function PublicPropertyFilterModalView({
 }: PublicPropertyFilterModalViewProps) {
   return (
     <Dialog open={open} onClose={onClose} maxWidth="md" fullWidth>
-      <DialogTitle>상세 필터</DialogTitle>
+      <DialogTitle className="text-xl font-bold text-primary">
+        상세 필터
+      </DialogTitle>
       <DialogContent>
-        <Box sx={{ display: "flex", flexDirection: "column", gap: 3, mt: 2 }}>
-          {/* Location Search Section */}
-          <RegionFilterSection
-            region={region}
-            onSidoChange={onSidoChange}
-            onGuChange={onGuChange}
-            onDongChange={onDongChange}
+        <Box className="flex flex-col gap-4 mt-4">
+          <div className="flex gap-8">
+            <div className="border-r border-gray-300 pr-8">
+              <RegionFilterSection
+                region={region}
+                onSidoChange={onSidoChange}
+                onGuChange={onGuChange}
+                onDongChange={onDongChange}
+              />
+            </div>
+            <PropertyTypeFilterSection
+              category={localFilters.category || ""}
+              buildingType={localFilters.buildingType || ""}
+              onCategoryChange={onCategoryChange}
+              onBuildingTypeChange={onBuildingTypeChange}
+            />
+          </div>
+          <TextField
+            value={localFilters.buildingName || ""}
+            onChange={onBuildingNameChange}
+            label="건물명"
+            fullWidth
           />
 
           {/* Property Type and Building Info */}
-          <PropertyTypeFilterSection
-            category={localFilters.category || ""}
-            buildingType={localFilters.buildingType || ""}
-            buildingName={localFilters.buildingName || ""}
-            onCategoryChange={onCategoryChange}
-            onBuildingTypeChange={onBuildingTypeChange}
-            onBuildingNameChange={onBuildingNameChange}
-          />
 
-          <Divider sx={{ my: 3 }} />
+          <Divider className="my-6" />
 
           {/* Price Ranges */}
           <PriceRangeSection
@@ -96,8 +106,12 @@ export default function PublicPropertyFilterModalView({
         </Box>
       </DialogContent>
       <DialogActions>
-        <Button onClick={onReset}>초기화</Button>
-        <Button onClick={onClose}>취소</Button>
+        <Button variant="outlined" color="info" onClick={onReset}>
+          초기화
+        </Button>
+        <Button variant="outlined" onClick={onClose}>
+          취소
+        </Button>
         <Button onClick={onApply} variant="contained">
           적용
         </Button>

@@ -82,21 +82,8 @@ const ContractAddModalView = ({
 }: Props) => {
   return (
     <Modal open={open} onClose={handleModalClose}>
-      <Box
-        sx={{
-          position: "absolute",
-          top: "50%",
-          left: "50%",
-          transform: "translate(-50%, -50%)",
-          width: "40vw",
-          bgcolor: "white",
-          p: 4,
-          borderRadius: 2,
-          maxHeight: "90vh",
-          overflowY: "auto",
-        }}
-      >
-        <Typography variant="h6" sx={{ mb: 2 }}>
+      <Box className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-2/5 bg-white p-8 rounded-lg max-h-90vh overflow-y-auto">
+        <Typography variant="h6" className="mb-4">
           계약 등록
         </Typography>
 

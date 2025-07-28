@@ -201,22 +201,11 @@ const CustomerFilterModal = ({
   return (
     <Modal open={open} onClose={onClose}>
       <Box
-        sx={{
-          position: "absolute",
-          top: "50%",
-          left: "50%",
-          transform: "translate(-50%, -50%)",
-          width: "80%",
-          maxWidth: 800,
-          maxHeight: "90%",
-          bgcolor: "background.paper",
-          boxShadow: 24,
-          p: 4,
-          borderRadius: 2,
-          overflow: "auto",
-        }}
+        className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 
+                w-[80%] max-w-[800px] max-h-[90%] bg-white shadow-2xl 
+                p-8 rounded-lg overflow-auto"
       >
-        <Typography variant="h5" sx={{ mb: 3, fontWeight: 600 }}>
+        <Typography variant="h5" className="mb-6 font-semibold">
           고객 필터
         </Typography>
 
@@ -244,9 +233,7 @@ const CustomerFilterModal = ({
           setFiltersTemp={setFiltersTemp}
         />
 
-        <Box
-          sx={{ display: "flex", gap: 2, justifyContent: "flex-end", mt: 4 }}
-        >
+        <Box className="flex justify-end mt-8">
           <Button variant="outlined" onClick={handleReset}>
             초기화
           </Button>

@@ -55,17 +55,10 @@ function MessageTemplatePageView({
   onMobileMenuToggle,
 }: MessageTemplatePageViewProps) {
   return (
-    <Box
-      sx={{
-        p: 0,
-        pb: 3,
-        minHeight: "100vh",
-        backgroundColor: "#f5f5f5",
-      }}
-    >
+    <Box className="p-0 pb-6 min-h-screen bg-gray-100">
       <PageHeader title="문자 템플릿" onMobileMenuToggle={onMobileMenuToggle} />
 
-      <Box sx={{ p: 3 }}>
+      <Box className="p-6">
         <div className="flex flex-col lg:flex-row gap-7">
           {/* 데스크톱: 왼쪽 영역 (템플릿 목록 + 변수 목록) / 모바일: 템플릿 목록 */}
           <div className="lg:w-80 flex flex-col gap-7">

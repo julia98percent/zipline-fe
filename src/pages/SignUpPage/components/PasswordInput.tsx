@@ -62,7 +62,7 @@ const PasswordInput = ({
           InputProps={{
             endAdornment: isPasswordError && (
               <Tooltip title={passwordErrorMessage} arrow placement="right">
-                <ErrorOutlineIcon color="error" sx={{ cursor: "help" }} />
+                <ErrorOutlineIcon color="error" className="cursor-help" />
               </Tooltip>
             ),
           }}
@@ -87,7 +87,7 @@ const PasswordInput = ({
                 arrow
                 placement="right"
               >
-                <ErrorOutlineIcon color="error" sx={{ cursor: "help" }} />
+                <ErrorOutlineIcon color="error" className="cursor-help" />
               </Tooltip>
             ),
           }}

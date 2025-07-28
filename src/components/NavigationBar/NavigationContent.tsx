@@ -68,17 +68,17 @@ const getMenuIcon = (name: ParentMenuName, isActive: boolean) => {
 
   switch (name) {
     case "매물":
-      return <BusinessIcon sx={{ color: iconColor }} />;
+      return <BusinessIcon style={{ color: iconColor }} />;
     case "고객":
-      return <PeopleIcon sx={{ color: iconColor }} />;
+      return <PeopleIcon style={{ color: iconColor }} />;
     case "계약":
-      return <SettingsIcon sx={{ color: iconColor }} />;
+      return <SettingsIcon style={{ color: iconColor }} />;
     case "일정":
-      return <CalendarMonthIcon sx={{ color: iconColor }} />;
+      return <CalendarMonthIcon style={{ color: iconColor }} />;
     case "상담":
-      return <ForumIcon sx={{ color: iconColor }} />;
+      return <ForumIcon style={{ color: iconColor }} />;
     case "문자":
-      return <EmailIcon sx={{ color: iconColor }} />;
+      return <EmailIcon style={{ color: iconColor }} />;
     default:
       return null;
   }
@@ -94,32 +94,26 @@ const NavigationContent = ({ onItemClick }: NavigationContentProps) => {
 
   return (
     <>
-      <Box sx={{ p: 2 }}>
+      <Box className="p-4">
         <Link to={"/"} style={{ textDecoration: "none" }}>
-          <Box sx={{ display: "flex", alignItems: "center" }}>
-            <img
-              src={Logo}
-              alt="ZIPLINE Logo"
-              style={{ width: "24px", height: "24px", marginRight: "8px" }}
-            />
+          <Box className="flex items-center">
+            <img src={Logo} alt="ZIPLINE Logo" className="w-6 h-6 mr-2" />
             <Typography
               variant="h6"
-              sx={{ fontWeight: "bold", color: "#164F9E" }}
+              className="font-bold text-blue-800 text-primary"
             >
               ZIPLINE
             </Typography>
           </Box>
         </Link>
       </Box>
-      <List sx={{ pt: "4px" }}>
+      <List className="pt-1">
         <ListItem disablePadding>
           <Link to="/" style={{ width: "100%", textDecoration: "none" }}>
             <ListItemButton
               onClick={onItemClick}
-              sx={{
-                "&:hover": {
-                  backgroundColor: "rgba(0, 0, 0, 0.04)",
-                },
+              className="hover:bg-gray-50 px-4 justify-start"
+              style={{
                 borderLeft:
                   currentPath === "/" || currentPath.startsWith("/dashboard")
                     ? "4px solid #164F9E"
@@ -128,13 +122,12 @@ const NavigationContent = ({ onItemClick }: NavigationContentProps) => {
                   currentPath === "/" || currentPath.startsWith("/dashboard")
                     ? "rgba(22, 79, 158, 0.04)"
                     : "transparent",
-                justifyContent: "flex-start",
-                px: 2,
               }}
             >
-              <ListItemIcon sx={{ minWidth: 40 }}>
+              <ListItemIcon className="min-w-10">
                 <DashboardIcon
-                  sx={{
+                  className="text-2xl"
+                  style={{
                     color:
                       currentPath === "/" ||
                       currentPath.startsWith("/dashboard")
@@ -146,7 +139,7 @@ const NavigationContent = ({ onItemClick }: NavigationContentProps) => {
               </ListItemIcon>
               <ListItemText
                 primary="대시보드"
-                sx={{
+                style={{
                   color:
                     currentPath === "/" || currentPath.startsWith("/dashboard")
                       ? "#164F9E"
@@ -173,45 +166,38 @@ const NavigationContent = ({ onItemClick }: NavigationContentProps) => {
             <ListItem
               key={key}
               disablePadding
-              sx={{
-                borderBottom: "1px solid rgba(0, 0, 0, 0.12)",
-                "&:last-child": {
-                  borderBottom: "none",
-                },
-              }}
+              className="border-b border-gray-200 last:border-b-0"
             >
               {hasSubmenu ? (
-                <Box sx={{ width: "100%" }}>
+                <Box className="w-full">
                   <Link
                     to={submenu![0].to}
                     style={{ width: "100%", textDecoration: "none" }}
                   >
                     <ListItemButton
                       onClick={onItemClick}
-                      sx={{
+                      className="hover:bg-gray-50"
+                      style={{
                         borderBottom: "none",
-                        "&:hover": {
-                          backgroundColor: "rgba(0, 0, 0, 0.04)",
-                        },
                         borderLeft: isActive ? "4px solid #164F9E" : "none",
                         backgroundColor: isActive
                           ? "rgba(22, 79, 158, 0.04)"
                           : "transparent",
                       }}
                     >
-                      <ListItemIcon sx={{ minWidth: 40 }}>
+                      <ListItemIcon className="min-w-10">
                         {getMenuIcon(name, isActive)}
                       </ListItemIcon>
                       <ListItemText
                         primary={name}
-                        sx={{
+                        style={{
                           color: isActive ? "#164F9E" : "#222222",
                           fontWeight: isActive ? "bold" : "normal",
                         }}
                       />
                     </ListItemButton>
                   </Link>
-                  <List sx={{ mt: 0, mb: 0 }}>
+                  <List className="mt-0 mb-0">
                     {submenu?.map((sub) => (
                       <Link
                         to={sub.to}
@@ -220,10 +206,8 @@ const NavigationContent = ({ onItemClick }: NavigationContentProps) => {
                       >
                         <ListItemButton
                           onClick={onItemClick}
-                          sx={{
-                            "&:hover": {
-                              backgroundColor: "rgba(0, 0, 0, 0.04)",
-                            },
+                          className="hover:bg-gray-50 justify-start px-4 py-1 mb-1 ml-8"
+                          style={{
                             borderLeft:
                               currentPath === sub.to
                                 ? "4px solid #164F9E"
@@ -232,21 +216,16 @@ const NavigationContent = ({ onItemClick }: NavigationContentProps) => {
                               currentPath === sub.to
                                 ? "rgba(22, 79, 158, 0.04)"
                                 : "transparent",
-                            justifyContent: "flex-start",
-                            px: 2,
-                            ml: 4,
-                            py: 0.5,
-                            mb: 0.25,
                           }}
                         >
                           <ListItemText
                             primary={sub.name}
-                            sx={{
+                            className="text-sm"
+                            style={{
                               color:
                                 currentPath === sub.to ? "#164F9E" : "#222222",
                               fontWeight:
                                 currentPath === sub.to ? "bold" : "normal",
-                              fontSize: "0.875rem",
                             }}
                           />
                         </ListItemButton>
@@ -261,22 +240,20 @@ const NavigationContent = ({ onItemClick }: NavigationContentProps) => {
                 >
                   <ListItemButton
                     onClick={onItemClick}
-                    sx={{
-                      "&:hover": {
-                        backgroundColor: "rgba(0, 0, 0, 0.04)",
-                      },
+                    className="hover:bg-gray-50"
+                    style={{
                       borderLeft: isActive ? "4px solid #164F9E" : "none",
                       backgroundColor: isActive
                         ? "rgba(22, 79, 158, 0.04)"
                         : "transparent",
                     }}
                   >
-                    <ListItemIcon sx={{ minWidth: 40 }}>
+                    <ListItemIcon className="min-w-10">
                       {getMenuIcon(name, isActive)}
                     </ListItemIcon>
                     <ListItemText
                       primary={name}
-                      sx={{
+                      style={{
                         color: isActive ? "#164F9E" : "#222222",
                         fontWeight: isActive ? "bold" : "normal",
                       }}

@@ -10,3 +10,15 @@ body {
   --color-primary: #164f9e;
   --color-primary-dark: #154c98;
 }
+
+@layer components {
+  .fc-toolbar-title {
+    @apply text-lg font-semibold text-gray-800;
+  }
+  .fc-toolbar-chunk .fc-button {
+    @apply bg-transparent! border-none! text-gray-700!
+    px-2! py-1! hover:bg-gray-100! rounded-md! cursor-pointer!
+    focus:outline-none! focus:ring-2! focus:ring-blue-500!
+    focus:shadow-none! focus:ring-gray-200! focus:ring-offset-1!;
+  }
+}

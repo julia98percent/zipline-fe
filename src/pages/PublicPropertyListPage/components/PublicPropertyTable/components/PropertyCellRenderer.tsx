@@ -70,7 +70,7 @@ const PropertyCellRenderer = {
       color="success"
       variant="outlined"
       size="small"
-      sx={{ fontWeight: 500 }}
+      className="font-medium"
     />
   ),
 
@@ -79,11 +79,10 @@ const PropertyCellRenderer = {
     return (
       <Chip
         label={translateType(category)}
+        className="font-medium text-sm"
         sx={{
           backgroundColor: colors.background,
           color: colors.text,
-          fontWeight: 500,
-          fontSize: "0.95em",
         }}
         size="small"
       />

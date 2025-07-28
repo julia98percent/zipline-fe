@@ -59,12 +59,10 @@ function ContractTable({
       <Chip
         label={statusInfo.name}
         variant="outlined"
+        className="font-medium h-[28px] text-sm"
         sx={{
           color: getColor(statusInfo.color),
           borderColor: getColor(statusInfo.color),
-          fontWeight: 500,
-          height: 28,
-          fontSize: 13,
         }}
       />
     );
@@ -81,12 +79,10 @@ function ContractTable({
     return (
       <Chip
         label={typeInfo.name}
+        className="font-medium h-[28px] text-sm"
         sx={{
           backgroundColor: colors.background,
           color: colors.text,
-          fontWeight: 500,
-          height: 28,
-          fontSize: 13,
         }}
       />
     );

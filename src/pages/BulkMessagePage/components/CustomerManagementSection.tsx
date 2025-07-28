@@ -21,9 +21,9 @@ const CustomerManagementSection = ({
   return (
     <Box className="w-full">
       <Paper className="p-6 mb-4 rounded-lg shadow-sm">
-        <Box className="flex justify-between items-center mb-4">
-          <Typography variant="h6" className="text-gray-900">
-            고객 추가
+        <Box className="flex justify-between items-center">
+          <Typography className="text-xl font-semibold">
+            문자 발송 대상 고객
           </Typography>
           <Button variant="contained" color="primary" onClick={onAddCustomer}>
             고객 선택하기
@@ -33,7 +33,7 @@ const CustomerManagementSection = ({
           {customers.map((customer, index) => (
             <Box
               key={index}
-              className="flex items-center justify-between p-2 mb-7 bg-gray-50 rounded"
+              className="flex items-center justify-between p-2 mt-2 bg-gray-50 rounded"
             >
               <Box>
                 <Typography variant="body1">{customer.name}</Typography>
@@ -57,7 +57,7 @@ const CustomerManagementSection = ({
         disabled={customers.length === 0 || !selectedTemplate}
       >
         {customers.length === 0
-          ? "고객을 추가해주세요"
+          ? "문자를 보낼 고객을 선택해주세요"
           : !selectedTemplate
           ? "템플릿을 선택해주세요"
           : `${customers.length}명에게 발송하기`}

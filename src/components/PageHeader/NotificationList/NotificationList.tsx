@@ -46,25 +46,7 @@ function NotificationList({
 
   return (
     <>
-      <Box
-        sx={{
-          position: "absolute",
-          top: 60,
-          right: -50,
-          backgroundColor: "white",
-          boxShadow: "0px 4px 12px rgba(0, 0, 0, 0.1)",
-          borderRadius: "8px",
-          padding: "16px",
-          zIndex: 50,
-          width: "40vw",
-          minWidth: "300px",
-          maxWidth: "400px",
-          maxHeight: "50vh",
-          overflowY: "hidden",
-          display: "flex",
-          flexDirection: "column",
-        }}
-      >
+      <Box className="absolute top-15 -right-12 bg-white shadow-lg rounded-lg p-4 z-50 w-2/5 min-w-75 max-w-96 max-h-1/2 overflow-hidden flex flex-col">
         <div className="flex items-center justify-between text-gray-900 font-semibold mb-3 pb-2 border-b border-gray-200">
           <Typography variant="h6">알림</Typography>
           <Button
@@ -75,15 +57,7 @@ function NotificationList({
             모두 읽음 표시
           </Button>
         </div>
-        <List
-          sx={{
-            padding: 0,
-            flex: 1,
-            overflowY: "auto",
-            minHeight: 0,
-          }}
-          className="divide-y divide-gray-200"
-        >
+        <List className="p-0 flex-1 overflow-y-auto min-h-0 divide-y divide-gray-200">
           {notifications.length === 0 ? (
             <Box className="p-6 text-center">
               <Typography className="text-neutral-500 text-sm">

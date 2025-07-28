@@ -89,36 +89,26 @@ function BulkUploadModal({ open, handleClose, fetchPropertyData }: Props) {
       <DialogContent>
         <Typography
           variant="subtitle2"
-          sx={{
-            color: "#333333",
-            fontWeight: 600,
-            mb: 2,
-          }}
+          className="text-gray-800 font-semibold mb-4"
         >
           엑셀 파일 업로드 정책
         </Typography>
 
-        <Box sx={{ display: "flex", flexDirection: "column", gap: 1.5, mb: 3 }}>
-          <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
+        <Box className="flex flex-col gap-3 mb-6">
+          <Box className="flex items-center gap-2">
             <Typography variant="body2" color="text.secondary">
               • 파일 형식:
             </Typography>
-            <Typography
-              variant="body2"
-              sx={{ color: "#164F9E", fontWeight: 500 }}
-            >
+            <Typography variant="body2" className="font-medium text-primary">
               .xlsx, .xls
             </Typography>
           </Box>
 
-          <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
+          <Box className="flex items-center gap-2">
             <Typography variant="body2" color="text.secondary">
               • 파일 크기:
             </Typography>
-            <Typography
-              variant="body2"
-              sx={{ color: "#164F9E", fontWeight: 500 }}
-            >
+            <Typography variant="body2" className="font-medium text-primary">
               10MB 이하
             </Typography>
           </Box>
@@ -128,15 +118,8 @@ function BulkUploadModal({ open, handleClose, fetchPropertyData }: Props) {
           </Typography>
         </Box>
 
-        <Box
-          sx={{
-            backgroundColor: "#F8F9FA",
-            p: 2,
-            borderRadius: 1,
-            border: "1px solid #E0E0E0",
-          }}
-        >
-          <Typography variant="body2" color="text.secondary" sx={{ mb: 1 }}>
+        <Box className="bg-gray-50 p-4 rounded border border-gray-300">
+          <Typography variant="body2" color="text.secondary" className="mb-2">
             엑셀의 열 순서가 변경되면 업로드가 실패할 수 있으니,{" "}
             <Link
               to={import.meta.env.VITE_PROPERTY_EXCEL_TEMPLATE_URL}
@@ -150,7 +133,7 @@ function BulkUploadModal({ open, handleClose, fetchPropertyData }: Props) {
             </Link>
             을 그대로 사용하는 것을 권장합니다.
           </Typography>
-          <Typography variant="body2" sx={{ color: "#164F9E", mt: 1 }}>
+          <Typography variant="body2" className="text-primary mt-2">
             <Link
               to={import.meta.env.VITE_PROPERTY_EXCEL_TEMPLATE_URL}
               style={{
@@ -164,51 +147,38 @@ function BulkUploadModal({ open, handleClose, fetchPropertyData }: Props) {
           </Typography>
         </Box>
 
-        <Box sx={{ mt: 3 }}>
+        <Box className="mt-6">
           <Typography
             variant="body2"
-            sx={{ color: "#666666", mb: 1, fontWeight: 500 }}
+            className="text-gray-700 mb-2 font-medium"
           >
             • 지정된 입력 값 안내
           </Typography>
-          <Box sx={{ pl: 2 }}>
-            <Typography variant="body2" color="text.secondary" sx={{ mb: 1 }}>
+          <Box className="pl-4">
+            <Typography variant="body2" color="text.secondary" className="mb-2">
               - 매물 카테고리:{" "}
-              <Typography
-                component="span"
-                sx={{ color: "#164F9E", fontWeight: 500 }}
-              >
+              <Typography component="span" className="font-medium text-primary">
                 매매, 전세, 월세
               </Typography>
             </Typography>
             <Typography variant="body2" color="text.secondary">
               - 매물 유형:{" "}
-              <Typography
-                component="span"
-                sx={{ color: "#164F9E", fontWeight: 500 }}
-              >
+              <Typography component="span" className="font-medium text-primary">
                 아파트, 빌라, 상가, 오피스텔, 원룸, 투룸, 주택
               </Typography>
             </Typography>
           </Box>
-          <Typography
-            variant="body2"
-            color="error"
-            sx={{ my: 1, fontSize: "12px" }}
-          >
+          <Typography variant="body2" color="error" className="my-2 text-xs">
             * 허용되지 않은 값이 입력될 경우, 업로드 과정에서 오류가 발생합니다.
           </Typography>
         </Box>
 
         <Paper
           {...getRootProps()}
-          sx={{
-            p: 3,
-            textAlign: "center",
-            cursor: "pointer",
-            border: "2px dashed",
-            borderColor: isDragActive ? "primary.main" : "grey.300",
-            bgcolor: isDragActive ? "action.hover" : "background.paper",
+          className="p-6 text-center cursor-pointer border-2 border-dashed"
+          style={{
+            borderColor: isDragActive ? "#1976d2" : "#e0e0e0",
+            backgroundColor: isDragActive ? "rgba(0, 0, 0, 0.04)" : "#ffffff",
             opacity: isLoading ? 0.5 : 1,
             pointerEvents: isLoading ? "none" : "auto",
           }}
@@ -226,7 +196,7 @@ function BulkUploadModal({ open, handleClose, fetchPropertyData }: Props) {
         </Paper>
 
         {error && (
-          <Typography color="error" sx={{ mt: 1 }}>
+          <Typography color="error" className="mt-2">
             {error}
           </Typography>
         )}

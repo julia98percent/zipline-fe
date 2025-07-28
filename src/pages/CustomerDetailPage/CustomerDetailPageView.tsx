@@ -58,38 +58,17 @@ const CustomerDetailPageView = ({
 }: CustomerDetailPageViewProps) => {
   if (loading || !customer || !customerId) {
     return (
-      <Box
-        sx={{
-          flexGrow: 1,
-          height: "calc(100vh - 64px)",
-          overflow: "auto",
-          width: "calc(100% - 240px)",
-          ml: "240px",
-          display: "flex",
-          justifyContent: "center",
-          alignItems: "center",
-        }}
-      >
+      <Box className="flex-grow h-[calc(100vh-64px)] overflow-auto w-[calc(100%-240px)] ml-60 flex justify-center items-center">
         <CircularProgress color="primary" />
       </Box>
     );
   }
 
   return (
-    <Box
-      sx={{
-        flexGrow: 1,
-        height: "100vh",
-        overflow: "auto",
-        backgroundColor: "#f5f5f5",
-        p: 0,
-        maxWidth: "100vw",
-        boxSizing: "border-box",
-      }}
-    >
+    <Box className="flex-grow h-screen overflow-auto bg-gray-100 p-0 max-w-screen box-border">
       <PageHeader title="고객 상세" onMobileMenuToggle={onMobileMenuToggle} />
 
-      <Box sx={{ p: 3, pt: 0 }}>
+      <Box className="p-6 pt-0">
         <CustomerActionButtons
           isEditing={isEditing}
           onEditClick={onEditClick}
@@ -98,7 +77,7 @@ const CustomerDetailPageView = ({
           onDeleteClick={onDeleteClick}
         />
 
-        <Box sx={{ display: "flex", gap: 3, mb: 3 }}>
+        <Box className="flex gap-6 mb-6">
           <CustomerBasicInfo
             customer={customer}
             isEditing={isEditing}
@@ -126,7 +105,7 @@ const CustomerDetailPageView = ({
         />
 
         {!isEditing && (
-          <Paper elevation={0} sx={{ p: 3, borderRadius: 2 }}>
+          <Paper elevation={0} className="p-6 rounded-lg">
             <CustomerInfo customerId={customerId} />
           </Paper>
         )}

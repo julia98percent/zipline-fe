@@ -23,9 +23,8 @@ export default function CustomerPaginationSection({
       onPageChange={onPageChange}
       rowsPerPage={rowsPerPage}
       onRowsPerPageChange={onRowsPerPageChange}
+      className="border-t border-gray-200"
       sx={{
-        borderTop: 1,
-        borderColor: "divider",
         "& .MuiTablePagination-select": {
           paddingTop: 0,
           paddingBottom: 0,

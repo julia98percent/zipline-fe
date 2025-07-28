@@ -53,7 +53,7 @@ function ConsultationTable({
       label: "상태",
       render: (value) => (
         <Chip
-          label={value ? "완료" : "진행중"}
+          label={value ? "완료" : "진행 중"}
           size="small"
           sx={{
             backgroundColor: value ? "#E9F7EF" : "#FEF5EB",

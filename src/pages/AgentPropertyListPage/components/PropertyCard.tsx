@@ -61,30 +61,24 @@ const PropertyCard = ({ property, onRowClick }: PropertyCardProps) => {
 
   return (
     <Card
-      sx={{
-        marginBottom: 2,
-        borderRadius: 2,
-        boxShadow: "0 2px 8px rgba(0,0,0,0.08)",
+      className="mb-4 rounded-lg shadow-sm"
+      style={{
         cursor: onRowClick ? "pointer" : "default",
-        "&:hover": {
-          boxShadow: onRowClick
-            ? "0 4px 12px rgba(0,0,0,0.12)"
-            : "0 2px 8px rgba(0,0,0,0.08)",
-        },
       }}
       onClick={handleClick}
     >
-      <CardContent sx={{ padding: "16px !important" }}>
+      <CardContent className="p-4">
         {/* 상단: 매물 유형과 거래 유형 */}
-        <Box sx={{ display: "flex", gap: 1, marginBottom: 1.5 }}>
+        <Box className="flex gap-2 mb-3">
           <Chip
             label={PropertyCategory[property.realCategory]}
             size="small"
-            sx={{
+            className="text-xs h-6"
+            style={{
               backgroundColor: getCategoryChipColor(property.realCategory),
               color: "#333",
-              fontSize: "12px",
-              height: "24px",
+            }}
+            sx={{
               "& .MuiChip-label": {
                 padding: "0 8px",
               },
@@ -93,11 +87,12 @@ const PropertyCard = ({ property, onRowClick }: PropertyCardProps) => {
           <Chip
             label={getPropertyTypeText(property.type)}
             size="small"
-            sx={{
+            className="text-xs h-6"
+            style={{
               backgroundColor: getTypeChipColor(property.type),
               color: getTypeTextColor(property.type),
-              fontSize: "12px",
-              height: "24px",
+            }}
+            sx={{
               "& .MuiChip-label": {
                 padding: "0 8px",
               },
@@ -108,75 +103,33 @@ const PropertyCard = ({ property, onRowClick }: PropertyCardProps) => {
         {/* 주소 */}
         <Typography
           variant="subtitle1"
-          sx={{
-            fontWeight: 600,
-            marginBottom: 0.5,
-            fontSize: "16px",
-            lineHeight: 1.4,
-          }}
+          className="font-semibold mb-1 text-base leading-6"
         >
           {property.address}
         </Typography>
         {property.detailAddress && (
-          <Typography
-            variant="body2"
-            sx={{
-              color: "text.secondary",
-              marginBottom: 1.5,
-              fontSize: "14px",
-            }}
-          >
+          <Typography variant="body2" className="text-gray-600 mb-3 text-sm">
             {property.detailAddress}
           </Typography>
         )}
 
         {/* 면적과 가격 */}
-        <Box
-          sx={{
-            display: "flex",
-            justifyContent: "space-between",
-            alignItems: "flex-end",
-          }}
-        >
-          <Typography
-            variant="body2"
-            sx={{
-              color: "text.secondary",
-              fontSize: "14px",
-            }}
-          >
+        <Box className="flex justify-between items-end">
+          <Typography variant="body2" className="text-gray-600 text-sm">
             {property.netArea.toFixed(1)}m²
           </Typography>
-          <Typography
-            variant="h6"
-            sx={{
-              fontWeight: 700,
-              color: "#333",
-              fontSize: "18px",
-            }}
-          >
+          <Typography variant="h6" className="font-bold text-gray-800 text-lg">
             {getPriceText(property)}
           </Typography>
         </Box>
 
         {/* 기타 정보 (입주일, 상세설명) */}
         {(property.moveInDate || property.details) && (
-          <Box
-            sx={{
-              marginTop: 1.5,
-              paddingTop: 1.5,
-              borderTop: "1px solid #f0f0f0",
-            }}
-          >
+          <Box className="mt-3 pt-3 border-t border-gray-200">
             {property.moveInDate && (
               <Typography
                 variant="caption"
-                sx={{
-                  color: "text.secondary",
-                  display: "block",
-                  fontSize: "12px",
-                  marginBottom: 0.5,
-                }}
+                className="text-gray-600 block text-xs mb-1"
               >
                 입주: {formatDate(property.moveInDate)}
               </Typography>
@@ -184,11 +137,7 @@ const PropertyCard = ({ property, onRowClick }: PropertyCardProps) => {
             {property.details && (
               <Typography
                 variant="body2"
-                sx={{
-                  color: "text.primary",
-                  fontSize: "13px",
-                  lineHeight: 1.4,
-                }}
+                className="text-gray-900 text-xs leading-6"
               >
                 {property.details.length > 50
                   ? property.details.slice(0, 50) + "..."

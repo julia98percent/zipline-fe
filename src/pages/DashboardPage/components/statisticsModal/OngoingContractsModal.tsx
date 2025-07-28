@@ -192,9 +192,9 @@ const OngoingContractsModal = ({
       onClose={onClose}
       aria-labelledby="ongoing-contracts-modal"
     >
-          진행중인 계약 목록
       <Box className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-4/5 max-w-4xl bg-gray-100 shadow-2xl p-6 rounded-lg max-h-4/5 overflow-auto">
         <Typography className="font-bold text-primary text-xl mb-4">
+          진행 중인 계약 목록
         </Typography>
         <Table
           columns={columns}
@@ -209,7 +209,7 @@ const OngoingContractsModal = ({
             handleRowsPerPageChange(parseInt(e.target.value, 10))
           }
           isLoading={loading}
-          noDataMessage="진행중인 계약이 없습니다"
+          noDataMessage="진행 중인 계약이 없습니다"
         />
       </Box>
     </Modal>

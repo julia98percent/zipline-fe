@@ -21,9 +21,9 @@ const CustomerManagementSection = ({
   return (
     <Box className="w-full">
       <Paper className="p-6 mb-4 rounded-lg shadow-sm">
-            고객 추가
         <Box className="flex justify-between items-center">
           <Typography className="text-xl font-semibold">
+            문자 발송 대상 고객
           </Typography>
           <Button variant="contained" color="primary" onClick={onAddCustomer}>
             고객 선택하기
@@ -57,7 +57,7 @@ const CustomerManagementSection = ({
         disabled={customers.length === 0 || !selectedTemplate}
       >
         {customers.length === 0
-          ? "고객을 추가해주세요"
+          ? "문자를 보낼 고객을 선택해주세요"
           : !selectedTemplate
           ? "템플릿을 선택해주세요"
           : `${customers.length}명에게 발송하기`}

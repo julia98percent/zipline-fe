@@ -44,7 +44,7 @@ interface DashboardModalsProps {
   recentContractsModalOpen: boolean;
   setRecentContractsModalOpen: React.Dispatch<React.SetStateAction<boolean>>;
 
-  // 진행중 계약 모달
+  // 진행 중 계약 모달
   ongoingContractsOpen: boolean;
   setOngoingContractsOpen: React.Dispatch<React.SetStateAction<boolean>>;
 

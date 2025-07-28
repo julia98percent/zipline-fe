@@ -114,7 +114,7 @@ const CounselBasicInfo = ({
           ) : (
             <Box className="inline-block">
               <Chip
-                label={data.completed ? "완료" : "진행중"}
+                label={data.completed ? "완료" : "진행 중"}
                 size="small"
                 variant="outlined"
                 color={data.completed ? "success" : "default"}

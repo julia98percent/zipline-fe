@@ -135,7 +135,7 @@ const CounselList: React.FC<CounselListProps> = ({
             bodyList={tableData}
             handleRowClick={(counsel) => handleCounselClick(counsel.counselUid)}
             pagination={false}
-            noDataMessage="마감 예정인 상담이 없습니다"
+            noDataMessage="마감 예정인 상담이 없습니다."
             className="shadow-none!"
             sx={{
               "& .MuiTableCell-head": {

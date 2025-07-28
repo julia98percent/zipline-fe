@@ -62,7 +62,7 @@ const CounselTable = ({
               backgroundColor: isCompleted ? "#E9F7EF" : "#FEF5EB",
             }}
           >
-            {isCompleted ? "의뢰 마감" : "의뢰 진행중"}
+            {isCompleted ? "의뢰 마감" : "의뢰 진행 중"}
           </Typography>
         );
       },

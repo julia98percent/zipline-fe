@@ -105,9 +105,9 @@ const ContractList = ({
 
   const getNoDataMessage = () => {
     if (contractTab === "expiring") {
-      return "6개월 이내 만료 예정인 계약이 없습니다";
+      return "6개월 이내 만료 예정인 계약이 없습니다.";
     } else {
-      return "최근 계약이 없습니다";
+      return "최근 계약이 없습니다.";
     }
   };
 

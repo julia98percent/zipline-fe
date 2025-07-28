@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import {
   Dialog,
   DialogTitle,
@@ -36,6 +36,7 @@ const ContractDocumentsEditModal = ({
   const [documents, setDocuments] = useState<ContractDetail["documents"]>([]);
   const [newFiles, setNewFiles] = useState<File[]>([]);
   const [isLoading, setIsLoading] = useState(false);
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
     if (open && contract) {
@@ -59,6 +60,10 @@ const ContractDocumentsEditModal = ({
     }
 
     setNewFiles((prev) => [...prev, ...files]);
+  };
+
+  const handleFileInputClick = () => {
+    fileInputRef.current?.click();
   };
 
   const handleRemoveExistingDocument = (index: number) => {
@@ -287,23 +292,22 @@ const ContractDocumentsEditModal = ({
           {/* 파일 업로드 버튼 */}
           <Box className="text-center mt-4">
             <input
+              ref={fileInputRef}
               accept="*/*"
               style={{ display: "none" }}
-              id="file-upload"
               type="file"
               multiple
               onChange={handleFileUpload}
             />
-            <label htmlFor="file-upload">
-              <Button
-                variant="outlined"
-                startIcon={<UploadFileIcon />}
-                className={"min-w-[200px]"}
-                disabled={isLoading}
-              >
-                파일 추가
-              </Button>
-            </label>
+            <Button
+              variant="outlined"
+              startIcon={<UploadFileIcon />}
+              className={"min-w-[200px]"}
+              disabled={isLoading}
+              onClick={handleFileInputClick}
+            >
+              파일 추가
+            </Button>
             <Typography
               variant="caption"
               display="block"

@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React from "react";
 import AddIcon from "@mui/icons-material/Add";
 import FullCalendar from "@fullcalendar/react";
 import dayGridPlugin from "@fullcalendar/daygrid";
@@ -86,46 +86,6 @@ const ScheduleView: React.FC<ScheduleViewProps> = ({
     handleSubmitSchedule,
     handleUpdateSchedule,
   } = handlers;
-
-  useEffect(() => {
-    const addCalendarButtonStyles = () => {
-      const existingStyle = document.getElementById("calendar-button-styles");
-      if (existingStyle) return;
-
-      const style = document.createElement("style");
-      style.id = "calendar-button-styles";
-      style.textContent = `
-        .fc-toolbar-chunk .fc-button {
-          background: none !important;
-          border: none !important;
-          color: #374151 !important;
-          padding: 4px 8px !important;
-          border-radius: 4px !important;
-          transition: background-color 0.2s ease !important;
-        }
-        .fc-toolbar-chunk .fc-button:hover {
-          background-color: #f3f4f6 !important;
-        }
-        .fc-toolbar-chunk .fc-button:focus {
-          box-shadow: none !important;
-        }
-        .fc-toolbar-chunk .fc-button-active {
-          background-color: #e5e7eb !important;
-        }
-      `;
-      document.head.appendChild(style);
-    };
-
-    addCalendarButtonStyles();
-
-    // 컴포넌트 언마운트 시 스타일 제거
-    return () => {
-      const style = document.getElementById("calendar-button-styles");
-      if (style) {
-        document.head.removeChild(style);
-      }
-    };
-  }, []);
 
   return (
     <div className="flex-grow bg-gray-100 min-h-screen">

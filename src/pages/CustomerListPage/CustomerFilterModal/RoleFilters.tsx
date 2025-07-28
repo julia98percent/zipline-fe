@@ -6,8 +6,8 @@ const ROLES = ["tenant", "landlord", "buyer", "seller"] as const;
 const ROLE_LABELS = {
   tenant: "임차인",
   landlord: "임대인",
-  buyer: "매수자",
-  seller: "매도자",
+  buyer: "매수인",
+  seller: "매도인",
 } as const;
 
 const RoleFilters = ({ filtersTemp, setFiltersTemp }: FilterSectionProps) => {

@@ -109,7 +109,7 @@ export const renderRolesColumn = (
           }}
         />
         <Chip
-          label="매수자"
+          label="매수인"
           size="small"
           onClick={(e) => {
             e.stopPropagation();
@@ -125,7 +125,7 @@ export const renderRolesColumn = (
           }}
         />
         <Chip
-          label="매도자"
+          label="매도인"
           size="small"
           onClick={(e) => {
             e.stopPropagation();
@@ -162,14 +162,14 @@ export const renderRolesColumn = (
       )}
       {customer.buyer && (
         <Chip
-          label="매수자"
+          label="매수인"
           size="small"
           className="bg-[#E9F7EF] text-[#219653]"
         />
       )}
       {customer.seller && (
         <Chip
-          label="매도자"
+          label="매도인"
           size="small"
           className="bg-[#EBF2FC] text-[#2F80ED]"
         />

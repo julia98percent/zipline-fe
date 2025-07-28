@@ -28,8 +28,8 @@ interface CustomerFiltersProps {
 const ROLE_LABELS: Record<string, string> = {
   tenant: "임차인",
   landlord: "임대인",
-  buyer: "매수자",
-  seller: "매도자",
+  buyer: "매수인",
+  seller: "매도인",
   noRole: "역할없음",
 };
 

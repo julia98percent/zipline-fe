@@ -12,11 +12,11 @@ export const CUSTOMER_TYPE_COLORS = {
   buyer: {
     backgroundColor: "#E9F7EF",
     color: "#219653",
-    label: "매수자",
+    label: "매수인",
   },
   seller: {
     backgroundColor: "#EBF2FC",
     color: "#2F80ED",
-    label: "매도자",
+    label: "매도인",
   },
 } as const;

@@ -25,13 +25,13 @@ export default function RoleSection({
           control={
             <Checkbox name="seller" checked={seller} onChange={onFieldChange} />
           }
-          label="매도자"
+          label="매도인"
         />
         <FormControlLabel
           control={
             <Checkbox name="buyer" checked={buyer} onChange={onFieldChange} />
           }
-          label="매수자"
+          label="매수인"
         />
         <FormControlLabel
           control={

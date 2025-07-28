@@ -33,7 +33,7 @@ export default function PriceSection({
 }: PriceSectionProps) {
   return (
     <>
-      {/* 매매가 범위 - 매도자 또는 매수자 선택 시 */}
+      {/* 매매가 범위 - 매도인 또는 매수인 선택 시 */}
       {showSalePrice && (
         <Box className="mb-8">
           <Typography variant="h6" className="mb-4 font-bold">

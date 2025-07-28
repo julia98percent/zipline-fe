@@ -41,7 +41,7 @@ export default function PropertyTypeFilterSection({
   return (
     <div>
       <h6 className="text-base font-medium mb-2">유형</h6>
-      <div className="flex gap-4 flex-col md:flex-row max-w-fit">
+      <div className="flex gap-4 flex-col lg:flex-row max-w-fit">
         <Select
           value={category || ""}
           onChange={onCategoryChange}

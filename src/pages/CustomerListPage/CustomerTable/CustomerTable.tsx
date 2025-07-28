@@ -1,4 +1,8 @@
-import { Box } from "@mui/material";
+import { Box, IconButton } from "@mui/material";
+import {
+  ChevronLeft as ChevronLeftIcon,
+  ChevronRight as ChevronRightIcon,
+} from "@mui/icons-material";
 import { useNavigate } from "react-router-dom";
 import { useState, useEffect } from "react";
 import DeleteConfirmModal from "@components/DeleteConfirm/DeleteConfirmModal";
@@ -7,6 +11,7 @@ import { showToast } from "@components/Toast/Toast";
 import { Customer, Label } from "@ts/customer";
 import { deleteCustomer } from "@apis/customerService";
 import { CUSTOMER_TABLE_COLUMNS } from "./constants";
+import CustomerCard from "../CustomerCard";
 import {
   renderNameColumn,
   renderPhoneColumn,
@@ -281,22 +286,117 @@ const CustomerTable = ({
     }
   };
 
+  const handleChangePage = (_: unknown, newPage: number) => {
+    setPage(newPage);
+  };
+
   return (
     <Box className="w-full mt-[28px]">
-      <Table
-        columns={columns}
-        bodyList={customerList.map((customer) => ({
-          ...customer,
-          id: customer.uid,
-        }))}
-        handleRowClick={handleTableRowClick}
-        totalElements={totalCount}
-        page={page}
-        handleChangePage={(_, newPage) => setPage(newPage)}
-        rowsPerPage={rowsPerPage}
-        handleChangeRowsPerPage={(e) => setRowsPerPage(Number(e.target.value))}
-        noDataMessage="고객 데이터가 없습니다"
-      />
+      <Box className="hidden lg:block">
+        <Table
+          columns={columns}
+          bodyList={customerList.map((customer) => ({
+            ...customer,
+            id: customer.uid,
+          }))}
+          handleRowClick={handleTableRowClick}
+          totalElements={totalCount}
+          page={page}
+          handleChangePage={(_, newPage) => setPage(newPage)}
+          rowsPerPage={rowsPerPage}
+          handleChangeRowsPerPage={(e) =>
+            setRowsPerPage(Number(e.target.value))
+          }
+          noDataMessage="고객 데이터가 없습니다"
+        />
+      </Box>
+
+      <Box className="block lg:hidden">
+        {customerList.length === 0 ? (
+          <Box className="text-center py-8 text-gray-500">
+            고객 데이터가 없습니다
+          </Box>
+        ) : (
+          <>
+            <Box className="space-y-3">
+              {customerList.map((customer) => (
+                <CustomerCard
+                  key={customer.uid}
+                  customer={customer}
+                  onRowClick={handleRowClick}
+                  onEdit={handleEditStart}
+                  onDelete={handleDelete}
+                  isEditing={!!editingCustomers[customer.uid]}
+                  editingCustomer={editingCustomers[customer.uid]}
+                  onEditChange={handleEditChange}
+                  onSave={() => handleEditSave(customer.uid)}
+                  onCancel={() => handleEditCancel(customer.uid)}
+                  availableLabels={availableLabels}
+                  onCreateLabel={handleCreateLabel}
+                  labelInputValue={labelInputValues[customer.uid] || ""}
+                  onLabelInputChange={(value: string) => {
+                    setLabelInputValues({
+                      ...labelInputValues,
+                      [customer.uid]: value,
+                    });
+                  }}
+                />
+              ))}
+            </Box>
+
+            {/* 모바일용 간단한 페이지네이션 */}
+            <Box className="flex justify-center items-center mt-6 gap-1">
+              {/* 이전 페이지 버튼 */}
+              <IconButton
+                size="small"
+                onClick={() => handleChangePage(null, page - 1)}
+                disabled={page === 0}
+                className="w-8 h-8 border border-gray-300 rounded mr-2 disabled:opacity-50"
+              >
+                <ChevronLeftIcon fontSize="small" />
+              </IconButton>
+
+              {/* 페이지 번호들 */}
+              {(() => {
+                const totalPages = Math.ceil(totalCount / rowsPerPage);
+                const currentPage = page;
+                const startPage = Math.max(0, currentPage - 1);
+                const endPage = Math.min(totalPages - 1, currentPage + 1);
+                const pages = [];
+
+                for (let i = startPage; i <= endPage; i++) {
+                  pages.push(i);
+                }
+
+                return pages.map((pageIndex) => (
+                  <Box
+                    key={pageIndex}
+                    onClick={() => handleChangePage(null, pageIndex)}
+                    className={`w-8 h-8 flex items-center justify-center border rounded cursor-pointer text-sm ${
+                      page === pageIndex
+                        ? "border-blue-500 bg-blue-500 text-white font-bold hover:bg-blue-600"
+                        : "border-gray-300 bg-transparent text-gray-900 font-normal hover:bg-gray-100"
+                    }`}
+                  >
+                    {pageIndex + 1}
+                  </Box>
+                ));
+              })()}
+
+              {/* 다음 페이지 버튼 */}
+              <IconButton
+                size="small"
+                onClick={() => handleChangePage(null, page + 1)}
+                disabled={page >= Math.ceil(totalCount / rowsPerPage) - 1}
+                className="w-8 h-8 border border-gray-300 rounded ml-2 disabled:opacity-50"
+              >
+                <ChevronRightIcon fontSize="small" />
+              </IconButton>
+            </Box>
+          </>
+        )}
+      </Box>
+
       <DeleteConfirmModal
         open={deleteModalOpen}
         onConfirm={handleDeleteConfirm}

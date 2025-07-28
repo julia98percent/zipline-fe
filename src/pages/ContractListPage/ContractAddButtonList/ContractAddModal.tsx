@@ -108,12 +108,12 @@ const ContractAddModal = ({ open, handleClose, fetchContractData }: Props) => {
     }
 
     if (lessorUids.length === 0)
-      newErrors.lessorUids = "임대/매도자를 선택해 주세요.";
+      newErrors.lessorUids = "임대/매도인를 선택해 주세요.";
 
-    // 임대자와 임차자가 겹치는지 확인
+    // 임대인와 임차인가 겹치는지 확인
     const hasOverlap = lessorUids.some((id) => lesseeUids.includes(id));
     if (hasOverlap) {
-      newErrors.lesseeUids = "임대자와 임차자는 같을 수 없습니다.";
+      newErrors.lesseeUids = "임대인와 임차인는 같을 수 없습니다.";
     }
 
     if (!propertyUid) newErrors.propertyUid = "매물을 선택해 주세요.";

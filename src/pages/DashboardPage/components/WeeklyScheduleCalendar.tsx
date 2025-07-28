@@ -81,7 +81,7 @@ const WeeklyScheduleCalendar: React.FC<WeeklyScheduleCalendarProps> = ({
       {/* Calendar Content */}
       <div className="grid flex-1 p-4 min-h-0">
         {/* Desktop Grid View */}
-        <div className="hidden md:grid grid-cols-7 gap-2 h-full auto-rows-fr">
+        <div className="hidden lg:grid grid-cols-7 gap-2 h-full auto-rows-fr">
           {getWeekDates().map((date, index) => {
             const daySchedules = schedules.filter((schedule) =>
               dayjs(schedule.startDate).isSame(date, "day")
@@ -164,7 +164,7 @@ const WeeklyScheduleCalendar: React.FC<WeeklyScheduleCalendarProps> = ({
           })}
         </div>
 
-        <div className="flex md:hidden h-full flex-1 overflow-x-auto pb-2 scrollbar-thin scrollbar-track-gray-100 scrollbar-thumb-gray-400 hover:scrollbar-thumb-gray-500">
+        <div className="flex lg:hidden h-full flex-1 overflow-x-auto pb-2 scrollbar-thin scrollbar-track-gray-100 scrollbar-thumb-gray-400 hover:scrollbar-thumb-gray-500">
           <div className="flex gap-4 min-w-max pb-2">
             {getWeekDates().map((date, index) => {
               const daySchedules = schedules.filter((schedule) =>
@@ -178,7 +178,7 @@ const WeeklyScheduleCalendar: React.FC<WeeklyScheduleCalendarProps> = ({
                 <div
                   key={index}
                   className={`
-                    border rounded-lg p-4 w-[calc(33.333vw-20px)] min-w-[200px] flex-shrink-0 h-full 
+                    border rounded-lg p-4 lg:w-[calc(33.333vw-20px)] min-w-[200px] flex-shrink-0 h-full 
                     ${
                       isToday
                         ? "border-2 border-blue-600 bg-blue-50"

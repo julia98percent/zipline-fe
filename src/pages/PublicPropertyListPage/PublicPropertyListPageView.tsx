@@ -92,7 +92,7 @@ const PublicPropertyListPageView = ({
         {/* 상단 필터 바 */}
         <div className="flex flex-col gap-4 bg-white rounded-lg p-3 shadow-sm mb-5">
           {/* 모바일 필터 레이아웃 (md 미만) */}
-          <div className="md:hidden space-y-3">
+          <div className="lg:hidden space-y-3">
             {/* 주소 검색 */}
             <TextField
               fullWidth
@@ -137,7 +137,7 @@ const PublicPropertyListPageView = ({
           </div>
 
           {/* 데스크톱/태블릿 필터 레이아웃 (md 이상) */}
-          <div className="hidden md:block space-y-4">
+          <div className="hidden lg:block space-y-4">
             {/* 첫 번째 줄: 주소 검색 */}
             <div className="flex items-center gap-2">
               <TextField

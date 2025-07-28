@@ -99,9 +99,9 @@ const ContractBasicInfoEditModalView = ({
           계약 정보 수정
         </Typography>
       </DialogTitle>
-      <DialogContent sx={{ maxHeight: 600, overflowY: "auto" }}>
-        <Box sx={{ display: "flex", flexDirection: "column", gap: 3, mt: 2 }}>
-          <Box sx={{ display: "flex", gap: 2 }}>
+      <DialogContent className="max-h-[600px] overflow-y-auto">
+        <Box className="flex flex-col gap-4 mt-4">
+          <Box className="flex gap-2">
             <StringSelect
               value={category || ""}
               onChange={(e) =>
@@ -129,7 +129,7 @@ const ContractBasicInfoEditModalView = ({
             </StringSelect>
           </Box>
 
-          <Box sx={{ display: "flex", gap: 2 }}>
+          <Box className="flex gap-2">
             <TextField
               label="계약일"
               type="date"
@@ -149,7 +149,7 @@ const ContractBasicInfoEditModalView = ({
             />
           </Box>
 
-          <Box sx={{ display: "flex", gap: 2 }}>
+          <Box className="flex gap-2">
             <TextField
               label="계약 종료일"
               type="date"
@@ -191,7 +191,7 @@ const ContractBasicInfoEditModalView = ({
             ))}
           </StringSelect>
 
-          <Box sx={{ display: "flex", gap: 2 }}>
+          <Box className="flex gap-2">
             <TextField
               label="보증금 (원)"
               value={formatPrice(deposit)}
@@ -213,7 +213,7 @@ const ContractBasicInfoEditModalView = ({
             />
           </Box>
 
-          <Box sx={{ display: "flex", gap: 2 }}>
+          <Box className="flex gap-2">
             <TextField
               label="매매가 (원)"
               value={formatPrice(price)}
@@ -221,7 +221,7 @@ const ContractBasicInfoEditModalView = ({
               fullWidth
               placeholder="0"
             />
-            <Box sx={{ flex: 1 }} />
+            <Box className="flex-1" />
           </Box>
 
           <Autocomplete

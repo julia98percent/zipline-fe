@@ -6,10 +6,7 @@ const Header = () => {
       <Typography
         variant="h5"
         component="h1"
-        sx={{
-          color: "#164F9E",
-          fontWeight: "bold",
-        }}
+        className="font-bold text-primary"
       >
         로그인
       </Typography>

@@ -34,7 +34,7 @@ const ContractBasicInfoSection = ({
         error={!!errors.category}
         helperText={errors.category}
         fullWidth
-        sx={{ mb: 2 }}
+        className="mb-4"
       >
         <MenuItem value="SALE">매매</MenuItem>
         <MenuItem value="DEPOSIT">전세</MenuItem>
@@ -49,7 +49,7 @@ const ContractBasicInfoSection = ({
         error={!!errors.status}
         helperText={errors.status}
         fullWidth
-        sx={{ mb: 2 }}
+        className="mb-4"
       >
         {CONTRACT_STATUS_OPTION_LIST.map((s) => (
           <MenuItem key={s.value} value={s.value}>
@@ -66,7 +66,7 @@ const ContractBasicInfoSection = ({
         error={!!errors.propertyUid}
         helperText={errors.propertyUid}
         fullWidth
-        sx={{ mb: 2 }}
+        className="mb-4"
       >
         {propertyOptions.length > 0 ? (
           propertyOptions.map((p) => (

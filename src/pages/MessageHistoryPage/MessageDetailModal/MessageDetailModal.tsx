@@ -70,14 +70,7 @@ function MessageDetailModal({ open, onClose, messageHistory }: Props) {
           },
         }}
       >
-        <Box
-          sx={{
-            display: "flex",
-            justifyContent: "center",
-            alignItems: "center",
-            padding: "24px",
-          }}
-        >
+        <Box className="flex justify-center items-center p-6">
           <CircularProgress />
         </Box>
       </Dialog>
@@ -95,28 +88,22 @@ function MessageDetailModal({ open, onClose, messageHistory }: Props) {
         },
       }}
     >
-      <Box
-        sx={{
-          display: "flex",
-          justifyContent: "space-between",
-          alignItems: "center",
-          fontWeight: 700,
-          padding: "20px 24px 0 24px",
-        }}
-      >
-        <DialogTitle sx={{ padding: 0 }}>문자 발송 내역 상세</DialogTitle>
+      <Box className="flex justify-between items-center font-bold p-[20px_24px_0_24px]">
+        <DialogTitle className="font-bold text-primary text-xl p-0">
+          문자 발송 내역 상세
+        </DialogTitle>
         <IconButton onClick={onClose}>
           <Clear />
         </IconButton>
       </Box>
 
-      <DialogContent sx={{ display: "flex", flexDirection: "row", gap: 2 }}>
+      <DialogContent className="flex flex-row gap-4">
         <Stack spacing={2}>
           <Box className="flex flex-col items-center">
-            <Typography variant="subtitle1" fontWeight="semi-bold">
+            <Typography className="font-medium mb-2">
               문자 발송 요청 상태
             </Typography>
-            <Typography color="primary">
+            <Typography color="primary" className="font-semibold">
               {translateMessageStatusToKorean(messageHistory?.status)}
             </Typography>
           </Box>
@@ -125,17 +112,8 @@ function MessageDetailModal({ open, onClose, messageHistory }: Props) {
           <MessageDateInfo messageHistory={messageHistory} />
           <MessageLog messageHistory={messageHistory} />
         </Stack>
-        <Stack
-          sx={{
-            flex: 1,
-            display: "flex",
-            flexDirection: "column",
-            gap: 2,
-          }}
-        >
-          <Typography variant="subtitle1" fontWeight="semi-bold">
-            발송 요청 문자 목록
-          </Typography>
+        <Stack className="flex-1 flex flex-col gap-4">
+          <Typography className="font-medium">발송 요청 문자 목록</Typography>
 
           <MessageDetail messageList={messageList} />
         </Stack>

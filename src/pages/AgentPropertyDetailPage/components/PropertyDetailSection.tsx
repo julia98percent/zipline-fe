@@ -28,8 +28,8 @@ const PropertyDetailSection = ({ property }: PropertyDetailSectionProps) => {
   };
 
   return (
-    <InfoCard>
-      <Typography variant="h6" fontWeight="bold" gutterBottom>
+    <InfoCard className="rounded-lg bg-white shadow-sm">
+      <Typography className="text-xl font-bold text-primary" gutterBottom>
         매물 세부정보
       </Typography>
 

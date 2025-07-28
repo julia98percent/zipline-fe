@@ -96,78 +96,44 @@ function SubmittedSurveyPopup() {
             elevation: 3,
           }}
         >
-          <Box
-            sx={{
-              py: 1,
-              px: 2,
-              bgcolor: "#f5f5f5",
-              borderBottom: "1px solid #e0e0e0",
-            }}
-          >
-            <Typography variant="subtitle2" sx={{ fontWeight: 600 }}>
+          <Box className="py-2 px-4 bg-gray-100 border-b border-gray-300">
+            <Typography variant="subtitle2" className="font-semibold">
               제출된 설문
             </Typography>
           </Box>
 
           {loading ? (
-            <Box
-              sx={{
-                display: "flex",
-                justifyContent: "center",
-                alignItems: "center",
-                padding: 6,
-              }}
-            >
+            <Box className="flex justify-center items-center p-12">
               <CircularProgress color="primary" />
             </Box>
           ) : notifications && notifications.length > 0 ? (
             <div>
-              <Box sx={{ maxHeight: 280, overflow: "auto" }}>
+              <Box className="max-h-70 overflow-auto max-h-70">
                 {notifications.map((notification, index) => (
                   <Box key={notification.surveyResponseUid}>
-                    <MenuItem
-                      sx={{
-                        display: "block",
-                        py: 1.5,
-                        px: 2,
-                        cursor: "default",
-                        "&:hover": {
-                          bgcolor: "#f9f9f9",
-                        },
-                      }}
-                    >
+                    <MenuItem className="block py-3 px-4 cursor-default hover:bg-gray-50">
                       <Typography
                         variant="caption"
                         color="text.secondary"
-                        sx={{ display: "block", mb: 0.5 }}
+                        className="block mb-1"
                       >
                         제출일: {formatDate(notification.submittedAt)}
                       </Typography>
                       <Typography
                         variant="body2"
-                        sx={{
-                          fontWeight: 500,
-                          color: "#164F9E",
-                        }}
+                        className="font-medium text-primary"
                       >
                         {notification.name}님 / {notification.phoneNumber}
                       </Typography>
                     </MenuItem>
                     {index < notifications.length - 1 && (
-                      <Divider sx={{ my: 0 }} />
+                      <Divider className="my-0" />
                     )}
                   </Box>
                 ))}
               </Box>
               <Divider />
-              <Box
-                sx={{
-                  display: "flex",
-                  justifyContent: "center",
-                  py: 1.5,
-                  bgcolor: "#f9f9f9",
-                }}
-              >
+              <Box className="flex justify-center py-3 bg-gray-50">
                 <Pagination
                   count={totalPages}
                   page={page}
@@ -180,7 +146,7 @@ function SubmittedSurveyPopup() {
               </Box>
             </div>
           ) : (
-            <Box sx={{ p: 2, textAlign: "center" }}>
+            <Box className="p-4 text-center">
               <Typography variant="body2" color="text.secondary">
                 알림이 없습니다.
               </Typography>

@@ -16,7 +16,7 @@ const PropertyFeaturesSection = ({
   return (
     <>
       {/* 반려동물 여부 */}
-      <Typography variant="subtitle1" sx={{ mt: 2 }}>
+      <Typography variant="subtitle1" className="mt-4">
         반려동물 여부
       </Typography>
       <RadioGroup
@@ -29,7 +29,7 @@ const PropertyFeaturesSection = ({
       </RadioGroup>
 
       {/* 건물 엘리베이터 여부 */}
-      <Typography variant="subtitle1" sx={{ mt: 2 }}>
+      <Typography variant="subtitle1" className="mt-4">
         건물 엘리베이터 여부
       </Typography>
       <RadioGroup

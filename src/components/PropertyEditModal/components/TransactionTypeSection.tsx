@@ -25,7 +25,7 @@ const TransactionTypeSection = ({
 }: TransactionTypeSectionProps) => {
   return (
     <>
-      <Typography variant="subtitle1" sx={{ mt: 2 }}>
+      <Typography variant="subtitle1" className="mt-4">
         거래 유형
       </Typography>
       <RadioGroup
@@ -44,7 +44,7 @@ const TransactionTypeSection = ({
           label="매매 가격"
           value={price}
           onChange={onPriceChange}
-          sx={{ mt: 2 }}
+          className="mt-4"
           fullWidth
         />
       )}
@@ -53,7 +53,7 @@ const TransactionTypeSection = ({
           label="보증금"
           value={deposit}
           onChange={onDepositChange}
-          sx={{ mt: 2 }}
+          className="mt-4"
           fullWidth
         />
       )}
@@ -63,14 +63,14 @@ const TransactionTypeSection = ({
             label="보증금"
             value={deposit}
             onChange={onDepositChange}
-            sx={{ mt: 2 }}
+            className="mt-4"
             fullWidth
           />
           <TextField
             label="월세"
             value={monthlyRent}
             onChange={onMonthlyRentChange}
-            sx={{ mt: 2 }}
+            className="mt-4"
             fullWidth
           />
         </>

@@ -26,27 +26,17 @@ const CustomerList = ({
   onCustomerSelect,
 }: CustomerListProps) => {
   return (
-    <List
-      sx={{
-        height: 320,
-        overflowY: "auto",
-        border: "1px solid #eee",
-        borderRadius: "8px",
-        background: "#fff",
-        mb: 2,
-      }}
-    >
+    <List className="h-[320px] overflow-y-auto border border-[#eee] rounded-lg bg-white mb-4">
       {loading ? (
-        <Box sx={{ display: "flex", justifyContent: "center", p: 2 }}>
+        <Box className="flex justify-center p-4">
           <CircularProgress size={24} />
         </Box>
       ) : (
         customers.map((customer) => (
           <ListItem
             key={customer.uid}
+            className="mb-2 rounded-xs"
             sx={{
-              borderRadius: 1,
-              mb: 1,
               backgroundColor: selectedCustomers.some(
                 (c) => c.uid === customer.uid
               )
@@ -80,7 +70,7 @@ const CustomerList = ({
                 }}
               >
                 {selectedCustomers.some((c) => c.uid === customer.uid) ? (
-                  <CloseIcon sx={{ color: "#164F9E" }} />
+                  <CloseIcon className="text-primary" />
                 ) : (
                   <AddIcon />
                 )}

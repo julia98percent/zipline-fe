@@ -45,7 +45,7 @@ const EmailInput = ({
         InputProps={{
           endAdornment: isError && (
             <Tooltip title={errorMessage} arrow placement="right">
-              <ErrorOutlineIcon color="error" sx={{ cursor: "help" }} />
+              <ErrorOutlineIcon color="error" className="cursor-help" />
             </Tooltip>
           ),
         }}

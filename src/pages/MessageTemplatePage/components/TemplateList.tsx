@@ -25,20 +25,14 @@ const TemplateList: React.FC<TemplateListProps> = ({
   onAddNewTemplate,
 }) => {
   return (
-    <Paper
-      sx={{
-        p: 3,
-        borderRadius: "8px",
-        boxShadow: "0 2px 6px rgba(0, 0, 0, 0.05)",
-      }}
-    >
-      <Typography variant="h6" sx={{ mb: 1, color: "#333333" }}>
+    <Paper className="p-6 rounded-lg shadow-sm">
+      <Typography variant="h6" className="mb-2 text-gray-800">
         템플릿 목록
       </Typography>
-      <List sx={{ py: 0 }}>
+      <List className="py-0">
         {templateList.map((category) => (
           <Box key={category.id}>
-            <ListItem sx={{ px: 0, py: 0.5 }}>
+            <ListItem className="px-0 py-1">
               <ListItemText
                 primary={category.name}
                 sx={{
@@ -53,18 +47,12 @@ const TemplateList: React.FC<TemplateListProps> = ({
             {category.templates.map((template) => (
               <ListItem
                 key={template.uid}
-                sx={{
-                  pl: 2,
-                  py: 0.5,
-                  cursor: "pointer",
-                  minHeight: "32px",
+                className="pl-4 py-1 cursor-pointer min-h-8 hover:bg-blue-50"
+                style={{
                   backgroundColor:
                     selectedTemplate?.uid === template.uid
                       ? "#F0F7FF"
                       : "transparent",
-                  "&:hover": {
-                    backgroundColor: "#F0F7FF",
-                  },
                 }}
                 onClick={() => onTemplateSelect(template)}
               >
@@ -72,13 +60,12 @@ const TemplateList: React.FC<TemplateListProps> = ({
                   primary={
                     <Typography
                       variant="body2"
-                      sx={{
+                      className="text-sm hover:text-primary"
+                      style={{
                         color:
                           selectedTemplate?.uid === template.uid
                             ? "#164F9E"
                             : "#666666",
-                        "&:hover": { color: "#164F9E" },
-                        fontSize: "0.875rem",
                       }}
                     >
                       • {template.name}
@@ -87,7 +74,7 @@ const TemplateList: React.FC<TemplateListProps> = ({
                 />
               </ListItem>
             ))}
-            <Divider sx={{ my: 0.5 }} />
+            <Divider className="my-1" />
           </Box>
         ))}
       </List>

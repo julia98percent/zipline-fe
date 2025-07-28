@@ -19,14 +19,7 @@ function MessageDetail({ messageList }: { messageList: MessageDetailType[] }) {
 
   return (
     <>
-      <Box
-        sx={{
-          padding: 2,
-          border: "1px solid #ddd",
-          borderRadius: 1,
-          backgroundColor: "#f9f9f9",
-        }}
-      >
+      <Box className="p-4 bg-white rounded-lg shadow-md">
         <Stack spacing={1}>
           {messageList.length > 0 && (
             <>
@@ -71,13 +64,7 @@ function MessageDetail({ messageList }: { messageList: MessageDetailType[] }) {
           )}
         </Stack>
       </Box>
-      <Box
-        sx={{
-          display: "flex",
-          justifyContent: "space-between",
-          alignItems: "center",
-        }}
-      >
+      <Box className="flex justify-between items-center">
         <Button
           startIcon={<NavigateBefore />}
           onClick={handlePrevious}

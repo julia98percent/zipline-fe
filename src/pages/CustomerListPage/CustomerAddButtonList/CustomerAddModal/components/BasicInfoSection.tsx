@@ -24,9 +24,9 @@ export default function BasicInfoSection({
   onFieldChange,
 }: BasicInfoSectionProps) {
   return (
-    <Box sx={{ mb: 4 }}>
-      <Box sx={{ mb: 2 }}>
-        <Typography variant="subtitle2" sx={{ mb: 1 }}>
+    <Box className="mb-8">
+      <Box className="mb-4">
+        <Typography variant="subtitle2" className="mb-2">
           이름
         </Typography>
         <TextField
@@ -38,8 +38,8 @@ export default function BasicInfoSection({
           size="small"
         />
       </Box>
-      <Box sx={{ mb: 2 }}>
-        <Typography variant="subtitle2" sx={{ mb: 1 }}>
+      <Box className="mb-4">
+        <Typography variant="subtitle2" className="mb-1">
           전화번호
         </Typography>
         <TextField
@@ -51,8 +51,8 @@ export default function BasicInfoSection({
           size="small"
         />
       </Box>
-      <Box sx={{ mb: 2 }}>
-        <Typography variant="subtitle2" sx={{ mb: 1 }}>
+      <Box className="mb-4">
+        <Typography variant="subtitle2" className="mb-2">
           생년월일
         </Typography>
         <TextField
@@ -69,7 +69,7 @@ export default function BasicInfoSection({
       </Box>
 
       <Box>
-        <Typography variant="subtitle2" sx={{ mb: 1 }}>
+        <Typography variant="subtitle2" className="mb-2">
           통신사
         </Typography>
         <FormControl>
@@ -78,9 +78,9 @@ export default function BasicInfoSection({
             value={telProvider}
             onChange={onFieldChange}
             row
-            sx={{ gap: 4 }}
+            className="gap-4"
           >
-            <Box sx={{ display: "flex", flexDirection: "column", gap: 1 }}>
+            <Box className="flex gap-2 flex-col">
               <FormControlLabel value="SKT" control={<Radio />} label="SKT" />
               <FormControlLabel
                 value="SKT 알뜰폰"
@@ -88,7 +88,7 @@ export default function BasicInfoSection({
                 label="SKT 알뜰폰"
               />
             </Box>
-            <Box sx={{ display: "flex", flexDirection: "column", gap: 1 }}>
+            <Box className="flex gap-2 flex-col">
               <FormControlLabel value="KT" control={<Radio />} label="KT" />
               <FormControlLabel
                 value="KT 알뜰폰"
@@ -96,7 +96,7 @@ export default function BasicInfoSection({
                 label="KT 알뜰폰"
               />
             </Box>
-            <Box sx={{ display: "flex", flexDirection: "column", gap: 1 }}>
+            <Box className="flex gap-2 flex-col">
               <FormControlLabel value="LGU+" control={<Radio />} label="LGU+" />
               <FormControlLabel
                 value="LGU+ 알뜰폰"

@@ -45,13 +45,7 @@ const DeleteConfirmModal = ({
         },
       }}
     >
-      <DialogTitle
-        sx={{
-          display: "flex",
-          justifyContent: "space-between",
-          alignItems: "center",
-        }}
-      >
+      <DialogTitle className="flex justify-between items-center">
         <Typography variant="h6" fontWeight="bold">
           {title || defaultTitle}
         </Typography>
@@ -66,7 +60,7 @@ const DeleteConfirmModal = ({
         </Typography>
       </DialogContent>
 
-      <DialogActions sx={{ justifyContent: "center", mb: 2 }}>
+      <DialogActions className="flex justify-center mb-4">
         <Button
           onClick={onConfirm}
           variant="contained"

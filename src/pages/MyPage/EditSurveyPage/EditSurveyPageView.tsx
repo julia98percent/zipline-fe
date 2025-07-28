@@ -69,14 +69,7 @@ const EditSurveyPageView = ({
 
   if (loading) {
     return (
-      <Box
-        sx={{
-          display: "flex",
-          justifyContent: "center",
-          alignItems: "center",
-          height: "100vh",
-        }}
-      >
+      <Box className="h-screen flex items-center justify-center">
         <CircularProgress color="primary" />
       </Box>
     );
@@ -87,66 +80,33 @@ const EditSurveyPageView = ({
       <PageHeader title="설문 수정" />
 
       <Box
-        sx={{
-          display: "flex",
-          justifyContent: "flex-end",
-          position: "sticky",
-          top: "64px",
-          zIndex: 999,
-          backgroundColor: "white",
-          padding: "16px 32px",
-          borderBottom: "1px solid #e0e0e0",
-          boxShadow: "0 2px 4px rgba(0,0,0,0.05)",
-          gap: 2,
-        }}
+        className="flex justify-end sticky top-[64px] z-[999] bg-white gap-2
+        px-8 py-4 border-b border-[#e0e0e0] shadow-[0_2px_4px_rgba(0,0,0,0.05)]"
       >
-        <Button
-          onClick={onAddQuestion}
-          variant="outlined"
-          className="px-4 py-2"
-        >
+        <Button onClick={onAddQuestion} variant="outlined">
           질문 추가
         </Button>
-        <Button onClick={onUpdateSurvey} className="px-4 py-2">
-          설문 저장
-        </Button>
+        <Button onClick={onUpdateSurvey}>설문 저장</Button>
       </Box>
 
       {/* Content */}
-      <Box sx={{ p: 4 }}>
+      <Box className="p-8">
         <TextField
           fullWidth
           label="설문 제목"
           value={survey.title}
           onChange={handleSurveyTitleChange}
-          sx={{ mb: 4 }}
+          className="mb-16"
         />
 
         {survey.questions.map((question, questionIndex) => (
           <Paper
             key={questionIndex}
             elevation={1}
-            sx={{
-              mb: 4,
-              p: 3,
-              borderRadius: 2,
-              backgroundColor: "#f9f9f9",
-              position: "relative",
-            }}
+            className="mb-8 p-6 rounded-md bg-[#f9f9f9] relative"
           >
             {questionIndex < 2 && (
-              <Box
-                sx={{
-                  backgroundColor: "#e3f2fd",
-                  color: "#1565c0",
-                  padding: "4px 8px",
-                  borderRadius: 1,
-                  fontSize: "0.75rem",
-                  display: "inline",
-                  float: "right",
-                  marginBottom: "12px",
-                }}
-              >
+              <Box className="inline bg-[#e3f2fd] text-primary mb-4 float-right text-xs px-2 py-1 rounded">
                 기본 질문
               </Box>
             )}
@@ -160,7 +120,7 @@ const EditSurveyPageView = ({
                 onChange={(event) =>
                   onQuestionChange(questionIndex, "title", event.target.value)
                 }
-                sx={{ mb: 2 }}
+                className="mb-4"
               />
               <TextField
                 disabled={questionIndex < 2}
@@ -174,7 +134,7 @@ const EditSurveyPageView = ({
                     event.target.value
                   )
                 }
-                sx={{ mb: 2 }}
+                className="mb-4"
               />
               <StringBooleanSelect
                 disabled={questionIndex < 2}
@@ -204,7 +164,7 @@ const EditSurveyPageView = ({
                   />
                 }
                 label={
-                  <Typography sx={{ fontWeight: "500", color: "#555" }}>
+                  <Typography className="font-medium text-[#555]">
                     필수 질문
                   </Typography>
                 }
@@ -214,7 +174,7 @@ const EditSurveyPageView = ({
             {(question.type === "SINGLE_CHOICE" ||
               question.type === "MULTIPLE_CHOICE") && (
               <>
-                <Divider sx={{ my: 2 }} />
+                <Divider className="my-4" />
 
                 {/* 단일 선택 객관식 */}
                 {question.type === "SINGLE_CHOICE" && (
@@ -240,7 +200,7 @@ const EditSurveyPageView = ({
               </>
             )}
 
-            <Box sx={{ display: "flex", justifyContent: "flex-end", mt: 2 }}>
+            <Box className="flex justify-end mt-4">
               {isQuestionDeletable(questionIndex) ? (
                 <Button
                   color="error"

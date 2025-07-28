@@ -76,8 +76,8 @@ export default function CustomerSelectModalView({
       }}
     >
       <DialogTitle className="pb-2">
-        <Typography variant="h6" className="font-bold">
           단체 문자 발송 대상 선택
+        <Typography className="text-xl font-bold text-primary mb-4">
         </Typography>
       </DialogTitle>
 

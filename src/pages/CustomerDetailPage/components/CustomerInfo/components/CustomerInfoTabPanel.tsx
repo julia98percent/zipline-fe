@@ -118,7 +118,7 @@ const CustomerInfoTabPanel = ({
     <TableContainer
       component={Paper}
       elevation={0}
-      sx={{ mt: 2, boxShadow: "none" }}
+      className="mt-4 shadow-none"
     >
       {renderTabContent()}
     </TableContainer>

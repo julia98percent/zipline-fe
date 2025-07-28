@@ -30,7 +30,7 @@ const ContractPriceSection = ({
         helperText={errors.deposit}
         type="number"
         fullWidth
-        sx={{ mt: 2 }}
+        className="mt-4"
       />
       <TextField
         label="월세 (숫자)"
@@ -40,7 +40,7 @@ const ContractPriceSection = ({
         helperText={errors.monthlyRent}
         type="number"
         fullWidth
-        sx={{ mt: 2 }}
+        className="mt-4"
       />
       <TextField
         label="매매가 (숫자)"
@@ -50,7 +50,7 @@ const ContractPriceSection = ({
         helperText={errors.price}
         type="number"
         fullWidth
-        sx={{ mt: 2 }}
+        className="mt-4"
       />
     </>
   );

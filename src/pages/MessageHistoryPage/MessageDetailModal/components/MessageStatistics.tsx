@@ -14,13 +14,9 @@ function MessageStatistics({
 
   return (
     <>
-      <Stack
-        direction="row"
-        spacing={2}
-        sx={{ display: "grid", gridAutoFlow: "column" }}
-      >
+      <Stack direction="row" spacing={2} className="grid grid-flow-col">
         {stats.map(({ label, value }) => (
-          <Stack key={label} spacing={1} sx={{ alignItems: "center" }}>
+          <Stack key={label} spacing={1} className="items-center">
             <Typography variant="body2">{label}</Typography>
             <Typography variant="body2">{value}</Typography>
           </Stack>

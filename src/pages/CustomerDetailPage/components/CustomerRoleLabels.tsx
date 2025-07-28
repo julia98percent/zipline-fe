@@ -36,27 +36,24 @@ const CustomerRoleLabels = ({
   onLabelInputChange,
 }: CustomerRoleLabelsProps) => {
   return (
-    <Paper elevation={0} sx={{ flex: 1, p: 3, borderRadius: 2, mt: 1 }}>
+    <Paper elevation={0} className="flex-1 p-6 rounded-lg mt-2">
       {/* 역할 정보 영역 */}
-      <Box sx={{ mb: 4 }}>
-        <Typography
-          variant="h6"
-          sx={{ mb: 2, color: "#164F9E", fontWeight: "bold" }}
-        >
+      <Box className="mb-8">
+        <Typography variant="h6" className="mb-4 font-bold text-primary">
           역할
         </Typography>
-        <Box sx={{ display: "flex", gap: 1, flexWrap: "wrap" }}>
+        <Box className="flex gap-2 flex-wrap">
           {isEditing ? (
             <>
               <Chip
                 label="임차인"
                 onClick={() => onInputChange("tenant", !editedCustomer?.tenant)}
+                className="cursor-pointer"
                 sx={{
                   backgroundColor: editedCustomer?.tenant
                     ? "#FEF5EB"
                     : "#F5F5F5",
                   color: editedCustomer?.tenant ? "#F2994A" : "#757575",
-                  cursor: "pointer",
                 }}
               />
               <Chip
@@ -64,34 +61,34 @@ const CustomerRoleLabels = ({
                 onClick={() =>
                   onInputChange("landlord", !editedCustomer?.landlord)
                 }
+                className="cursor-pointer"
                 sx={{
                   backgroundColor: editedCustomer?.landlord
                     ? "#FDEEEE"
                     : "#F5F5F5",
                   color: editedCustomer?.landlord ? "#EB5757" : "#757575",
-                  cursor: "pointer",
                 }}
               />
               <Chip
                 label="매수인"
                 onClick={() => onInputChange("buyer", !editedCustomer?.buyer)}
+                className="cursor-pointer"
                 sx={{
                   backgroundColor: editedCustomer?.buyer
                     ? "#E9F7EF"
                     : "#F5F5F5",
                   color: editedCustomer?.buyer ? "#219653" : "#757575",
-                  cursor: "pointer",
                 }}
               />
               <Chip
                 label="매도인"
                 onClick={() => onInputChange("seller", !editedCustomer?.seller)}
+                className="cursor-pointer"
                 sx={{
                   backgroundColor: editedCustomer?.seller
                     ? "#EBF2FC"
                     : "#F5F5F5",
                   color: editedCustomer?.seller ? "#2F80ED" : "#757575",
-                  cursor: "pointer",
                 }}
               />
             </>
@@ -132,13 +129,10 @@ const CustomerRoleLabels = ({
 
       {/* 라벨 영역 */}
       <Box>
-        <Typography
-          variant="h6"
-          sx={{ mb: 2, color: "#164F9E", fontWeight: "bold" }}
-        >
+        <Typography variant="h6" className="mb-4 font-bold text-primary">
           라벨
         </Typography>
-        <Box sx={{ display: "flex", flexWrap: "wrap", gap: 1 }}>
+        <Box className="flex flex-wrap gap-2">
           {isEditing ? (
             <Autocomplete
               multiple
@@ -337,7 +331,7 @@ const CustomerRoleLabels = ({
               renderOption={(props, option) => (
                 <Box component="li" {...props}>
                   {option.uid === NEW_LABEL_TEMP_UID ? (
-                    <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
+                    <Box className="flex items-center gap-2">
                       <span>"{option.name}" 새 라벨 생성</span>
                       <Chip
                         label="NEW"
@@ -351,7 +345,7 @@ const CustomerRoleLabels = ({
                   )}
                 </Box>
               )}
-              sx={{ width: "100%" }}
+              className="w-full"
             />
           ) : (
             <>

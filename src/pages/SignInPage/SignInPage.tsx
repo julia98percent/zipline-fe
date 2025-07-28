@@ -62,14 +62,10 @@ const SignInPage = () => {
               alt="공인중개사 CRM 서비스"
               className="w-96 mx-auto mb-8"
             />
-            <Typography
-              variant="h4"
-              component="h1"
-              sx={{ fontWeight: "bold", mb: 1 }}
-            >
+            <Typography variant="h4" component="h1" className="font-bold mb-2">
               Zip-line
             </Typography>
-            <Typography variant="h6" sx={{ opacity: 0.9 }}>
+            <Typography variant="h6" className="opacity-90">
               흩어진 중개 업무, 여기서 전부 관리해요!
             </Typography>
           </div>
@@ -102,22 +98,11 @@ const SignInPage = () => {
               로그인
             </Button>
 
-            <Box
-              sx={{
-                display: "flex",
-                flexDirection: "column",
-                alignItems: "center",
-                mt: 3,
-                p: 2,
-                backgroundColor: "#F9FAFB",
-                borderRadius: "8px",
-                border: "1px solid #E5E7EB",
-              }}
-            >
+            <Box className="flex flex-col items-center mt-6 p-4 bg-gray-50 rounded-lg border border-gray-200">
               <Typography
                 variant="subtitle2"
                 color="text.secondary"
-                sx={{ mb: 1 }}
+                className="mb-2"
               >
                 테스트 계정
               </Typography>
@@ -129,15 +114,7 @@ const SignInPage = () => {
               </Typography>
             </Box>
 
-            <Box
-              sx={{
-                display: "flex",
-                justifyContent: "center",
-                alignItems: "center",
-                mt: 2,
-                gap: 1,
-              }}
-            >
+            <Box className="flex justify-center items-center mt-4 gap-2">
               <AuthLinks />
             </Box>
           </div>

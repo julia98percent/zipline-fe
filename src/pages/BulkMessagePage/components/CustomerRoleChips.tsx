@@ -7,7 +7,7 @@ interface CustomerRoleChipsProps {
 
 const CustomerRoleChips = ({ customer }: CustomerRoleChipsProps) => {
   return (
-    <Box sx={{ display: "flex", gap: 1, mt: 0.5 }}>
+    <Box className="flex gap-1 mt-1">
       {customer.tenant && (
         <Chip
           label="임차인"

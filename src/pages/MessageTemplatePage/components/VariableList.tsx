@@ -36,27 +36,16 @@ const VariableList: React.FC<VariableListProps> = ({
   };
 
   return (
-    <Paper
-      sx={{
-        p: 3,
-        borderRadius: "8px",
-        boxShadow: "0 2px 6px rgba(0, 0, 0, 0.05)",
-      }}
-    >
-      <Typography variant="h6" sx={{ mb: 2, color: "#333333" }}>
+    <Paper className="p-6 rounded-lg shadow-sm">
+      <Typography variant="h6" className="mb-4 text-gray-800">
         변수 목록
       </Typography>
-      <List sx={{ py: 0 }}>
+      <List className="py-0">
         {VARIABLE_LIST.map((variable) => (
           <ListItem
             key={variable.key}
+            className="px-3 py-2 cursor-pointer rounded-md transition-all duration-200 mb-1"
             sx={{
-              px: 1.5,
-              py: 1,
-              cursor: "pointer",
-              borderRadius: "6px",
-              transition: "all 0.2s ease",
-              mb: 0.5,
               "&:hover": {
                 backgroundColor: "rgba(22, 79, 158, 0.04)",
                 "& .variable-insert-icon": {
@@ -69,67 +58,28 @@ const VariableList: React.FC<VariableListProps> = ({
           >
             <ListItemText
               primary={
-                <Box
-                  sx={{
-                    display: "flex",
-                    alignItems: "center",
-                    justifyContent: "space-between",
-                  }}
-                >
-                  <Box sx={{ display: "flex", alignItems: "center" }}>
+                <Box className="flex items-center justify-between">
+                  <Box className="flex items-center">
                     <Typography
                       variant="body2"
-                      sx={{
-                        color: "#333333",
-                        fontWeight: 500,
-                      }}
+                      className="text-gray-800 font-medium"
                     >
                       {variable.label}
                     </Typography>
                     <Typography
                       variant="caption"
-                      sx={{
-                        color: "#666666",
-                        ml: 1,
-                      }}
+                      className="text-gray-600 ml-2"
                     >
                       {`{{${variable.key}}}`}
                     </Typography>
                   </Box>
-                  <Box
-                    className="variable-insert-icon"
-                    sx={{
-                      color: "#164F9E",
-                      fontSize: "0.75rem",
-                      opacity: 0,
-                      transform: "translateX(-4px)",
-                      transition: "all 0.2s ease",
-                      display: "flex",
-                      alignItems: "center",
-                      gap: 0.5,
-                    }}
-                  >
-                    <Typography
-                      variant="caption"
-                      sx={{
-                        fontWeight: 500,
-                      }}
-                    >
+                  <Box className="variable-insert-icon text-xs flex items-center gap-1 transition-all duration-200 opacity-0 transform -translate-x-1 text-primary">
+                    <Typography variant="caption" className="font-medium">
                       추가
                     </Typography>
                     <Box
                       component="span"
-                      sx={{
-                        width: "16px",
-                        height: "16px",
-                        display: "flex",
-                        alignItems: "center",
-                        justifyContent: "center",
-                        borderRadius: "4px",
-                        backgroundColor: "#164F9E",
-                        color: "#FFFFFF",
-                        fontSize: "12px",
-                      }}
+                      className="w-4 h-4 flex items-center justify-center rounded bg-primary text-white text-xs"
                     >
                       +
                     </Box>
@@ -140,7 +90,11 @@ const VariableList: React.FC<VariableListProps> = ({
           </ListItem>
         ))}
       </List>
-      <Typography variant="caption" color="textSecondary" sx={{ mt: 1 }}>
+      <Typography
+        variant="caption"
+        color="textSecondary"
+        className="mt-2 block"
+      >
         변수는 반드시 <b>{"{{변수명}}"}</b> 형태로만 입력해 주세요.
         <br />
         (예: {"{{이름}}"}, {"{{생년월일}}"}, {"{{관심지역}}"})

@@ -113,21 +113,9 @@ const ContractStatusStepper = ({
     currentStatus === "CANCELLED" || currentStatus === "TERMINATED";
 
   return (
-    <Paper
-      elevation={1}
-      sx={{
-        p: 3,
-        borderRadius: 2,
-        backgroundColor: "#fafafa",
-      }}
-    >
-      <Box
-        display="flex"
-        justifyContent="space-between"
-        alignItems="center"
-        mb={2}
-      >
-        <Typography variant="h6" fontWeight="bold">
+    <Paper elevation={1} className="p-6 rounded-lg bg-white shadow-sm">
+      <Box className="flex justify-between items-center mb-4">
+        <Typography variant="h6" className="font-bold text-primary">
           계약 진행 상태
         </Typography>
         {!isTerminated && onStatusChange && (
@@ -135,15 +123,7 @@ const ContractStatusStepper = ({
             <IconButton
               onClick={handleMenuClick}
               size="small"
-              sx={{
-                backgroundColor: "white",
-                border: "1px solid #e0e0e0",
-                boxShadow: "0 1px 3px rgba(0,0,0,0.12)",
-                "&:hover": {
-                  backgroundColor: "#f0f0f0",
-                  borderColor: "#d0d0d0",
-                },
-              }}
+              className="bg-gray-100 hover:bg-gray-300"
               title="계약 상태 변경"
             >
               <MoreVert fontSize="small" />
@@ -179,13 +159,13 @@ const ContractStatusStepper = ({
       </Box>
 
       {isTerminated ? (
-        <Box display="flex" alignItems="center" justifyContent="center" py={2}>
-          <Cancel sx={{ color: "#d32f2f", mr: 1, fontSize: 28 }} />
-          <Typography variant="h6" color="#d32f2f" fontWeight="bold">
+        <Box className="flex items-center justify-center py-4">
+          <Cancel className="text-red-700 mr-2 text-3xl" />
+          <Typography variant="h6" className="text-red-700 font-bold">
             계약 {currentStatus === "CANCELLED" ? "취소됨" : "해지됨"}
           </Typography>
           {getStatusDate(currentStatus) && (
-            <Typography variant="body2" color="#999" ml={2}>
+            <Typography variant="body2" className="text-gray-500 ml-4">
               (
               {new Date(getStatusDate(currentStatus)!).toLocaleDateString(
                 "ko-KR"
@@ -224,13 +204,8 @@ const ContractStatusStepper = ({
                 <StepLabel
                   StepIconComponent={() => (
                     <Box
+                      className="w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold transition-all duration-300"
                       sx={{
-                        width: 32,
-                        height: 32,
-                        borderRadius: "50%",
-                        display: "flex",
-                        alignItems: "center",
-                        justifyContent: "center",
                         backgroundColor: isCompleted
                           ? "#4caf50"
                           : isActive
@@ -244,9 +219,6 @@ const ContractStatusStepper = ({
                             : isClickable
                             ? "#1976d2"
                             : "#666",
-                        fontSize: 12,
-                        fontWeight: "bold",
-                        transition: "all 0.3s ease",
                         cursor: isClickable ? "pointer" : "default",
                         border: isClickable ? "2px solid #1976d2" : "none",
                         "&:hover": isClickable
@@ -264,16 +236,17 @@ const ContractStatusStepper = ({
                       }
                     >
                       {isCompleted ? (
-                        <CheckCircle sx={{ fontSize: 20 }} />
+                        <CheckCircle className="text-xl" />
                       ) : (
                         index + 1
                       )}
                     </Box>
                   )}
                 >
-                  <Box textAlign="center" mt={1}>
+                  <Box className="text-center mt-2">
                     <Typography
                       variant="caption"
+                      className="block text-xs leading-tight"
                       sx={{
                         fontWeight: isCompleted || isActive ? "bold" : "normal",
                         color: isCompleted
@@ -283,9 +256,6 @@ const ContractStatusStepper = ({
                           : isClickable
                           ? "#1976d2"
                           : "#666",
-                        fontSize: 10,
-                        lineHeight: 1.2,
-                        display: "block",
                       }}
                     >
                       {getStatusLabel(step)}
@@ -293,12 +263,7 @@ const ContractStatusStepper = ({
                     {(isCompleted || isActive) && stepDate && (
                       <Typography
                         variant="caption"
-                        sx={{
-                          display: "block",
-                          color: "#999",
-                          fontSize: 9,
-                          mt: 0.25,
-                        }}
+                        className="block text-gray-500 text-xs mt-1"
                       >
                         {new Date(stepDate).toLocaleDateString("ko-KR", {
                           month: "short",

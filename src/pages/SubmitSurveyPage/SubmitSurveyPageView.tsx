@@ -42,35 +42,22 @@ const SubmitSurveyPageView = ({
 }: SubmitSurveyPageViewProps) => {
   if (loading) {
     return (
-      <Box
-        sx={{
-          display: "flex",
-          justifyContent: "center",
-          alignItems: "center",
-          height: "100vh",
-        }}
-      >
+      <Box className="flex justify-center items-center h-screen">
         <CircularProgress color="primary" />
       </Box>
     );
   }
 
   return (
-    <Box sx={{ p: 4 }}>
-      <Typography variant="h4" sx={{ mb: 4 }}>
+    <Box className="p-8">
+      <Typography variant="h4" className="mb-8">
         설문 답변 제출
       </Typography>
 
       {Object.keys(validationErrors).length > 0 && (
         <Paper
           elevation={0}
-          sx={{
-            mb: 4,
-            p: 2,
-            borderRadius: 2,
-            backgroundColor: "#FFEBEE",
-            border: "1px solid #FFCDD2",
-          }}
+          className="mb-8 p-4 rounded-lg bg-red-50 border border-red-200"
         >
           <Typography variant="subtitle1" color="error">
             필수 항목을 모두 입력해주세요.
@@ -85,23 +72,20 @@ const SubmitSurveyPageView = ({
           <Paper
             key={question.id}
             elevation={1}
-            sx={{
-              mb: 4,
-              p: 3,
-              borderRadius: 2,
-              backgroundColor: "#f9f9f9",
+            className="mb-8 p-6 rounded-lg bg-gray-50"
+            style={{
               border: isError ? "1px solid #f44336" : "none",
             }}
           >
             <Typography variant="h6">
               {question.title}
               {question.required && (
-                <Box component="span" sx={{ color: "#f44336", ml: 1 }}>
+                <Box component="span" className="text-red-600 ml-2">
                   *
                 </Box>
               )}
             </Typography>
-            <Typography variant="body2" sx={{ mb: 2 }}>
+            <Typography variant="body2" className="mb-4">
               {question.description}
             </Typography>
 
@@ -109,7 +93,7 @@ const SubmitSurveyPageView = ({
               <Typography
                 variant="caption"
                 color="error"
-                sx={{ display: "block", mb: 2 }}
+                className="block mb-4"
               >
                 이 항목은 필수입니다.
               </Typography>
@@ -133,15 +117,15 @@ const SubmitSurveyPageView = ({
             )}
 
             {question.type === "FILE_UPLOAD" && (
-              <Box sx={{ mt: 2 }}>
+              <Box className="mt-4">
                 {!answers[questionIndex]?.file ? (
                   <input
                     type="file"
                     onChange={(e) => onFileChange(questionIndex, e)}
-                    style={{ marginTop: "8px" }}
+                    className="mt-2"
                   />
                 ) : (
-                  <Box sx={{ display: "flex", alignItems: "center", mt: 1 }}>
+                  <Box className="flex items-center mt-2">
                     <Typography variant="body2">
                       선택된 파일: {answers[questionIndex].file?.name}
                     </Typography>

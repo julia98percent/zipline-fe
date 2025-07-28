@@ -57,7 +57,7 @@ const CounselBasicInfo = ({
               ))}
             </StringBooleanSelect>
           ) : (
-            <Box sx={{ display: "inline-block" }}>
+            <Box className="inline-block">
               <Chip
                 label={COUNSEL_TYPES[data.type]}
                 size="small"
@@ -112,7 +112,7 @@ const CounselBasicInfo = ({
               label="완료"
             />
           ) : (
-            <Box sx={{ display: "inline-block" }}>
+            <Box className="inline-block">
               <Chip
                 label={data.completed ? "완료" : "진행중"}
                 size="small"

@@ -91,11 +91,10 @@ const AgentPropertyTable = ({
         <Chip
           label={getPropertyTypeText(row.type)}
           size="small"
+          className="text-xs h-6"
           sx={{
             backgroundColor: getTypeChipColor(row.type),
             color: getTypeTextColor(row.type),
-            fontSize: "12px",
-            height: "24px",
             "& .MuiChip-label": {
               padding: "0 8px",
             },

@@ -37,7 +37,7 @@ const ContractCustomerSection = ({
             helperText={errors.lessorUids}
           />
         )}
-        sx={{ mt: 2 }}
+        className="mt-4"
       />
       <Autocomplete
         multiple
@@ -55,7 +55,7 @@ const ContractCustomerSection = ({
             helperText={errors.lesseeUids}
           />
         )}
-        sx={{ mt: 2 }}
+        className="mt-4"
       />
     </>
   );

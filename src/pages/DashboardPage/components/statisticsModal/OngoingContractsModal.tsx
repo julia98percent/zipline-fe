@@ -89,12 +89,10 @@ const OngoingContractsModal = ({
       <Chip
         label={statusInfo.name}
         variant="outlined"
+        className="font-medium h-6 text-sm"
         sx={{
           color: getColor(statusInfo.color),
           borderColor: getColor(statusInfo.color),
-          fontWeight: 500,
-          height: 28,
-          fontSize: 13,
         }}
       />
     );
@@ -108,12 +106,10 @@ const OngoingContractsModal = ({
     return (
       <Chip
         label={label}
+        className="font-medium h-6 text-sm"
         sx={{
           backgroundColor: colors.background,
           color: colors.text,
-          fontWeight: 500,
-          height: 26,
-          fontSize: 13,
         }}
       />
     );
@@ -196,30 +192,9 @@ const OngoingContractsModal = ({
       onClose={onClose}
       aria-labelledby="ongoing-contracts-modal"
     >
-      <Box
-        sx={{
-          position: "absolute",
-          top: "50%",
-          left: "50%",
-          transform: "translate(-50%, -50%)",
-          width: "100%",
-          maxWidth: 1000,
-          bgcolor: "#f5f5f5",
-          boxShadow: 24,
-          p: 4,
-          borderRadius: 2,
-          maxHeight: "80vh",
-          overflow: "auto",
-          padding: "24px",
-        }}
-      >
-        <Typography
-          variant="h6"
-          component="h2"
-          gutterBottom
-          sx={{ fontWeight: 700, marginBottom: "16px" }}
-        >
           진행중인 계약 목록
+      <Box className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-4/5 max-w-4xl bg-gray-100 shadow-2xl p-6 rounded-lg max-h-4/5 overflow-auto">
+        <Typography className="font-bold text-primary text-xl mb-4">
         </Typography>
         <Table
           columns={columns}

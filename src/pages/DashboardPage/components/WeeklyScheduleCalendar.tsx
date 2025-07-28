@@ -40,7 +40,7 @@ const WeeklyScheduleCalendar: React.FC<WeeklyScheduleCalendarProps> = ({
             variant="outlined"
             size="small"
             onClick={onViewAllSchedules}
-            className="hidden md:inline-flex hover:cursor-pointer"
+            className="hidden lg:inline-flex hover:cursor-pointer"
           >
             전체 일정 보기
           </Button>

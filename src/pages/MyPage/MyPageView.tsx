@@ -72,36 +72,16 @@ const MyPageView = ({
   };
 
   return (
-    <Box
-      sx={{
-        flexGrow: 1,
-        backgroundColor: "#f5f5f5",
-        minHeight: "100vh",
-      }}
-    >
+    <Box className="flex-grow bg-gray-100 min-h-screen">
       <PageHeader title="마이페이지" />
 
-      <Box sx={{ p: 3 }}>
+      <Box className="p-6">
         {/* 회원 정보 수정 */}
-        <Box
-          sx={{
-            mb: 3,
-            border: "1px solid #ddd",
-            borderRadius: 2,
-            p: 2,
-            backgroundColor: "white",
-          }}
-        >
-          <Box
-            sx={{
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "space-between",
-            }}
-          >
-            <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
-              <AccountCircleIcon sx={{ color: "#666" }} />
-              <Typography variant="subtitle1" fontWeight="bold">
+        <Box className="mb-6 border border-gray-300 rounded-lg p-4 bg-white">
+          <Box className="flex items-center justify-between">
+            <Box className="flex items-center gap-2">
+              <AccountCircleIcon className="text-gray-600" />
+              <Typography variant="subtitle1" className="font-bold">
                 회원 정보 수정
               </Typography>
             </Box>
@@ -114,9 +94,7 @@ const MyPageView = ({
             </Button>
           </Box>
           <Collapse in={editOpen}>
-            <Box
-              sx={{ display: "flex", flexDirection: "column", gap: 2, mt: 1 }}
-            >
+            <Box className="flex flex-col gap-4 mt-2">
               <TextField
                 label="이름"
                 value={name}
@@ -149,25 +127,11 @@ const MyPageView = ({
         </Box>
 
         {/* 문자 발송 설정 */}
-        <Box
-          sx={{
-            mb: 3,
-            border: "1px solid #ddd",
-            borderRadius: 2,
-            p: 2,
-            backgroundColor: "white",
-          }}
-        >
-          <Box
-            sx={{
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "space-between",
-            }}
-          >
-            <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
-              <AccessTimeIcon sx={{ color: "#666" }} />
-              <Typography variant="subtitle1" fontWeight="bold">
+        <Box className="mb-6 border border-gray-300 rounded-lg p-4 bg-white">
+          <Box className="flex items-center justify-between">
+            <Box className="flex items-center gap-2">
+              <AccessTimeIcon className="text-gray-600" />
+              <Typography variant="subtitle1" className="font-bold">
                 문자 발송 설정
               </Typography>
             </Box>
@@ -180,9 +144,7 @@ const MyPageView = ({
             </Button>
           </Box>
           <Collapse in={noticeOpen}>
-            <Box
-              sx={{ display: "flex", flexDirection: "column", gap: 2, mt: 1 }}
-            >
+            <Box className="flex flex-col gap-4 mt-2">
               <TextField
                 label="계약 만료 문자 기준 달"
                 type="number"
@@ -212,31 +174,10 @@ const MyPageView = ({
         </Box>
 
         {/* QR 코드 및 URL 섹션 */}
-        <Box
-          sx={{
-            mb: 4,
-            border: "1px solid #ddd",
-            borderRadius: 2,
-            p: 2,
-            display: "flex",
-            alignItems: "center",
-            gap: 3,
-            backgroundColor: "white",
-          }}
-        >
+        <Box className="mb-8 border border-gray-300 rounded-lg p-4 flex items-center gap-6 bg-white">
           {/* QR 코드 영역 */}
           {user?.url && (
-            <Box
-              sx={{
-                width: 100,
-                height: 100,
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "center",
-                borderRadius: 1,
-                backgroundColor: "#f5f5f5",
-              }}
-            >
+            <Box className="w-25 h-25 flex items-center justify-center rounded bg-gray-100">
               <QRCode
                 value={`${import.meta.env.VITE_CLIENT_URL}/${user?.url}`}
                 size={80}
@@ -244,11 +185,11 @@ const MyPageView = ({
             </Box>
           )}
 
-          <Box sx={{ flex: 1 }}>
-            <Typography variant="subtitle1" fontWeight="bold" sx={{ mb: 1 }}>
+          <Box className="flex-1">
+            <Typography variant="subtitle1" className="font-bold mb-2">
               설문 URL
             </Typography>
-            <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
+            <Box className="flex items-center gap-2">
               <TextField
                 fullWidth
                 value={
@@ -270,21 +211,12 @@ const MyPageView = ({
         </Box>
 
         {/* 설문 정보 섹션 */}
-        <Box
-          sx={{
-            display: "flex",
-            justifyContent: "space-between",
-            border: "1px solid #ddd",
-            borderRadius: 2,
-            p: 3,
-            backgroundColor: "white",
-          }}
-        >
-          <Box sx={{ alignItems: "center" }}>
-            <Typography variant="h6" sx={{ fontWeight: "bold" }}>
+        <Box className="flex justify-between border border-gray-300 rounded-lg p-6 bg-white">
+          <Box className="items-center">
+            <Typography variant="h6" className="font-bold">
               {user?.surveyTitle || "기본 설문지"}
             </Typography>
-            <Typography variant="body2" sx={{ color: "gray" }}>
+            <Typography variant="body2" className="text-gray-500">
               생성일:{" "}
               {user?.surveyCreatedAt ? formatDate(user.surveyCreatedAt) : "-"}
             </Typography>

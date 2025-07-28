@@ -32,6 +32,7 @@ const PublicPropertyTableView = ({
       key: "category",
       label: "매물 유형",
       align: "center",
+      minWidth: 90,
       render: (_, property) => (
         <PropertyCellRenderer.Category category={property.category} />
       ),
@@ -153,14 +154,14 @@ const PublicPropertyTableView = ({
   const tableData = propertyList.map((property) => property);
 
   return (
-    <Box sx={{ width: "100%", mt: "0px" }}>
+    <Box className="w-full mt-0">
       <Table
         columns={columns as ColumnConfig[]}
         bodyList={tableData as unknown as RowData[]}
         pagination={false}
         noDataMessage="매물 데이터가 없습니다"
+        className="min-w-[650px]  rounded-lg shadow-sm"
         sx={{
-          minWidth: 650,
           "& .MuiTableCell-root": {
             maxWidth: "300px",
             whiteSpace: "normal",
@@ -169,9 +170,12 @@ const PublicPropertyTableView = ({
           "& .MuiTableCell-head": {
             fontWeight: 600,
             position: "sticky",
-            top: 0, // 추가
+            top: 0,
             background: "#fff",
             zIndex: 2,
+          },
+          "& .MuiTableContainer-root": {
+            borderRadius: "8px",
           },
         }}
       />

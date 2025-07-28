@@ -52,7 +52,7 @@ export default function PublicPropertyFilterModalView({
     <Dialog open={open} onClose={onClose} maxWidth="md" fullWidth>
       <DialogTitle>상세 필터</DialogTitle>
       <DialogContent>
-        <Box sx={{ display: "flex", flexDirection: "column", gap: 3, mt: 2 }}>
+        <Box className="flex flex-col gap-4 mt-4">
           {/* Location Search Section */}
           <RegionFilterSection
             region={region}
@@ -71,7 +71,7 @@ export default function PublicPropertyFilterModalView({
             onBuildingNameChange={onBuildingNameChange}
           />
 
-          <Divider sx={{ my: 3 }} />
+          <Divider className="my-6" />
 
           {/* Price Ranges */}
           <PriceRangeSection

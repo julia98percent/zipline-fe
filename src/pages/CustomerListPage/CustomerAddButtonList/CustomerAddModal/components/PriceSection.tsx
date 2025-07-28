@@ -35,11 +35,11 @@ export default function PriceSection({
     <>
       {/* 매매가 범위 - 매도자 또는 매수자 선택 시 */}
       {showSalePrice && (
-        <Box sx={{ mb: 4 }}>
-          <Typography variant="h6" sx={{ mb: 2, fontWeight: "bold" }}>
+        <Box className="mb-8">
+          <Typography variant="h6" className="mb-4 font-bold">
             희망 매매가 범위
           </Typography>
-          <Box sx={{ display: "flex", gap: 2 }}>
+          <Box className="flex gap-4">
             <TextField
               name="minPrice"
               value={minPrice}
@@ -85,11 +85,11 @@ export default function PriceSection({
       {/* 월세 및 보증금 범위 - 임차인 또는 임대인 선택 시 */}
       {showRentPrice && (
         <>
-          <Box sx={{ mb: 4 }}>
-            <Typography variant="h6" sx={{ mb: 2, fontWeight: "bold" }}>
+          <Box className="mb-8">
+            <Typography variant="h6" className="mb-4 font-bold">
               희망 월세 범위
             </Typography>
-            <Box sx={{ display: "flex", gap: 2 }}>
+            <Box className="flex gap-4">
               <TextField
                 name="minRent"
                 value={minRent}
@@ -131,11 +131,11 @@ export default function PriceSection({
             </Box>
           </Box>
 
-          <Box sx={{ mb: 4 }}>
-            <Typography variant="h6" sx={{ mb: 2, fontWeight: "bold" }}>
+          <Box className="mb-8">
+            <Typography variant="h6" className="mb-4 font-bold">
               희망 보증금 범위
             </Typography>
-            <Box sx={{ display: "flex", gap: 2 }}>
+            <Box className="flex gap-4">
               <TextField
                 name="minDeposit"
                 value={minDeposit}

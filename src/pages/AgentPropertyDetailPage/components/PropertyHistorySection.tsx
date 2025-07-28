@@ -52,12 +52,10 @@ const PropertyHistorySection = ({
       <Chip
         label={statusInfo.name}
         variant="outlined"
-        sx={{
+        className="font-medium h-7 text-sm"
+        style={{
           color: getColor(statusInfo.color),
           borderColor: getColor(statusInfo.color),
-          fontWeight: 500,
-          height: 28,
-          fontSize: 13,
         }}
       />
     );
@@ -71,12 +69,10 @@ const PropertyHistorySection = ({
     return (
       <Chip
         label={label}
-        sx={{
+        className="font-medium h-6 text-sm"
+        style={{
           backgroundColor: colors.background,
           color: colors.text,
-          fontWeight: 500,
-          height: 26,
-          fontSize: 13,
         }}
       />
     );
@@ -95,43 +91,20 @@ const PropertyHistorySection = ({
   };
 
   return (
-    <InfoCard
-      sx={{
-        flex: 6,
-        display: "flex",
-        flexDirection: "column",
-        height: "100%",
-        minHeight: "230px",
-      }}
-    >
-      <Tabs value={tab} onChange={(_, v) => onTabChange(v)} sx={{ mb: 2 }}>
+    <InfoCard className="flex-[6] flex flex-col h-full min-h-58 rounded-lg shadow-sm">
+      <Tabs value={tab} onChange={(_, v) => onTabChange(v)} className="mb-4 ">
         <Tab label="계약 히스토리" />
         <Tab label="상담 히스토리" />
       </Tabs>
 
       {tab === 0 && (
         <>
-          <Box
-            display="flex"
-            fontWeight="bold"
-            fontSize={14}
-            sx={{ borderBottom: "1px solid #ccc", pb: 1, mb: 1 }}
-          >
-            <Box flex={1} textAlign="center">
-              임대인/매도인
-            </Box>
-            <Box flex={1} textAlign="center">
-              임차인/매수인
-            </Box>
-            <Box flex={1} textAlign="center">
-              카테고리
-            </Box>
-            <Box flex={1} textAlign="center">
-              상태
-            </Box>
-            <Box flex={1} textAlign="center">
-              변경일
-            </Box>
+          <Box className="flex font-bold text-sm border-b border-gray-200 pb-2 mb-2">
+            <Box className="flex-1 text-center">임대인/매도인</Box>
+            <Box className="flex-1 text-center">임차인/매수인</Box>
+            <Box className="flex-1 text-center">카테고리</Box>
+            <Box className="flex-1 text-center">상태</Box>
+            <Box className="flex-1 text-center">변경일</Box>
           </Box>
           {contractHistories.length === 0 ? (
             <Typography color="text.secondary" align="center">
@@ -141,27 +114,21 @@ const PropertyHistorySection = ({
             contractHistories.map((history, idx) => (
               <Box
                 key={idx}
-                display="flex"
-                alignItems="center"
-                fontSize={14}
-                sx={{
-                  borderBottom: "1px solid #eee",
-                  py: 1,
-                }}
+                className="flex items-center text-sm border-b border-gray-200 py-2"
               >
-                <Box flex={1} textAlign="center">
+                <Box className="flex-1 text-center">
                   {getCustomerSummary(history.customers, "LESSOR_OR_SELLER")}
                 </Box>
-                <Box flex={1} textAlign="center">
+                <Box className="flex-1 text-center">
                   {getCustomerSummary(history.customers, "LESSEE_OR_BUYER")}
                 </Box>
-                <Box flex={1} textAlign="center">
+                <Box className="flex-1 text-center">
                   {getCategoryChip(history.contractCategory)}
                 </Box>
-                <Box flex={1} textAlign="center">
+                <Box className="flex-1 text-center">
                   {getStatusChip(history.contractStatus)}
                 </Box>
-                <Box flex={1} textAlign="center">
+                <Box className="flex-1 text-center">
                   {dayjs(history.endDate).format("YYYY.MM.DD")}
                 </Box>
               </Box>
@@ -172,24 +139,11 @@ const PropertyHistorySection = ({
 
       {tab === 1 && (
         <>
-          <Box
-            display="flex"
-            fontWeight="bold"
-            fontSize={14}
-            sx={{ borderBottom: "1px solid #ccc", pb: 1, mb: 1 }}
-          >
-            <Box flex={1} textAlign="center">
-              상담 제목
-            </Box>
-            <Box flex={1} textAlign="center">
-              상담일
-            </Box>
-            <Box flex={1} textAlign="center">
-              고객명
-            </Box>
-            <Box flex={1} textAlign="center">
-              연락처
-            </Box>
+          <Box className="flex font-bold text-sm border-b border-gray-200 pb-2 mb-2">
+            <Box className="flex-1 text-center">상담 제목</Box>
+            <Box className="flex-1 text-center">상담일</Box>
+            <Box className="flex-1 text-center">고객명</Box>
+            <Box className="flex-1 text-center">연락처</Box>
           </Box>
           {counselHistories.length === 0 ? (
             <Typography color="text.secondary" align="center">
@@ -199,21 +153,12 @@ const PropertyHistorySection = ({
             counselHistories.map((counsel) => (
               <Box
                 key={counsel.counselUid}
-                display="flex"
-                alignItems="center"
-                fontSize={14}
-                sx={{ borderBottom: "1px solid #eee", py: 1 }}
+                className="flex items-center text-sm border-b border-gray-200 py-2"
               >
-                <Box flex={1} textAlign="center">
-                  {counsel.counselTitle}
-                </Box>
-                <Box flex={1} textAlign="center">
-                  {counsel.counselDate}
-                </Box>
-                <Box flex={1} textAlign="center">
-                  {counsel.customerName}
-                </Box>
-                <Box flex={1} textAlign="center">
+                <Box className="flex-1 text-center">{counsel.counselTitle}</Box>
+                <Box className="flex-1 text-center">{counsel.counselDate}</Box>
+                <Box className="flex-1 text-center">{counsel.customerName}</Box>
+                <Box className="flex-1 text-center">
                   {counsel.customerPhoneNo}
                 </Box>
               </Box>

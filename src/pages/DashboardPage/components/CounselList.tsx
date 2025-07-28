@@ -45,20 +45,14 @@ const CounselList: React.FC<CounselListProps> = ({
       label: "제목",
       align: "left",
       render: (_, counsel) => (
-        <Box
-          sx={{
-            display: "flex",
-            alignItems: "center",
-            gap: 1,
-          }}
-        >
+        <Box className="flex items-center gap-2">
           {counsel.title}
           {counsel.completed && (
             <Chip
               label="완료"
               size="small"
               color="success"
-              sx={{ fontSize: "10px", height: "18px" }}
+              className="text-xs h-4"
             />
           )}
         </Box>
@@ -78,40 +72,18 @@ const CounselList: React.FC<CounselListProps> = ({
   }));
 
   return (
-    <Card
-      sx={{
-        display: "flex",
-        flexDirection: "column",
-        boxShadow: "0 2px 6px rgba(0, 0, 0, 0.05)",
-        borderRadius: "6px",
-        backgroundColor: "#fff",
-        minHeight: "400px",
-        height: "fit-content",
-      }}
-    >
-      <Box
-        sx={{
-          p: 2,
-          borderBottom: "1px solid #e0e0e0",
-        }}
-      >
-        <Box
-          sx={{
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "space-between",
-            mb: 1,
-          }}
-        >
-          <Typography variant="h6" sx={{ fontWeight: 600, color: "#164f9e" }}>
+    <Card className="flex flex-col shadow-sm rounded-md bg-white min-h-96 h-fit">
+      <Box className="p-4 border-b border-gray-300">
+        <Box className="flex items-center justify-between mb-2">
+          <Typography variant="h6" className="font-semibold text-primary">
             상담 목록
           </Typography>
         </Box>
         <Tabs
           value={counselTab}
           onChange={handleCounselTabChange}
+          className="min-h-auto"
           sx={{
-            minHeight: "auto",
             "& .MuiTab-root": {
               minHeight: "32px",
               fontSize: "14px",
@@ -127,13 +99,13 @@ const CounselList: React.FC<CounselListProps> = ({
               <div className="flex items-center gap-1">
                 <p style={{ color: "inherit" }}>의뢰일 임박 순</p>
                 <Tooltip title="2주 이내 의뢰 마감 예정인 상담이 표시됩니다.">
-                  <HelpOutlineIcon sx={{ fontSize: 16, color: "inherit" }} />
+                  <HelpOutlineIcon className="text-base color-inherit" />
                 </Tooltip>
               </div>
             }
             value="request"
+            className="text-sm"
             sx={{
-              fontSize: "13px",
               "&.Mui-selected": {
                 color: "primary.main",
               },
@@ -143,8 +115,8 @@ const CounselList: React.FC<CounselListProps> = ({
           <Tab
             label="최신 순"
             value="latest"
+            className="text-sm"
             sx={{
-              fontSize: "13px",
               "&.Mui-selected": {
                 color: "primary.main",
               },
@@ -152,16 +124,9 @@ const CounselList: React.FC<CounselListProps> = ({
           />
         </Tabs>
       </Box>
-      <Box sx={{ flex: 1, overflow: "auto" }}>
+      <Box className="flex-1 overflow-auto">
         {counselLoading ? (
-          <Box
-            sx={{
-              display: "flex",
-              justifyContent: "center",
-              alignItems: "center",
-              height: "200px",
-            }}
-          >
+          <Box className="flex justify-center items-center h-48">
             <CircularProgress />
           </Box>
         ) : (
@@ -171,6 +136,7 @@ const CounselList: React.FC<CounselListProps> = ({
             handleRowClick={(counsel) => handleCounselClick(counsel.counselUid)}
             pagination={false}
             noDataMessage="마감 예정인 상담이 없습니다"
+            className="shadow-none!"
             sx={{
               "& .MuiTableCell-head": {
                 fontSize: "13px",
@@ -180,9 +146,6 @@ const CounselList: React.FC<CounselListProps> = ({
               "& .MuiTableCell-body": {
                 fontSize: "12px",
                 padding: "8px 16px",
-              },
-              "& .MuiTableRow-root:hover": {
-                backgroundColor: "rgba(22, 79, 158, 0.04)",
               },
               boxShadow: "none",
             }}

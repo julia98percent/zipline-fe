@@ -60,7 +60,7 @@ function PreCounselListPage() {
   }, [fetchData]);
 
   return (
-    <div className="bg-[#f5f5f5]">
+    <div className="bg-gray-100">
       <PageHeader
         title="사전 상담 목록"
         onMobileMenuToggle={onMobileMenuToggle}

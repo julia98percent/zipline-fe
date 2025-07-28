@@ -85,23 +85,15 @@ const TemplatePreview: React.FC<TemplatePreviewProps> = ({
   };
 
   return (
-    <Box sx={{ mt: 2 }}>
-      <Typography variant="subtitle2" sx={{ color: "#666", mb: 0.5 }}>
+    <Box className="mt-4">
+      <Typography variant="subtitle2" className="text-[#666] mb-1">
         미리보기
       </Typography>
-      <Box
-        sx={{
-          p: "28px",
-          background: "#F8F9FA",
-          borderRadius: 2,
-          minHeight: 48,
-          fontSize: 16,
-        }}
-      >
+      <Box className="p-7 bg-[#F8F9FA] rounded-lg min-h-[48px] text-base">
         {getHighlightedPreview(templateContent, allowedVariables)}
       </Box>
       {hasBrokenVariable && (
-        <Typography color="error" sx={{ mt: 1 }}>
+        <Typography color="error" className="mt-2">
           변수 표기(&#123;&#123;...&#125;&#125;)가 올바르지 않습니다. 쌍이
           맞는지 확인해 주세요.
         </Typography>

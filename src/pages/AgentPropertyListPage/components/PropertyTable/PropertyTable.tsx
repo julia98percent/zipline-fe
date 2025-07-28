@@ -103,11 +103,10 @@ const PropertyTable = ({
       render: (value) => (
         <Chip
           label={translateType(value as PropertyType)}
+          className="font-medium text-sm"
           sx={{
             backgroundColor: colorMap[value as PropertyType] || "#e0e0e0",
             color: textColorMap[value as PropertyType] || "#222",
-            fontWeight: 500,
-            fontSize: "0.95em",
           }}
           size="small"
         />
@@ -154,7 +153,7 @@ const PropertyTable = ({
   };
 
   return (
-    <Box sx={{ width: "100%", mt: "28px" }}>
+    <Box className="w-full mt-7">
       <FormControlLabel
         control={
           <IOSSwitch
@@ -165,9 +164,8 @@ const PropertyTable = ({
           />
         }
         label={useMetric ? "제곱미터(m²)" : "평(py)"}
+        className="mb-4 ml-0"
         sx={{
-          mb: "12px",
-          ml: "0px",
           "& .MuiFormControlLabel-label": {
             fontSize: "14px",
             marginLeft: "4px",
@@ -185,11 +183,7 @@ const PropertyTable = ({
         rowsPerPage={rowsPerPage}
         handleChangeRowsPerPage={onRowsPerPageChange}
         noDataMessage="매물 데이터가 없습니다"
-        sx={{
-          minWidth: 650,
-          border: "none",
-          boxShadow: "0 2px 6px rgba(0, 0, 0, 0.05)",
-        }}
+        className="min-w-[650px] border-none shadow-sm"
       />
     </Box>
   );

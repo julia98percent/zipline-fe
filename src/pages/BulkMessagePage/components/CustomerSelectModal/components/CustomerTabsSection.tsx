@@ -14,7 +14,7 @@ export default function CustomerTabsSection({
   onTabChange,
 }: CustomerTabsSectionProps) {
   return (
-    <Box sx={{ borderBottom: 1, borderColor: "divider", mb: 2 }}>
+    <Box className="border-b border-gray-200 mb-4">
       <Tabs
         value={selectedTab}
         onChange={(_, newValue) => onTabChange(newValue)}

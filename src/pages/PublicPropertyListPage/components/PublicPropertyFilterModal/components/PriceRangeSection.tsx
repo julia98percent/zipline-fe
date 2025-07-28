@@ -36,14 +36,14 @@ export default function PriceRangeSection({
 
   return (
     <>
-      <Typography variant="subtitle1" gutterBottom sx={{ mb: 2 }}>
+      <Typography variant="subtitle1" gutterBottom className="mb-4">
         가격 범위
       </Typography>
 
       {/* Sale Price Range */}
       <Box
+        className="mb-6"
         sx={{
-          mb: 3,
           display: category === "SALE" ? "block" : "none",
         }}
       >
@@ -61,8 +61,8 @@ export default function PriceRangeSection({
 
       {/* Deposit Range */}
       <Box
+        className="mb-6"
         sx={{
-          mb: 3,
           display:
             category === "MONTHLY" || category === "DEPOSIT" ? "block" : "none",
         }}
@@ -81,8 +81,8 @@ export default function PriceRangeSection({
 
       {/* Monthly Rent Range */}
       <Box
+        className="mb-6"
         sx={{
-          mb: 3,
           display: category === "MONTHLY" ? "block" : "none",
         }}
       >

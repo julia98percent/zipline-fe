@@ -70,7 +70,7 @@ const CounselCustomerInfo = ({ customer }: CounselCustomerInfoProps) => {
         )}
         <div className={styles.infoItem}>
           <span className={styles.infoLabel}>고객 유형</span>
-          <Box sx={{ display: "flex", gap: 1, flexWrap: "wrap" }}>
+          <Box className="flex gap-2 flex-wrap">
             {customer.tenant && (
               <Chip label="임차인" size="small" variant="outlined" />
             )}

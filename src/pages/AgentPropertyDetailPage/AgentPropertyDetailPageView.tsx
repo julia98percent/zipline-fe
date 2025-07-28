@@ -120,7 +120,7 @@ function AgentPropertyDetailPageView({
         </DetailHeader>
 
         {/* 지도 */}
-        <InfoCard sx={{ mb: 3 }}>
+        <InfoCard className="rounded-lg shadow-sm mb-6">
           <MapContainer>
             <KakaoMap lat={property.latitude} lng={property.longitude} />
           </MapContainer>
@@ -135,7 +135,7 @@ function AgentPropertyDetailPageView({
         </InfoGrid>
 
         {/* 하단 섹션 */}
-        <Box display="flex" gap={3} mt={3} sx={{ height: "fit-content" }}>
+        <Box display="flex" gap={3} mt={3} className="h-fit">
           <PropertyDetailsSection details={property.details} />
           <PropertyHistorySection
             contractHistories={contractHistories}

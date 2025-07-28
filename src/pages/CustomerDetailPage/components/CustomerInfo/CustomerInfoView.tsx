@@ -45,13 +45,12 @@ const CustomerInfoView = ({
   };
 
   return (
-    <Box sx={{ mt: 0 }}>
+    <Box className="mt-0">
       <Tabs
         value={currentTab}
         onChange={handleTabChange}
         textColor="primary"
         indicatorColor="primary"
-        centered
       >
         <Tab label="상담 내역" />
         <Tab label="매물" />
@@ -59,14 +58,7 @@ const CustomerInfoView = ({
       </Tabs>
 
       {loading ? (
-        <Box
-          sx={{
-            display: "flex",
-            justifyContent: "center",
-            alignItems: "center",
-            height: "200px",
-          }}
-        >
+        <Box className="flex items-center justify-center h-[200px]">
           <CircularProgress color="primary" />
         </Box>
       ) : (

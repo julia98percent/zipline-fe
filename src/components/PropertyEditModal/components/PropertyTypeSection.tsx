@@ -11,7 +11,7 @@ const PropertyTypeSection = ({
 }: PropertyTypeSectionProps) => {
   return (
     <>
-      <Typography variant="subtitle1" sx={{ mt: 2 }}>
+      <Typography variant="subtitle1" className="mt-4">
         부동산 유형 선택
       </Typography>
       <RadioGroup

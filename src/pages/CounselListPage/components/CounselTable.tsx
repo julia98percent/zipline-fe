@@ -56,13 +56,10 @@ const CounselTable = ({
         return (
           <Typography
             variant="body2"
+            className="py-2 px-2 rounded-sm inline-block"
             sx={{
               color: isCompleted ? "#219653" : "#F2994A",
               backgroundColor: isCompleted ? "#E9F7EF" : "#FEF5EB",
-              py: 0.5,
-              px: 1,
-              borderRadius: 1,
-              display: "inline-block",
             }}
           >
             {isCompleted ? "의뢰 마감" : "의뢰 진행중"}
@@ -88,10 +85,7 @@ const CounselTable = ({
       handleChangeRowsPerPage={onRowsPerPageChange}
       noDataMessage="상담 내역이 없습니다."
       pagination={true}
-      sx={{
-        borderRadius: "8px",
-        boxShadow: "0 2px 6px rgba(0, 0, 0, 0.05)",
-      }}
+      className="rounded-sm shadow-md"
     />
   );
 };

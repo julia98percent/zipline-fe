@@ -201,22 +201,16 @@ function AddScheduleModal({ open, onClose, onSubmit }: AddScheduleModalProps) {
       onClose={handleClose}
       maxWidth={false}
       PaperProps={{
-        sx: {
-          width: "800px",
-          height: "700px",
-          maxHeight: "80vh",
-          backgroundColor: "#FFFFFF",
-          borderRadius: "8px",
-        },
+        className: "w-200 h-175 max-h-4/5 bg-white rounded-lg",
       }}
     >
-      <DialogTitle sx={{ color: "#164F9E", fontWeight: "bold", p: 3 }}>
+      <DialogTitle className="text-primary font-bold p-6">
         일정 등록
       </DialogTitle>
-      <DialogContent sx={{ p: 3, pt: "10px !important" }}>
-        <Box sx={{ display: "flex", flexDirection: "column", gap: 1.5 }}>
-          <Box sx={{ width: "100%" }}>
-            <FormControl fullWidth sx={{ mb: 2, ...inputStyle }}>
+      <DialogContent className="p-6 pt-2">
+        <Box className="flex flex-col gap-3">
+          <Box className="w-full">
+            <FormControl fullWidth className="mb-4" sx={inputStyle}>
               <Autocomplete
                 options={customers}
                 getOptionLabel={(option) => option.name}
@@ -248,7 +242,7 @@ function AddScheduleModal({ open, onClose, onSubmit }: AddScheduleModalProps) {
               />
             </FormControl>
           </Box>
-          <Box sx={{ width: "100%" }}>
+          <Box className="w-full">
             <TextField
               fullWidth
               label="일정 제목"
@@ -257,8 +251,8 @@ function AddScheduleModal({ open, onClose, onSubmit }: AddScheduleModalProps) {
               sx={inputStyle}
             />
           </Box>
-          <Box sx={{ display: "flex", gap: 1.5, flexWrap: "wrap" }}>
-            <Box sx={{ flex: "1 1 calc(50% - 6px)", minWidth: "240px" }}>
+          <Box className="flex gap-3 flex-wrap">
+            <Box className="flex-[1_1_calc(50%-6px)] min-w-60">
               <LocalizationProvider dateAdapter={AdapterDayjs}>
                 <DatePicker
                   label="시작 날짜"
@@ -279,7 +273,7 @@ function AddScheduleModal({ open, onClose, onSubmit }: AddScheduleModalProps) {
                 />
               </LocalizationProvider>
             </Box>
-            <Box sx={{ flex: "1 1 calc(50% - 6px)", minWidth: "240px" }}>
+            <Box className="flex-[1_1_calc(50%-6px)] min-w-60">
               <TextField
                 fullWidth
                 label="시작 시간"
@@ -292,8 +286,8 @@ function AddScheduleModal({ open, onClose, onSubmit }: AddScheduleModalProps) {
               />
             </Box>
           </Box>
-          <Box sx={{ display: "flex", gap: 1.5, flexWrap: "wrap" }}>
-            <Box sx={{ flex: "1 1 calc(50% - 6px)", minWidth: "240px" }}>
+          <Box className="flex gap-3 flex-wrap">
+            <Box className="flex-[1_1_calc(50%-6px)] min-w-60">
               <LocalizationProvider dateAdapter={AdapterDayjs}>
                 <DatePicker
                   label="종료 날짜"
@@ -314,7 +308,7 @@ function AddScheduleModal({ open, onClose, onSubmit }: AddScheduleModalProps) {
                 />
               </LocalizationProvider>
             </Box>
-            <Box sx={{ flex: "1 1 calc(50% - 6px)", minWidth: "240px" }}>
+            <Box className="flex-[1_1_calc(50%-6px)] min-w-60">
               <TextField
                 fullWidth
                 label="종료 시간"
@@ -339,10 +333,10 @@ function AddScheduleModal({ open, onClose, onSubmit }: AddScheduleModalProps) {
                 />
               }
               label="시간 포함"
-              sx={{ mb: 1.5 }}
+              className="mb-3"
             />
           </Box>
-          <Box sx={{ width: "100%" }}>
+          <Box className="w-full">
             <TextField
               fullWidth
               label="세부사항"
@@ -354,20 +348,13 @@ function AddScheduleModal({ open, onClose, onSubmit }: AddScheduleModalProps) {
           </Box>
         </Box>
       </DialogContent>
-      <DialogActions sx={{ p: 3, position: "relative" }}>
+      <DialogActions className="p-6 relative">
         {errorMessage && (
-          <Typography
-            sx={{
-              position: "absolute",
-              left: 24,
-              color: "#D32F2F",
-              fontSize: "0.875rem",
-            }}
-          >
+          <Typography className="absolute left-6 text-red-600 text-sm">
             {errorMessage}
           </Typography>
         )}
-        <Button onClick={handleClose} variant="outlined">
+        <Button onClick={handleClose} color="info" variant="outlined">
           취소
         </Button>
         <Button onClick={handleSubmit} variant="contained">

@@ -20,9 +20,7 @@ const MessageTemplateSection = ({
 }: MessageTemplateSectionProps) => {
   return (
     <div className="flex-1 p-6 rounded-lg shadow-[0_2px_6px_rgba(0,0,0,0.05)] bg-white">
-      <h6 className="mb-4 text-gray-800 text-lg font-semibold">
-        문자 템플릿 선택
-      </h6>
+      <h6 className="text-xl font-semibold mb-4">문자 템플릿 선택</h6>
 
       <Select
         fullWidth

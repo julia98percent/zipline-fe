@@ -111,9 +111,7 @@ const RecentCustomersModal = ({
         },
       }}
     >
-      <DialogTitle
-        sx={{ fontWeight: "bold", color: "#164F9E", fontSize: "1.25rem" }}
-      >
+      <DialogTitle className="font-bold text-primary text-lg">
         최근 유입 고객
       </DialogTitle>
       <DialogContent>
@@ -133,7 +131,7 @@ const RecentCustomersModal = ({
           noDataMessage="신규 사전 상담이 없습니다"
         />
       </DialogContent>
-      <DialogActions sx={{ p: 2 }}>
+      <DialogActions className="p-4">
         <Button
           onClick={handleClose}
           variant="contained"

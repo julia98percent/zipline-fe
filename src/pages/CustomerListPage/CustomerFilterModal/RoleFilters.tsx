@@ -50,11 +50,11 @@ const RoleFilters = ({ filtersTemp, setFiltersTemp }: FilterSectionProps) => {
   );
 
   return (
-    <Box sx={{ mb: 3 }}>
-      <Typography variant="h6" sx={{ mb: 2, fontWeight: 600 }}>
+    <Box className="mb-6">
+      <Typography variant="h6" className="mb-4 font-semibold">
         역할
       </Typography>
-      <Box sx={{ display: "flex", flexDirection: "column", gap: 1 }}>
+      <Box className="flex flex-col gap-2">
         {ROLES.map((role) => {
           const isChecked = filtersTemp[
             role as keyof typeof filtersTemp

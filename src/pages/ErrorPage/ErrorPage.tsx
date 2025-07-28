@@ -10,21 +10,11 @@ function ErrorPage() {
   };
 
   return (
-    <Box
-      sx={{
-        display: "flex",
-        flexDirection: "column",
-        justifyContent: "center",
-        alignItems: "center",
-        height: "100vh",
-        backgroundColor: "#f9f9f9",
-        textAlign: "center",
-      }}
-    >
-      <Typography variant="h4" sx={{ mb: 2 }}>
+    <Box className="flex flex-col items-center justify-center h-screen bg-gray-50 text-center">
+      <Typography variant="h4" className="mb-4">
         404: 페이지를 찾을 수 없습니다
       </Typography>
-      <Typography variant="body1" sx={{ mb: 4 }}>
+      <Typography variant="body1" className="mb-8">
         요청하신 페이지가 존재하지 않거나 이동되었습니다.
       </Typography>
       <Button

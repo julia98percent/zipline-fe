@@ -79,7 +79,7 @@ const ScheduleDetailModalView = ({
           : "일정 상세"}
       </DialogTitle>
       <DialogContent>
-        <Box sx={{ mt: 2 }}>
+        <Box className="mt-4">
           <TextField
             autoFocus={isEditMode}
             margin="dense"
@@ -92,8 +92,8 @@ const ScheduleDetailModalView = ({
             InputProps={{
               readOnly: !isEditMode,
             }}
+            className="mb-4"
             sx={{
-              mb: 2,
               ...(!isEditMode && {
                 "& .MuiInputBase-root": {
                   cursor: "default",
@@ -116,8 +116,8 @@ const ScheduleDetailModalView = ({
             value={editingSchedule?.description || ""}
             onChange={onDescriptionChange}
             disabled={!isEditMode}
+            className="mb-4"
             sx={{
-              mb: 2,
               ...(!isEditMode && {
                 "& .MuiInputBase-root": {
                   cursor: "default",
@@ -176,8 +176,8 @@ const ScheduleDetailModalView = ({
                 }}
               />
             )}
+            className="mb-4"
             sx={{
-              mb: 2,
               ...(!isEditMode && {
                 "& .MuiInputBase-root": {
                   cursor: "default",
@@ -211,8 +211,8 @@ const ScheduleDetailModalView = ({
               />
             }
             label="시간 포함"
+            className="mb-4"
             sx={{
-              mb: 2,
               ...(!isEditMode && {
                 cursor: "default",
                 pointerEvents: "none",
@@ -220,7 +220,7 @@ const ScheduleDetailModalView = ({
             }}
           />
 
-          <Box sx={{ display: "flex", gap: 2, mb: 2 }}>
+          <Box className="flex gap-4 mb-4">
             <TextField
               label="시작일"
               type="date"
@@ -273,7 +273,7 @@ const ScheduleDetailModalView = ({
             )}
           </Box>
 
-          <Box sx={{ display: "flex", gap: 2, mb: 2 }}>
+          <Box className="flex gap-4 mb-4">
             <TextField
               label="종료일"
               type="date"
@@ -328,7 +328,7 @@ const ScheduleDetailModalView = ({
         </Box>
       </DialogContent>
       <DialogActions>
-        <Button onClick={onClose} color="primary" variant="outlined">
+        <Button onClick={onClose} color="info" variant="outlined">
           {isEditMode ? "취소" : "닫기"}
         </Button>
         {isEditMode ? (
@@ -337,7 +337,7 @@ const ScheduleDetailModalView = ({
           </Button>
         ) : (
           onEdit && (
-            <Button onClick={onEdit} variant="contained">
+            <Button onClick={onEdit} color="primary" variant="outlined">
               수정
             </Button>
           )

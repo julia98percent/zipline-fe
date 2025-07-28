@@ -81,7 +81,7 @@ const CounselTable = ({
   return (
     <Box className="w-full">
       {/* Desktop view - 768px and above */}
-      <Box className="hidden md:block">
+      <Box className="hidden lg:block">
         <Table
           isLoading={isLoading}
           columns={columns}
@@ -102,7 +102,7 @@ const CounselTable = ({
       </Box>
 
       {/* Mobile view - below 768px */}
-      <Box className="block md:hidden">
+      <Box className="block lg:hidden">
         {counsels.length === 0 ? (
           <Box className="text-center py-8 text-gray-500">
             상담 내역이 없습니다.

@@ -60,7 +60,7 @@ const PublicPropertyTable = ({
   return (
     <Box ref={scrollRef} className="w-full">
       {/* 데스크톱: 테이블 뷰 */}
-      <div className="hidden md:block">
+      <div className="hidden lg:block">
         <PublicPropertyTableView
           propertyList={propertyList}
           onSort={onSort}
@@ -71,7 +71,7 @@ const PublicPropertyTable = ({
       </div>
 
       {/* 모바일: 카드 뷰 */}
-      <div className="md:hidden">
+      <div className="lg:hidden">
         {propertyList.map((property, index) => (
           <PublicPropertyCard
             key={`${property.platform}-${property.address}-${index}`}

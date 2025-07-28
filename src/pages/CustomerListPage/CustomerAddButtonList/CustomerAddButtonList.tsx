@@ -35,7 +35,7 @@ function CustomerAddButtonList({ fetchCustomerData }: Props) {
         <Button
           variant="contained"
           onClick={handleOpen}
-          className="w-full py-4 text-base font-medium min-h-[48px]"
+          className="w-full py-4 text-base font-medium"
         >
           <AddIcon fontSize="small" className="mr-2" />
           고객 등록
@@ -44,7 +44,7 @@ function CustomerAddButtonList({ fetchCustomerData }: Props) {
         <Button
           variant="outlined"
           onClick={handleOpenBulkUpload}
-          className="w-full py-4 text-base font-medium min-h-[48px]"
+          className="w-full py-4 text-base font-medium"
         >
           고객 데이터 일괄 등록(.csv)
         </Button>

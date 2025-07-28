@@ -182,7 +182,7 @@ const AgentPropertyTable = ({
   return (
     <>
       {/* 모바일 카드 UI (md 미만) */}
-      <div className="md:hidden">
+      <div className="lg:hidden">
         {propertyList.length > 0 ? (
           <>
             {propertyList.map((property) => (
@@ -250,7 +250,7 @@ const AgentPropertyTable = ({
       </div>
 
       {/* 데스크톱 테이블 UI (md 이상) */}
-      <div className="hidden md:block">
+      <div className="hidden lg:block">
         <Table
           columns={columns}
           bodyList={tableData}

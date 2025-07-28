@@ -54,7 +54,7 @@ const PreCounselTable = ({
   return (
     <Box className="w-full">
       {/* Desktop view - 768px and above */}
-      <Box className="hidden md:block">
+      <Box className="hidden lg:block">
         <Table
           isLoading={isLoading}
           columns={columns}
@@ -77,7 +77,7 @@ const PreCounselTable = ({
       </Box>
 
       {/* Mobile view - below 768px */}
-      <Box className="block md:hidden">
+      <Box className="block lg:hidden">
         {counsels.length === 0 ? (
           <Box className="text-center py-8 text-gray-500">
             사전 상담 요청이 없습니다.

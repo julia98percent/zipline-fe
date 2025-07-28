@@ -44,7 +44,7 @@ const SurveyList: React.FC<SurveyListProps> = ({
     : [];
 
   return (
-    <Card className="flex-1 flex flex-col rounded-md bg-white shadow-lg p-4">
+    <Card className="flex-1 flex flex-col rounded-md bg-white shadow-sm p-4">
       <Box className="flex items-center justify-between border-b border-[#e0e0e0]">
         <Typography variant="h6" className="font-semibold pb-2 text-primary">
           신규 사전 상담

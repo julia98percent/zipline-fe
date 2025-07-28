@@ -141,7 +141,7 @@ const MessageHistoryPage = () => {
         </Box>
 
         {/* Desktop view - 768px and above */}
-        <Box className="hidden md:block">
+        <Box className="hidden lg:block">
           <Paper className="w-full rounded-lg shadow-none">
             <Table
               isLoading={isLoading}
@@ -165,7 +165,7 @@ const MessageHistoryPage = () => {
         </Box>
 
         {/* Mobile view - below 768px */}
-        <Box className="block md:hidden">
+        <Box className="block lg:hidden">
           {messages.length === 0 ? (
             <Box className="text-center py-8 text-gray-500">
               문자 발송 내역이 없습니다.

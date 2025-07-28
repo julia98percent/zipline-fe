@@ -88,7 +88,7 @@ const EnhancedPagination = ({
     <Box className="flex items-center justify-between px-6 py-4 border-t border-gray-200 bg-white min-h-[56px]">
       <Box
         className={`flex items-center gap-6 ${
-          hidePaginationControls ? "hidden md:flex" : "flex"
+          hidePaginationControls ? "hidden lg:flex" : "flex"
         }`}
       >
         <Typography
@@ -178,7 +178,7 @@ const EnhancedPagination = ({
         {/* 페이지 직접 이동 */}
         <Box
           className={`flex items-center gap-4 ${
-            hidePaginationControls ? "hidden md:flex" : "flex"
+            hidePaginationControls ? "hidden lg:flex" : "flex"
           }`}
         >
           <TextField

@@ -182,7 +182,7 @@ const ContractTable = ({
   return (
     <Box className="w-full mt-[28px]">
       {/* Desktop view - 768px and above */}
-      <Box className="hidden md:block">
+      <Box className="hidden lg:block">
         <Table<ContractRowData>
           columns={columns}
           bodyList={rows}
@@ -209,7 +209,7 @@ const ContractTable = ({
       </Box>
 
       {/* Mobile view - below 768px */}
-      <Box className="block md:hidden">
+      <Box className="block lg:hidden">
         {contractList.length === 0 ? (
           <Box className="text-center py-8 text-gray-500">
             계약 데이터가 없습니다

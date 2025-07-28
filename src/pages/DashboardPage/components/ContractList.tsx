@@ -8,9 +8,10 @@ import {
   CircularProgress,
   Tooltip,
 } from "@mui/material";
+import { useNavigate } from "react-router-dom";
 import { formatDate } from "@utils/dateUtil";
 import { Contract } from "@ts/contract";
-import Table, { ColumnConfig } from "@components/Table";
+import Table, { ColumnConfig, RowData } from "@components/Table";
 import HelpOutlineIcon from "@mui/icons-material/HelpOutline";
 import dayjs from "dayjs";
 
@@ -30,6 +31,12 @@ const ContractList = ({
   contractLoading,
   handleContractTabChange,
 }: ContractListProps) => {
+  const navigate = useNavigate();
+
+  const handleRowClick = (rowData: RowData) => {
+    navigate(`/contracts/${rowData.id}`);
+  };
+
   const filteredAndSortedContracts = useMemo(() => {
     if (!currentContractList || currentContractList.length === 0) {
       return [];
@@ -169,6 +176,7 @@ const ContractList = ({
           <Table
             columns={columns}
             bodyList={tableData}
+            handleRowClick={handleRowClick}
             pagination={false}
             noDataMessage={getNoDataMessage()}
             className="shadow-none!"

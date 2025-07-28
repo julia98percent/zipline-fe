@@ -1,5 +1,6 @@
 import React from "react";
-import { ChevronLeft, ChevronRight } from "@mui/icons-material";
+import { IconButton } from "@mui/material";
+import { ChevronLeft, ChevronRight, OpenInFull } from "@mui/icons-material";
 import dayjs from "dayjs";
 import { Schedule } from "@ts/schedule";
 import { WEEKLY_SCHEDULE_MAX_ITEMS_PER_DAY } from "@constants/schedule";
@@ -36,6 +37,7 @@ const WeeklyScheduleCalendar: React.FC<WeeklyScheduleCalendarProps> = ({
       <div className="p-4 border-b border-gray-200 flex items-center justify-between">
         <div className="flex items-center gap-2 h-full">
           <h2 className="text-xl font-semibold text-primary">주간 일정</h2>
+          {/* 데스크톱: 텍스트 버튼 */}
           <Button
             variant="outlined"
             size="small"
@@ -44,6 +46,16 @@ const WeeklyScheduleCalendar: React.FC<WeeklyScheduleCalendarProps> = ({
           >
             전체 일정 보기
           </Button>
+          {/* 모바일/태블릿: 아이콘 버튼 */}
+          <IconButton
+            edge="end"
+            size="small"
+            onClick={onViewAllSchedules}
+            className="lg:hidden p-2 min-w-0 bg-gray-100 hover:bg-gray-300"
+            aria-label="전체 일정 보기"
+          >
+            <OpenInFull fontSize="small" />
+          </IconButton>
         </div>
         <div className="flex items-center">
           <Button

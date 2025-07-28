@@ -1,15 +1,10 @@
-import {
-  Dialog,
-  DialogTitle,
-  DialogContent,
-  DialogActions,
-} from "@mui/material";
+import { Modal, Typography, Box } from "@mui/material";
 import { useState, useEffect, useCallback } from "react";
 import { formatDate } from "@utils/dateUtil";
 import { PreCounsel } from "@ts/counsel";
 import { fetchSubmittedSurveyResponses } from "@apis/preCounselService";
 import Table, { ColumnConfig } from "@components/Table";
-import Button from "@components/Button";
+
 interface RecentCustomersModalProps {
   open: boolean;
   onClose: () => void;
@@ -99,22 +94,11 @@ const RecentCustomersModal = ({
   }));
 
   return (
-    <Dialog
-      open={open}
-      onClose={handleClose}
-      maxWidth="md"
-      fullWidth
-      PaperProps={{
-        sx: {
-          borderRadius: "12px",
-          backgroundColor: "#f5f5f5",
-        },
-      }}
-    >
-      <DialogTitle className="font-bold text-primary text-lg">
-        최근 유입 고객
-      </DialogTitle>
-      <DialogContent>
+    <Modal open={open} onClose={handleClose}>
+      <Box className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-4/5 max-w-4xl bg-gray-100 shadow-2xl p-6 rounded-lg max-h-4/5 overflow-auto">
+        <Typography className="font-bold text-primary text-xl mb-4">
+          최근 유입 고객
+        </Typography>
         <Table
           columns={columns}
           bodyList={tableData}
@@ -130,19 +114,8 @@ const RecentCustomersModal = ({
           isLoading={loading}
           noDataMessage="신규 사전 상담이 없습니다"
         />
-      </DialogContent>
-      <DialogActions className="p-4">
-        <Button
-          onClick={handleClose}
-          variant="contained"
-          className={
-            "bg-[#164F9E] shadow-none hover:bg-[#0D3B7A] hover:shadow-none"
-          }
-        >
-          닫기
-        </Button>
-      </DialogActions>
-    </Dialog>
+      </Box>
+    </Modal>
   );
 };
 

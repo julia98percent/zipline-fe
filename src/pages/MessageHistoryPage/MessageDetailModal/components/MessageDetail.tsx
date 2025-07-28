@@ -1,9 +1,8 @@
 import { useState } from "react";
-import { Box, Typography, Stack } from "@mui/material";
+import { Box, Typography, Stack, IconButton } from "@mui/material";
 import { MessageDetail as MessageDetailType } from "@ts/message";
 import { getStatusMessage, getErrorMessage } from "@utils/messageUtil";
 import { formatDate } from "@utils/dateUtil";
-import Button from "@components/Button";
 import { NavigateBefore, NavigateNext } from "@mui/icons-material";
 
 function MessageDetail({ messageList }: { messageList: MessageDetailType[] }) {
@@ -65,23 +64,19 @@ function MessageDetail({ messageList }: { messageList: MessageDetailType[] }) {
         </Stack>
       </Box>
       <Box className="flex justify-between items-center">
-        <Button
-          startIcon={<NavigateBefore />}
-          onClick={handlePrevious}
-          disabled={currentIndex === 0}
-        >
-          이전
-        </Button>
+        <IconButton onClick={handlePrevious} disabled={currentIndex === 0}>
+          <NavigateBefore />
+        </IconButton>
+
         <Typography variant="body2">
           {currentIndex + 1} / {messageList.length}
         </Typography>
-        <Button
-          endIcon={<NavigateNext />}
+        <IconButton
           onClick={handleNext}
           disabled={currentIndex === messageList.length - 1}
         >
-          다음
-        </Button>
+          <NavigateNext />
+        </IconButton>
       </Box>
     </>
   );

@@ -248,6 +248,9 @@ const ContractDetailContentView = ({
                       📎 {doc.fileName}
                     </Typography>
                     <Button
+                      download={doc.fileName}
+                      target="_blank"
+                      rel="noopener"
                       variant="outlined"
                       size="small"
                       className="min-w-auto px-2"

@@ -23,6 +23,9 @@ interface ButtonType {
   startIcon?: React.ReactNode;
   endIcon?: React.ReactNode;
   fullWidth?: boolean;
+  download?: string;
+  target?: string;
+  rel?: string;
 }
 
 const Button = ({
@@ -38,6 +41,9 @@ const Button = ({
   startIcon,
   endIcon,
   fullWidth,
+  download,
+  target,
+  rel,
   ...props
 }: ButtonType) => {
   const classNameWithVariant =
@@ -57,6 +63,9 @@ const Button = ({
       startIcon={startIcon}
       endIcon={endIcon}
       fullWidth={fullWidth}
+      target={target}
+      rel={rel}
+      download={download}
       {...props}
     >
       {children}

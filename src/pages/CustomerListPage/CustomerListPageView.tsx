@@ -111,8 +111,8 @@ const CustomerListPageView = ({
               }}
             />
 
-            <div className="flex items-center justify-between gap-2">
-              <div>
+            <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4 lg:gap-2">
+              <div className="hidden lg:block">
                 <Button
                   variant="outlined"
                   onClick={onFilterModalOpen}
@@ -128,6 +128,26 @@ const CustomerListPageView = ({
                   필터 초기화
                 </Button>
               </div>
+
+              {/* Mobile filter buttons */}
+              <div className="flex lg:hidden gap-2">
+                <Button
+                  variant="outlined"
+                  onClick={onFilterModalOpen}
+                  startIcon={<FilterListIcon />}
+                  className="flex-1"
+                >
+                  상세 필터
+                </Button>
+                <Button
+                  variant="text"
+                  onClick={onFilterReset}
+                  className="flex-1"
+                >
+                  필터 초기화
+                </Button>
+              </div>
+
               <CustomerAddButtonList fetchCustomerData={onCustomerCreate} />
             </div>
           </div>

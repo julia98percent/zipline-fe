@@ -1,5 +1,6 @@
 import { Box, Chip } from "@mui/material";
 import { Customer } from "@ts/customer";
+import { CUSTOMER_TYPE_COLORS } from "@constants/customer";
 
 interface CustomerRoleChipsProps {
   customer: Customer;
@@ -10,30 +11,42 @@ const CustomerRoleChips = ({ customer }: CustomerRoleChipsProps) => {
     <Box className="flex gap-1 mt-1">
       {customer.tenant && (
         <Chip
-          label="임차인"
+          label={CUSTOMER_TYPE_COLORS.tenant.label}
           size="small"
-          sx={{ backgroundColor: "#FEF5EB", color: "#F2994A" }}
+          sx={{
+            backgroundColor: CUSTOMER_TYPE_COLORS.tenant.backgroundColor,
+            color: CUSTOMER_TYPE_COLORS.tenant.color,
+          }}
         />
       )}
       {customer.landlord && (
         <Chip
-          label="임대인"
+          label={CUSTOMER_TYPE_COLORS.landlord.label}
           size="small"
-          sx={{ backgroundColor: "#FDEEEE", color: "#EB5757" }}
+          sx={{
+            backgroundColor: CUSTOMER_TYPE_COLORS.landlord.backgroundColor,
+            color: CUSTOMER_TYPE_COLORS.landlord.color,
+          }}
         />
       )}
       {customer.buyer && (
         <Chip
-          label="매수자"
+          label={CUSTOMER_TYPE_COLORS.buyer.label}
           size="small"
-          sx={{ backgroundColor: "#E9F7EF", color: "#219653" }}
+          sx={{
+            backgroundColor: CUSTOMER_TYPE_COLORS.buyer.backgroundColor,
+            color: CUSTOMER_TYPE_COLORS.buyer.color,
+          }}
         />
       )}
       {customer.seller && (
         <Chip
-          label="매도자"
+          label={CUSTOMER_TYPE_COLORS.seller.label}
           size="small"
-          sx={{ backgroundColor: "#EBF2FC", color: "#2F80ED" }}
+          sx={{
+            backgroundColor: CUSTOMER_TYPE_COLORS.seller.backgroundColor,
+            color: CUSTOMER_TYPE_COLORS.seller.color,
+          }}
         />
       )}
       {customer.labels &&

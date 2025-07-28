@@ -1,4 +1,5 @@
 import { Typography, Box, Chip } from "@mui/material";
+import { CUSTOMER_TYPE_COLORS } from "@constants/customer";
 import styles from "../styles/CounselDetailPage.module.css";
 
 interface CustomerInfo {
@@ -72,16 +73,45 @@ const CounselCustomerInfo = ({ customer }: CounselCustomerInfoProps) => {
           <span className={styles.infoLabel}>고객 유형</span>
           <Box className="flex gap-2 flex-wrap">
             {customer.tenant && (
-              <Chip label="임차인" size="small" variant="outlined" />
+              <Chip
+                label={CUSTOMER_TYPE_COLORS.tenant.label}
+                size="small"
+                sx={{
+                  backgroundColor: CUSTOMER_TYPE_COLORS.tenant.backgroundColor,
+                  color: CUSTOMER_TYPE_COLORS.tenant.color,
+                }}
+              />
             )}
             {customer.landlord && (
-              <Chip label="임대인" size="small" variant="outlined" />
+              <Chip
+                label={CUSTOMER_TYPE_COLORS.landlord.label}
+                size="small"
+                sx={{
+                  backgroundColor:
+                    CUSTOMER_TYPE_COLORS.landlord.backgroundColor,
+                  color: CUSTOMER_TYPE_COLORS.landlord.color,
+                }}
+              />
             )}
             {customer.buyer && (
-              <Chip label="매수인" size="small" variant="outlined" />
+              <Chip
+                label={CUSTOMER_TYPE_COLORS.buyer.label}
+                size="small"
+                sx={{
+                  backgroundColor: CUSTOMER_TYPE_COLORS.buyer.backgroundColor,
+                  color: CUSTOMER_TYPE_COLORS.buyer.color,
+                }}
+              />
             )}
             {customer.seller && (
-              <Chip label="매도인" size="small" variant="outlined" />
+              <Chip
+                label={CUSTOMER_TYPE_COLORS.seller.label}
+                size="small"
+                sx={{
+                  backgroundColor: CUSTOMER_TYPE_COLORS.seller.backgroundColor,
+                  color: CUSTOMER_TYPE_COLORS.seller.color,
+                }}
+              />
             )}
           </Box>
         </div>

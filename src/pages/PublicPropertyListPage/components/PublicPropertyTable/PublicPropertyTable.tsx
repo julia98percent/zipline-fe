@@ -1,6 +1,7 @@
 import { useEffect, useRef, useCallback } from "react";
 import { PublicPropertyItem } from "@ts/property";
 import PublicPropertyTableView from "./PublicPropertyTableView";
+import PublicPropertyCard from "../PublicPropertyCard";
 import { Box, CircularProgress, Typography } from "@mui/material";
 
 interface Props {
@@ -58,13 +59,27 @@ const PublicPropertyTable = ({
 
   return (
     <Box ref={scrollRef} className="w-full">
-      <PublicPropertyTableView
-        propertyList={propertyList}
-        onSort={onSort}
-        sortField={sortField}
-        isAscending={isAscending}
-        useMetric={useMetric}
-      />
+      {/* 데스크톱: 테이블 뷰 */}
+      <div className="hidden md:block">
+        <PublicPropertyTableView
+          propertyList={propertyList}
+          onSort={onSort}
+          sortField={sortField}
+          isAscending={isAscending}
+          useMetric={useMetric}
+        />
+      </div>
+
+      {/* 모바일: 카드 뷰 */}
+      <div className="md:hidden">
+        {propertyList.map((property, index) => (
+          <PublicPropertyCard
+            key={`${property.platform}-${property.address}-${index}`}
+            property={property}
+            useMetric={useMetric}
+          />
+        ))}
+      </div>
 
       {/* 로딩 인디케이터 */}
       {isLoading && (

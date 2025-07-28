@@ -81,3 +81,12 @@ export function formatPhoneNumber(input: string): string {
 
   return formattedNumber;
 }
+
+export const formatPublicPropertyPrice = (value: number) => {
+  if (value === 0) return "-";
+  return value >= 10000
+    ? `${Math.floor(value / 10000)}억 ${
+        value % 10000 > 0 ? `${value % 10000}만` : ""
+      }`
+    : `${value}만`;
+};

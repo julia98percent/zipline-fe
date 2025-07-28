@@ -4,6 +4,7 @@ import {
   getPropertyTypeColors,
   getPropertyCategoryColors,
 } from "@constants/property";
+import { formatPublicPropertyPrice } from "@utils/numberUtil";
 
 // 색상을 가져오는 유틸리티 함수
 const getColors = (type: string) => {
@@ -41,15 +42,6 @@ const translateType = (type: string) => {
     default:
       return type || "-";
   }
-};
-
-const formatPrice = (value: number) => {
-  if (value === 0) return "-";
-  return value >= 10000
-    ? `${Math.floor(value / 10000)}억 ${
-        value % 10000 > 0 ? `${value % 10000}만` : ""
-      }`
-    : `${value}만`;
 };
 
 const formatBuildingInfo = (property: PublicPropertyItem) => {
@@ -105,7 +97,9 @@ const PropertyCellRenderer = {
     </span>
   ),
 
-  Price: ({ price }: { price: number }) => <span>{formatPrice(price)}</span>,
+  Price: ({ price }: { price: number }) => (
+    <span>{formatPublicPropertyPrice(price)}</span>
+  ),
 
   MonthlyRent: ({ monthlyRent }: { monthlyRent: number }) => (
     <span>{monthlyRent === 0 ? "-" : `${monthlyRent}만`}</span>

@@ -1,5 +1,5 @@
 import Button from "@components/Button";
-import { Modal, Box, Typography } from "@mui/material";
+import { Dialog, DialogTitle, DialogContent } from "@mui/material";
 import { Customer } from "@ts/customer";
 import { PropertyType } from "@ts/property";
 import { Dayjs } from "dayjs";
@@ -103,26 +103,33 @@ const PropertyAddModalView = ({
   };
 
   return (
-    <Modal open={open} onClose={onClose}>
-      <Box className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-1/2 bg-white shadow-2xl rounded-lg p-4 max-h-4/5 overflow-y-auto">
-        <Typography variant="h6" className="text-primary font-bold mb-6">
-          매물 등록
-        </Typography>
-
+    <Dialog
+      open={open}
+      onClose={onClose}
+      maxWidth="md"
+      fullWidth
+      PaperProps={{
+        sx: {
+          borderRadius: "8px",
+          maxHeight: "90vh",
+        },
+      }}
+    >
+      <DialogTitle className="border-b text-primary font-bold border-gray-200">
+        매물 등록
+      </DialogTitle>
+      <DialogContent className="mt-4">
         <CustomerAddressSection
           customerData={customerData}
           addressData={addressData}
           createContract={otherData.createContract}
           onCreateContractChange={otherData.onCreateContractChange}
         />
-
         <PropertyTypeAndPriceSection
           propertyTypeData={propertyTypeData}
           priceInputs={priceInputs}
         />
-
         <PropertyDetailsSection detailInputs={detailInputs} />
-
         <PropertyOptionsSection
           moveInDate={otherData.moveInDate}
           petsAllowed={otherData.petsAllowed}
@@ -133,7 +140,6 @@ const PropertyAddModalView = ({
           onHasElevatorChange={otherData.onHasElevatorChange}
           onDetailsChange={otherData.onDetailsChange}
         />
-
         {/* 등록 버튼 */}
         <div className="mt-4">
           <Button
@@ -160,8 +166,8 @@ const PropertyAddModalView = ({
             </div>
           )}
         </div>
-      </Box>
-    </Modal>
+      </DialogContent>
+    </Dialog>
   );
 };
 

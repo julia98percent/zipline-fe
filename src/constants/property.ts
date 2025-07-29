@@ -68,3 +68,13 @@ export const getPropertyCategoryColors = (category: string) => {
     ] || DEFAULT_PROPERTY_COLORS
   );
 };
+
+export const MAX_PROPERTY_PRICE = 50000000000; // 500억
+export const MAX_PROPERTY_AREA = 10000; // 최대 면적 10,000㎡
+export const MIN_PROPERTY_AREA = 1; // 최소 면적 1㎡
+export const MAX_PROPERTY_FLOOR = 100; // 최대 층수 100층
+export const MIN_PROPERTY_FLOOR = -1; // 최소 층수 -1 (지하층)
+export const MAX_PROPERTY_CONSTRUCTION_YEAR = new Date().getFullYear(); // 현재 연도
+export const MIN_PROPERTY_CONSTRUCTION_YEAR = 1900; // 최소 연도 1900
+export const MAX_PROPERTY_PARKING_CAPACITY = 100; // 최대 주차 가능 대수
+export const MIN_PROPERTY_PARKING_CAPACITY = 0; // 최소 주차 가능 대수 0

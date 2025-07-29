@@ -4,8 +4,6 @@ import {
   DialogTitle,
   DialogContent,
   DialogActions,
-  Box,
-  Typography,
   Paper,
   CircularProgress,
 } from "@mui/material";
@@ -13,8 +11,9 @@ import { useDropzone } from "react-dropzone";
 import { uploadPropertiesBulk } from "@apis/propertyService";
 import { Link } from "react-router-dom";
 import { AxiosError } from "axios";
-import { showToast } from "@components/Toast/Toast";
+import { showToast } from "@components/Toast";
 import Button from "@components/Button";
+import { FILE_ERROR_MESSAGES } from "@constants/clientErrorMessage";
 
 interface Props {
   open: boolean;
@@ -24,11 +23,21 @@ interface Props {
 
 interface ErrorResponse {
   message: string;
+  code?: string;
+  errors?: Array<{
+    message: string;
+    value: string;
+    field: string;
+    rowNum: number;
+  }>;
 }
 
 function BulkUploadModal({ open, handleClose, fetchPropertyData }: Props) {
   const [file, setFile] = useState<File | null>(null);
   const [error, setError] = useState<string>("");
+  const [detailedErrors, setDetailedErrors] = useState<ErrorResponse["errors"]>(
+    []
+  );
   const [isLoading, setIsLoading] = useState(false);
 
   const onDrop = useCallback((acceptedFiles: File[]) => {
@@ -42,6 +51,7 @@ function BulkUploadModal({ open, handleClose, fetchPropertyData }: Props) {
       }
       setFile(uploadedFile);
       setError("");
+      setDetailedErrors([]);
     }
   }, []);
 
@@ -70,12 +80,20 @@ function BulkUploadModal({ open, handleClose, fetchPropertyData }: Props) {
       fetchPropertyData();
     } catch (error) {
       const axiosError = error as AxiosError<ErrorResponse>;
-      const errorMessage =
-        axiosError.response?.data?.message ||
-        "파일 업로드 중 오류가 발생했습니다.";
-      setError(errorMessage);
+      const errorResponse = axiosError.response?.data;
+
+      if (errorResponse?.errors && errorResponse.errors.length > 0) {
+        setDetailedErrors(errorResponse.errors);
+        setError(errorResponse.message || FILE_ERROR_MESSAGES.UPLOAD_FAILED);
+      } else {
+        const errorMessage =
+          errorResponse?.message || FILE_ERROR_MESSAGES.UPLOAD_FAILED;
+        setError(errorMessage);
+        setDetailedErrors([]);
+      }
+
       showToast({
-        message: errorMessage,
+        message: errorResponse?.message || FILE_ERROR_MESSAGES.UPLOAD_FAILED,
         type: "error",
       });
     } finally {
@@ -87,39 +105,32 @@ function BulkUploadModal({ open, handleClose, fetchPropertyData }: Props) {
     <Dialog open={open} onClose={handleClose} maxWidth="sm" fullWidth>
       <DialogTitle>매물 데이터 일괄 등록</DialogTitle>
       <DialogContent>
-        <Typography
-          variant="subtitle2"
-          className="text-gray-800 font-semibold mb-4"
-        >
-          엑셀 파일 업로드 정책
-        </Typography>
+        <div className="flex flex-col gap-1 mb-6">
+          <p className="text-gray-800 font-semibold">엑셀 파일 업로드 정책</p>
 
-        <Box className="flex flex-col gap-3 mb-6">
-          <Box className="flex items-center gap-2">
-            <Typography variant="body2" color="text.secondary">
-              • 파일 형식:
-            </Typography>
-            <Typography variant="body2" className="font-medium text-primary">
-              .xlsx, .xls
-            </Typography>
-          </Box>
+          <div className="flex items-center gap-2">
+            <p className="text-secondary">
+              • 파일 형식:{" "}
+              <span className="font-medium text-primary">.xlsx, .xls</span>
+            </p>
+          </div>
 
-          <Box className="flex items-center gap-2">
-            <Typography variant="body2" color="text.secondary">
-              • 파일 크기:
-            </Typography>
-            <Typography variant="body2" className="font-medium text-primary">
-              10MB 이하
-            </Typography>
-          </Box>
+          <div className="flex items-center gap-2">
+            <p color="text.secondary">• 파일 크기:</p>
+            <p className="font-medium text-primary">10MB 이하</p>
+          </div>
 
-          <Typography variant="body2" color="text.secondary">
+          <p color="text.secondary">
             • 필수 입력 항목이 누락된 경우 업로드가 실패할 수 있습니다.
-          </Typography>
-        </Box>
+          </p>
+          <p className="ml-4 font-medium text-primary">
+            - 필수 항목: 고객명, 매물 주소, 매물 카테고리, 매물 유형, 공급면적,
+            전용면적
+          </p>
+        </div>
 
-        <Box className="bg-gray-50 p-4 rounded border border-gray-300">
-          <Typography variant="body2" color="text.secondary" className="mb-2">
+        <div className="bg-gray-50 p-4 rounded border border-gray-300">
+          <p color="text.secondary" className="mb-2">
             엑셀의 열 순서가 변경되면 업로드가 실패할 수 있으니,{" "}
             <Link
               to={import.meta.env.VITE_PROPERTY_EXCEL_TEMPLATE_URL}
@@ -132,8 +143,8 @@ function BulkUploadModal({ open, handleClose, fetchPropertyData }: Props) {
               제공되는 템플릿
             </Link>
             을 그대로 사용하는 것을 권장합니다.
-          </Typography>
-          <Typography variant="body2" className="text-primary mt-2">
+          </p>
+          <p className="text-primary mt-2">
             <Link
               to={import.meta.env.VITE_PROPERTY_EXCEL_TEMPLATE_URL}
               style={{
@@ -144,34 +155,27 @@ function BulkUploadModal({ open, handleClose, fetchPropertyData }: Props) {
             >
               → 템플릿 다운로드
             </Link>
-          </Typography>
-        </Box>
+          </p>
+        </div>
 
-        <Box className="mt-6">
-          <Typography
-            variant="body2"
-            className="text-gray-700 mb-2 font-medium"
-          >
-            • 지정된 입력 값 안내
-          </Typography>
-          <Box className="pl-4">
-            <Typography variant="body2" color="text.secondary" className="mb-2">
-              - 매물 카테고리:{" "}
-              <Typography component="span" className="font-medium text-primary">
-                매매, 전세, 월세
-              </Typography>
-            </Typography>
-            <Typography variant="body2" color="text.secondary">
-              - 매물 유형:{" "}
-              <Typography component="span" className="font-medium text-primary">
-                아파트, 빌라, 상가, 오피스텔, 원룸, 투룸, 주택
-              </Typography>
-            </Typography>
-          </Box>
-          <Typography variant="body2" color="error" className="my-2 text-xs">
-            * 허용되지 않은 값이 입력될 경우, 업로드 과정에서 오류가 발생합니다.
-          </Typography>
-        </Box>
+        <div className="mt-6">
+          <p className="text-gray-800 font-semibold">지정된 입력 값 안내</p>
+
+          <p color="text.secondary" className="inline">
+            • 매물 카테고리:{" "}
+          </p>
+          <span className="font-medium text-primary">
+            아파트, 빌라, 상가, 오피스텔, 원룸, 투룸, 주택
+          </span>
+          <p color="text.secondary">
+            • 매물 유형:{" "}
+            <span className="font-medium text-primary">매매, 전세, 월세</span>
+          </p>
+        </div>
+
+        <p className="my-2 text-xs text-red-500">
+          * 허용되지 않은 값이 입력될 경우, 업로드 과정에서 오류가 발생합니다.
+        </p>
 
         <Paper
           {...getRootProps()}
@@ -185,20 +189,42 @@ function BulkUploadModal({ open, handleClose, fetchPropertyData }: Props) {
         >
           <input {...getInputProps()} />
           {file ? (
-            <Typography>{file.name}</Typography>
+            <p>{file.name}</p>
           ) : (
-            <Typography>
+            <p>
               {isDragActive
                 ? "파일을 여기에 놓으세요"
                 : "파일을 드래그하거나 클릭하여 업로드하세요"}
-            </Typography>
+            </p>
           )}
         </Paper>
 
         {error && (
-          <Typography color="error" className="mt-2">
-            {error}
-          </Typography>
+          <div className="mt-4 p-4 bg-red-50 border border-red-200 rounded">
+            <p className="text-red-700 font-medium mb-2">{error}</p>
+            {detailedErrors && detailedErrors.length > 0 && (
+              <div className="mt-3">
+                <p className="text-red-600 text-sm font-medium mb-2">
+                  상세 오류 내역:
+                </p>
+                <ul className="text-red-600 text-sm space-y-1">
+                  {detailedErrors.map((err, index) => (
+                    <li key={index} className="flex items-start">
+                      <span className="inline-block w-1 h-1 bg-red-500 rounded-full mt-2 mr-2 flex-shrink-0" />
+                      <span>
+                        <strong>{err.rowNum}행</strong> - {err.message}
+                        {err.value && (
+                          <span className="text-red-500 ml-1">
+                            (입력값: "{err.value}")
+                          </span>
+                        )}
+                      </span>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            )}
+          </div>
         )}
       </DialogContent>
       <DialogActions>

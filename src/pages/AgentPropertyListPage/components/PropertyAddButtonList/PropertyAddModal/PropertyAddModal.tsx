@@ -9,6 +9,17 @@ import { showToast } from "@components/Toast/Toast";
 import { useNumericInput, useRawNumericInput } from "@hooks/useNumericInput";
 import useInput from "@hooks/useInput";
 import PropertyAddModalView from "./PropertyAddModalView";
+import {
+  MAX_PROPERTY_PRICE,
+  MAX_PROPERTY_AREA,
+  MIN_PROPERTY_AREA,
+  MIN_PROPERTY_FLOOR,
+  MAX_PROPERTY_FLOOR,
+  MIN_PROPERTY_CONSTRUCTION_YEAR,
+  MAX_PROPERTY_CONSTRUCTION_YEAR,
+  MIN_PROPERTY_PARKING_CAPACITY,
+  MAX_PROPERTY_PARKING_CAPACITY,
+} from "@constants/property";
 
 interface PropertyAddModalProps {
   open: boolean;
@@ -29,26 +40,30 @@ const PropertyAddModal = ({
   const [extraAddress, handleChangeDetailAddress] = useInput<string>("");
   const [createContract, setCreateContract] = useState<boolean>(false);
 
-  // Numeric inputs with validation
-  const [deposit, handleChangeDeposit, , setDepositError] = useNumericInput("");
-  const [monthlyRent, handleChangeMonthlyRent, , setMonthlyRentError] =
-    useNumericInput("");
-  const [price, handleChangePrice, priceError, setPriceError] =
-    useNumericInput("");
-  const [netArea, handleChangeNetArea, netAreaError, setNetAreaError] =
-    useRawNumericInput("");
-  const [totalArea, handleChangeTotalArea, totalAreaError, setTotalAreaError] =
-    useRawNumericInput("");
-  const [floor, handleChangeFloor, floorError, setFloorError] =
-    useRawNumericInput("");
-  const [
-    constructionYear,
-    handleChangeConstructionYear,
-    constructionYearError,
-    setConstructionYearError,
-  ] = useRawNumericInput("");
-  const [parkingCapacity, handleChangeParkingCapacity, parkingCapacityError] =
-    useRawNumericInput("");
+  const priceInput = useNumericInput("", { max: MAX_PROPERTY_PRICE });
+  const depositInput = useNumericInput("", { max: MAX_PROPERTY_PRICE });
+  const monthlyRentInput = useNumericInput("", { max: MAX_PROPERTY_PRICE });
+  const netAreaInput = useNumericInput("", {
+    max: MAX_PROPERTY_AREA,
+    min: MIN_PROPERTY_AREA,
+  });
+  const totalAreaInput = useNumericInput("", {
+    max: MAX_PROPERTY_AREA,
+    min: MIN_PROPERTY_AREA,
+  });
+  const floorInput = useRawNumericInput("", {
+    min: MIN_PROPERTY_FLOOR,
+    allowNegative: true,
+    max: MAX_PROPERTY_FLOOR,
+  });
+  const constructionYearInput = useRawNumericInput("", {
+    min: MIN_PROPERTY_CONSTRUCTION_YEAR,
+    max: MAX_PROPERTY_CONSTRUCTION_YEAR,
+  });
+  const parkingCapacityInput = useRawNumericInput("", {
+    min: MIN_PROPERTY_PARKING_CAPACITY,
+    max: MAX_PROPERTY_PARKING_CAPACITY,
+  });
 
   // Other form fields
   const [details, handleChangeDetails] = useInput(null);
@@ -71,37 +86,11 @@ const PropertyAddModal = ({
     }
   };
 
-  // Form validation and submission
+
   const validateForm = (): boolean => {
-    if (!customerUid) {
-      showToast({ message: "고객을 선택해주세요.", type: "error" });
-      return false;
-    }
-    if (!address) {
-      showToast({ message: "주소를 입력해주세요.", type: "error" });
-      return false;
-    }
-    if (!realCategory) {
-      showToast({ message: "매물 유형을 선택해주세요.", type: "error" });
-      return false;
-    }
-    if (!type) {
-      showToast({ message: "거래 유형을 선택해주세요.", type: "error" });
-      return false;
-    }
-    if (hasElevator === null || hasElevator === undefined) {
-      showToast({
-        message: "엘리베이터 유무를 선택해주세요.",
-        type: "error",
-      });
-      return false;
-    }
-    if (!netArea || Number(netArea) <= 0) {
-      showToast({ message: "전용면적을 입력해주세요.", type: "error" });
-      return false;
-    }
-    if (!totalArea || Number(totalArea) <= 0) {
-      showToast({ message: "공급면적을 입력해주세요.", type: "error" });
+    const errors = getValidationErrors();
+    if (errors.length > 0) {
+      showToast({ message: errors[0], type: "error" });
       return false;
     }
     return true;
@@ -120,21 +109,23 @@ const PropertyAddModal = ({
       address: address!,
       detailAddress: extraAddress,
       legalDistrictCode,
-      deposit: parseNumber(deposit),
-      monthlyRent: parseNumber(monthlyRent),
-      price: parseNumber(price),
+      deposit: parseNumber(depositInput[0]),
+      monthlyRent: parseNumber(monthlyRentInput[0]),
+      price: parseNumber(priceInput[0]),
       type: type,
       longitude,
       latitude,
       moveInDate: moveInDate?.format("YYYY-MM-DD") || null,
       realCategory,
       petsAllowed,
-      floor: Number(floor),
+      floor: Number(floorInput[0]),
       hasElevator,
-      constructionYear: constructionYear ? Number(constructionYear) : null,
-      parkingCapacity: Number(parkingCapacity),
-      netArea: Number(netArea),
-      totalArea: Number(totalArea),
+      constructionYear: constructionYearInput[0]
+        ? Number(constructionYearInput[0])
+        : null,
+      parkingCapacity: Number(parkingCapacityInput[0]),
+      netArea: Number(netAreaInput[0]),
+      totalArea: Number(totalAreaInput[0]),
       details,
       createContract,
     };
@@ -157,13 +148,13 @@ const PropertyAddModal = ({
       }
 
       const errorMap: Record<string, (msg: string) => void> = {
-        보증금: (msg) => setDepositError(msg),
-        월세: (msg) => setMonthlyRentError(msg),
-        "매매 가격": (msg) => setPriceError(msg),
-        "전용 면적": (msg) => setNetAreaError(msg),
-        "공급 면적": (msg) => setTotalAreaError(msg),
-        층수: (msg) => setFloorError(msg),
-        건축년도: (msg) => setConstructionYearError(msg),
+        보증금: (msg) => depositInput[3](msg),
+        월세: (msg) => monthlyRentInput[3](msg),
+        "매매 가격": (msg) => priceInput[3](msg),
+        "전용 면적": (msg) => netAreaInput[3](msg),
+        "공급 면적": (msg) => totalAreaInput[3](msg),
+        층수: (msg) => floorInput[3](msg),
+        건축년도: (msg) => constructionYearInput[3](msg),
         주소: (msg) => showToast({ message: msg, type: "error" }),
         고객: () => showToast({ message, type: "error" }),
         "이미 등록되어있는 매물입니다.": () =>
@@ -227,66 +218,68 @@ const PropertyAddModal = ({
     }
   }, [open]);
 
+  // Form data objects
+  const customerData = {
+    uid: customerUid,
+    options: customerOptions,
+    onChange: setCustomerUid,
+  };
+
+  const addressData = {
+    address,
+    extraAddress,
+    onAddressChange: setAddress,
+    onDaumPostAddressChange: handleAddressChange,
+    onExtraAddressChange: handleChangeDetailAddress,
+  };
+
+  const propertyTypeData = {
+    type,
+    realCategory,
+    onTypeChange: setType,
+    onRealCategoryChange: setRealCategory,
+  };
+
+  const numericInputs = {
+    price: priceInput,
+    deposit: depositInput,
+    monthlyRent: monthlyRentInput,
+    netArea: netAreaInput,
+    totalArea: totalAreaInput,
+    floor: floorInput,
+    constructionYear: constructionYearInput,
+    parkingCapacity: parkingCapacityInput,
+  };
+
+  const otherData = {
+    moveInDate,
+    petsAllowed,
+    hasElevator,
+    details,
+    createContract,
+    onMoveInDateChange: setMoveInDate,
+    onPetsAllowedChange: setPetsAllowed,
+    onHasElevatorChange: setHasElevator,
+    onDetailsChange: handleChangeDetails,
+    onCreateContractChange: setCreateContract,
+  };
+
+  const validationErrors = getValidationErrors();
+
   return (
     <PropertyAddModalView
       open={open}
       onClose={handleClose}
       onSubmit={handleSubmit}
-      // Customer
-      customerUid={customerUid}
-      customerOptions={customerOptions}
-      onCustomerChange={setCustomerUid}
-      // Address
-      address={address}
-      onAddressChange={setAddress}
-      onDaumPostAddressChange={handleAddressChange}
-      extraAddress={extraAddress}
-      onExtraAddressChange={handleChangeDetailAddress}
-      // Contract
-      createContract={createContract}
-      onCreateContractChange={setCreateContract}
-      // Property type
-      type={type}
-      onTypeChange={setType}
-      realCategory={realCategory}
-      onRealCategoryChange={setRealCategory}
-      // Price fields
-      deposit={deposit}
-      onDepositChange={handleChangeDeposit}
-      monthlyRent={monthlyRent}
-      onMonthlyRentChange={handleChangeMonthlyRent}
-      price={price}
-      priceError={priceError}
-      onPriceChange={handleChangePrice}
-      // Area and floor
-      netArea={netArea}
-      netAreaError={netAreaError}
-      onNetAreaChange={handleChangeNetArea}
-      totalArea={totalArea}
-      totalAreaError={totalAreaError}
-      onTotalAreaChange={handleChangeTotalArea}
-      floor={floor}
-      floorError={floorError}
-      onFloorChange={handleChangeFloor}
-      // Construction and parking
-      constructionYear={constructionYear}
-      constructionYearError={constructionYearError}
-      onConstructionYearChange={handleChangeConstructionYear}
-      parkingCapacity={parkingCapacity}
-      parkingCapacityError={parkingCapacityError}
-      onParkingCapacityChange={handleChangeParkingCapacity}
-      // Other properties
-      moveInDate={moveInDate}
-      onMoveInDateChange={setMoveInDate}
-      petsAllowed={petsAllowed}
-      onPetsAllowedChange={setPetsAllowed}
-      hasElevator={hasElevator}
-      onHasElevatorChange={setHasElevator}
-      details={details}
-      onDetailsChange={handleChangeDetails}
+      customerData={customerData}
+      addressData={addressData}
+      propertyTypeData={propertyTypeData}
+      numericInputs={numericInputs}
+      otherData={otherData}
+      isFormValid={isFormValid}
+      validationErrors={validationErrors}
     />
   );
 };
 
 export default PropertyAddModal;
-// This

@@ -1,6 +1,7 @@
 import { useCallback, useState } from "react";
 import { Box, Typography, List } from "@mui/material";
 import type { Notification } from "@stores/useNotificationStore";
+import useNotificationStore from "@stores/useNotificationStore";
 import PreCounselDetailModal from "@components/PreCounselDetailModal";
 import { readAllNotifications } from "@apis/notificationService";
 import Button from "@components/Button";
@@ -17,6 +18,7 @@ function NotificationList({
 }: NotificationListProps) {
   const [isSurveyDetailModalOpen, setIsSurveyDetailModalOpen] = useState(false);
   const [selectedSurveyId, setSelectedSurveyId] = useState<number | null>(null);
+  const { setNotificationList } = useNotificationStore();
 
   const handleModalStateChange = useCallback(
     (isOpen: boolean) => {
@@ -40,8 +42,21 @@ function NotificationList({
     handleModalStateChange(false);
   };
 
-  const handleReadAllNotifications = () => {
-    readAllNotifications();
+  const handleReadAllNotifications = async () => {
+    try {
+      const updatedNotifications = notifications.map((notification) => ({
+        ...notification,
+        read: true,
+      }));
+      setNotificationList(updatedNotifications);
+
+      // 서버에 읽음 처리 요청
+      await readAllNotifications();
+    } catch (error) {
+      console.error("알림 읽음 처리 실패:", error);
+
+      setNotificationList(notifications);
+    }
   };
 
   return (

@@ -62,7 +62,7 @@ function NotificationList({
   return (
     <>
       <Box className="absolute top-15 -right-12 bg-white shadow-lg rounded-lg p-4 z-50 w-2/5 min-w-75 max-w-96 max-h-[50vh] overflow-hidden flex flex-col">
-        <div className="flex items-center justify-between text-gray-900 font-semibold mb-3 pb-2 border-b border-gray-200">
+        <div className="flex items-center justify-between text-gray-900 font-semibold pb-2 border-b border-gray-200">
           <Typography variant="h6">알림</Typography>
           <Button
             variant="text"

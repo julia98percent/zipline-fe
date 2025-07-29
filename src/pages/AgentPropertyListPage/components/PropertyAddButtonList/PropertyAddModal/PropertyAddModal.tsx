@@ -32,7 +32,6 @@ const PropertyAddModal = ({
   handleClose,
   fetchPropertyData,
 }: PropertyAddModalProps) => {
-  // State for form fields
   const [customerUid, setCustomerUid] = useState<number | null>(null);
   const [customerOptions, setCustomerOptions] = useState<Customer[]>([]);
   const [address, setAddress] = useState<string | null>(null);
@@ -86,6 +85,34 @@ const PropertyAddModal = ({
     }
   };
 
+  const getValidationErrors = () => {
+    const errors: string[] = [];
+
+    if (!customerUid) errors.push("고객을 선택해주세요");
+    if (!address) errors.push("주소를 입력해주세요");
+    if (!realCategory) errors.push("매물 유형을 선택해주세요");
+    if (!type) errors.push("거래 유형을 선택해주세요");
+    if (hasElevator === null || hasElevator === undefined)
+      errors.push("엘리베이터 유무를 선택해주세요");
+    if (!netAreaInput[0] || Number(netAreaInput[0]) <= 0)
+      errors.push("전용면적을 입력해주세요");
+    if (!totalAreaInput[0] || Number(totalAreaInput[0]) <= 0)
+      errors.push("공급면적을 입력해주세요");
+
+    if (netAreaInput[2]) errors.push("유효한 전용 면적을 입력해주세요");
+    if (totalAreaInput[2]) errors.push("유효한 공급 면적을 입력해주세요");
+    if (floorInput[2]) errors.push("유효한 층수를 입력해주세요");
+    if (constructionYearInput[2]) errors.push("유효한 건축년도를 입력해주세요");
+    if (parkingCapacityInput[2])
+      errors.push("유효한 주차 가능 대수를 입력해주세요");
+    if (priceInput[2]) errors.push("유효한 가격을 입력해주세요");
+    if (depositInput[2]) errors.push("유효한 보증금을 입력해주세요");
+    if (monthlyRentInput[2]) errors.push("유효한 월세를 입력해주세요");
+
+    return errors;
+  };
+
+  const isFormValid = getValidationErrors().length === 0;
 
   const validateForm = (): boolean => {
     const errors = getValidationErrors();

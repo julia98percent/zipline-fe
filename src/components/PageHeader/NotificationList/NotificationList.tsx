@@ -1,6 +1,7 @@
 import { useCallback, useState } from "react";
 import { Box, Typography, List } from "@mui/material";
 import type { Notification } from "@stores/useNotificationStore";
+import useNotificationStore from "@stores/useNotificationStore";
 import PreCounselDetailModal from "@components/PreCounselDetailModal";
 import { readAllNotifications } from "@apis/notificationService";
 import Button from "@components/Button";
@@ -17,6 +18,7 @@ function NotificationList({
 }: NotificationListProps) {
   const [isSurveyDetailModalOpen, setIsSurveyDetailModalOpen] = useState(false);
   const [selectedSurveyId, setSelectedSurveyId] = useState<number | null>(null);
+  const { setNotificationList } = useNotificationStore();
 
   const handleModalStateChange = useCallback(
     (isOpen: boolean) => {
@@ -40,14 +42,27 @@ function NotificationList({
     handleModalStateChange(false);
   };
 
-  const handleReadAllNotifications = () => {
-    readAllNotifications();
+  const handleReadAllNotifications = async () => {
+    try {
+      const updatedNotifications = notifications.map((notification) => ({
+        ...notification,
+        read: true,
+      }));
+      setNotificationList(updatedNotifications);
+
+      // 서버에 읽음 처리 요청
+      await readAllNotifications();
+    } catch (error) {
+      console.error("알림 읽음 처리 실패:", error);
+
+      setNotificationList(notifications);
+    }
   };
 
   return (
     <>
       <Box className="absolute top-15 -right-12 bg-white shadow-lg rounded-lg p-4 z-50 w-2/5 min-w-75 max-w-96 max-h-[50vh] overflow-hidden flex flex-col">
-        <div className="flex items-center justify-between text-gray-900 font-semibold mb-3 pb-2 border-b border-gray-200">
+        <div className="flex items-center justify-between text-gray-900 font-semibold pb-2 border-b border-gray-200">
           <Typography variant="h6">알림</Typography>
           <Button
             variant="text"

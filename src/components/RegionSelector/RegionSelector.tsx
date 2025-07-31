@@ -15,7 +15,7 @@ interface RegionSelectorProps {
   placeholder?: string;
   className?: string;
   showEmptyOption?: boolean;
-  size?: "small" | "medium" | "large";
+  size?: "small" | "medium";
 }
 
 const RegionSelector = ({
@@ -27,6 +27,7 @@ const RegionSelector = ({
   placeholder = "전체",
   className,
   showEmptyOption = true,
+  size = "small",
 }: RegionSelectorProps) => {
   return (
     <NumberSelect
@@ -37,6 +38,7 @@ const RegionSelector = ({
       className={className}
       showEmptyOption={showEmptyOption}
       emptyText={placeholder}
+      size={size}
     >
       {regions.map((region) => (
         <MenuItem key={region.cortarNo} value={String(region.cortarNo)}>

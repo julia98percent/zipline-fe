@@ -38,6 +38,7 @@ export default function AdditionalInfoSection({
               onRegionChange("sido")(event as unknown as SelectChangeEvent)
             }
             label="시/도"
+            size="medium"
           />
 
           <RegionSelector
@@ -48,6 +49,7 @@ export default function AdditionalInfoSection({
             }
             disabled={!regionState.selectedSido}
             label="시/군/구"
+            size="medium"
           />
 
           <RegionSelector
@@ -58,6 +60,7 @@ export default function AdditionalInfoSection({
             }
             disabled={!regionState.selectedSigungu}
             label="읍/면/동"
+            size="medium"
           />
         </div>
       </div>

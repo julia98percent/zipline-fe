@@ -40,8 +40,8 @@ const BulkMessagePageContainer = () => {
       "{{생년월일}}": customer.birthday
         ? formatBirthday(customer.birthday)
         : "생일 정보 없음",
-      "{{관심지역}}": customer.legalDistrictCode
-        ? `$$###{${customer.legalDistrictCode}}`
+      "{{관심지역}}": customer.preferredRegionKR
+        ? `$$###{${customer.preferredRegionKR}}`
         : "",
     };
 
@@ -139,7 +139,6 @@ const BulkMessagePageContainer = () => {
 
   return (
     <BulkMessagePage
-      templates={templates}
       selectedTemplate={selectedTemplate}
       messageContent={messageContent}
       customers={customers}

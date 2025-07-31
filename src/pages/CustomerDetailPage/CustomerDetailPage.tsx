@@ -85,8 +85,6 @@ const CustomerDetailPage = () => {
     if (customer) {
       const editedData = {
         ...customer,
-        legalDistrictCode: customer.legalDistrictCode,
-        preferredRegion: customer.preferredRegion,
         minRent: customer.minRent || null,
         maxRent: customer.maxRent || null,
         minPrice: customer.minPrice || null,
@@ -118,21 +116,6 @@ const CustomerDetailPage = () => {
       const updated = {
         ...editedCustomer,
         [field]: processedValue,
-      };
-
-      setEditedCustomer(updated);
-    },
-    [editedCustomer]
-  );
-
-  const handleRegionChange = useCallback(
-    (value: { code: number | null; name: string }) => {
-      if (!editedCustomer) return;
-
-      const updated = {
-        ...editedCustomer,
-        legalDistrictCode: `${value.code}`,
-        preferredRegion: value.name,
       };
 
       setEditedCustomer(updated);
@@ -250,7 +233,6 @@ const CustomerDetailPage = () => {
       onCancelEdit={handleCancelEdit}
       onSaveEdit={handleSaveEdit}
       onInputChange={handleInputChange}
-      onRegionChange={handleRegionChange}
       onDeleteClick={handleDeleteClick}
       onDeleteCancel={handleDeleteCancel}
       onDeleteConfirm={handleDeleteConfirm}

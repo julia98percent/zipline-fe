@@ -200,7 +200,6 @@ export function useRawNumericInput(
   };
 
   const handleBlur = (e: React.FocusEvent<HTMLInputElement>) => {
-    console.log("test");
     const rawValue = e.target.value;
 
     const validation = validateRange(rawValue);

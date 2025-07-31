@@ -25,7 +25,6 @@ interface CustomerDetailPageViewProps {
     field: keyof Customer,
     value: string | number | boolean | null | { uid: number; name: string }[]
   ) => void;
-  onRegionChange: (value: { code: number | null; name: string }) => void;
   onDeleteClick: () => void;
   onDeleteCancel: () => void;
   onDeleteConfirm: () => void;
@@ -47,7 +46,6 @@ const CustomerDetailPageView = ({
   onCancelEdit,
   onSaveEdit,
   onInputChange,
-  onRegionChange,
   onDeleteClick,
   onDeleteCancel,
   onDeleteConfirm,
@@ -83,7 +81,6 @@ const CustomerDetailPageView = ({
             isEditing={isEditing}
             editedCustomer={editedCustomer}
             onInputChange={onInputChange}
-            onRegionChange={onRegionChange}
           />
           <CustomerRoleLabels
             customer={customer}

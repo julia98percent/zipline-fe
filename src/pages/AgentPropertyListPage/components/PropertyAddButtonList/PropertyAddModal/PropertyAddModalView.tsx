@@ -122,12 +122,12 @@ const PropertyAddModalView = ({
         <CustomerAddressSection
           customerData={customerData}
           addressData={addressData}
-          createContract={otherData.createContract}
-          onCreateContractChange={otherData.onCreateContractChange}
         />
         <PropertyTypeAndPriceSection
           propertyTypeData={propertyTypeData}
           priceInputs={priceInputs}
+          createContract={otherData.createContract}
+          onCreateContractChange={otherData.onCreateContractChange}
         />
         <PropertyDetailsSection detailInputs={detailInputs} />
         <PropertyOptionsSection

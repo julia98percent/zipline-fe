@@ -1,5 +1,5 @@
 import TextField from "@components/TextField";
-import { MenuItem, FormControlLabel, Checkbox } from "@mui/material";
+import { MenuItem } from "@mui/material";
 import DaumPost from "@components/DaumPost";
 import { Customer } from "@ts/customer";
 
@@ -20,15 +20,11 @@ interface AddressData {
 interface CustomerAddressSectionProps {
   customerData: CustomerData;
   addressData: AddressData;
-  createContract: boolean;
-  onCreateContractChange: (checked: boolean) => void;
 }
 
 const CustomerAddressSection = ({
   customerData,
   addressData,
-  createContract,
-  onCreateContractChange,
 }: CustomerAddressSectionProps) => {
   return (
     <div>

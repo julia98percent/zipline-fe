@@ -4,7 +4,6 @@ import {
   DialogTitle,
   DialogContent,
   DialogActions,
-  Box,
   TextField,
   FormControl,
   FormControlLabel,
@@ -12,6 +11,7 @@ import {
   CircularProgress,
   Typography,
   Autocomplete,
+  Tooltip,
 } from "@mui/material";
 import { DatePicker } from "@mui/x-date-pickers/DatePicker";
 import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
@@ -124,27 +124,22 @@ function AddScheduleModal({ open, onClose, onSubmit }: AddScheduleModalProps) {
     onClose();
   };
 
-  const handleSubmit = async () => {
+  const getValidationErrors = () => {
+    const errors: string[] = [];
+
     if (!formData.customerId) {
-      setErrorMessage("고객을 선택해주세요.");
-      return;
+      errors.push("고객을 선택해주세요.");
     }
 
     if (!formData.title.trim()) {
-      setErrorMessage("일정 제목을 입력해주세요.");
-      return;
+      errors.push("일정 제목을 입력해주세요.");
     }
-
     if (!formData.startDate) {
-      setErrorMessage("시작 날짜를 선택해주세요.");
-      return;
+      errors.push("시작 날짜를 선택해주세요.");
     }
-
     if (formData.includeTime && !formData.startTime) {
-      setErrorMessage("시작 시간을 선택해주세요.");
-      return;
+      errors.push("시작 시간을 선택해주세요.");
     }
-
     if (formData.includeTime && formData.endTime) {
       const startDateTime = new Date(
         `${formData.startDate}T${formData.startTime}`
@@ -152,12 +147,26 @@ function AddScheduleModal({ open, onClose, onSubmit }: AddScheduleModalProps) {
       const endDateTime = new Date(
         `${formData.endDate || formData.startDate}T${formData.endTime}`
       );
-
       if (startDateTime > endDateTime) {
-        setErrorMessage("시작 시간은 종료 시간보다 늦을 수 없습니다.");
-        return;
+        errors.push("시작 시간은 종료 시간보다 늦을 수 없습니다.");
       }
     }
+    if (formData.startDate && formData.endDate) {
+      const startDate = new Date(formData.startDate);
+      const endDate = new Date(formData.endDate);
+      if (startDate > endDate) {
+        errors.push("시작 날짜는 종료 날짜보다 늦을 수 없습니다.");
+      }
+    }
+
+    return errors;
+  };
+
+  const validationErrors = getValidationErrors();
+  const isSubmitButtonDisabled = validationErrors.length > 0;
+
+  const handleSubmit = async () => {
+    if (validationErrors.length) return;
 
     const formatDateTime = (date: string, time: string) => {
       const dateTime = new Date(date);
@@ -201,48 +210,48 @@ function AddScheduleModal({ open, onClose, onSubmit }: AddScheduleModalProps) {
       onClose={handleClose}
       maxWidth={false}
       PaperProps={{
-        className: "w-200 h-175 max-h-4/5 bg-white rounded-lg",
+        className: "w-200 h-175 max-h-[90vh] bg-white rounded-lg",
       }}
     >
-      <DialogTitle className="text-primary font-bold p-6">
+      <DialogTitle className="border-b text-primary font-bold border-gray-200">
         일정 등록
       </DialogTitle>
-      <DialogContent className="p-6 pt-2">
-        <Box className="flex flex-col gap-3">
-          <Box className="w-full">
-            <FormControl fullWidth className="mb-4" sx={inputStyle}>
-              <Autocomplete
-                options={customers}
-                getOptionLabel={(option) => option.name}
-                value={
-                  customers.find((c) => c.uid === formData.customerId) || null
-                }
-                onChange={(_, newValue) => {
-                  handleFormChange("customerId", newValue?.uid || null);
-                }}
-                loading={loading}
-                renderInput={(params) => (
-                  <TextField
-                    {...params}
-                    label="고객"
-                    helperText={!formData.customerId ? errorMessage : ""}
-                    InputProps={{
-                      ...params.InputProps,
-                      endAdornment: (
-                        <>
-                          {loading ? (
-                            <CircularProgress color="inherit" size={20} />
-                          ) : null}
-                          {params.InputProps.endAdornment}
-                        </>
-                      ),
-                    }}
-                  />
-                )}
-              />
-            </FormControl>
-          </Box>
-          <Box className="w-full">
+
+      <DialogContent className=" p-7">
+        <div className="grid grid-cols-1 gap-4">
+          <FormControl fullWidth sx={inputStyle}>
+            <Autocomplete
+              options={customers}
+              getOptionLabel={(option) => option.name}
+              value={
+                customers.find((c) => c.uid === formData.customerId) || null
+              }
+              onChange={(_, newValue) => {
+                handleFormChange("customerId", newValue?.uid || null);
+              }}
+              loading={loading}
+              renderInput={(params) => (
+                <TextField
+                  {...params}
+                  label="고객"
+                  helperText={!formData.customerId ? errorMessage : ""}
+                  InputProps={{
+                    ...params.InputProps,
+                    endAdornment: (
+                      <>
+                        {loading ? (
+                          <CircularProgress color="inherit" size={20} />
+                        ) : null}
+                        {params.InputProps.endAdornment}
+                      </>
+                    ),
+                  }}
+                />
+              )}
+            />
+          </FormControl>
+
+          <div>
             <TextField
               fullWidth
               label="일정 제목"
@@ -250,9 +259,9 @@ function AddScheduleModal({ open, onClose, onSubmit }: AddScheduleModalProps) {
               onChange={(e) => handleFormChange("title", e.target.value)}
               sx={inputStyle}
             />
-          </Box>
-          <Box className="flex gap-3 flex-wrap">
-            <Box className="flex-[1_1_calc(50%-6px)] min-w-60">
+          </div>
+          <div className="flex gap-3 flex-wrap">
+            <div className="flex-[1_1_calc(50%-6px)] min-w-60">
               <LocalizationProvider dateAdapter={AdapterDayjs}>
                 <DatePicker
                   label="시작 날짜"
@@ -272,8 +281,8 @@ function AddScheduleModal({ open, onClose, onSubmit }: AddScheduleModalProps) {
                   }}
                 />
               </LocalizationProvider>
-            </Box>
-            <Box className="flex-[1_1_calc(50%-6px)] min-w-60">
+            </div>
+            <div className="flex-[1_1_calc(50%-6px)] min-w-60">
               <TextField
                 fullWidth
                 label="시작 시간"
@@ -284,10 +293,10 @@ function AddScheduleModal({ open, onClose, onSubmit }: AddScheduleModalProps) {
                 InputLabelProps={{ shrink: true }}
                 sx={inputStyle}
               />
-            </Box>
-          </Box>
-          <Box className="flex gap-3 flex-wrap">
-            <Box className="flex-[1_1_calc(50%-6px)] min-w-60">
+            </div>
+          </div>
+          <div className="flex gap-3 flex-wrap">
+            <div className="flex-[1_1_calc(50%-6px)] min-w-60">
               <LocalizationProvider dateAdapter={AdapterDayjs}>
                 <DatePicker
                   label="종료 날짜"
@@ -307,8 +316,8 @@ function AddScheduleModal({ open, onClose, onSubmit }: AddScheduleModalProps) {
                   }}
                 />
               </LocalizationProvider>
-            </Box>
-            <Box className="flex-[1_1_calc(50%-6px)] min-w-60">
+            </div>
+            <div className="flex-[1_1_calc(50%-6px)] min-w-60">
               <TextField
                 fullWidth
                 label="종료 시간"
@@ -319,9 +328,9 @@ function AddScheduleModal({ open, onClose, onSubmit }: AddScheduleModalProps) {
                 InputLabelProps={{ shrink: true }}
                 sx={inputStyle}
               />
-            </Box>
-          </Box>
-          <Box>
+            </div>
+          </div>
+          <div>
             <FormControlLabel
               control={
                 <Checkbox
@@ -333,10 +342,9 @@ function AddScheduleModal({ open, onClose, onSubmit }: AddScheduleModalProps) {
                 />
               }
               label="시간 포함"
-              className="mb-3"
             />
-          </Box>
-          <Box className="w-full">
+          </div>
+          <div>
             <TextField
               fullWidth
               label="세부사항"
@@ -345,21 +353,51 @@ function AddScheduleModal({ open, onClose, onSubmit }: AddScheduleModalProps) {
               value={formData.description}
               onChange={(e) => handleFormChange("description", e.target.value)}
             />
-          </Box>
-        </Box>
+          </div>
+        </div>
       </DialogContent>
-      <DialogActions className="p-6 relative">
+      <DialogActions className="flex flex-row-reverse items-center justify-between p-6 border-t border-gray-200">
         {errorMessage && (
           <Typography className="absolute left-6 text-red-600 text-sm">
             {errorMessage}
           </Typography>
         )}
-        <Button onClick={handleClose} color="info" variant="outlined">
-          취소
-        </Button>
-        <Button onClick={handleSubmit} variant="contained">
-          저장
-        </Button>
+        <div className="flex gap-2">
+          <Button onClick={onClose} variant="outlined">
+            취소
+          </Button>
+          <Button
+            onClick={handleSubmit}
+            variant="contained"
+            disabled={isSubmitButtonDisabled}
+          >
+            저장
+          </Button>
+        </div>
+        {isSubmitButtonDisabled && validationErrors.length > 0 && (
+          <Tooltip
+            title={
+              <div>
+                {validationErrors.map((error, index) => (
+                  <div key={index}>• {error}</div>
+                ))}
+              </div>
+            }
+            arrow
+            placement="top"
+          >
+            <div className="text-sm text-red-600 cursor-help">
+              <ul className="list-disc list-inside">
+                {validationErrors.slice(0, 1).map((error, index) => (
+                  <li key={index}>{error}</li>
+                ))}
+                {validationErrors.length > 1 && (
+                  <li>외 {validationErrors.length - 1}개 항목</li>
+                )}
+              </ul>
+            </div>
+          </Tooltip>
+        )}
       </DialogActions>
     </Dialog>
   );

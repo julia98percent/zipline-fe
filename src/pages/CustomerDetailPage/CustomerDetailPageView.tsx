@@ -9,6 +9,7 @@ import {
   CustomerRoleLabels,
   CustomerPriceInfo,
 } from "./components";
+import { RegionHierarchy } from "@utils/regionUtil";
 
 interface CustomerDetailPageViewProps {
   loading: boolean;
@@ -32,6 +33,7 @@ interface CustomerDetailPageViewProps {
   labelInputValue?: string;
   onLabelInputChange?: (value: string) => void;
   onMobileMenuToggle: () => void;
+  initialRegionValueList: RegionHierarchy | null;
 }
 
 const CustomerDetailPageView = ({
@@ -53,6 +55,7 @@ const CustomerDetailPageView = ({
   labelInputValue,
   onLabelInputChange,
   onMobileMenuToggle,
+  initialRegionValueList,
 }: CustomerDetailPageViewProps) => {
   if (loading || !customer || !customerId) {
     return (
@@ -81,6 +84,7 @@ const CustomerDetailPageView = ({
             isEditing={isEditing}
             editedCustomer={editedCustomer}
             onInputChange={onInputChange}
+            initialRegionValueList={initialRegionValueList}
           />
           <CustomerRoleLabels
             customer={customer}

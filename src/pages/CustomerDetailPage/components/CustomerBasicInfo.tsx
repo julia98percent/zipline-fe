@@ -7,6 +7,7 @@ import { formatPhoneNumber } from "@utils/numberUtil";
 import { Customer } from "@ts/customer";
 import { Region } from "@ts/region";
 import { fetchSido, fetchSigungu, fetchDong } from "@apis/regionService";
+import { RegionHierarchy } from "@utils/regionUtil";
 
 interface CustomerBasicInfoProps {
   customer: Customer;
@@ -16,6 +17,7 @@ interface CustomerBasicInfoProps {
     field: keyof Customer,
     value: string | number | boolean | null | { uid: number; name: string }[]
   ) => void;
+  initialRegionValueList?: RegionHierarchy | null;
 }
 
 const CustomerBasicInfo = ({
@@ -23,19 +25,20 @@ const CustomerBasicInfo = ({
   isEditing,
   editedCustomer,
   onInputChange,
+  initialRegionValueList,
 }: CustomerBasicInfoProps) => {
-  const [regions, setRegions] = useState<Region[]>([]);
+  const [sidoOptions, setSidoOptions] = useState<Region[]>([]);
   const [sigunguOptions, setSigunguOptions] = useState<Region[]>([]);
   const [dongOptions, setDongOptions] = useState<Region[]>([]);
-  const [selectedSido, setSelectedSido] = useState<number>(0);
-  const [selectedGu, setSelectedGu] = useState<number>(0);
-  const [selectedDong, setSelectedDong] = useState<number>(0);
+  const [selectedSido, setSelectedSido] = useState<number | null>(null);
+  const [selectedGu, setSelectedGu] = useState<number | null>(null);
+  const [selectedDong, setSelectedDong] = useState<number | null>(null);
 
   useEffect(() => {
     const loadRegions = async () => {
       try {
         const sidoData = await fetchSido();
-        setRegions(sidoData);
+        setSidoOptions(sidoData);
       } catch (error) {
         console.error("시/도 데이터 로드 실패:", error);
       }
@@ -44,58 +47,91 @@ const CustomerBasicInfo = ({
   }, []);
 
   useEffect(() => {
-    if (selectedSido) {
-      const loadSigungu = async () => {
-        try {
-          const sigunguData = await fetchSigungu(selectedSido);
+    const getInitialRegionValuesByCode = async () => {
+      if (!customer.preferredRegion || !initialRegionValueList) {
+        return;
+      }
+
+      try {
+        const { sidoCode, sigunguCode, dongCode } = initialRegionValueList;
+
+        if (sidoCode && sidoOptions.length > 0) {
+          const sigunguData = await fetchSigungu(sidoCode);
+
           setSigunguOptions(sigunguData);
-          setSelectedGu(0);
-          setDongOptions([]);
-        } catch (error) {
-          console.error("시/군/구 데이터 로드 실패:", error);
+
+          if (sigunguCode) {
+            const dongData = await fetchDong(sigunguCode);
+            setDongOptions(dongData);
+          }
         }
-      };
-      loadSigungu();
-    } else {
+
+        setSelectedSido(sidoCode);
+        setSelectedGu(sigunguCode || null);
+        setSelectedDong(dongCode || null);
+      } catch (error) {
+        console.error("지역 코드로 초기화 실패:", error);
+      }
+    };
+
+    if (isEditing && customer.preferredRegion && sidoOptions.length > 0) {
+      getInitialRegionValuesByCode();
+    } else if (!isEditing) {
+      setSelectedSido(null);
+      setSelectedGu(null);
+      setSelectedDong(null);
       setSigunguOptions([]);
       setDongOptions([]);
-      setSelectedGu(0);
     }
-  }, [selectedSido]);
+  }, [isEditing, customer.preferredRegion, sidoOptions]);
 
-  useEffect(() => {
-    if (selectedGu) {
-      const loadDong = async () => {
-        try {
-          const dongData = await fetchDong(selectedGu);
-          setDongOptions(dongData);
-          setSelectedDong(0);
-        } catch (error) {
-          console.error("동 데이터 로드 실패:", error);
-        }
-      };
-      loadDong();
-    } else {
-      setDongOptions([]);
-      setSelectedDong(0);
-    }
-  }, [selectedGu]);
-
-  const handleSidoChange = (event: SelectChangeEvent<number>) => {
+  const handleSidoChange = async (event: SelectChangeEvent<number>) => {
     const value = Number(event.target.value);
     setSelectedSido(value);
-    const selectedRegion = regions.find((r) => r.cortarNo === value);
+
+    // 시/군/구, 동 초기화
+    setSelectedGu(null);
+    setSelectedDong(null);
+    setSigunguOptions([]);
+    setDongOptions([]);
+
+    // 시/군/구 데이터 로드
+    if (value > 0) {
+      try {
+        const sigunguData = await fetchSigungu(value);
+        setSigunguOptions(sigunguData);
+      } catch (error) {
+        console.error("시/군/구 데이터 로드 실패:", error);
+      }
+    }
+
+    const selectedRegion = sidoOptions.find((r) => r.cortarNo === value);
     if (selectedRegion) {
-      onInputChange("preferredRegion", selectedRegion.cortarName);
+      onInputChange("preferredRegion", selectedRegion.cortarNo);
     }
   };
 
-  const handleGuChange = (event: SelectChangeEvent<number>) => {
+  const handleGuChange = async (event: SelectChangeEvent<number>) => {
     const value = Number(event.target.value);
     setSelectedGu(value);
+
+    // 동 초기화
+    setSelectedDong(null);
+    setDongOptions([]);
+
+    // 동 데이터 로드
+    if (value > 0) {
+      try {
+        const dongData = await fetchDong(value);
+        setDongOptions(dongData);
+      } catch (error) {
+        console.error("동 데이터 로드 실패:", error);
+      }
+    }
+
     const selectedRegion = sigunguOptions.find((r) => r.cortarNo === value);
     if (selectedRegion) {
-      onInputChange("preferredRegion", selectedRegion.cortarName);
+      onInputChange("preferredRegion", selectedRegion.cortarNo);
     }
   };
 
@@ -104,7 +140,7 @@ const CustomerBasicInfo = ({
     setSelectedDong(value);
     const selectedRegion = dongOptions.find((r) => r.cortarNo === value);
     if (selectedRegion) {
-      onInputChange("preferredRegion", selectedRegion.cortarName);
+      onInputChange("preferredRegion", selectedRegion.cortarNo);
     }
   };
 
@@ -163,32 +199,32 @@ const CustomerBasicInfo = ({
           )}
         </div>
         <div className="flex-[0_0_calc(100%)]">
-          <div className="text-sm text-gray-600 mb-1">희망 지역</div>
+          <div className="text-sm text-gray-600 mb-1">관심 지역</div>
           {isEditing ? (
             <div className="grid grid-cols-3 gap-2">
               <RegionSelector
                 label="시/도"
-                value={selectedSido}
-                regions={regions}
+                value={selectedSido || 0}
+                regions={sidoOptions}
                 onChange={handleSidoChange}
               />
               <RegionSelector
                 label="시/군/구"
-                value={selectedGu}
+                value={selectedGu || 0}
                 regions={sigunguOptions}
                 onChange={handleGuChange}
                 disabled={!selectedSido}
               />
               <RegionSelector
                 label="동"
-                value={selectedDong}
+                value={selectedDong || 0}
                 regions={dongOptions}
                 onChange={handleDongChange}
                 disabled={!selectedGu}
               />
             </div>
           ) : (
-            <div className="text-base">{customer.preferredRegion || "-"}</div>
+            <div className="text-base">{customer.preferredRegionKR || "-"}</div>
           )}
         </div>
         <div className="flex-[0_0_calc(50%-8px)]">
@@ -212,6 +248,7 @@ const CustomerBasicInfo = ({
               fullWidth
               value={editedCustomer?.trafficSource || ""}
               onChange={(e) => onInputChange("trafficSource", e.target.value)}
+              size="small"
             />
           ) : (
             <div className="text-base">{customer.trafficSource || "-"}</div>

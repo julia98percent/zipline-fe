@@ -12,6 +12,7 @@ import { showToast } from "@components/Toast/Toast";
 import CustomerDetailPageView from "./CustomerDetailPageView";
 import { Customer, CustomerUpdateData, Label } from "@ts/customer";
 import { API_ERROR_MESSAGES } from "@ts/apiResponse";
+import { parseRegionCode, RegionHierarchy } from "@utils/regionUtil";
 
 interface OutletContext {
   onMobileMenuToggle: () => void;
@@ -30,6 +31,8 @@ const CustomerDetailPage = () => {
   >([]);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const [labelInputValue, setLabelInputValue] = useState("");
+  const [regionValueList, setRegionValueList] =
+    useState<RegionHierarchy | null>(null);
 
   const fetchCustomerData = useCallback(async () => {
     if (!customerId) return;
@@ -38,6 +41,7 @@ const CustomerDetailPage = () => {
     try {
       const customerData = await fetchCustomerDetail(customerId);
       setCustomer(customerData);
+      setRegionValueList(parseRegionCode(customerData.preferredRegion));
     } catch (error) {
       console.error("Failed to fetch customer:", error);
     } finally {
@@ -240,6 +244,7 @@ const CustomerDetailPage = () => {
       labelInputValue={labelInputValue}
       onLabelInputChange={setLabelInputValue}
       onMobileMenuToggle={onMobileMenuToggle}
+      initialRegionValueList={regionValueList}
     />
   );
 };

@@ -1,4 +1,4 @@
-import { Box, Typography, InputAdornment } from "@mui/material";
+import { InputAdornment } from "@mui/material";
 import TextField from "@components/TextField";
 
 interface PriceSectionProps {
@@ -32,14 +32,13 @@ export default function PriceSection({
   onFieldChange,
 }: PriceSectionProps) {
   return (
-    <>
+    <div className="flex flex-col pb-7 mb-4 border-b border-gray-200 gap-4">
       {/* 매매가 범위 - 매도인 또는 매수인 선택 시 */}
       {showSalePrice && (
-        <Box className="mb-8">
-          <Typography variant="h6" className="mb-4 font-bold">
-            희망 매매가 범위
-          </Typography>
-          <Box className="flex gap-4">
+        <div>
+          <h6 className="mb-2 font-medium">희망 매매가 범위</h6>
+
+          <div className="flex gap-4">
             <TextField
               name="minPrice"
               value={minPrice}
@@ -78,18 +77,16 @@ export default function PriceSection({
                 onChange: formatNumberField,
               }}
             />
-          </Box>
-        </Box>
+          </div>
+        </div>
       )}
 
       {/* 월세 및 보증금 범위 - 임차인 또는 임대인 선택 시 */}
       {showRentPrice && (
         <>
-          <Box className="mb-8">
-            <Typography variant="h6" className="mb-4 font-bold">
-              희망 월세 범위
-            </Typography>
-            <Box className="flex gap-4">
+          <div>
+            <h6 className="mb-2 font-medium">희망 월세 범위</h6>
+            <div className="flex gap-4">
               <TextField
                 name="minRent"
                 value={minRent}
@@ -128,14 +125,12 @@ export default function PriceSection({
                   onChange: formatNumberField,
                 }}
               />
-            </Box>
-          </Box>
+            </div>
+          </div>
 
-          <Box className="mb-8">
-            <Typography variant="h6" className="mb-4 font-bold">
-              희망 보증금 범위
-            </Typography>
-            <Box className="flex gap-4">
+          <div>
+            <h6 className="mb-2 font-medium">희망 보증금 범위</h6>
+            <div className="flex gap-4">
               <TextField
                 name="minDeposit"
                 value={minDeposit}
@@ -174,10 +169,10 @@ export default function PriceSection({
                   onChange: formatNumberField,
                 }}
               />
-            </Box>
-          </Box>
+            </div>
+          </div>
         </>
       )}
-    </>
+    </div>
   );
 }

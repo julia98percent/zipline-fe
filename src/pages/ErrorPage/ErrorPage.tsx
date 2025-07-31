@@ -19,7 +19,7 @@ function ErrorPage() {
       </Typography>
       <Button
         onClick={handleGoHome}
-        className="bg-[#164F9E] text-white hover:bg-[#0D3B7A] px-3 py-1 rounded"
+        className="bg-[#164F9E] text-white hover:bg-primary-dark px-3 py-1 rounded"
       >
         홈으로 돌아가기
       </Button>

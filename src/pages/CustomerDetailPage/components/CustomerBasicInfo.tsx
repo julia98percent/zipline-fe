@@ -210,7 +210,6 @@ const CustomerBasicInfo = ({
           {isEditing ? (
             <TextField
               fullWidth
-              size="small"
               value={editedCustomer?.trafficSource || ""}
               onChange={(e) => onInputChange("trafficSource", e.target.value)}
             />

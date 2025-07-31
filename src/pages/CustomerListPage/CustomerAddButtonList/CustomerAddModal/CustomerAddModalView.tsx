@@ -69,11 +69,11 @@ export default function CustomerAddModalView({
         },
       }}
     >
-      <DialogTitle className="border-b font-bold border-[#E0E0E0]">
+      <DialogTitle className="border-b text-primary font-bold border-gray-200">
         고객 등록
       </DialogTitle>
 
-      <DialogContent className="mt-4">
+      <DialogContent className="mt-4 p-7 pt-0">
         <BasicInfoSection
           name={formData.name}
           phoneNo={formData.phoneNo}
@@ -132,7 +132,6 @@ export default function CustomerAddModalView({
         <Button
           onClick={onSubmit}
           variant="contained"
-          className="bg-[#164F9E]  "
           disabled={isSubmitButtonDisabled}
         >
           확인

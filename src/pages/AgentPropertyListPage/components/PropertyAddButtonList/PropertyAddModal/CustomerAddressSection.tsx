@@ -31,55 +31,45 @@ const CustomerAddressSection = ({
   onCreateContractChange,
 }: CustomerAddressSectionProps) => {
   return (
-    <>
-      {/* 고객 선택 */}
-      <TextField
-        select
-        label="고객 선택"
-        value={customerData.uid !== null ? customerData.uid.toString() : ""}
-        onChange={(e) => customerData.onChange(Number(e.target.value))}
-        fullWidth
-        required
-      >
-        {customerData.options.map((customer) => (
-          <MenuItem key={customer.uid} value={customer.uid.toString()}>
-            {customer.name}
-          </MenuItem>
-        ))}
-      </TextField>
-
-      {/* 주소 */}
-      <TextField
-        label="주소"
-        value={addressData.address ?? ""}
-        variant="outlined"
-        disabled
-        fullWidth
-        className="mt-4"
-        required
-      />
-      <DaumPost setAddress={addressData.onDaumPostAddressChange} />
-      <TextField
-        label="상세 주소"
-        value={addressData.extraAddress ?? ""}
-        onChange={addressData.onExtraAddressChange}
-        disabled={!addressData.address}
-        variant="outlined"
-        fullWidth
-      />
-
-      {/* 계약 자동 생성 */}
-      <FormControlLabel
-        control={
-          <Checkbox
-            checked={createContract}
-            onChange={(e) => onCreateContractChange(e.target.checked)}
+    <div>
+      <h5 className="text-lg font-bold mb-4">기본 정보</h5>
+      <div className="flex flex-col gap-5 mb-5">
+        <TextField
+          select
+          label="고객 선택"
+          value={customerData.uid !== null ? customerData.uid.toString() : ""}
+          onChange={(e) => customerData.onChange(Number(e.target.value))}
+          fullWidth
+          required
+        >
+          {customerData.options.map((customer) => (
+            <MenuItem key={customer.uid} value={customer.uid.toString()}>
+              {customer.name}
+            </MenuItem>
+          ))}
+        </TextField>
+        <div>
+          {/* 주소 */}
+          <TextField
+            label="주소"
+            value={addressData.address ?? ""}
+            variant="outlined"
+            disabled
+            fullWidth
+            required
           />
-        }
-        label="계약 자동 생성하기"
-        className="mt-4"
-      />
-    </>
+          <DaumPost setAddress={addressData.onDaumPostAddressChange} />
+          <TextField
+            label="상세 주소"
+            value={addressData.extraAddress ?? ""}
+            onChange={addressData.onExtraAddressChange}
+            disabled={!addressData.address}
+            variant="outlined"
+            fullWidth
+          />
+        </div>
+      </div>
+    </div>
   );
 };
 

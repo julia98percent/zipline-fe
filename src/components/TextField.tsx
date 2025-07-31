@@ -9,6 +9,7 @@ interface TextFieldProps {
   helperText?: string;
   className?: string;
   type?: string;
+  size?: "small" | "medium";
   [key: string]: unknown;
 }
 
@@ -21,6 +22,7 @@ const TextField = ({
   helperText,
   className,
   type,
+  size = "medium",
   ...props
 }: TextFieldProps) => {
   return (
@@ -32,6 +34,7 @@ const TextField = ({
       error={error}
       helperText={helperText}
       className={className || ""}
+      size={size}
       type={type}
       InputProps={{
         readOnly: Boolean(onChange) == false,

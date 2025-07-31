@@ -32,7 +32,7 @@ function PropertyAddButtonList({ fetchPropertyData }: Props) {
         <Button
           variant="outlined"
           onClick={handleOpenBulkUpload}
-          className="text-[#164F9E] min-h-[32px] border-[#164F9E] sm:ml-3 hover:border-[#0D3B7A] hover:text-[#0D3B7A] hover:bg-[rgba(22,79,158,0.08)] w-full sm:w-auto"
+          className="text-[#164F9E] min-h-[32px] border-[#164F9E] sm:ml-3 hover:border-primary-dark hover:text-primary-dark hover:bg-[rgba(22,79,158,0.08)] w-full sm:w-auto"
         >
           매물 데이터 일괄 등록(.csv)
         </Button>

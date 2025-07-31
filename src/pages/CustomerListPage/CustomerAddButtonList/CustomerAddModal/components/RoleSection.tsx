@@ -1,4 +1,4 @@
-import { Box, Typography, FormControlLabel, Checkbox } from "@mui/material";
+import { FormControlLabel, Checkbox } from "@mui/material";
 
 interface RoleSectionProps {
   seller: boolean;
@@ -16,11 +16,10 @@ export default function RoleSection({
   onFieldChange,
 }: RoleSectionProps) {
   return (
-    <Box className="mb-8">
-      <Typography variant="h6" className="mb-4 font-bold">
-        역할
-      </Typography>
-      <Box className="flex gap-8">
+    <div>
+      <h6 className="mb-2 font-semibold">역할</h6>
+
+      <div className="grid grid-cols-3 sm:grid-cols-5">
         <FormControlLabel
           control={
             <Checkbox name="seller" checked={seller} onChange={onFieldChange} />
@@ -49,7 +48,7 @@ export default function RoleSection({
           }
           label="임대인"
         />
-      </Box>
-    </Box>
+      </div>
+    </div>
   );
 }

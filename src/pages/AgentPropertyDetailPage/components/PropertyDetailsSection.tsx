@@ -2,7 +2,6 @@ import { Typography } from "@mui/material";
 import {
   InfoCard,
   InfoItem,
-  InfoLabel,
   InfoValue,
 } from "../styles/AgentPropertyDetailPage.styles";
 
@@ -15,11 +14,10 @@ const PropertyDetailsSection = ({ details }: PropertyDetailsSectionProps) => {
 
   return (
     <InfoCard className="flex-[4] flex flex-col h-full min-h-58">
-      <Typography variant="h6" className="font-bold mb-2">
-        상세 정보
+      <Typography className="text-primary text-xl font-bold">
+        특이 사항
       </Typography>
       <InfoItem>
-        <InfoLabel>특이사항</InfoLabel>
         <InfoValue>{details || "-"}</InfoValue>
       </InfoItem>
     </InfoCard>

@@ -57,7 +57,10 @@ const PropertyOptionsSection = ({
 
       {/* 입주 가능일 */}
       <LocalizationProvider dateAdapter={AdapterDayjs}>
-        <DemoContainer components={["DatePicker"]}>
+        <DemoContainer
+          components={["DatePicker"]}
+          sx={{ marginTop: -1, paddingTop: 0 }}
+        >
           <DesktopDatePicker
             onChange={onMoveInDateChange}
             value={moveInDate}
@@ -77,7 +80,6 @@ const PropertyOptionsSection = ({
         label="특이사항"
         value={details ?? ""}
         onChange={onDetailsChange}
-        className="mt-4"
         fullWidth
       />
     </>

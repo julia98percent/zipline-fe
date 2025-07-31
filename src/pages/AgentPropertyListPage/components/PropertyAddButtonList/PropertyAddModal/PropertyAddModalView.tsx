@@ -118,7 +118,7 @@ const PropertyAddModalView = ({
       <DialogTitle className="border-b text-primary font-bold border-gray-200">
         매물 등록
       </DialogTitle>
-      <DialogContent className="mt-4">
+      <DialogContent className="p-7 pt-0 flex flex-col mt-4">
         <CustomerAddressSection
           customerData={customerData}
           addressData={addressData}

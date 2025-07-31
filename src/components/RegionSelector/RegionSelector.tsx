@@ -15,6 +15,7 @@ interface RegionSelectorProps {
   placeholder?: string;
   className?: string;
   showEmptyOption?: boolean;
+  size?: "small" | "medium" | "large";
 }
 
 const RegionSelector = ({

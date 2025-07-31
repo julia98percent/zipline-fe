@@ -153,7 +153,7 @@ const CustomerDetailPage = () => {
         name: editedCustomer.name,
         phoneNo: formatPhoneNumber(editedCustomer.phoneNo),
         telProvider: editedCustomer.telProvider,
-        legalDistrictCode: editedCustomer.legalDistrictCode,
+        preferredRegion: editedCustomer.preferredRegion,
         minRent: editedCustomer.minRent,
         maxRent: editedCustomer.maxRent,
         trafficSource: editedCustomer.trafficSource,

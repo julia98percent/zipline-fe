@@ -38,7 +38,7 @@ const CustomerFilterModal = ({
     maxDeposit: null,
     labelUids: [],
     telProvider: "",
-    legalDistrictCode: "",
+    preferredRegion: "",
     trafficSource: "",
   });
   const [region, setRegion] = useState<RegionState>({
@@ -160,7 +160,7 @@ const CustomerFilterModal = ({
       maxDeposit: parsePrice(filtersTemp.maxDeposit),
       labelUids: selectedLabels.map((label) => label.uid),
       telProvider: filtersTemp.telProvider || "",
-      legalDistrictCode: regionCode || "",
+      preferredRegion: regionCode || "",
       trafficSource: filtersTemp.trafficSource || "",
       noRole: filtersTemp.noRole,
     };
@@ -184,7 +184,7 @@ const CustomerFilterModal = ({
       maxRent: null,
       labelUids: [],
       telProvider: "",
-      legalDistrictCode: "",
+      preferredRegion: "",
       trafficSource: "",
     });
     setSelectedLabels([]);

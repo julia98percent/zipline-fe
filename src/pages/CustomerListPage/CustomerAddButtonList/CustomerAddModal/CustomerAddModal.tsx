@@ -10,6 +10,7 @@ import {
 } from "@apis/customerService";
 import { fetchRegions } from "@apis/regionService";
 import { showToast } from "@components/Toast/Toast";
+import { formatPhoneNumber } from "@utils/numberUtil";
 import CustomerAddModalView from "./CustomerAddModalView";
 
 interface CustomerAddModalProps {
@@ -71,11 +72,15 @@ function CustomerAddModal({
   };
 
   const handlePhoneChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setFormData((prev) => ({ ...prev, phoneNo: e.target.value }));
+    const formattedNumber = formatPhoneNumber(e.target.value);
+    setFormData((prev) => ({ ...prev, phoneNo: formattedNumber }));
   };
 
   const handleBirthdayChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setFormData((prev) => ({ ...prev, birthday: e.target.value }));
+    const value = e.target.value.replace(/\D/g, "");
+    if (value.length <= 8) {
+      setFormData((prev) => ({ ...prev, birthday: value }));
+    }
   };
 
   const handleTelProviderChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -90,22 +95,7 @@ function CustomerAddModal({
     const { name, value } = e.target;
 
     if (name === "phoneNo") {
-      // 숫자만 추출
-      const numbers = value.replace(/[^0-9]/g, "");
-
-      // 전화번호 형식으로 변환
-      let formattedNumber = "";
-      if (numbers.length <= 3) {
-        formattedNumber = numbers;
-      } else if (numbers.length <= 7) {
-        formattedNumber = `${numbers.slice(0, 3)}-${numbers.slice(3)}`;
-      } else {
-        formattedNumber = `${numbers.slice(0, 3)}-${numbers.slice(
-          3,
-          7
-        )}-${numbers.slice(7, 11)}`;
-      }
-
+      const formattedNumber = formatPhoneNumber(value);
       setFormData((prev: CustomerFormData) => ({
         ...prev,
         [name]: formattedNumber,
@@ -213,10 +203,22 @@ function CustomerAddModal({
 
       fetchCustomerList();
       onClose();
-    } catch (error: any) {
-      console.error("Failed to register customer:", error);
+    } catch (error: unknown) {
+      let errorMessage = "고객 등록에 실패했습니다.";
+
+      if (error instanceof Error) {
+        errorMessage = error.message;
+      } else if (
+        typeof error === "object" &&
+        error !== null &&
+        "message" in error
+      ) {
+        errorMessage =
+          String((error as { message: unknown }).message) || errorMessage;
+      }
+
       showToast({
-        message: error.message || "고객 등록에 실패했습니다.",
+        message: errorMessage,
         type: "error",
       });
     }

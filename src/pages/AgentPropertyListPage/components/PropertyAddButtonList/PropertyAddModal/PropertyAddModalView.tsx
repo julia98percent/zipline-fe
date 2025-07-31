@@ -1,5 +1,11 @@
 import Button from "@components/Button";
-import { Dialog, DialogTitle, DialogContent } from "@mui/material";
+import {
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  DialogActions,
+  Tooltip,
+} from "@mui/material";
 import { Customer } from "@ts/customer";
 import { PropertyType } from "@ts/property";
 import { Dayjs } from "dayjs";
@@ -140,33 +146,41 @@ const PropertyAddModalView = ({
           onHasElevatorChange={otherData.onHasElevatorChange}
           onDetailsChange={otherData.onDetailsChange}
         />
-        {/* 등록 버튼 */}
-        <div className="mt-4">
-          <Button
-            onClick={onSubmit}
-            color="primary"
-            disabled={!isFormValid}
-            className={`w-full ${
-              !isFormValid ? "opacity-50 cursor-not-allowed" : ""
-            }`}
-          >
-            등록
+      </DialogContent>
+      <DialogActions className="flex flex-row-reverse items-center justify-between p-6 border-t border-gray-200">
+        <div className="flex gap-2">
+          <Button onClick={onClose} variant="outlined">
+            취소
           </Button>
-          {!isFormValid && validationErrors.length > 0 && (
-            <div className="mt-2 text-sm text-red-600">
-              <div className="font-medium">다음 항목을 확인해주세요:</div>
-              <ul className="mt-1 list-disc list-inside">
-                {validationErrors.slice(0, 3).map((error, index) => (
+          <Button onClick={onSubmit} color="primary" disabled={!isFormValid}>
+            확인
+          </Button>
+        </div>
+        {!isFormValid && validationErrors.length > 0 && (
+          <Tooltip
+            title={
+              <div>
+                {validationErrors.map((error, index) => (
+                  <div key={index}>• {error}</div>
+                ))}
+              </div>
+            }
+            arrow
+            placement="top"
+          >
+            <div className="text-sm text-red-600 cursor-help">
+              <ul className=" list-disc list-inside">
+                {validationErrors.slice(0, 1).map((error, index) => (
                   <li key={index}>{error}</li>
                 ))}
-                {validationErrors.length > 3 && (
-                  <li>외 {validationErrors.length - 3}개 항목</li>
+                {validationErrors.length > 1 && (
+                  <li>외 {validationErrors.length - 1}개 항목</li>
                 )}
               </ul>
             </div>
-          )}
-        </div>
-      </DialogContent>
+          </Tooltip>
+        )}
+      </DialogActions>
     </Dialog>
   );
 };

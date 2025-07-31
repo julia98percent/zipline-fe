@@ -60,6 +60,35 @@ function CustomerAddModal({
   const handleFieldChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value, type, checked } = e.target;
 
+    setFormData((prev: CustomerFormData) => ({
+      ...prev,
+      [name]: type === "checkbox" ? checked : value,
+    }));
+  };
+
+  const handleNameChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setFormData((prev) => ({ ...prev, name: e.target.value }));
+  };
+
+  const handlePhoneChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setFormData((prev) => ({ ...prev, phoneNo: e.target.value }));
+  };
+
+  const handleBirthdayChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setFormData((prev) => ({ ...prev, birthday: e.target.value }));
+  };
+
+  const handleTelProviderChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setFormData((prev) => ({ ...prev, telProvider: e.target.value }));
+  };
+
+  const handleRoleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const { name, checked } = e.target;
+    setFormData((prev) => ({ ...prev, [name]: checked }));
+  };
+  const handleFieldBlur = (e: React.FocusEvent<HTMLInputElement>) => {
+    const { name, value } = e.target;
+
     if (name === "phoneNo") {
       // 숫자만 추출
       const numbers = value.replace(/[^0-9]/g, "");
@@ -81,12 +110,23 @@ function CustomerAddModal({
         ...prev,
         [name]: formattedNumber,
       }));
-    } else {
-      setFormData((prev: CustomerFormData) => ({
-        ...prev,
-        [name]: type === "checkbox" ? checked : value,
-      }));
     }
+  };
+
+  const getValidationErrors = () => {
+    const errors: string[] = [];
+
+    if (!formData.name) errors.push("이름을 입력해주세요");
+    if (!formData.phoneNo) errors.push("전화번호를 입력해주세요");
+    if (formData.phoneNo && !/^\d{3}-\d{3,4}-\d{4}$/.test(formData.phoneNo)) {
+      errors.push("올바른 전화번호 형식을 입력해주세요");
+    }
+    if (formData.birthday && !/^\d{8}$/.test(formData.birthday)) {
+      errors.push("생년월일을 올바르게 입력해주세요 (예: 19910501)");
+    }
+    if (!formData.telProvider) errors.push("통신사를 선택해주세요");
+
+    return errors;
   };
 
   const handleRegionChange =
@@ -280,9 +320,8 @@ function CustomerAddModal({
       .catch(console.error);
   }, [region.selectedSigungu]);
 
-  const phoneRegex = /^\d{3}-\d{3,4}-\d{4}$/;
-  const isSubmitButtonDisabled =
-    !formData.name || !phoneRegex.test(formData.phoneNo);
+  const validationErrors = getValidationErrors();
+  const isSubmitButtonDisabled = validationErrors.length > 0;
 
   return (
     <CustomerAddModalView
@@ -294,8 +333,15 @@ function CustomerAddModal({
       isAddingLabel={isAddingLabel}
       newLabelName={newLabelName}
       isSubmitButtonDisabled={isSubmitButtonDisabled}
+      validationErrors={validationErrors}
       onClose={onClose}
       onFieldChange={handleFieldChange}
+      onNameChange={handleNameChange}
+      onPhoneChange={handlePhoneChange}
+      onBirthdayChange={handleBirthdayChange}
+      onTelProviderChange={handleTelProviderChange}
+      onRoleChange={handleRoleChange}
+      onFieldBlur={handleFieldBlur}
       onRegionChange={handleRegionChange}
       onSubmit={handleSubmit}
       onLabelSelect={handleLabelSelect}

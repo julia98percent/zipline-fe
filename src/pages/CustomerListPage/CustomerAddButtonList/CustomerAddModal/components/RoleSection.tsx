@@ -5,7 +5,7 @@ interface RoleSectionProps {
   buyer: boolean;
   tenant: boolean;
   landlord: boolean;
-  onFieldChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
+  onRoleChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
 }
 
 export default function RoleSection({
@@ -13,7 +13,7 @@ export default function RoleSection({
   buyer,
   tenant,
   landlord,
-  onFieldChange,
+  onRoleChange,
 }: RoleSectionProps) {
   return (
     <div>
@@ -22,19 +22,19 @@ export default function RoleSection({
       <div className="grid grid-cols-3 sm:grid-cols-5">
         <FormControlLabel
           control={
-            <Checkbox name="seller" checked={seller} onChange={onFieldChange} />
+            <Checkbox name="seller" checked={seller} onChange={onRoleChange} />
           }
           label="매도인"
         />
         <FormControlLabel
           control={
-            <Checkbox name="buyer" checked={buyer} onChange={onFieldChange} />
+            <Checkbox name="buyer" checked={buyer} onChange={onRoleChange} />
           }
           label="매수인"
         />
         <FormControlLabel
           control={
-            <Checkbox name="tenant" checked={tenant} onChange={onFieldChange} />
+            <Checkbox name="tenant" checked={tenant} onChange={onRoleChange} />
           }
           label="임차인"
         />
@@ -43,7 +43,7 @@ export default function RoleSection({
             <Checkbox
               name="landlord"
               checked={landlord}
-              onChange={onFieldChange}
+              onChange={onRoleChange}
             />
           }
           label="임대인"

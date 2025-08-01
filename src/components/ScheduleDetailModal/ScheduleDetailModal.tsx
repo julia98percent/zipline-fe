@@ -25,17 +25,11 @@ const ScheduleDetailModal = ({
     editingSchedule,
     selectedCustomer,
     includeTime,
-    startDate,
-    endDate,
-    startTime,
-    endTime,
     customerOptions,
     handleTitleChange,
     handleDescriptionChange,
-    handleStartDateChange,
-    handleEndDateChange,
-    handleStartTimeChange,
-    handleEndTimeChange,
+    handleStartDateTimeChange,
+    handleEndDateTimeChange,
     handleIncludeTimeChange,
     handleCustomerChange,
     handleSave,
@@ -57,17 +51,11 @@ const ScheduleDetailModal = ({
       editingSchedule={editingSchedule}
       selectedCustomer={selectedCustomer}
       includeTime={includeTime}
-      startDate={startDate}
-      endDate={endDate}
-      startTime={startTime}
-      endTime={endTime}
       customerOptions={customerOptions}
       onTitleChange={handleTitleChange}
       onDescriptionChange={handleDescriptionChange}
-      onStartDateChange={handleStartDateChange}
-      onEndDateChange={handleEndDateChange}
-      onStartTimeChange={handleStartTimeChange}
-      onEndTimeChange={handleEndTimeChange}
+      onStartDateTimeChange={handleStartDateTimeChange}
+      onEndDateTimeChange={handleEndDateTimeChange}
       onIncludeTimeChange={handleIncludeTimeChange}
       onCustomerChange={handleCustomerChange}
       onSave={handleSave}

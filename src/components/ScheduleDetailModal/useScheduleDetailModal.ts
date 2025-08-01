@@ -1,8 +1,9 @@
 import { useState, useEffect, useCallback } from "react";
 import { Schedule } from "@ts/schedule";
-import dayjs from "dayjs";
+import dayjs, { Dayjs } from "dayjs";
 import { fetchCustomerList } from "@apis/customerService";
 import { showToast } from "@components/Toast";
+import { getValidationErrors } from "@utils/scheduleUtil";
 
 interface Customer {
   uid: number;
@@ -32,10 +33,6 @@ export const useScheduleDetailModal = ({
       : null
   );
   const [includeTime, setIncludeTime] = useState(false);
-  const [startDate, setStartDate] = useState("");
-  const [endDate, setEndDate] = useState("");
-  const [startTime, setStartTime] = useState("00:00");
-  const [endTime, setEndTime] = useState("00:00");
   const [customerOptions, setCustomerOptions] = useState<Customer[]>([]);
 
   useEffect(() => {
@@ -49,15 +46,10 @@ export const useScheduleDetailModal = ({
             }
           : null
       );
-      const start = dayjs(schedule.startDate);
-      const end = dayjs(schedule.endDate);
-      const hasTime =
-        start.format("HH:mm") !== "00:00" || end.format("HH:mm") !== "00:00";
 
-      setStartDate(start.format("YYYY-MM-DD"));
-      setEndDate(end.format("YYYY-MM-DD"));
-      setStartTime(start.format("HH:mm"));
-      setEndTime(end.format("HH:mm"));
+      const hasTime =
+        dayjs(schedule.startDate).format("HH:mm") !== "00:00" ||
+        dayjs(schedule.endDate).format("HH:mm") !== "00:00";
       setIncludeTime(hasTime);
     }
   }, [schedule]);
@@ -115,139 +107,85 @@ export const useScheduleDetailModal = ({
     [editingSchedule]
   );
 
-  const handleStartDateChange = useCallback(
-    (e: React.ChangeEvent<HTMLInputElement>) => {
-      setStartDate(e.target.value);
+  const handleStartDateTimeChange = useCallback(
+    (startDate: Dayjs | null) => {
+      if (editingSchedule && startDate) {
+        setEditingSchedule({
+          ...editingSchedule,
+          startDate,
+        });
+      }
     },
-    []
+    [editingSchedule]
   );
 
-  const handleEndDateChange = useCallback(
-    (e: React.ChangeEvent<HTMLInputElement>) => {
-      setEndDate(e.target.value);
+  const handleEndDateTimeChange = useCallback(
+    (endDate: Dayjs | null) => {
+      if (editingSchedule && endDate) {
+        setEditingSchedule({
+          ...editingSchedule,
+          endDate,
+        });
+      }
     },
-    []
-  );
-
-  const handleStartTimeChange = useCallback(
-    (e: React.ChangeEvent<HTMLInputElement>) => {
-      setStartTime(e.target.value);
-    },
-    []
-  );
-
-  const handleEndTimeChange = useCallback(
-    (e: React.ChangeEvent<HTMLInputElement>) => {
-      setEndTime(e.target.value);
-    },
-    []
+    [editingSchedule]
   );
 
   const handleIncludeTimeChange = useCallback(
     (e: React.ChangeEvent<HTMLInputElement>) => {
       setIncludeTime(e.target.checked);
+      if (!e.target.checked && editingSchedule) {
+        setEditingSchedule({
+          ...editingSchedule,
+          startDate: dayjs(editingSchedule.startDate).startOf("day"),
+          endDate: dayjs(editingSchedule.endDate).startOf("day"),
+        });
+      }
     },
-    []
+    [editingSchedule]
   );
 
   const handleCustomerChange = useCallback(
     (_event: React.SyntheticEvent, newValue: Customer | null) => {
-      setSelectedCustomer(newValue);
+      if (editingSchedule) {
+        setSelectedCustomer(newValue);
+      }
     },
-    []
+    [editingSchedule]
   );
 
-  const validateForm = useCallback(() => {
-    if (!editingSchedule?.title.trim()) {
-      showToast({
-        type: "error",
-        message: "제목을 입력해주세요.",
-      });
-      return false;
-    }
+  const validateErrors = getValidationErrors({
+    customerId: selectedCustomer?.uid,
+    title: editingSchedule?.title,
+    startDateTime: editingSchedule?.startDate,
+    endDateTime: editingSchedule?.endDate,
+  });
 
-    if (!startDate) {
-      showToast({
-        type: "error",
-        message: "시작일을 선택해주세요.",
-      });
-      return false;
-    }
-
-    if (!endDate) {
-      showToast({
-        type: "error",
-        message: "종료일을 선택해주세요.",
-      });
-      return false;
-    }
-
-    const startDateTime = includeTime
-      ? dayjs(`${startDate}T${startTime}`)
-      : dayjs(startDate);
-    const endDateTime = includeTime
-      ? dayjs(`${endDate}T${endTime}`)
-      : dayjs(endDate);
-
-    if (endDateTime.isBefore(startDateTime)) {
-      showToast({
-        type: "error",
-        message: "종료일시는 시작일시보다 늦어야 합니다.",
-      });
-      return false;
-    }
-
-    return true;
-  }, [editingSchedule, startDate, endDate, startTime, endTime, includeTime]);
-
-  const handleSave = useCallback(() => {
-    if (!editingSchedule || !validateForm()) return;
-
-    const startDateTime = includeTime
-      ? dayjs(`${startDate}T${startTime}`)
-      : dayjs(startDate);
-    const endDateTime = includeTime
-      ? dayjs(`${endDate}T${endTime}`)
-      : dayjs(endDate);
+  const handleSave = () => {
+    if (!editingSchedule || validateErrors.length) return;
 
     const { uid, ...scheduleWithoutUid } = editingSchedule;
 
     const updatedSchedule: Omit<Schedule, "uid"> = {
       ...scheduleWithoutUid,
-      startDate: startDateTime.toISOString(),
-      endDate: endDateTime.toISOString(),
+      startDate: editingSchedule.startDate,
+      endDate: editingSchedule.endDate,
       customerUid: selectedCustomer?.uid || null,
       customerName: selectedCustomer?.name || null,
     };
 
     onSave({ uid, ...updatedSchedule } as Schedule);
-  }, [
-    editingSchedule,
-    validateForm,
-    includeTime,
-    startDate,
-    startTime,
-    endDate,
-    endTime,
-    selectedCustomer,
-    onSave,
-  ]);
+  };
 
   return {
     editingSchedule,
     selectedCustomer,
     includeTime,
-    startDate,
-    endDate,
-    startTime,
-    endTime,
     customerOptions,
     handleTitleChange,
     handleDescriptionChange,
-    handleStartDateChange,
-    handleEndDateChange,
-    handleStartTimeChange,
-    handleEndTimeChange,
+    handleStartDateTimeChange,
+    handleEndDateTimeChange,
     handleIncludeTimeChange,
     handleCustomerChange,
     handleSave,

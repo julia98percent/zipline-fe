@@ -11,6 +11,8 @@ import {
 } from "@mui/material";
 import { Schedule } from "@ts/schedule";
 import Button from "@components/Button";
+import DatePicker from "@components/DatePicker";
+import dayjs, { Dayjs } from "dayjs";
 
 interface Customer {
   uid: number;
@@ -26,17 +28,11 @@ interface ScheduleDetailModalViewProps {
   editingSchedule: Schedule | null;
   selectedCustomer: Customer | null;
   includeTime: boolean;
-  startDate: string;
-  endDate: string;
-  startTime: string;
-  endTime: string;
   customerOptions: Customer[];
   onTitleChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
   onDescriptionChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
-  onStartDateChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
-  onEndDateChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
-  onStartTimeChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
-  onEndTimeChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
+  onStartDateTimeChange: (date: Dayjs | null) => void;
+  onEndDateTimeChange: (date: Dayjs | null) => void;
   onIncludeTimeChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
   onCustomerChange: (
     event: React.SyntheticEvent,
@@ -54,17 +50,11 @@ const ScheduleDetailModalView = ({
   editingSchedule,
   selectedCustomer,
   includeTime,
-  startDate,
-  endDate,
-  startTime,
-  endTime,
   customerOptions,
   onTitleChange,
   onDescriptionChange,
-  onStartDateChange,
-  onEndDateChange,
-  onStartTimeChange,
-  onEndTimeChange,
+  onStartDateTimeChange,
+  onEndDateTimeChange,
   onIncludeTimeChange,
   onCustomerChange,
   onSave,
@@ -220,19 +210,17 @@ const ScheduleDetailModalView = ({
             }}
           />
 
-          <Box className="flex gap-4 mb-4">
-            <TextField
-              label="시작일"
-              type="date"
-              value={startDate}
-              onChange={onStartDateChange}
-              fullWidth
-              InputLabelProps={{
-                shrink: true,
-              }}
-              InputProps={{
-                readOnly: !isEditMode,
-              }}
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-4">
+            <DatePicker
+              isDateTimePicker={includeTime}
+              label="시작일시"
+              value={
+                editingSchedule?.startDate
+                  ? dayjs(editingSchedule.startDate)
+                  : null
+              }
+              onChange={onStartDateTimeChange}
+              readOnly={!isEditMode}
               sx={{
                 ...(!isEditMode && {
                   "& .MuiInputBase-root": {
@@ -241,51 +229,20 @@ const ScheduleDetailModalView = ({
                   },
                   "& .MuiInputLabel-root": {
                     cursor: "default",
+                    pointerEvents: "none",
                   },
                 }),
               }}
             />
-            {includeTime && (
-              <TextField
-                label="시작시간"
-                type="time"
-                value={startTime}
-                onChange={onStartTimeChange}
-                fullWidth
-                InputLabelProps={{
-                  shrink: true,
-                }}
-                InputProps={{
-                  readOnly: !isEditMode,
-                }}
-                sx={{
-                  ...(!isEditMode && {
-                    "& .MuiInputBase-root": {
-                      cursor: "default",
-                      pointerEvents: "none",
-                    },
-                    "& .MuiInputLabel-root": {
-                      cursor: "default",
-                    },
-                  }),
-                }}
-              />
-            )}
-          </Box>
 
-          <Box className="flex gap-4 mb-4">
-            <TextField
-              label="종료일"
-              type="date"
-              value={endDate}
-              onChange={onEndDateChange}
-              fullWidth
-              InputLabelProps={{
-                shrink: true,
-              }}
-              InputProps={{
-                readOnly: !isEditMode,
-              }}
+            <DatePicker
+              isDateTimePicker={includeTime}
+              label="종료일시"
+              value={
+                editingSchedule?.endDate ? dayjs(editingSchedule.endDate) : null
+              }
+              onChange={onEndDateTimeChange}
+              readOnly={!isEditMode}
               sx={{
                 ...(!isEditMode && {
                   "& .MuiInputBase-root": {
@@ -294,37 +251,12 @@ const ScheduleDetailModalView = ({
                   },
                   "& .MuiInputLabel-root": {
                     cursor: "default",
+                    pointerEvents: "none",
                   },
                 }),
               }}
             />
-            {includeTime && (
-              <TextField
-                label="종료시간"
-                type="time"
-                value={endTime}
-                onChange={onEndTimeChange}
-                fullWidth
-                InputLabelProps={{
-                  shrink: true,
-                }}
-                InputProps={{
-                  readOnly: !isEditMode,
-                }}
-                sx={{
-                  ...(!isEditMode && {
-                    "& .MuiInputBase-root": {
-                      cursor: "default",
-                      pointerEvents: "none",
-                    },
-                    "& .MuiInputLabel-root": {
-                      cursor: "default",
-                    },
-                  }),
-                }}
-              />
-            )}
-          </Box>
+          </div>
         </Box>
       </DialogContent>
       <DialogActions>

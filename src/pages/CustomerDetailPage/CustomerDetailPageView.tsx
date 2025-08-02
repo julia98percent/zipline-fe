@@ -78,7 +78,7 @@ const CustomerDetailPageView = ({
           onDeleteClick={onDeleteClick}
         />
 
-        <Box className="flex gap-6 mb-6">
+        <Box className="grid grid-cols-1 sm:grid-cols-[2fr_1fr] gap-6 mb-6">
           <CustomerBasicInfo
             customer={customer}
             isEditing={isEditing}

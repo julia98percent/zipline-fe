@@ -1,9 +1,7 @@
 import { Box } from "@mui/material";
 import { Dayjs } from "dayjs";
-import { DesktopDatePicker } from "@mui/x-date-pickers";
-import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
-import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import { FormErrors } from "@ts/contract";
+import DatePicker from "@components/DatePicker";
 
 interface Props {
   contractDate: Dayjs | null;
@@ -29,12 +27,11 @@ const ContractDateSection = ({
   errors,
 }: Props) => {
   return (
-    <LocalizationProvider dateAdapter={AdapterDayjs}>
-      <DesktopDatePicker
+    <>
+      <DatePicker
         label="계약일"
         value={contractDate}
         onChange={setContractDate}
-        format="YYYY. MM. DD"
         slotProps={{
           textField: {
             fullWidth: true,
@@ -44,11 +41,10 @@ const ContractDateSection = ({
         }}
       />
       <Box className="flex gap-2 my-4">
-        <DesktopDatePicker
+        <DatePicker
           label="시작일"
           value={contractStartDate}
           onChange={setContractStartDate}
-          format="YYYY. MM. DD"
           slotProps={{
             textField: {
               fullWidth: true,
@@ -57,11 +53,10 @@ const ContractDateSection = ({
             },
           }}
         />
-        <DesktopDatePicker
+        <DatePicker
           label="종료일"
           value={contractEndDate}
           onChange={setContractEndDate}
-          format="YYYY. MM. DD"
           slotProps={{
             textField: {
               fullWidth: true,
@@ -71,11 +66,10 @@ const ContractDateSection = ({
           }}
         />
       </Box>
-      <DesktopDatePicker
+      <DatePicker
         label="예상 종료일"
         value={expectedContractEndDate}
         onChange={setExpectedContractEndDate}
-        format="YYYY. MM. DD"
         slotProps={{
           textField: {
             fullWidth: true,
@@ -84,7 +78,7 @@ const ContractDateSection = ({
           },
         }}
       />
-    </LocalizationProvider>
+    </>
   );
 };
 

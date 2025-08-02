@@ -149,6 +149,11 @@ const CustomerBasicInfo = ({
     return birthday.replace(/(\d{4})(\d{2})(\d{2})/, "$1.$2.$3");
   };
 
+  const handleChangeBirthday = (value: string) => {
+    const formattedValue = value.replace(/\D/g, "").slice(0, 8);
+    onInputChange("birthday", formattedValue);
+  };
+
   return (
     <div className="flex-grow p-6 rounded-lg bg-white shadow-sm mt-2">
       <h6 className="mb-4 font-bold text-xl text-primary">기본 정보</h6>
@@ -234,8 +239,9 @@ const CustomerBasicInfo = ({
               fullWidth
               size="small"
               value={editedCustomer?.birthday || ""}
-              onChange={(e) => onInputChange("birthday", e.target.value)}
+              onChange={(e) => handleChangeBirthday(e.target.value)}
               placeholder="YYYYMMDD"
+              inputProps={{ maxLength: 8 }}
             />
           ) : (
             <div className="text-base">{formatBirthDay(customer.birthday)}</div>
@@ -251,7 +257,9 @@ const CustomerBasicInfo = ({
               size="small"
             />
           ) : (
-            <div className="text-base">{customer.trafficSource || "-"}</div>
+            <div className="text-base truncate max-w-[20vw]">
+              {customer.trafficSource || "-"}
+            </div>
           )}
         </div>
       </div>

@@ -14,6 +14,8 @@ import { ContractCategory, ContractCategoryType } from "@ts/contract";
 import { CONTRACT_STATUS_OPTION_LIST } from "@constants/contract";
 import { AgentPropertyResponse, CustomerResponse } from "@apis/contractService";
 import Button from "@components/Button";
+import { DatePicker } from "@mui/x-date-pickers/DatePicker/DatePicker";
+import { Dayjs } from "dayjs";
 interface ContractBasicInfoEditModalViewProps {
   // Dialog props
   open: boolean;
@@ -22,10 +24,10 @@ interface ContractBasicInfoEditModalViewProps {
 
   category: ContractCategoryType | null;
   status: string;
-  contractStartDate: string;
-  contractDate: string | null;
-  contractEndDate: string;
-  expectedContractEndDate: string;
+  contractStartDate: Dayjs;
+  contractDate: Dayjs | null;
+  contractEndDate: Dayjs;
+  expectedContractEndDate: Dayjs | null;
   deposit: string;
   monthlyRent: string;
   price: string;
@@ -39,10 +41,10 @@ interface ContractBasicInfoEditModalViewProps {
 
   onCategoryChange: (value: ContractCategoryType) => void;
   onStatusChange: (value: string) => void;
-  onContractStartDateChange: (value: string) => void;
-  onContractDateChange: (value: string) => void;
-  onContractEndDateChange: (value: string) => void;
-  onExpectedContractEndDateChange: (value: string) => void;
+  onContractStartDateChange: (value: Dayjs | null) => void;
+  onContractDateChange: (value: Dayjs | null) => void;
+  onContractEndDateChange: (value: Dayjs | null) => void;
+  onExpectedContractEndDateChange: (value: Dayjs | null) => void;
   onDepositChange: (value: string) => void;
   onMonthlyRentChange: (value: string) => void;
   onPriceChange: (value: string) => void;
@@ -130,33 +132,24 @@ const ContractBasicInfoEditModalView = ({
           </Box>
 
           <Box className="flex gap-2">
-            <TextField
+            <DatePicker
               label="계약일"
-              type="date"
               value={contractDate}
-              onChange={(e) => onContractDateChange(e.target.value)}
-              InputLabelProps={{ shrink: true }}
-              fullWidth
+              onChange={onContractDateChange}
             />
 
-            <TextField
+            <DatePicker
               label="계약 시작일"
-              type="date"
               value={contractStartDate}
-              onChange={(e) => onContractStartDateChange(e.target.value)}
-              InputLabelProps={{ shrink: true }}
-              fullWidth
+              onChange={onContractStartDateChange}
             />
           </Box>
 
           <Box className="flex gap-2">
-            <TextField
+            <DatePicker
               label="계약 종료일"
-              type="date"
               value={contractEndDate}
-              onChange={(e) => onContractEndDateChange(e.target.value)}
-              InputLabelProps={{ shrink: true }}
-              fullWidth
+              onChange={onContractEndDateChange}
             />
 
             <TextField
@@ -169,13 +162,10 @@ const ContractBasicInfoEditModalView = ({
           </Box>
 
           {status === "CANCELLED" && (
-            <TextField
+            <DatePicker
               label="계약 예상 종료일"
-              type="date"
               value={expectedContractEndDate}
-              onChange={(e) => onExpectedContractEndDateChange(e.target.value)}
-              InputLabelProps={{ shrink: true }}
-              fullWidth
+              onChange={onExpectedContractEndDateChange}
             />
           )}
 

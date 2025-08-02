@@ -1,9 +1,6 @@
 import TextField from "@components/TextField";
 import { RadioGroup, FormControlLabel, Radio } from "@mui/material";
-import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
-import { DemoContainer } from "@mui/x-date-pickers/internals/demo";
-import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
-import { DesktopDatePicker } from "@mui/x-date-pickers";
+import DatePicker from "@components/DatePicker";
 import { Dayjs } from "dayjs";
 
 interface PropertyOptionsSectionProps {
@@ -54,24 +51,17 @@ const PropertyOptionsSection = ({
         </div>
       </div>
       {/* 입주 가능일 */}
-      <LocalizationProvider dateAdapter={AdapterDayjs}>
-        <DemoContainer
-          components={["DatePicker"]}
-          sx={{ marginTop: -1, paddingTop: 0 }}
-        >
-          <DesktopDatePicker
-            onChange={onMoveInDateChange}
-            value={moveInDate}
-            format="YYYY. MM. DD"
-            label="입주 가능일"
-            slotProps={{
-              textField: {
-                fullWidth: true,
-              },
-            }}
-          />
-        </DemoContainer>
-      </LocalizationProvider>
+
+      <DatePicker
+        onChange={onMoveInDateChange}
+        value={moveInDate}
+        label="입주 가능일"
+        slotProps={{
+          textField: {
+            fullWidth: true,
+          },
+        }}
+      />
 
       {/* 특이사항 */}
       <TextField

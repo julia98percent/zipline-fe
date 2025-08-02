@@ -1,12 +1,13 @@
-import { Schedule } from "@ts/schedule";
+import { Schedule, ScheduleRequest } from "@ts/schedule";
 import { useScheduleDetailModal } from "./useScheduleDetailModal";
 import ScheduleDetailModalView from "./ScheduleDetailModalView";
 
 interface ScheduleDetailModalProps {
   open: boolean;
   onClose: () => void;
+  onCancel: () => void;
   schedule: Schedule | null;
-  onSave: (schedule: Schedule) => void;
+  onSave: (schedule: ScheduleRequest) => void;
   onEdit?: () => void;
   isUpdating?: boolean;
   isEditMode?: boolean;
@@ -15,6 +16,7 @@ interface ScheduleDetailModalProps {
 const ScheduleDetailModal = ({
   open,
   onClose,
+  onCancel,
   schedule,
   onSave,
   onEdit,
@@ -45,6 +47,7 @@ const ScheduleDetailModal = ({
     <ScheduleDetailModalView
       open={open}
       onClose={onClose}
+      onCancel={onCancel}
       onEdit={onEdit}
       isUpdating={isUpdating}
       isEditMode={isEditMode}

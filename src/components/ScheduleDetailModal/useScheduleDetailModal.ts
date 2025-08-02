@@ -174,7 +174,7 @@ export const useScheduleDetailModal = ({
       customerName: selectedCustomer?.name || null,
     };
 
-    onSave({ uid, ...updatedSchedule } as Schedule);
+    onSave({ uid, ...updatedSchedule });
   };
 
   return {

@@ -13,29 +13,26 @@ import {
   Autocomplete,
   Tooltip,
 } from "@mui/material";
-import { DatePicker } from "@mui/x-date-pickers/DatePicker";
-import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
-import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
-import dayjs from "dayjs";
+import DatePicker from "@components/DatePicker";
 import { fetchCustomerList } from "@apis/customerService";
 import { Customer } from "@ts/customer";
 import Button from "@components/Button";
+import dayjs, { Dayjs } from "dayjs";
+import { getValidationErrors } from "@utils/scheduleUtil";
 
 interface ScheduleFormData {
   customerId: number | null;
   title: string;
-  startDate: string;
-  startTime: string;
-  endDate: string;
-  endTime: string;
+  startDateTime: Dayjs | null;
+  endDateTime: Dayjs | null;
   type: string;
   description: string;
   includeTime: boolean;
 }
 
 interface ScheduleSubmitData {
-  startDateTime: string;
-  endDateTime: string;
+  startDateTime: Dayjs | null;
+  endDateTime: Dayjs | null;
   title: string;
   description: string;
   customerUid: number | null;
@@ -51,34 +48,11 @@ function AddScheduleModal({ open, onClose, onSubmit }: AddScheduleModalProps) {
   const initialFormData: ScheduleFormData = {
     customerId: null,
     title: "",
-    startDate: "",
-    startTime: "",
-    endDate: "",
-    endTime: "",
+    startDateTime: null,
+    endDateTime: null,
     type: "",
     description: "",
     includeTime: false,
-  };
-
-  const inputStyle = {
-    "& .MuiOutlinedInput-root": {
-      backgroundColor: "#FFFFFF",
-      "& fieldset": {
-        borderColor: "#E0E0E0",
-      },
-      "&:hover fieldset": {
-        borderColor: "#164F9E",
-      },
-      "&.Mui-focused fieldset": {
-        borderColor: "#164F9E",
-      },
-      "&.Mui-disabled": {
-        backgroundColor: "#F8F9FA",
-        "& fieldset": {
-          borderColor: "#E0E0E0",
-        },
-      },
-    },
   };
 
   const [formData, setFormData] = useState<ScheduleFormData>(initialFormData);
@@ -109,7 +83,7 @@ function AddScheduleModal({ open, onClose, onSubmit }: AddScheduleModalProps) {
 
   const handleFormChange = (
     field: keyof ScheduleFormData,
-    value: string | boolean | number | null
+    value: string | boolean | number | Dayjs | null
   ) => {
     setFormData((prev) => ({
       ...prev,
@@ -124,69 +98,24 @@ function AddScheduleModal({ open, onClose, onSubmit }: AddScheduleModalProps) {
     onClose();
   };
 
-  const getValidationErrors = () => {
-    const errors: string[] = [];
+  const validationErrors = getValidationErrors({
+    customerId: formData.customerId,
+    title: formData.title,
+    startDateTime: formData.startDateTime,
+    endDateTime: formData.endDateTime,
+  });
 
-    if (!formData.customerId) {
-      errors.push("고객을 선택해주세요.");
-    }
-
-    if (!formData.title.trim()) {
-      errors.push("일정 제목을 입력해주세요.");
-    }
-    if (!formData.startDate) {
-      errors.push("시작 날짜를 선택해주세요.");
-    }
-    if (formData.includeTime && !formData.startTime) {
-      errors.push("시작 시간을 선택해주세요.");
-    }
-    if (formData.includeTime && formData.endTime) {
-      const startDateTime = new Date(
-        `${formData.startDate}T${formData.startTime}`
-      );
-      const endDateTime = new Date(
-        `${formData.endDate || formData.startDate}T${formData.endTime}`
-      );
-      if (startDateTime > endDateTime) {
-        errors.push("시작 시간은 종료 시간보다 늦을 수 없습니다.");
-      }
-    }
-    if (formData.startDate && formData.endDate) {
-      const startDate = new Date(formData.startDate);
-      const endDate = new Date(formData.endDate);
-      if (startDate > endDate) {
-        errors.push("시작 날짜는 종료 날짜보다 늦을 수 없습니다.");
-      }
-    }
-
-    return errors;
-  };
-
-  const validationErrors = getValidationErrors();
   const isSubmitButtonDisabled = validationErrors.length > 0;
 
   const handleSubmit = async () => {
     if (validationErrors.length) return;
 
-    const formatDateTime = (date: string, time: string) => {
-      const dateTime = new Date(date);
-      if (formData.includeTime && time) {
-        const [hours, minutes] = time.split(":");
-        dateTime.setHours(parseInt(hours, 10));
-        dateTime.setMinutes(parseInt(minutes, 10));
-      }
-      return dateTime.toISOString();
-    };
-
-    // 종료 날짜가 없는 경우 시작 날짜로 설정
-    const endDate = formData.endDate || formData.startDate;
-    const endTime = formData.includeTime
-      ? formData.endTime || formData.startTime
-      : "00:00";
+    // 종료 일시가 없는 경우 시작 일시로 설정
+    const endDateTime = formData.endDateTime || formData.startDateTime;
 
     const submitData: ScheduleSubmitData = {
-      startDateTime: formatDateTime(formData.startDate, formData.startTime),
-      endDateTime: formatDateTime(endDate, endTime),
+      startDateTime: formData.startDateTime,
+      endDateTime,
       title: formData.title.trim(),
       description: formData.description.trim(),
       customerUid: formData.customerId,
@@ -219,7 +148,7 @@ function AddScheduleModal({ open, onClose, onSubmit }: AddScheduleModalProps) {
 
       <DialogContent className=" p-7">
         <div className="grid grid-cols-1 gap-4">
-          <FormControl fullWidth sx={inputStyle}>
+          <FormControl fullWidth>
             <Autocomplete
               options={customers}
               getOptionLabel={(option) => option.name}
@@ -257,93 +186,56 @@ function AddScheduleModal({ open, onClose, onSubmit }: AddScheduleModalProps) {
               label="일정 제목"
               value={formData.title}
               onChange={(e) => handleFormChange("title", e.target.value)}
-              sx={inputStyle}
             />
           </div>
-          <div className="flex gap-3 flex-wrap">
-            <div className="flex-[1_1_calc(50%-6px)] min-w-60">
-              <LocalizationProvider dateAdapter={AdapterDayjs}>
-                <DatePicker
-                  label="시작 날짜"
-                  value={formData.startDate ? dayjs(formData.startDate) : null}
-                  onChange={(newValue) => {
-                    handleFormChange(
-                      "startDate",
-                      newValue?.format("YYYY-MM-DD") || ""
-                    );
-                  }}
-                  format="YYYY/MM/DD"
-                  slotProps={{
-                    textField: {
-                      fullWidth: true,
-                      sx: inputStyle,
-                    },
-                  }}
-                />
-              </LocalizationProvider>
-            </div>
-            <div className="flex-[1_1_calc(50%-6px)] min-w-60">
-              <TextField
-                fullWidth
-                label="시작 시간"
-                type="time"
-                value={formData.startTime}
-                onChange={(e) => handleFormChange("startTime", e.target.value)}
-                disabled={!formData.includeTime}
-                InputLabelProps={{ shrink: true }}
-                sx={inputStyle}
-              />
-            </div>
-          </div>
-          <div className="flex gap-3 flex-wrap">
-            <div className="flex-[1_1_calc(50%-6px)] min-w-60">
-              <LocalizationProvider dateAdapter={AdapterDayjs}>
-                <DatePicker
-                  label="종료 날짜"
-                  value={formData.endDate ? dayjs(formData.endDate) : null}
-                  onChange={(newValue) => {
-                    handleFormChange(
-                      "endDate",
-                      newValue?.format("YYYY-MM-DD") || ""
-                    );
-                  }}
-                  format="YYYY/MM/DD"
-                  slotProps={{
-                    textField: {
-                      fullWidth: true,
-                      sx: inputStyle,
-                    },
-                  }}
-                />
-              </LocalizationProvider>
-            </div>
-            <div className="flex-[1_1_calc(50%-6px)] min-w-60">
-              <TextField
-                fullWidth
-                label="종료 시간"
-                type="time"
-                value={formData.endTime}
-                onChange={(e) => handleFormChange("endTime", e.target.value)}
-                disabled={!formData.includeTime}
-                InputLabelProps={{ shrink: true }}
-                sx={inputStyle}
-              />
-            </div>
-          </div>
-          <div>
-            <FormControlLabel
-              control={
-                <Checkbox
-                  checked={formData.includeTime}
-                  onChange={(e) =>
-                    handleFormChange("includeTime", e.target.checked)
-                  }
-                  size="small"
-                />
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <DatePicker
+              isDateTimePicker={formData.includeTime}
+              label="시작 일시"
+              value={
+                formData.startDateTime ? dayjs(formData.startDateTime) : null
               }
-              label="시간 포함"
+              onChange={(newValue) => {
+                handleFormChange("startDateTime", newValue || null);
+              }}
+            />
+            <DatePicker
+              isDateTimePicker={formData.includeTime}
+              label="종료 일시"
+              value={formData.endDateTime ? dayjs(formData.endDateTime) : null}
+              onChange={(newValue) => {
+                handleFormChange("endDateTime", newValue || null);
+              }}
             />
           </div>
+
+          <FormControlLabel
+            control={
+              <Checkbox
+                checked={formData.includeTime}
+                onChange={(e) => {
+                  handleFormChange("includeTime", e.target.checked);
+                  if (!e.target.checked) {
+                    handleFormChange(
+                      "startDateTime",
+                      formData.startDateTime
+                        ? dayjs(formData.startDateTime).startOf("day")
+                        : null
+                    );
+                    handleFormChange(
+                      "endDateTime",
+                      formData.endDateTime
+                        ? dayjs(formData.endDateTime).startOf("day")
+                        : null
+                    );
+                  }
+                }}
+                size="small"
+              />
+            }
+            label="시간 포함"
+          />
+
           <div>
             <TextField
               fullWidth

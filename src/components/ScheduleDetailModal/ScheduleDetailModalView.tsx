@@ -23,6 +23,7 @@ interface ScheduleDetailModalViewProps {
   open: boolean;
   onClose: () => void;
   onEdit?: () => void;
+  onCancel?: () => void;
   isUpdating?: boolean;
   isEditMode?: boolean;
   editingSchedule: Schedule | null;
@@ -44,6 +45,7 @@ interface ScheduleDetailModalViewProps {
 const ScheduleDetailModalView = ({
   open,
   onClose,
+  onCancel,
   onEdit,
   isUpdating = false,
   isEditMode = false,
@@ -259,21 +261,32 @@ const ScheduleDetailModalView = ({
           </div>
         </Box>
       </DialogContent>
-      <DialogActions>
-        <Button onClick={onClose} color="info" variant="outlined">
-          {isEditMode ? "취소" : "닫기"}
-        </Button>
-        {isEditMode ? (
-          <Button onClick={onSave} variant="contained" disabled={isUpdating}>
-            {isUpdating ? "저장 중..." : "저장"}
-          </Button>
-        ) : (
-          onEdit && (
-            <Button onClick={onEdit} color="primary" variant="outlined">
-              수정
-            </Button>
-          )
-        )}
+      <DialogActions className="flex flex-row-reverse items-center justify-between p-6 border-t border-gray-200">
+        <div className="flex gap-2">
+          {isEditMode ? (
+            <>
+              <Button onClick={onCancel} color="info" variant="outlined">
+                취소
+              </Button>
+              <Button
+                onClick={onSave}
+                variant="contained"
+                disabled={isUpdating}
+              >
+                {isUpdating ? "저장 중..." : "저장"}
+              </Button>
+            </>
+          ) : (
+            <>
+              <Button onClick={onClose} color="info" variant="outlined">
+                닫기
+              </Button>
+              <Button onClick={onEdit} color="primary" variant="outlined">
+                수정
+              </Button>
+            </>
+          )}
+        </div>
       </DialogActions>
     </Dialog>
   );

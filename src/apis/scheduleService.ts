@@ -3,6 +3,7 @@ import { ApiResponse } from "@ts/apiResponse";
 import { Schedule } from "@ts/schedule";
 import { handleApiResponse, handleApiError } from "@utils/apiUtil";
 import { SCHEDULE_ERROR_MESSAGES } from "@constants/clientErrorMessage";
+import dayjs, { Dayjs } from "dayjs";
 
 export const fetchSchedulesByDateRange = async (params: {
   startDate: string;
@@ -13,7 +14,16 @@ export const fetchSchedulesByDateRange = async (params: {
       `/schedules?startDate=${params.startDate}&endDate=${params.endDate}`
     );
 
-    return handleApiResponse(response, SCHEDULE_ERROR_MESSAGES.FETCH_FAILED);
+    const schedules = handleApiResponse(
+      response,
+      SCHEDULE_ERROR_MESSAGES.FETCH_FAILED
+    );
+
+    return schedules.map((schedule: Schedule) => ({
+      ...schedule,
+      startDate: dayjs(schedule.startDate),
+      endDate: dayjs(schedule.endDate),
+    }));
   } catch (error) {
     return handleApiError(error, "fetching schedules by date range");
   }
@@ -81,8 +91,8 @@ export const fetchAllSchedules = async (params: {
 };
 
 export interface ScheduleCreateData {
-  startDateTime: string;
-  endDateTime: string;
+  startDateTime: Dayjs | null;
+  endDateTime: Dayjs | null;
   title: string;
   description: string;
   customerUid: number | null;

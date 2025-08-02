@@ -8,23 +8,24 @@ import {
   ConsultationResponse,
   CounselUpdateRequest,
 } from "@ts/counsel";
+import { Dayjs } from "dayjs";
 
 type CounselListResponse = ApiResponse<ConsultationResponse>;
 interface CounselListParams {
   page: number;
   size: number;
   search?: string;
-  startDate?: string;
-  endDate?: string;
+  startDate?: Dayjs | null;
+  endDate?: Dayjs | null;
   type?: string;
   completed?: boolean;
 }
 
 interface CreateCounselRequest {
   title: string;
-  counselDate: string;
+  counselDate: Dayjs | null;
   type: string;
-  dueDate?: string;
+  dueDate?: Dayjs | null;
   propertyUid?: string;
   content: string;
 }
@@ -37,9 +38,11 @@ export const fetchCounselList = async (params: CounselListParams) => {
         params: {
           page: params.page + 1,
           size: params.size,
-          search: params.search || undefined,
-          startDate: params.startDate || undefined,
-          endDate: params.endDate || undefined,
+          search: params.search,
+          startDate: params.startDate
+            ? params.startDate.format("YYYY-MM-DD")
+            : null,
+          endDate: params.endDate ? params.endDate.format("YYYY-MM-DD") : null,
           type: params.type || undefined,
           completed: params.completed,
         },

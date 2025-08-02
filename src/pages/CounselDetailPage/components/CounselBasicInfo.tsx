@@ -7,15 +7,19 @@ import {
   Typography,
 } from "@mui/material";
 import Select, { MenuItem } from "@components/Select";
-import dayjs from "dayjs";
+import dayjs, { Dayjs } from "dayjs";
 import styles from "../styles/CounselDetailPage.module.css";
 import { CounselCategoryType, Counsel } from "@ts/counsel";
+import DatePicker from "@components/DatePicker";
 
 interface CounselBasicInfoProps {
   data: Counsel;
   isEditing: boolean;
   COUNSEL_TYPES: Record<CounselCategoryType, string>;
-  onInputChange: (field: keyof Counsel, value: string | boolean) => void;
+  onInputChange: (
+    field: keyof Counsel,
+    value: string | boolean | Dayjs | null
+  ) => void;
 }
 
 const StringBooleanSelect = Select<string | boolean>;
@@ -70,12 +74,9 @@ const CounselBasicInfo = ({
         <div className={styles.infoItem}>
           <span className={styles.infoLabel}>상담 일시</span>
           {isEditing ? (
-            <TextField
-              type="date"
-              value={dayjs(data.counselDate).format("YYYY-MM-DD")}
-              onChange={(e) => onInputChange("counselDate", e.target.value)}
-              fullWidth
-              size="small"
+            <DatePicker
+              value={dayjs(data.counselDate)}
+              onChange={(date) => onInputChange("counselDate", date)}
             />
           ) : (
             <span className={styles.infoValue}>
@@ -84,14 +85,11 @@ const CounselBasicInfo = ({
           )}
         </div>
         <div className={styles.infoItem}>
-          <span className={styles.infoLabel}>완료 예정일</span>
+          <span className={styles.infoLabel}>의뢰 마감일</span>
           {isEditing ? (
-            <TextField
-              type="date"
-              value={dayjs(data.dueDate).format("YYYY-MM-DD")}
-              onChange={(e) => onInputChange("dueDate", e.target.value)}
-              fullWidth
-              size="small"
+            <DatePicker
+              value={dayjs(data.dueDate)}
+              onChange={(date) => onInputChange("dueDate", date)}
             />
           ) : (
             <span className={styles.infoValue}>
@@ -100,7 +98,7 @@ const CounselBasicInfo = ({
           )}
         </div>
         <div className={styles.infoItem}>
-          <span className={styles.infoLabel}>완료 여부</span>
+          <span className={styles.infoLabel}>의뢰 완료 여부</span>
           {isEditing ? (
             <FormControlLabel
               control={

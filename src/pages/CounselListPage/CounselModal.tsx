@@ -5,13 +5,12 @@ import {
   DialogContent,
   DialogActions,
   TextField,
-  Box,
+  Tooltip,
   CircularProgress,
 } from "@mui/material";
+import DatePicker from "@components/DatePicker";
 import { MenuItem, StringSelect } from "@components/Select";
-import dayjs from "dayjs";
-import utc from "dayjs/plugin/utc";
-import timezone from "dayjs/plugin/timezone";
+import dayjs, { Dayjs } from "dayjs";
 import {
   fetchCustomersForCounsel,
   fetchPropertiesForCounsel,
@@ -19,10 +18,6 @@ import {
 } from "@apis/counselService";
 import { CounselCategory } from "@ts/counsel";
 import Button from "@components/Button";
-import { showToast } from "@components/Toast";
-
-dayjs.extend(utc);
-dayjs.extend(timezone);
 
 interface Customer {
   uid: number;
@@ -47,11 +42,11 @@ interface CounselModalProps {
 function CounselModal({ open, onClose, onSuccess }: CounselModalProps) {
   const [selectedCustomer, setSelectedCustomer] = useState("");
   const [counselType, setCounselType] = useState("");
-  const [dueDate, setDueDate] = useState("");
+  const [dueDate, setDueDate] = useState<Dayjs | null>(null);
   const [selectedProperty, setSelectedProperty] = useState<string | null>(null);
   const [title, setTitle] = useState("");
-  const [counselDateTime, setCounselDateTime] = useState(
-    dayjs().tz("Asia/Seoul").format("YYYY-MM-DDTHH:mm")
+  const [counselDateTime, setCounselDateTime] = useState<Dayjs | null>(
+    dayjs().tz("Asia/Seoul")
   );
   const [counselContent, setCounselContent] = useState("");
   const [customers, setCustomers] = useState<Customer[]>([]);
@@ -92,46 +87,69 @@ function CounselModal({ open, onClose, onSuccess }: CounselModalProps) {
     }
   }, [open]);
 
-  const handleSubmit = async () => {
-    if (!selectedCustomer || !counselType || !title || !counselDateTime) {
-      showToast({
-        message: "고객, 상담 유형, 제목, 상담일시는 필수 입력 항목입니다.",
-        type: "error",
-      });
-      return;
-    }
+  const handleResetForm = () => {
+    setSelectedCustomer("");
+    setCounselType("");
+    setDueDate(null);
+    setSelectedProperty(null);
+    setTitle("");
+    setCounselDateTime(dayjs().tz("Asia/Seoul"));
+    setCounselContent("");
+  };
 
-    if (!counselContent.trim()) {
-      showToast({
-        message: "상담 내용을 입력해주세요.",
-        type: "error",
-      });
-      return;
-    }
+  const handleSubmit = async () => {
+    if (!counselDateTime) return;
 
     try {
       await createCounsel(selectedCustomer, {
         title,
-        counselDate: new Date(counselDateTime).toISOString(),
+        counselDate: counselDateTime,
         type: counselType,
         dueDate,
         propertyUid: selectedProperty || undefined,
-
         content: counselContent,
       });
 
       onClose();
       onSuccess();
+      handleResetForm();
     } catch (error) {
       console.error("Failed to create counsel:", error);
     }
   };
 
+  const getValidationErrors = () => {
+    const errors: string[] = [];
+
+    if (!selectedCustomer) {
+      errors.push("고객을 선택해주세요.");
+    }
+    if (!counselType) {
+      errors.push("상담 유형을 선택해주세요.");
+    }
+    if (!title) {
+      errors.push("상담 제목을 입력해주세요.");
+    }
+    if (!counselDateTime) {
+      errors.push("상담 일시를 선택해주세요.");
+    }
+    if (!counselContent.trim()) {
+      errors.push("상담 내용을 입력해주세요.");
+    }
+
+    return errors;
+  };
+  const validationErrors = getValidationErrors();
+  const isSubmitButtonDisabled = validationErrors.length > 0;
+
   return (
     <Dialog open={open} onClose={onClose} maxWidth="md" fullWidth>
-      <DialogTitle>상담 등록</DialogTitle>
-      <DialogContent>
-        <Box className="flex flex-col gap-3 mt-4">
+      <DialogTitle className="border-b text-primary font-bold border-gray-200">
+        상담 등록
+      </DialogTitle>
+
+      <DialogContent className=" p-7">
+        <div className="flex flex-col gap-4">
           <TextField
             label="상담 제목"
             value={title}
@@ -139,64 +157,64 @@ function CounselModal({ open, onClose, onSuccess }: CounselModalProps) {
             fullWidth
             required
           />
-
-          <StringSelect
-            value={selectedCustomer}
-            onChange={(e) => setSelectedCustomer(e.target.value)}
-            label="고객 선택"
-            disabled={isCustomersLoading}
-            required
-          >
-            {isCustomersLoading ? (
-              <MenuItem value="">
-                <CircularProgress size={20} />
-              </MenuItem>
-            ) : (
-              customers.map((customer) => (
-                <MenuItem key={customer.uid} value={customer.uid}>
-                  {customer.name}
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <StringSelect
+              value={selectedCustomer}
+              onChange={(e) => setSelectedCustomer(e.target.value)}
+              label="고객 선택"
+              disabled={isCustomersLoading}
+              required
+              size="medium"
+            >
+              {isCustomersLoading ? (
+                <MenuItem value="">
+                  <CircularProgress size={20} />
                 </MenuItem>
-              ))
-            )}
-          </StringSelect>
+              ) : (
+                customers.map((customer) => (
+                  <MenuItem key={customer.uid} value={customer.uid}>
+                    {customer.name}
+                  </MenuItem>
+                ))
+              )}
+            </StringSelect>
 
-          <StringSelect
-            value={counselType}
-            onChange={(e) => setCounselType(e.target.value)}
-            label="상담 유형"
-            required
-          >
-            {Object.entries(CounselCategory).map(([key, value]) => (
-              <MenuItem key={key} value={value}>
-                {value}
-              </MenuItem>
-            ))}
-          </StringSelect>
+            <StringSelect
+              value={counselType}
+              onChange={(e) => setCounselType(e.target.value)}
+              label="상담 유형"
+              required
+              size="medium"
+            >
+              {Object.entries(CounselCategory).map(([key, value]) => (
+                <MenuItem key={key} value={value}>
+                  {value}
+                </MenuItem>
+              ))}
+            </StringSelect>
+          </div>
 
-          <TextField
-            label="상담일시"
-            type="datetime-local"
-            value={counselDateTime}
-            onChange={(e) => setCounselDateTime(e.target.value)}
-            InputLabelProps={{ shrink: true }}
-            fullWidth
-            required
-          />
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <DatePicker
+              isDateTimePicker
+              label="상담일시"
+              value={counselDateTime}
+              onChange={setCounselDateTime}
+            />
 
-          <TextField
-            label="희망 마감 기한"
-            type="date"
-            value={dueDate}
-            onChange={(e) => setDueDate(e.target.value)}
-            InputLabelProps={{ shrink: true }}
-            fullWidth
-          />
+            <DatePicker
+              label="의뢰 마감일"
+              value={dueDate}
+              onChange={setDueDate}
+            />
+          </div>
 
           <StringSelect
             value={selectedProperty}
             onChange={(e) => setSelectedProperty(e.target.value)}
             label="관련 매물"
             disabled={isPropertiesLoading}
+            size="medium"
           >
             {isPropertiesLoading ? (
               <MenuItem value="">
@@ -217,25 +235,50 @@ function CounselModal({ open, onClose, onSuccess }: CounselModalProps) {
             onChange={(e) => setCounselContent(e.target.value)}
             multiline
             rows={6}
-            placeholder="상담 내용을 입력해주세요"
+            placeholder="상담 내용을 입력해주세요 (최대 500자)"
             fullWidth
             required
+            inputProps={{ maxLength: 500 }}
           />
-        </Box>
+        </div>
       </DialogContent>
-      <DialogActions>
-        <Button variant="outlined" onClick={onClose} className="px-4 py-2">
-          취소
-        </Button>
-        <Button
-          onClick={handleSubmit}
-          variant="contained"
-          disabled={
-            !selectedCustomer || !counselType || !title || !counselDateTime
-          }
-        >
-          등록
-        </Button>
+      <DialogActions className="flex flex-row-reverse items-center justify-between p-6 border-t border-gray-200">
+        <div className="flex gap-2">
+          <Button variant="outlined" onClick={onClose}>
+            취소
+          </Button>
+          <Button
+            onClick={handleSubmit}
+            variant="contained"
+            disabled={isSubmitButtonDisabled}
+          >
+            등록
+          </Button>
+        </div>
+        {isSubmitButtonDisabled && (
+          <Tooltip
+            title={
+              <div>
+                {validationErrors.map((error, index) => (
+                  <div key={index}>• {error}</div>
+                ))}
+              </div>
+            }
+            arrow
+            placement="top"
+          >
+            <div className="text-sm text-red-600 cursor-help">
+              <ul className="list-disc list-inside">
+                {validationErrors.slice(0, 1).map((error, index) => (
+                  <li key={index}>{error}</li>
+                ))}
+                {validationErrors.length > 1 && (
+                  <li>외 {validationErrors.length - 1}개 항목</li>
+                )}
+              </ul>
+            </div>
+          </Tooltip>
+        )}
       </DialogActions>
     </Dialog>
   );

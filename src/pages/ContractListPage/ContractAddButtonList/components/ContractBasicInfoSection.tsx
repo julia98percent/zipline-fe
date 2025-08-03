@@ -1,72 +1,64 @@
-import { TextField, MenuItem } from "@mui/material";
+import { MenuItem } from "@mui/material";
 import { CONTRACT_STATUS_OPTION_LIST } from "@constants/contract";
 import { AgentPropertyResponse } from "@apis/contractService";
-import { ContractStatus, FormErrors } from "@ts/contract";
+import { ContractStatus } from "@ts/contract";
+import { StringSelect } from "@components/Select";
 
 interface Props {
   category: string | null;
-  setCategory: (category: string | null) => void;
+  handleCategoryChange: (category: string | null) => void;
   status: ContractStatus;
   setStatus: (status: ContractStatus) => void;
   propertyUid: number | null;
   setPropertyUid: (uid: number | null) => void;
   propertyOptions: AgentPropertyResponse[];
-  errors: FormErrors;
 }
 
 const ContractBasicInfoSection = ({
   category,
-  setCategory,
+  handleCategoryChange,
   status,
   setStatus,
   propertyUid,
   setPropertyUid,
   propertyOptions,
-  errors,
 }: Props) => {
   return (
-    <>
-      <TextField
-        select
+    <div className="flex flex-col gap-4">
+      <StringSelect
         label="계약 카테고리"
         value={category ?? ""}
-        onChange={(e) => setCategory(e.target.value)}
-        error={!!errors.category}
-        helperText={errors.category}
+        onChange={(e) => handleCategoryChange(e.target.value)}
         fullWidth
-        className="mb-4"
+        size="medium"
       >
         <MenuItem value="SALE">매매</MenuItem>
         <MenuItem value="DEPOSIT">전세</MenuItem>
         <MenuItem value="MONTHLY">월세</MenuItem>
-      </TextField>
+      </StringSelect>
 
-      <TextField
-        select
-        label="계약 상태 *"
+      <StringSelect
+        label="계약 상태"
         value={status}
+        required
         onChange={(e) => setStatus(e.target.value as ContractStatus)}
-        error={!!errors.status}
-        helperText={errors.status}
         fullWidth
-        className="mb-4"
+        size="medium"
       >
         {CONTRACT_STATUS_OPTION_LIST.map((s) => (
           <MenuItem key={s.value} value={s.value}>
             {s.label}
           </MenuItem>
         ))}
-      </TextField>
+      </StringSelect>
 
-      <TextField
-        select
+      <StringSelect
         label="매물 *"
+        required
         value={propertyUid ?? ""}
         onChange={(e) => setPropertyUid(Number(e.target.value))}
-        error={!!errors.propertyUid}
-        helperText={errors.propertyUid}
         fullWidth
-        className="mb-4"
+        size="medium"
       >
         {propertyOptions.length > 0 ? (
           propertyOptions.map((p) => (
@@ -79,8 +71,8 @@ const ContractBasicInfoSection = ({
             등록된 매물이 없습니다
           </MenuItem>
         )}
-      </TextField>
-    </>
+      </StringSelect>
+    </div>
   );
 };
 

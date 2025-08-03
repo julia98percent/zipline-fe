@@ -1,11 +1,11 @@
-import { Box, Typography, FormControlLabel, Checkbox } from "@mui/material";
+import { FormControlLabel, Checkbox } from "@mui/material";
 
 interface RoleSectionProps {
   seller: boolean;
   buyer: boolean;
   tenant: boolean;
   landlord: boolean;
-  onFieldChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
+  onRoleChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
 }
 
 export default function RoleSection({
@@ -13,29 +13,28 @@ export default function RoleSection({
   buyer,
   tenant,
   landlord,
-  onFieldChange,
+  onRoleChange,
 }: RoleSectionProps) {
   return (
-    <Box className="mb-8">
-      <Typography variant="h6" className="mb-4 font-bold">
-        역할
-      </Typography>
-      <Box className="flex gap-8">
+    <div>
+      <h6 className="mb-2 font-semibold">역할</h6>
+
+      <div className="grid grid-cols-3 sm:grid-cols-5">
         <FormControlLabel
           control={
-            <Checkbox name="seller" checked={seller} onChange={onFieldChange} />
+            <Checkbox name="seller" checked={seller} onChange={onRoleChange} />
           }
           label="매도인"
         />
         <FormControlLabel
           control={
-            <Checkbox name="buyer" checked={buyer} onChange={onFieldChange} />
+            <Checkbox name="buyer" checked={buyer} onChange={onRoleChange} />
           }
           label="매수인"
         />
         <FormControlLabel
           control={
-            <Checkbox name="tenant" checked={tenant} onChange={onFieldChange} />
+            <Checkbox name="tenant" checked={tenant} onChange={onRoleChange} />
           }
           label="임차인"
         />
@@ -44,12 +43,12 @@ export default function RoleSection({
             <Checkbox
               name="landlord"
               checked={landlord}
-              onChange={onFieldChange}
+              onChange={onRoleChange}
             />
           }
           label="임대인"
         />
-      </Box>
-    </Box>
+      </div>
+    </div>
   );
 }

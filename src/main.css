@@ -8,7 +8,8 @@ body {
 
 @theme {
   --color-primary: #164f9e;
-  --color-primary-dark: #154c98;
+  --color-primary-dark: #0d3b7a;
+  --color-primary-light: #2a6fdb;
 }
 
 @layer components {

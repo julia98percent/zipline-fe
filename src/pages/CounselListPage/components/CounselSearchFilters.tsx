@@ -1,22 +1,19 @@
 import {
-  Typography,
   TextField as MuiTextField,
   InputAdornment,
   IconButton,
 } from "@mui/material";
-import { DatePicker } from "@mui/x-date-pickers/DatePicker";
-import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
-import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
+import DatePicker from "@components/DatePicker";
 import SearchIcon from "@mui/icons-material/Search";
-import dayjs from "dayjs";
+import { Dayjs } from "dayjs";
 
 interface Props {
   search: string;
-  startDate: string | null;
-  endDate: string | null;
+  startDate: Dayjs | null;
+  endDate: Dayjs | null;
   onSearchChange: (search: string) => void;
-  onStartDateChange: (startDate: string | null) => void;
-  onEndDateChange: (endDate: string | null) => void;
+  onStartDateChange: (startDate: Dayjs | null) => void;
+  onEndDateChange: (endDate: Dayjs | null) => void;
   onSearchClick: () => void;
 }
 
@@ -58,65 +55,32 @@ const CounselSearchFilters = ({
       </div>
 
       <div className="flex flex-col sm:flex-row gap-3 items-start sm:items-center">
-        <LocalizationProvider dateAdapter={AdapterDayjs}>
-          <div className="flex flex-col sm:flex-row items-start sm:items-center gap-3">
-            <Typography
-              variant="subtitle2"
-              className="text-gray-700 font-medium"
-            >
-              상담일
-            </Typography>
-            <div className="flex items-center gap-2">
-              <DatePicker
-                value={startDate ? dayjs(startDate) : null}
-                onChange={(newValue) => {
-                  onStartDateChange(
-                    newValue ? newValue.format("YYYY-MM-DD") : null
-                  );
-                }}
-                format="YYYY/MM/DD"
-                slotProps={{
-                  textField: {
-                    size: "small",
-                    sx: {
-                      backgroundColor: "white",
-                      width: "170px",
-                      "& .MuiOutlinedInput-root": {
-                        "& fieldset": {
-                          borderColor: "#E0E0E0",
-                        },
-                      },
-                    },
-                  },
-                }}
-              />
-              <span className="mx-1 text-gray-500">~</span>
-              <DatePicker
-                value={endDate ? dayjs(endDate) : null}
-                onChange={(newValue) => {
-                  onEndDateChange(
-                    newValue ? newValue.format("YYYY-MM-DD") : null
-                  );
-                }}
-                format="YYYY/MM/DD"
-                slotProps={{
-                  textField: {
-                    size: "small",
-                    sx: {
-                      backgroundColor: "white",
-                      width: "170px",
-                      "& .MuiOutlinedInput-root": {
-                        "& fieldset": {
-                          borderColor: "#E0E0E0",
-                        },
-                      },
-                    },
-                  },
-                }}
-              />
-            </div>
+        <div className="flex flex-col sm:flex-row items-start sm:items-center gap-2 md:gap-4">
+          <h6 className="text-sm text-gray-700 font-medium break-keep">
+            상담일
+          </h6>
+          <div className="flex items-center gap-2">
+            <DatePicker
+              value={startDate || null}
+              onChange={onStartDateChange}
+              slotProps={{
+                textField: {
+                  size: "small",
+                },
+              }}
+            />
+            <span className="mx-1 text-gray-500">~</span>
+            <DatePicker
+              value={endDate || null}
+              onChange={onEndDateChange}
+              slotProps={{
+                textField: {
+                  size: "small",
+                },
+              }}
+            />
           </div>
-        </LocalizationProvider>
+        </div>
       </div>
     </div>
   );

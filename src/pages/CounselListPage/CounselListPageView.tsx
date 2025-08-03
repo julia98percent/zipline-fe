@@ -8,6 +8,7 @@ import {
 import Button from "@components/Button";
 import AddIcon from "@mui/icons-material/Add";
 import { Counsel } from "@ts/counsel";
+import { Dayjs } from "dayjs";
 
 interface CounselListPageViewProps {
   counsels: Counsel[];
@@ -17,13 +18,13 @@ interface CounselListPageViewProps {
   isLoading: boolean;
   isModalOpen: boolean;
   search: string;
-  startDate: string | null;
-  endDate: string | null;
+  startDate: Dayjs | null;
+  endDate: Dayjs | null;
   selectedType: string | null;
   selectedCompleted: boolean | null;
   onSearchChange: (search: string) => void;
-  onStartDateChange: (startDate: string | null) => void;
-  onEndDateChange: (endDate: string | null) => void;
+  onStartDateChange: (startDate: Dayjs | null) => void;
+  onEndDateChange: (endDate: Dayjs | null) => void;
   onTypeChange: (type: string | null) => void;
   onCompletedChange: (completed: boolean | null) => void;
   onSearchClick: () => void;

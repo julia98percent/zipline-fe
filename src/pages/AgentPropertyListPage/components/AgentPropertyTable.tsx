@@ -5,7 +5,10 @@ import { Typography, Chip, IconButton } from "@mui/material";
 import ChevronLeftIcon from "@mui/icons-material/ChevronLeft";
 import ChevronRightIcon from "@mui/icons-material/ChevronRight";
 import PropertyCard from "./PropertyCard";
-import { getPropertyTypeColors } from "@constants/property";
+import {
+  getPropertyTypeColors,
+  getPropertyCategoryColors,
+} from "@constants/property";
 
 type PropertyRowData = RowData & Property;
 
@@ -61,11 +64,11 @@ const AgentPropertyTable = ({
   };
 
   const getTypeChipColor = (type: string) => {
-    return getPropertyTypeColors(type).background;
+    return getPropertyTypeColors(type).text;
   };
 
-  const getTypeTextColor = (type: string) => {
-    return getPropertyTypeColors(type).text;
+  const getCategoryChipColor = (category: string) => {
+    return getPropertyCategoryColors(category).text;
   };
 
   // 컬럼 정의
@@ -78,8 +81,17 @@ const AgentPropertyTable = ({
         <Chip
           label={PropertyCategory[row.realCategory]}
           size="small"
-          color="primary"
           variant="outlined"
+          className="text-xs h-6"
+          style={{
+            borderColor: getCategoryChipColor(row.realCategory),
+            color: getCategoryChipColor(row.realCategory),
+          }}
+          sx={{
+            "& .MuiChip-label": {
+              padding: "0 8px",
+            },
+          }}
         />
       ),
     },
@@ -91,10 +103,13 @@ const AgentPropertyTable = ({
         <Chip
           label={getPropertyTypeText(row.type)}
           size="small"
+          variant="outlined"
           className="text-xs h-6"
+          style={{
+            borderColor: getTypeChipColor(row.type),
+            color: getTypeChipColor(row.type),
+          }}
           sx={{
-            backgroundColor: getTypeChipColor(row.type),
-            color: getTypeTextColor(row.type),
             "& .MuiChip-label": {
               padding: "0 8px",
             },
@@ -141,7 +156,7 @@ const AgentPropertyTable = ({
         <div>
           {row.moveInDate && (
             <Typography variant="caption" color="text.secondary">
-              입주: {formatDate(row.moveInDate)}
+              입주 가능일: {formatDate(row.moveInDate)}
             </Typography>
           )}
           {row.details ? (

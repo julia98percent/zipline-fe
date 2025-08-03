@@ -10,6 +10,7 @@ import {
 } from "@apis/customerService";
 import { fetchRegions } from "@apis/regionService";
 import { showToast } from "@components/Toast/Toast";
+import { formatPhoneNumber } from "@utils/numberUtil";
 import CustomerAddModalView from "./CustomerAddModalView";
 
 interface CustomerAddModalProps {
@@ -23,7 +24,7 @@ const initialFormData: CustomerFormData = {
   phoneNo: "",
   birthday: "",
   telProvider: "SKT",
-  legalDistrictCode: "",
+  preferredRegion: "",
   trafficSource: "",
   seller: false,
   buyer: false,
@@ -60,33 +61,62 @@ function CustomerAddModal({
   const handleFieldChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value, type, checked } = e.target;
 
+    setFormData((prev: CustomerFormData) => ({
+      ...prev,
+      [name]: type === "checkbox" ? checked : value,
+    }));
+  };
+
+  const handleNameChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setFormData((prev) => ({ ...prev, name: e.target.value }));
+  };
+
+  const handlePhoneChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const formattedNumber = formatPhoneNumber(e.target.value);
+    setFormData((prev) => ({ ...prev, phoneNo: formattedNumber }));
+  };
+
+  const handleBirthdayChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const value = e.target.value.replace(/\D/g, "");
+    if (value.length <= 8) {
+      setFormData((prev) => ({ ...prev, birthday: value }));
+    }
+  };
+
+  const handleTelProviderChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setFormData((prev) => ({ ...prev, telProvider: e.target.value }));
+  };
+
+  const handleRoleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const { name, checked } = e.target;
+    setFormData((prev) => ({ ...prev, [name]: checked }));
+  };
+  const handleFieldBlur = (e: React.FocusEvent<HTMLInputElement>) => {
+    const { name, value } = e.target;
+
     if (name === "phoneNo") {
-      // 숫자만 추출
-      const numbers = value.replace(/[^0-9]/g, "");
-
-      // 전화번호 형식으로 변환
-      let formattedNumber = "";
-      if (numbers.length <= 3) {
-        formattedNumber = numbers;
-      } else if (numbers.length <= 7) {
-        formattedNumber = `${numbers.slice(0, 3)}-${numbers.slice(3)}`;
-      } else {
-        formattedNumber = `${numbers.slice(0, 3)}-${numbers.slice(
-          3,
-          7
-        )}-${numbers.slice(7, 11)}`;
-      }
-
+      const formattedNumber = formatPhoneNumber(value);
       setFormData((prev: CustomerFormData) => ({
         ...prev,
         [name]: formattedNumber,
       }));
-    } else {
-      setFormData((prev: CustomerFormData) => ({
-        ...prev,
-        [name]: type === "checkbox" ? checked : value,
-      }));
     }
+  };
+
+  const getValidationErrors = () => {
+    const errors: string[] = [];
+
+    if (!formData.name) errors.push("이름을 입력해주세요");
+    if (!formData.phoneNo) errors.push("전화번호를 입력해주세요");
+    if (formData.phoneNo && !/^\d{3}-\d{3,4}-\d{4}$/.test(formData.phoneNo)) {
+      errors.push("올바른 전화번호 형식을 입력해주세요");
+    }
+    if (formData.birthday && !/^\d{8}$/.test(formData.birthday)) {
+      errors.push("생년월일을 올바르게 입력해주세요 (예: 19910501)");
+    }
+    if (!formData.telProvider) errors.push("통신사를 선택해주세요");
+
+    return errors;
   };
 
   const handleRegionChange =
@@ -108,28 +138,6 @@ function CustomerAddModal({
 
   const handleSubmit = async () => {
     try {
-      if (!formData.name) {
-        showToast({
-          message: "이름을 입력해주세요.",
-          type: "error",
-        });
-        return;
-      }
-      if (!formData.phoneNo) {
-        showToast({
-          message: "전화번호를 입력해주세요.",
-          type: "error",
-        });
-        return;
-      }
-      if (formData.birthday && !/^\d{8}$/.test(formData.birthday)) {
-        showToast({
-          message: "생년월일을 올바르게 입력해주세요. ex)19910501",
-          type: "error",
-        });
-        return;
-      }
-
       // 선택된 지역 코드 (동 > 군구 > 시도 순으로 선택)
       const selectedRegion =
         region.selectedDong || region.selectedSigungu || region.selectedSido;
@@ -145,7 +153,7 @@ function CustomerAddModal({
         phoneNo: formData.phoneNo,
         birthday: formData.birthday || null,
         telProvider: formData.telProvider,
-        legalDistrictCode: String(selectedRegion || ""),
+        preferredRegion: String(selectedRegion || ""),
         trafficSource: formData.trafficSource,
         landlord: formData.landlord,
         tenant: formData.tenant,
@@ -173,10 +181,22 @@ function CustomerAddModal({
 
       fetchCustomerList();
       onClose();
-    } catch (error: any) {
-      console.error("Failed to register customer:", error);
+    } catch (error: unknown) {
+      let errorMessage = "고객 등록에 실패했습니다.";
+
+      if (error instanceof Error) {
+        errorMessage = error.message;
+      } else if (
+        typeof error === "object" &&
+        error !== null &&
+        "message" in error
+      ) {
+        errorMessage =
+          String((error as { message: unknown }).message) || errorMessage;
+      }
+
       showToast({
-        message: error.message || "고객 등록에 실패했습니다.",
+        message: errorMessage,
         type: "error",
       });
     }
@@ -280,9 +300,8 @@ function CustomerAddModal({
       .catch(console.error);
   }, [region.selectedSigungu]);
 
-  const phoneRegex = /^\d{3}-\d{3,4}-\d{4}$/;
-  const isSubmitButtonDisabled =
-    !formData.name || !phoneRegex.test(formData.phoneNo);
+  const validationErrors = getValidationErrors();
+  const isSubmitButtonDisabled = validationErrors.length > 0;
 
   return (
     <CustomerAddModalView
@@ -294,8 +313,15 @@ function CustomerAddModal({
       isAddingLabel={isAddingLabel}
       newLabelName={newLabelName}
       isSubmitButtonDisabled={isSubmitButtonDisabled}
+      validationErrors={validationErrors}
       onClose={onClose}
       onFieldChange={handleFieldChange}
+      onNameChange={handleNameChange}
+      onPhoneChange={handlePhoneChange}
+      onBirthdayChange={handleBirthdayChange}
+      onTelProviderChange={handleTelProviderChange}
+      onRoleChange={handleRoleChange}
+      onFieldBlur={handleFieldBlur}
       onRegionChange={handleRegionChange}
       onSubmit={handleSubmit}
       onLabelSelect={handleLabelSelect}

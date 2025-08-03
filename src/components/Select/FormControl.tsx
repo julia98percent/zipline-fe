@@ -7,7 +7,7 @@ import {
 export type FormControlProps = MuiFormControlProps;
 
 const FormControl = forwardRef<HTMLDivElement, FormControlProps>(
-  ({ children, className, size = "small", ...props }, ref) => {
+  ({ children, className, size = "medium", ...props }, ref) => {
     return (
       <MuiFormControl
         ref={ref}

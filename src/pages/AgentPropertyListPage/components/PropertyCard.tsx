@@ -44,15 +44,11 @@ const PropertyCard = ({ property, onRowClick }: PropertyCardProps) => {
   };
 
   const getTypeChipColor = (type: string) => {
-    return getPropertyTypeColors(type).background;
-  };
-
-  const getTypeTextColor = (type: string) => {
     return getPropertyTypeColors(type).text;
   };
 
   const getCategoryChipColor = (category: string) => {
-    return getPropertyCategoryColors(category).background;
+    return getPropertyCategoryColors(category).text;
   };
 
   const handleClick = () => {
@@ -73,10 +69,11 @@ const PropertyCard = ({ property, onRowClick }: PropertyCardProps) => {
           <Chip
             label={PropertyCategory[property.realCategory]}
             size="small"
+            variant="outlined"
             className="text-xs h-6"
             style={{
-              backgroundColor: getCategoryChipColor(property.realCategory),
-              color: "#333",
+              borderColor: getCategoryChipColor(property.realCategory),
+              color: getCategoryChipColor(property.realCategory),
             }}
             sx={{
               "& .MuiChip-label": {
@@ -87,10 +84,11 @@ const PropertyCard = ({ property, onRowClick }: PropertyCardProps) => {
           <Chip
             label={getPropertyTypeText(property.type)}
             size="small"
+            variant="outlined"
             className="text-xs h-6"
             style={{
-              backgroundColor: getTypeChipColor(property.type),
-              color: getTypeTextColor(property.type),
+              borderColor: getTypeChipColor(property.type),
+              color: getTypeChipColor(property.type),
             }}
             sx={{
               "& .MuiChip-label": {
@@ -131,7 +129,7 @@ const PropertyCard = ({ property, onRowClick }: PropertyCardProps) => {
                 variant="caption"
                 className="text-gray-600 block text-xs mb-1"
               >
-                입주: {formatDate(property.moveInDate)}
+                입주 가능일: {formatDate(property.moveInDate)}
               </Typography>
             )}
             {property.details && (

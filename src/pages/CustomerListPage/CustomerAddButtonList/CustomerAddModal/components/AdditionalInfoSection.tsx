@@ -26,11 +26,11 @@ export default function AdditionalInfoSection({
   onFieldChange,
 }: AdditionalInfoSectionProps) {
   return (
-    <div className="mb-8">
-      <h6 className="text-lg font-bold mb-4">부가 정보</h6>
-      <div className="mb-4">
-        <div className="text-sm font-medium mb-2">관심 지역</div>
-        <div className="flex flex-col gap-4">
+    <div className="flex flex-col gap-5 my-4 pb-7 border-b border-gray-200">
+      <h5 className="text-lg font-bold">부가 정보</h5>
+      <div>
+        <h6 className="mb-2 font-semibold">관심 지역</h6>
+        <div className="grid grid-cols-3 gap-2">
           <RegionSelector
             value={regionState.selectedSido || ""}
             regions={regionState.sido}
@@ -38,6 +38,7 @@ export default function AdditionalInfoSection({
               onRegionChange("sido")(event as unknown as SelectChangeEvent)
             }
             label="시/도"
+            size="medium"
           />
 
           <RegionSelector
@@ -48,6 +49,7 @@ export default function AdditionalInfoSection({
             }
             disabled={!regionState.selectedSido}
             label="시/군/구"
+            size="medium"
           />
 
           <RegionSelector
@@ -58,18 +60,18 @@ export default function AdditionalInfoSection({
             }
             disabled={!regionState.selectedSigungu}
             label="읍/면/동"
+            size="medium"
           />
         </div>
       </div>
       <div>
-        <div className="text-sm font-medium mb-2">유입경로</div>
+        <h6 className="mb-2 font-semibold">유입 경로</h6>
         <TextField
           name="trafficSource"
           value={trafficSource}
           onChange={onFieldChange}
           fullWidth
-          placeholder="유입경로를 입력하세요"
-          size="small"
+          placeholder="인터넷 검색, 지인 추천 등"
         />
       </div>
     </div>

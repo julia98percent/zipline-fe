@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useOutletContext } from "react-router-dom";
-import dayjs from "dayjs";
+import dayjs, { Dayjs } from "dayjs";
 import { EventClickArg, DatesSetArg } from "@fullcalendar/core";
 import { Schedule } from "@ts/schedule";
 import { showToast } from "@components/Toast";
@@ -34,8 +34,8 @@ interface CalendarEvent {
 }
 
 interface ScheduleFormData {
-  startDateTime: string;
-  endDateTime: string;
+  startDateTime: Dayjs | null;
+  endDateTime: Dayjs | null;
   title: string;
   description: string;
   customerUid: number | null;
@@ -111,6 +111,11 @@ const SchedulePage = () => {
 
   const handleEditClick = () => {
     setIsEditMode(true);
+  };
+
+  const handleCancelClick = () => {
+    setIsEditMode(false);
+    setSelectedSchedule((prev) => (prev ? { ...prev } : null));
   };
 
   const handleSubmitSchedule = async (formData: ScheduleFormData) => {
@@ -196,8 +201,8 @@ const SchedulePage = () => {
       title:
         schedule.title +
         (schedule.customerName ? ` - ${schedule.customerName}` : ""),
-      start: schedule.startDate,
-      end: schedule.endDate,
+      start: dayjs(schedule.startDate).toISOString(),
+      end: dayjs(schedule.endDate).toISOString(),
       description: schedule.description,
       extendedProps: {
         customerUid: schedule.customerUid,
@@ -228,6 +233,7 @@ const SchedulePage = () => {
       handleScheduleClick,
       handleCloseDetailModal,
       handleEditClick,
+      handleCancelClick,
       handleSubmitSchedule,
       handleUpdateSchedule,
     },

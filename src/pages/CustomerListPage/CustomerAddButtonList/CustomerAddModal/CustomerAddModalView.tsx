@@ -4,6 +4,7 @@ import {
   DialogContent,
   DialogActions,
   SelectChangeEvent,
+  Tooltip,
 } from "@mui/material";
 import Button from "@components/Button";
 import { Label } from "@ts/customer";
@@ -26,8 +27,15 @@ interface CustomerAddModalViewProps {
   isAddingLabel: boolean;
   newLabelName: string;
   isSubmitButtonDisabled: boolean;
+  validationErrors: string[];
   onClose: () => void;
   onFieldChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
+  onNameChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
+  onPhoneChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
+  onBirthdayChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
+  onTelProviderChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
+  onRoleChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
+  onFieldBlur: (e: React.FocusEvent<HTMLInputElement>) => void;
   onRegionChange: (
     type: "sido" | "sigungu" | "dong"
   ) => (event: SelectChangeEvent) => void;
@@ -47,8 +55,15 @@ export default function CustomerAddModalView({
   isAddingLabel,
   newLabelName,
   isSubmitButtonDisabled,
+  validationErrors,
   onClose,
   onFieldChange,
+  onNameChange,
+  onPhoneChange,
+  onBirthdayChange,
+  onTelProviderChange,
+  onRoleChange,
+  onFieldBlur,
   onRegionChange,
   onSubmit,
   onLabelSelect,
@@ -69,17 +84,21 @@ export default function CustomerAddModalView({
         },
       }}
     >
-      <DialogTitle className="border-b font-bold border-[#E0E0E0]">
+      <DialogTitle className="border-b text-primary font-bold border-gray-200">
         고객 등록
       </DialogTitle>
 
-      <DialogContent className="mt-4">
+      <DialogContent className="mt-4 p-7 pt-0">
         <BasicInfoSection
           name={formData.name}
           phoneNo={formData.phoneNo}
           birthday={formData.birthday}
           telProvider={formData.telProvider}
-          onFieldChange={onFieldChange}
+          onNameChange={onNameChange}
+          onPhoneChange={onPhoneChange}
+          onBirthdayChange={onBirthdayChange}
+          onTelProviderChange={onTelProviderChange}
+          onFieldBlur={onFieldBlur}
         />
 
         <AdditionalInfoSection
@@ -94,7 +113,7 @@ export default function CustomerAddModalView({
           buyer={formData.buyer}
           tenant={formData.tenant}
           landlord={formData.landlord}
-          onFieldChange={onFieldChange}
+          onRoleChange={onRoleChange}
         />
 
         <PriceSection
@@ -121,22 +140,43 @@ export default function CustomerAddModalView({
         />
       </DialogContent>
 
-      <DialogActions className="p-6 border-t border-[#E0E0E0]">
-        <Button
-          onClick={onClose}
-          variant="outlined"
-          className={"text-[#164F9E] border-[#164F9E]"}
-        >
-          취소
-        </Button>
-        <Button
-          onClick={onSubmit}
-          variant="contained"
-          className="bg-[#164F9E]  "
-          disabled={isSubmitButtonDisabled}
-        >
-          확인
-        </Button>
+      <DialogActions className="flex flex-row-reverse items-center justify-between p-6 border-t border-[#E0E0E0]">
+        <div className="flex gap-2">
+          <Button onClick={onClose} variant="outlined">
+            취소
+          </Button>
+          <Button
+            onClick={onSubmit}
+            variant="contained"
+            disabled={isSubmitButtonDisabled}
+          >
+            확인
+          </Button>
+        </div>
+        {isSubmitButtonDisabled && validationErrors.length > 0 && (
+          <Tooltip
+            title={
+              <div>
+                {validationErrors.map((error, index) => (
+                  <div key={index}>• {error}</div>
+                ))}
+              </div>
+            }
+            arrow
+            placement="top"
+          >
+            <div className="text-sm text-red-600 cursor-help">
+              <ul className="list-disc list-inside">
+                {validationErrors.slice(0, 1).map((error, index) => (
+                  <li key={index}>{error}</li>
+                ))}
+                {validationErrors.length > 1 && (
+                  <li>외 {validationErrors.length - 1}개 항목</li>
+                )}
+              </ul>
+            </div>
+          </Tooltip>
+        )}
       </DialogActions>
     </Dialog>
   );

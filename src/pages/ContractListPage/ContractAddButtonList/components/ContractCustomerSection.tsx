@@ -1,6 +1,5 @@
 import { Autocomplete, TextField } from "@mui/material";
 import { CustomerResponse } from "@apis/contractService";
-import { FormErrors } from "@ts/contract";
 
 interface Props {
   lessorUids: number[];
@@ -8,7 +7,6 @@ interface Props {
   lesseeUids: number[];
   setLesseeUids: (uids: number[]) => void;
   customerOptions: CustomerResponse[];
-  errors: FormErrors;
 }
 
 const ContractCustomerSection = ({
@@ -17,10 +15,9 @@ const ContractCustomerSection = ({
   lesseeUids,
   setLesseeUids,
   customerOptions,
-  errors,
 }: Props) => {
   return (
-    <>
+    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
       <Autocomplete
         multiple
         options={customerOptions}
@@ -30,14 +27,8 @@ const ContractCustomerSection = ({
           setLessorUids(newValue.map((v) => v.uid));
         }}
         renderInput={(params) => (
-          <TextField
-            {...params}
-            label="임대인 *"
-            error={!!errors.lessorUids}
-            helperText={errors.lessorUids}
-          />
+          <TextField {...params} label="임대인" required />
         )}
-        className="mt-4"
       />
       <Autocomplete
         multiple
@@ -47,17 +38,9 @@ const ContractCustomerSection = ({
         onChange={(_, newValue) => {
           setLesseeUids(newValue.map((v) => v.uid));
         }}
-        renderInput={(params) => (
-          <TextField
-            {...params}
-            label="임차인 *"
-            error={!!errors.lesseeUids}
-            helperText={errors.lesseeUids}
-          />
-        )}
-        className="mt-4"
+        renderInput={(params) => <TextField {...params} label="임차인" />}
       />
-    </>
+    </div>
   );
 };
 

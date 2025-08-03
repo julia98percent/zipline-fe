@@ -21,7 +21,7 @@ interface Filters {
   maxDeposit: number | null;
   labelUids: number[];
   telProvider: string;
-  legalDistrictCode: string;
+  preferredRegion: string;
   trafficSource: string;
   noRole: boolean;
 }

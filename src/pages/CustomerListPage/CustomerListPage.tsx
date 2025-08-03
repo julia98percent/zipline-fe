@@ -23,7 +23,7 @@ const INITIAL_FILTERS: CustomerFilter = {
   maxDeposit: null,
   labelUids: [],
   telProvider: "",
-  legalDistrictCode: "",
+  preferredRegion: "",
   trafficSource: "",
   noRole: false,
 };
@@ -67,8 +67,8 @@ const CustomerListPage = () => {
           params.noRole = true;
         }
         if (filters.telProvider) params.telProvider = filters.telProvider;
-        if (filters.legalDistrictCode)
-          params.legalDistrictCode = filters.legalDistrictCode;
+        if (filters.preferredRegion)
+          params.preferredRegion = filters.preferredRegion;
         if (filters.trafficSource) params.trafficSource = filters.trafficSource;
 
         return params;
@@ -109,7 +109,7 @@ const CustomerListPage = () => {
         labelUids: (updatedCustomer.labels || []).map((label) => label.uid),
         trafficSource: updatedCustomer.trafficSource,
         birthday: updatedCustomer.birthday,
-        legalDistrictCode: updatedCustomer.legalDistrictCode,
+        preferredRegion: updatedCustomer.preferredRegion,
         minPrice: updatedCustomer.minPrice,
         maxPrice: updatedCustomer.maxPrice,
         minDeposit: updatedCustomer.minDeposit,

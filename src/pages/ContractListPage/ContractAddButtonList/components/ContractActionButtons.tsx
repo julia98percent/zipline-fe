@@ -2,18 +2,28 @@ import Button from "@components/Button";
 
 interface Props {
   handleSubmit: () => void;
-  disabled?: boolean;
+  isSubmitButtonDisabled?: boolean;
+  handleModalClose?: () => void;
 }
 
-const ContractActionButtons = ({ handleSubmit, disabled = false }: Props) => {
+const ContractActionButtons = ({
+  handleSubmit,
+  isSubmitButtonDisabled = false,
+  handleModalClose,
+}: Props) => {
   return (
-    <Button
-      disabled={disabled}
-      onClick={handleSubmit}
-      className="mt-4 text-white bg-[#164F9E] disabled:bg-gray-400 disabled:text-white"
-    >
-      등록
-    </Button>
+    <div className="flex gap-2">
+      <Button variant="outlined" onClick={handleModalClose}>
+        취소
+      </Button>
+      <Button
+        onClick={handleSubmit}
+        variant="contained"
+        disabled={isSubmitButtonDisabled}
+      >
+        저장
+      </Button>
+    </div>
   );
 };
 

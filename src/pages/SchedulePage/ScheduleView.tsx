@@ -5,7 +5,7 @@ import dayGridPlugin from "@fullcalendar/daygrid";
 import interactionPlugin from "@fullcalendar/interaction";
 import { EventClickArg, DatesSetArg } from "@fullcalendar/core";
 import koLocale from "@fullcalendar/core/locales/ko";
-import dayjs from "dayjs";
+import dayjs, { Dayjs } from "dayjs";
 import PageHeader from "@components/PageHeader/PageHeader";
 import ScheduleDetailModal from "@components/ScheduleDetailModal/ScheduleDetailModal";
 import AddScheduleModal from "./AddScheduleModal";
@@ -14,8 +14,8 @@ import { useResponsiveCalendar } from "@hooks/useResponsiveCalendar";
 import { Schedule } from "@ts/schedule";
 
 interface ScheduleFormData {
-  startDateTime: string;
-  endDateTime: string;
+  startDateTime: Dayjs | null;
+  endDateTime: Dayjs | null;
   title: string;
   description: string;
   customerUid: number | null;
@@ -54,6 +54,7 @@ interface ScheduleViewProps {
     handleScheduleClick: (clickInfo: EventClickArg) => void;
     handleCloseDetailModal: () => void;
     handleEditClick: () => void;
+    handleCancelClick: () => void;
     handleSubmitSchedule: (formData: ScheduleFormData) => Promise<void>;
     handleUpdateSchedule: (updatedSchedule: Schedule) => Promise<void>;
   };
@@ -83,6 +84,7 @@ const ScheduleView: React.FC<ScheduleViewProps> = ({
     handleScheduleClick,
     handleCloseDetailModal,
     handleEditClick,
+    handleCancelClick,
     handleSubmitSchedule,
     handleUpdateSchedule,
   } = handlers;
@@ -178,6 +180,7 @@ const ScheduleView: React.FC<ScheduleViewProps> = ({
         onClose={handleCloseDetailModal}
         schedule={selectedSchedule}
         onSave={handleUpdateSchedule}
+        onCancel={handleCancelClick}
         onEdit={handleEditClick}
         isUpdating={isUpdating}
         isEditMode={isEditMode}

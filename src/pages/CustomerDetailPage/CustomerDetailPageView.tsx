@@ -9,6 +9,7 @@ import {
   CustomerRoleLabels,
   CustomerPriceInfo,
 } from "./components";
+import { RegionHierarchy } from "@utils/regionUtil";
 
 interface CustomerDetailPageViewProps {
   loading: boolean;
@@ -25,7 +26,6 @@ interface CustomerDetailPageViewProps {
     field: keyof Customer,
     value: string | number | boolean | null | { uid: number; name: string }[]
   ) => void;
-  onRegionChange: (value: { code: number | null; name: string }) => void;
   onDeleteClick: () => void;
   onDeleteCancel: () => void;
   onDeleteConfirm: () => void;
@@ -33,6 +33,7 @@ interface CustomerDetailPageViewProps {
   labelInputValue?: string;
   onLabelInputChange?: (value: string) => void;
   onMobileMenuToggle: () => void;
+  initialRegionValueList: RegionHierarchy | null;
 }
 
 const CustomerDetailPageView = ({
@@ -47,7 +48,6 @@ const CustomerDetailPageView = ({
   onCancelEdit,
   onSaveEdit,
   onInputChange,
-  onRegionChange,
   onDeleteClick,
   onDeleteCancel,
   onDeleteConfirm,
@@ -55,6 +55,7 @@ const CustomerDetailPageView = ({
   labelInputValue,
   onLabelInputChange,
   onMobileMenuToggle,
+  initialRegionValueList,
 }: CustomerDetailPageViewProps) => {
   if (loading || !customer || !customerId) {
     return (
@@ -77,13 +78,13 @@ const CustomerDetailPageView = ({
           onDeleteClick={onDeleteClick}
         />
 
-        <Box className="flex gap-6 mb-6">
+        <Box className="grid grid-cols-1 sm:grid-cols-[2fr_1fr] gap-6 mb-6">
           <CustomerBasicInfo
             customer={customer}
             isEditing={isEditing}
             editedCustomer={editedCustomer}
             onInputChange={onInputChange}
-            onRegionChange={onRegionChange}
+            initialRegionValueList={initialRegionValueList}
           />
           <CustomerRoleLabels
             customer={customer}

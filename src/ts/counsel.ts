@@ -36,7 +36,11 @@ export interface Counsel {
   counselUid: number;
   customer: Omit<
     Customer,
-    "trafficSource" | "birthday" | "legalDistrictCode" | "telProvider"
+    | "trafficSource"
+    | "birthday"
+    | "preferredRegion"
+    | "preferredRegionKR"
+    | "telProvider"
   >;
   property: Property;
   customerName: string;

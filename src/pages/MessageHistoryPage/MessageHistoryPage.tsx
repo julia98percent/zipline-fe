@@ -133,7 +133,7 @@ const MessageHistoryPage = () => {
           <Button
             variant="outlined"
             onClick={handleRefresh}
-            className="rounded border-[#164F9E] bg-white text-[#164F9E] h-9 text-xs px-4 hover:border-[#0D3B7A] hover:text-[#0D3B7A] hover:bg-[rgba(22,79,158,0.04)] flex items-center gap-2"
+            className="rounded border-[#164F9E] bg-white text-[#164F9E] h-9 text-xs px-4 hover:border-primary-dark hover:text-primary-dark hover:bg-[rgba(22,79,158,0.04)] flex items-center gap-2"
           >
             <RefreshIcon fontSize="small" />
             새로고침

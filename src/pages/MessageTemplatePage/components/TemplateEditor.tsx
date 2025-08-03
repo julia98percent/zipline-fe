@@ -115,7 +115,7 @@ const TemplateEditor: React.FC<TemplateEditorProps> = ({
             !selectedCategory ||
             hasBrokenVariable
           }
-          className="bg-[#164F9E] shadow-none hover:shadow-none hover:bg-[#0D3B7A] disabled:bg-[#164F9E]/40 disabled:text-white"
+          className="bg-[#164F9E] shadow-none hover:shadow-none hover:bg-primary-dark disabled:bg-[#164F9E]/40 disabled:text-white"
         >
           {selectedTemplate ? "수정하기" : "저장하기"}
         </Button>

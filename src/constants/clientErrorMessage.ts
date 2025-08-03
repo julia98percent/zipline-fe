@@ -51,3 +51,7 @@ export const SCHEDULE_ERROR_MESSAGES = {
   UPDATE_FAILED: "일정 수정에 실패했습니다.",
   ADD_FAILED: "일정 등록에 실패했습니다.",
 } as const;
+
+export const FILE_ERROR_MESSAGES = {
+  UPLOAD_FAILED: "파일 업로드에 실패했습니다.",
+};

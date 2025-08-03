@@ -5,6 +5,7 @@ import { showToast } from "@components/Toast/Toast";
 import CounselListPageView from "./CounselListPageView";
 import { Counsel } from "@ts/counsel";
 import { DEFAULT_ROWS_PER_PAGE } from "@components/Table/Table";
+import { Dayjs } from "dayjs";
 
 interface OutletContext {
   onMobileMenuToggle: () => void;
@@ -21,8 +22,8 @@ function CounselListPage() {
   const [isModalOpen, setIsModalOpen] = useState(false);
 
   const [search, setSearch] = useState("");
-  const [startDate, setStartDate] = useState<string | null>(null);
-  const [endDate, setEndDate] = useState<string | null>(null);
+  const [startDate, setStartDate] = useState<Dayjs | null>(null);
+  const [endDate, setEndDate] = useState<Dayjs | null>(null);
   const [selectedType, setSelectedType] = useState<string | null>(null);
   const [selectedCompleted, setSelectedCompleted] = useState<boolean | null>(
     null
@@ -106,6 +107,7 @@ function CounselListPage() {
       message: "상담을 등록했습니다.",
       type: "success",
     });
+    setIsModalOpen(false);
   };
 
   return (

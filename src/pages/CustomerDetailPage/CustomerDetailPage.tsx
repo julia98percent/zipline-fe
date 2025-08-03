@@ -12,6 +12,7 @@ import { showToast } from "@components/Toast/Toast";
 import CustomerDetailPageView from "./CustomerDetailPageView";
 import { Customer, CustomerUpdateData, Label } from "@ts/customer";
 import { API_ERROR_MESSAGES } from "@ts/apiResponse";
+import { parseRegionCode, RegionHierarchy } from "@utils/regionUtil";
 
 interface OutletContext {
   onMobileMenuToggle: () => void;
@@ -30,6 +31,8 @@ const CustomerDetailPage = () => {
   >([]);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const [labelInputValue, setLabelInputValue] = useState("");
+  const [regionValueList, setRegionValueList] =
+    useState<RegionHierarchy | null>(null);
 
   const fetchCustomerData = useCallback(async () => {
     if (!customerId) return;
@@ -38,6 +41,7 @@ const CustomerDetailPage = () => {
     try {
       const customerData = await fetchCustomerDetail(customerId);
       setCustomer(customerData);
+      setRegionValueList(parseRegionCode(customerData.preferredRegion));
     } catch (error) {
       console.error("Failed to fetch customer:", error);
     } finally {
@@ -85,8 +89,6 @@ const CustomerDetailPage = () => {
     if (customer) {
       const editedData = {
         ...customer,
-        legalDistrictCode: customer.legalDistrictCode,
-        preferredRegion: customer.preferredRegion,
         minRent: customer.minRent || null,
         maxRent: customer.maxRent || null,
         minPrice: customer.minPrice || null,
@@ -125,21 +127,6 @@ const CustomerDetailPage = () => {
     [editedCustomer]
   );
 
-  const handleRegionChange = useCallback(
-    (value: { code: number | null; name: string }) => {
-      if (!editedCustomer) return;
-
-      const updated = {
-        ...editedCustomer,
-        legalDistrictCode: `${value.code}`,
-        preferredRegion: value.name,
-      };
-
-      setEditedCustomer(updated);
-    },
-    [editedCustomer]
-  );
-
   const handleSaveEdit = async () => {
     if (!editedCustomer || !customerId) return;
 
@@ -170,7 +157,7 @@ const CustomerDetailPage = () => {
         name: editedCustomer.name,
         phoneNo: formatPhoneNumber(editedCustomer.phoneNo),
         telProvider: editedCustomer.telProvider,
-        legalDistrictCode: editedCustomer.legalDistrictCode,
+        preferredRegion: editedCustomer.preferredRegion,
         minRent: editedCustomer.minRent,
         maxRent: editedCustomer.maxRent,
         trafficSource: editedCustomer.trafficSource,
@@ -250,7 +237,6 @@ const CustomerDetailPage = () => {
       onCancelEdit={handleCancelEdit}
       onSaveEdit={handleSaveEdit}
       onInputChange={handleInputChange}
-      onRegionChange={handleRegionChange}
       onDeleteClick={handleDeleteClick}
       onDeleteCancel={handleDeleteCancel}
       onDeleteConfirm={handleDeleteConfirm}
@@ -258,6 +244,7 @@ const CustomerDetailPage = () => {
       labelInputValue={labelInputValue}
       onLabelInputChange={setLabelInputValue}
       onMobileMenuToggle={onMobileMenuToggle}
+      initialRegionValueList={regionValueList}
     />
   );
 };

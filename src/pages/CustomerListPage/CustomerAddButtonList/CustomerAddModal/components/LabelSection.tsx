@@ -1,4 +1,4 @@
-import { Box, Typography, Chip } from "@mui/material";
+import { Chip } from "@mui/material";
 import Button from "@components/Button";
 import TextField from "@components/TextField";
 import AddIcon from "@mui/icons-material/Add";
@@ -26,23 +26,20 @@ export default function LabelSection({
   onSetNewLabelName,
 }: LabelSectionProps) {
   return (
-    <Box className="mb-8">
-      <Box className="flex justify-between items-center mb-4">
-        <Typography variant="h6" className="font-bold">
-          라벨 선택
-        </Typography>
+    <div className="mb-4">
+      <div className="flex justify-between items-center mb-4">
+        <h6 className="mb-2 font-semibold">라벨</h6>
         <Button
-          className="bg-[#164F9E]"
           startIcon={<AddIcon />}
           onClick={() => onSetIsAddingLabel(true)}
         >
           라벨 추가
         </Button>
-      </Box>
+      </div>
 
       {/* 라벨 추가 입력 필드 */}
       {isAddingLabel && (
-        <Box className="flex gap-2 mb-4">
+        <div className="flex gap-2 mb-4">
           <TextField
             size="small"
             value={newLabelName}
@@ -50,27 +47,21 @@ export default function LabelSection({
             placeholder="새 라벨 이름"
             fullWidth
           />
-          <Button
-            onClick={onAddLabel}
-            className="bg-[#164F9E] text-white hover:bg-[#0D3B7A]"
-          >
-            추가
-          </Button>
+          <Button onClick={onAddLabel}>추가</Button>
           <Button
             onClick={() => {
               onSetIsAddingLabel(false);
               onSetNewLabelName("");
             }}
-            className="border-[#164F9E] text-[#164F9E]"
             variant="outlined"
           >
             취소
           </Button>
-        </Box>
+        </div>
       )}
 
       {/* 라벨 목록 */}
-      <Box className="flex flex-wrap gap-2">
+      <div className="flex flex-wrap gap-2">
         {labels.map((label) => (
           <Chip
             key={label.uid}
@@ -83,7 +74,7 @@ export default function LabelSection({
             }
             sx={{
               backgroundColor: selectedLabels.some((l) => l.uid === label.uid)
-                ? "#6366F1"
+                ? "	#2A6FDB"
                 : "transparent",
               color: selectedLabels.some((l) => l.uid === label.uid)
                 ? "white"
@@ -91,13 +82,13 @@ export default function LabelSection({
               border: "1px solid #164F9E",
               "&:hover": {
                 backgroundColor: selectedLabels.some((l) => l.uid === label.uid)
-                  ? "#0D3B7A"
+                  ? "	#2A6FDB"
                   : "rgba(99, 102, 241, 0.1)",
               },
             }}
           />
         ))}
-      </Box>
-    </Box>
+      </div>
+    </div>
   );
 }

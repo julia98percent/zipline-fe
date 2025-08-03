@@ -20,7 +20,7 @@ export interface CustomerBase {
   buyer: boolean;
   seller: boolean;
   birthday: string | null;
-  legalDistrictCode: string;
+  preferredRegion: string;
   minPrice: number | null;
   maxPrice: number | null;
   minDeposit: number | null;
@@ -32,7 +32,7 @@ export interface CustomerBase {
 
 export interface Customer extends CustomerBase {
   uid: number;
-  preferredRegion: string;
+  preferredRegionKR?: string | null;
   labels: Label[];
 }
 
@@ -55,7 +55,7 @@ export interface CustomerFilter {
   maxDeposit: number | null;
   labelUids: number[];
   telProvider: string;
-  legalDistrictCode: string;
+  preferredRegion: string;
   trafficSource: string;
   noRole: boolean;
 }
@@ -65,7 +65,7 @@ export interface CustomerFormData {
   phoneNo: string;
   birthday: string;
   telProvider: string;
-  legalDistrictCode: string;
+  preferredRegion: string;
   trafficSource: string;
   seller: boolean;
   buyer: boolean;

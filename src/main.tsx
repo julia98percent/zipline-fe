@@ -8,6 +8,9 @@ import {
 import GlobalStyles from "@mui/material/GlobalStyles";
 import App from "./App.tsx";
 import "./main.css";
+import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
+import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
+import { koKR } from "@mui/x-date-pickers/locales";
 
 const theme = createTheme({
   palette: {
@@ -24,12 +27,17 @@ const theme = createTheme({
 });
 
 createRoot(document.getElementById("root")!).render(
-  <StyledEngineProvider enableCssLayer>
-    <ThemeProvider theme={theme}>
-      <GlobalStyles styles="@layer theme, base, mui, components, utilities;" />
-      <BrowserRouter>
-        <App />
-      </BrowserRouter>
-    </ThemeProvider>
-  </StyledEngineProvider>
+  <LocalizationProvider
+    dateAdapter={AdapterDayjs}
+    localeText={koKR.components.MuiLocalizationProvider.defaultProps.localeText}
+  >
+    <StyledEngineProvider enableCssLayer>
+      <ThemeProvider theme={theme}>
+        <GlobalStyles styles="@layer theme, base, mui, components, utilities;" />
+        <BrowserRouter>
+          <App />
+        </BrowserRouter>
+      </ThemeProvider>
+    </StyledEngineProvider>
+  </LocalizationProvider>
 );

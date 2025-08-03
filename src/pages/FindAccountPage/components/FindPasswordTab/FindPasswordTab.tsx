@@ -75,9 +75,7 @@ const FindPasswordTab = ({ isActive }: FindPasswordTabProps) => {
       const remainingTime = await getRemainingTime(userId);
       setTimeLeft(remainingTime);
       return remainingTime;
-    } catch (error) {
-      console.log("Failed to fetch remaining time:", error);
-      // 서버에서 시간을 가져오지 못하면 기본값(0) 유지
+    } catch {
       return 0;
     }
   };

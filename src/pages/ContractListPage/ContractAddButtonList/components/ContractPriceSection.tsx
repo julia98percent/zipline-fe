@@ -1,14 +1,19 @@
 import { TextField } from "@mui/material";
-import { FormErrors } from "@ts/contract";
 
 interface Props {
   deposit: string;
-  setDeposit: (deposit: string) => void;
+  setDeposit: (e: React.ChangeEvent<HTMLInputElement>) => void;
   monthlyRent: string;
-  setMonthlyRent: (monthlyRent: string) => void;
+  setMonthlyRent: (e: React.ChangeEvent<HTMLInputElement>) => void;
   price: string;
-  setPrice: (price: string) => void;
-  errors: FormErrors;
+  setPrice: (e: React.ChangeEvent<HTMLInputElement>) => void;
+  category?: string | null;
+  handleDepositBlur: (e: React.FocusEvent<HTMLInputElement>) => void;
+  handleMonthlyRentBlur: (e: React.FocusEvent<HTMLInputElement>) => void;
+  handlePriceBlur: (e: React.FocusEvent<HTMLInputElement>) => void;
+  depositError: string | null;
+  monthlyError: string | null;
+  priceError: string | null;
 }
 
 const ContractPriceSection = ({
@@ -18,41 +23,67 @@ const ContractPriceSection = ({
   setMonthlyRent,
   price,
   setPrice,
-  errors,
+  category,
+  handleDepositBlur,
+  handleMonthlyRentBlur,
+  handlePriceBlur,
+  depositError,
+  monthlyError,
+  priceError,
 }: Props) => {
+  if (!category) {
+    return null;
+  }
+
   return (
-    <>
-      <TextField
-        label="보증금 (숫자)"
-        value={deposit}
-        onChange={(e) => setDeposit(e.target.value)}
-        error={!!errors.deposit}
-        helperText={errors.deposit}
-        type="number"
-        fullWidth
-        className="mt-4"
-      />
-      <TextField
-        label="월세 (숫자)"
-        value={monthlyRent}
-        onChange={(e) => setMonthlyRent(e.target.value)}
-        error={!!errors.monthlyRent}
-        helperText={errors.monthlyRent}
-        type="number"
-        fullWidth
-        className="mt-4"
-      />
-      <TextField
-        label="매매가 (숫자)"
-        value={price}
-        onChange={(e) => setPrice(e.target.value)}
-        error={!!errors.price}
-        helperText={errors.price}
-        type="number"
-        fullWidth
-        className="mt-4"
-      />
-    </>
+    <div className="flex flex-col gap-4">
+      {category === "SALE" && (
+        <TextField
+          label="매매가"
+          value={price}
+          onChange={setPrice}
+          fullWidth
+          onBlur={handlePriceBlur}
+          error={!!priceError}
+          helperText={priceError}
+        />
+      )}
+
+      {category === "DEPOSIT" && (
+        <TextField
+          label="보증금"
+          value={deposit}
+          onChange={setDeposit}
+          fullWidth
+          onBlur={handleDepositBlur}
+          error={!!depositError}
+          helperText={depositError}
+        />
+      )}
+
+      {category === "MONTHLY" && (
+        <>
+          <TextField
+            label="보증금"
+            value={deposit}
+            onChange={setDeposit}
+            fullWidth
+            onBlur={handleDepositBlur}
+            error={!!depositError}
+            helperText={depositError}
+          />
+          <TextField
+            label="월세"
+            value={monthlyRent}
+            onChange={setMonthlyRent}
+            fullWidth
+            onBlur={handleMonthlyRentBlur}
+            error={!!monthlyError}
+            helperText={monthlyError}
+          />
+        </>
+      )}
+    </div>
   );
 };
 

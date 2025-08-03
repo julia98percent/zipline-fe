@@ -138,28 +138,6 @@ function CustomerAddModal({
 
   const handleSubmit = async () => {
     try {
-      if (!formData.name) {
-        showToast({
-          message: "이름을 입력해주세요.",
-          type: "error",
-        });
-        return;
-      }
-      if (!formData.phoneNo) {
-        showToast({
-          message: "전화번호를 입력해주세요.",
-          type: "error",
-        });
-        return;
-      }
-      if (formData.birthday && !/^\d{8}$/.test(formData.birthday)) {
-        showToast({
-          message: "생년월일을 올바르게 입력해주세요. ex)19910501",
-          type: "error",
-        });
-        return;
-      }
-
       // 선택된 지역 코드 (동 > 군구 > 시도 순으로 선택)
       const selectedRegion =
         region.selectedDong || region.selectedSigungu || region.selectedSido;

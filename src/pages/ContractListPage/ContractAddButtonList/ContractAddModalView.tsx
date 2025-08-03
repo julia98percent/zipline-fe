@@ -1,4 +1,10 @@
-import { Modal, Box, Typography } from "@mui/material";
+import {
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  DialogActions,
+  Tooltip,
+} from "@mui/material";
 import { Dayjs } from "dayjs";
 import { AgentPropertyResponse, CustomerResponse } from "@apis/contractService";
 import {
@@ -9,13 +15,13 @@ import {
   ContractFileUploadSection,
   ContractActionButtons,
 } from "./components";
-import { ContractStatus, FormErrors } from "@ts/contract";
+import { ContractStatus } from "@ts/contract";
 
 interface Props {
   open: boolean;
   handleModalClose: () => void;
   category: string | null;
-  setCategory: (category: string | null) => void;
+  handleCategoryChange: (category: string | null) => void;
   contractDate: Dayjs | null;
   setContractDate: (date: Dayjs | null) => void;
   contractStartDate: Dayjs | null;
@@ -25,11 +31,11 @@ interface Props {
   expectedContractEndDate: Dayjs | null;
   setExpectedContractEndDate: (date: Dayjs | null) => void;
   deposit: string;
-  setDeposit: (deposit: string) => void;
+  setDeposit: (e: React.ChangeEvent<HTMLInputElement>) => void;
   monthlyRent: string;
-  setMonthlyRent: (monthlyRent: string) => void;
+  setMonthlyRent: (e: React.ChangeEvent<HTMLInputElement>) => void;
   price: string;
-  setPrice: (price: string) => void;
+  setPrice: (e: React.ChangeEvent<HTMLInputElement>) => void;
   lessorUids: number[];
   setLessorUids: (uids: number[]) => void;
   lesseeUids: number[];
@@ -42,15 +48,23 @@ interface Props {
   propertyOptions: AgentPropertyResponse[];
   files: File[];
   handleFileChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
-  errors: FormErrors;
   handleSubmit: () => void;
+  validationErrors: string[];
+  isSubmitButtonDisabled: boolean;
+  errorMessage: string;
+  handleDepositBlur: (e: React.FocusEvent<HTMLInputElement>) => void;
+  handleMonthlyRentBlur: (e: React.FocusEvent<HTMLInputElement>) => void;
+  handlePriceBlur: (e: React.FocusEvent<HTMLInputElement>) => void;
+  depositError: string | null;
+  monthlyError: string | null;
+  priceError: string | null;
 }
 
 const ContractAddModalView = ({
   open,
   handleModalClose,
   category,
-  setCategory,
+  handleCategoryChange,
   contractDate,
   setContractDate,
   contractStartDate,
@@ -77,25 +91,38 @@ const ContractAddModalView = ({
   propertyOptions,
   files,
   handleFileChange,
-  errors,
   handleSubmit,
+  validationErrors,
+  isSubmitButtonDisabled,
+  errorMessage,
+  handleDepositBlur,
+  handleMonthlyRentBlur,
+  handlePriceBlur,
+  depositError,
+  monthlyError,
+  priceError,
 }: Props) => {
   return (
-    <Modal open={open} onClose={handleModalClose}>
-      <Box className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-2/5 bg-white p-8 rounded-lg max-h-90vh overflow-y-auto">
-        <Typography variant="h6" className="mb-4">
-          계약 등록
-        </Typography>
+    <Dialog
+      open={open}
+      onClose={handleModalClose}
+      PaperProps={{
+        className: "w-200 h-175 max-h-[90vh] bg-white rounded-lg",
+      }}
+    >
+      <DialogTitle className="border-b text-primary font-bold border-gray-200">
+        계약 등록
+      </DialogTitle>
 
+      <DialogContent className="flex flex-col gap-4 p-7">
         <ContractBasicInfoSection
           category={category}
-          setCategory={setCategory}
+          handleCategoryChange={handleCategoryChange}
           status={status}
           setStatus={setStatus}
           propertyUid={propertyUid}
           setPropertyUid={setPropertyUid}
           propertyOptions={propertyOptions}
-          errors={errors}
         />
 
         <ContractDateSection
@@ -107,7 +134,6 @@ const ContractAddModalView = ({
           setContractEndDate={setContractEndDate}
           expectedContractEndDate={expectedContractEndDate}
           setExpectedContractEndDate={setExpectedContractEndDate}
-          errors={errors}
         />
 
         <ContractCustomerSection
@@ -116,7 +142,6 @@ const ContractAddModalView = ({
           lesseeUids={lesseeUids}
           setLesseeUids={setLesseeUids}
           customerOptions={customerOptions}
-          errors={errors}
         />
 
         <ContractPriceSection
@@ -126,17 +151,56 @@ const ContractAddModalView = ({
           setMonthlyRent={setMonthlyRent}
           price={price}
           setPrice={setPrice}
-          errors={errors}
+          handleDepositBlur={handleDepositBlur}
+          handleMonthlyRentBlur={handleMonthlyRentBlur}
+          handlePriceBlur={handlePriceBlur}
+          category={category}
+          depositError={depositError}
+          monthlyError={monthlyError}
+          priceError={priceError}
         />
 
         <ContractFileUploadSection
           files={files}
           handleFileChange={handleFileChange}
         />
+      </DialogContent>
 
-        <ContractActionButtons handleSubmit={handleSubmit} />
-      </Box>
-    </Modal>
+      <DialogActions className="flex flex-row-reverse items-center justify-between p-6 border-t border-gray-200">
+        {errorMessage && (
+          <p className="absolute left-6 text-red-600 text-sm">{errorMessage}</p>
+        )}
+        <ContractActionButtons
+          handleSubmit={handleSubmit}
+          isSubmitButtonDisabled={isSubmitButtonDisabled}
+          handleModalClose={handleModalClose}
+        />
+        {isSubmitButtonDisabled && validationErrors.length > 0 && (
+          <Tooltip
+            title={
+              <div>
+                {validationErrors.map((error, index) => (
+                  <div key={index}>• {error}</div>
+                ))}
+              </div>
+            }
+            arrow
+            placement="top"
+          >
+            <div className="text-sm text-red-600 cursor-help">
+              <ul className="list-disc list-inside">
+                {validationErrors.slice(0, 1).map((error, index) => (
+                  <li key={index}>{error}</li>
+                ))}
+                {validationErrors.length > 1 && (
+                  <li>외 {validationErrors.length - 1}개 항목</li>
+                )}
+              </ul>
+            </div>
+          </Tooltip>
+        )}
+      </DialogActions>
+    </Dialog>
   );
 };
 

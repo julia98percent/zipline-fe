@@ -42,6 +42,9 @@ export default function BasicInfoSection({
             label="이름"
             placeholder="이름을 입력하세요"
             required
+            inputProps={{
+              maxLength: 50,
+            }}
           />
 
           <TextField

@@ -1,6 +1,4 @@
-import { Box } from "@mui/material";
 import { Dayjs } from "dayjs";
-import { FormErrors } from "@ts/contract";
 import DatePicker from "@components/DatePicker";
 
 interface Props {
@@ -12,7 +10,6 @@ interface Props {
   setContractEndDate: (date: Dayjs | null) => void;
   expectedContractEndDate: Dayjs | null;
   setExpectedContractEndDate: (date: Dayjs | null) => void;
-  errors: FormErrors;
 }
 
 const ContractDateSection = ({
@@ -24,10 +21,9 @@ const ContractDateSection = ({
   setContractEndDate,
   expectedContractEndDate,
   setExpectedContractEndDate,
-  errors,
 }: Props) => {
   return (
-    <>
+    <div className="flex flex-col gap-4">
       <DatePicker
         label="계약일"
         value={contractDate}
@@ -35,37 +31,26 @@ const ContractDateSection = ({
         slotProps={{
           textField: {
             fullWidth: true,
-            error: !!errors.contractDate,
-            helperText: errors.contractDate,
           },
         }}
       />
-      <Box className="flex gap-2 my-4">
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
         <DatePicker
-          label="시작일"
+          label="계약 시작일"
           value={contractStartDate}
           onChange={setContractStartDate}
           slotProps={{
             textField: {
               fullWidth: true,
-              error: !!errors.contractStartDate,
-              helperText: errors.contractStartDate,
             },
           }}
         />
         <DatePicker
-          label="종료일"
+          label="계약 종료일"
           value={contractEndDate}
           onChange={setContractEndDate}
-          slotProps={{
-            textField: {
-              fullWidth: true,
-              error: !!errors.contractEndDate,
-              helperText: errors.contractEndDate,
-            },
-          }}
         />
-      </Box>
+      </div>
       <DatePicker
         label="예상 종료일"
         value={expectedContractEndDate}
@@ -73,12 +58,10 @@ const ContractDateSection = ({
         slotProps={{
           textField: {
             fullWidth: true,
-            error: !!errors.expectedContractEndDate,
-            helperText: errors.expectedContractEndDate,
           },
         }}
       />
-    </>
+    </div>
   );
 };
 

@@ -142,14 +142,10 @@ const CustomerListPage = () => {
     setFilters(newFilters);
   }, []);
 
-  const handleFilterApply = useCallback(
-    (appliedFilters: CustomerFilter) => {
-      setFilters(appliedFilters);
-      setFilterModalOpen(false);
-      fetchCustomerList(true);
-    },
-    [fetchCustomerList]
-  );
+  const handleFilterApply = useCallback((appliedFilters: CustomerFilter) => {
+    setFilters(appliedFilters);
+    setFilterModalOpen(false);
+  }, []);
 
   const handleSearchSubmit = useCallback(() => {
     setSearchQuery(searchTerm);

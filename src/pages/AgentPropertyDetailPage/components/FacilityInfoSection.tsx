@@ -23,15 +23,14 @@ const FacilityInfoSection = ({ property }: FacilityInfoSectionProps) => {
         <Box width="calc(50% - 8px)">
           <InfoItem>
             <InfoLabel>엘리베이터</InfoLabel>
-            <InfoValue>
-              <Chip
-                label={property.hasElevator ? "O" : "X"}
-                color={property.hasElevator ? "success" : "error"}
-                variant="outlined"
-                size="small"
-                className="font-semibold text-sm"
-              />
-            </InfoValue>
+
+            <Chip
+              label={property.hasElevator ? "O" : "X"}
+              color={property.hasElevator ? "success" : "error"}
+              variant="outlined"
+              size="small"
+              className="flex w-min font-semibold text-sm"
+            />
           </InfoItem>
         </Box>
 
@@ -49,15 +48,14 @@ const FacilityInfoSection = ({ property }: FacilityInfoSectionProps) => {
         <Box width="calc(50% - 8px)">
           <InfoItem>
             <InfoLabel>반려동물</InfoLabel>
-            <InfoValue>
-              <Chip
-                label={property.petsAllowed ? "O" : "X"}
-                color={property.petsAllowed ? "success" : "error"}
-                variant="outlined"
-                size="small"
-                className="font-semibold text-sm"
-              />
-            </InfoValue>
+
+            <Chip
+              label={property.petsAllowed ? "O" : "X"}
+              color={property.petsAllowed ? "success" : "error"}
+              variant="outlined"
+              size="small"
+              className="flex w-min font-semibold text-sm"
+            />
           </InfoItem>
         </Box>
 

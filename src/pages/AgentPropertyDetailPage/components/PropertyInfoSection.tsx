@@ -77,17 +77,16 @@ const PropertyInfoSection = ({ property }: PropertyInfoSectionProps) => {
         <Box width="calc(50% - 8px)">
           <InfoItem>
             <InfoLabel>거래 유형</InfoLabel>
-            <InfoValue>
-              <Chip
-                label={getTransactionType(property.type)}
-                size="small"
-                className="font-medium text-sm"
-                sx={{
-                  backgroundColor: getTypeChipColor(property.type),
-                  color: getTypeTextColor(property.type),
-                }}
-              />
-            </InfoValue>
+
+            <Chip
+              label={getTransactionType(property.type)}
+              size="small"
+              className="flex w-min font-medium text-sm"
+              sx={{
+                backgroundColor: getTypeChipColor(property.type),
+                color: getTypeTextColor(property.type),
+              }}
+            />
           </InfoItem>
         </Box>
 
@@ -95,17 +94,16 @@ const PropertyInfoSection = ({ property }: PropertyInfoSectionProps) => {
         <Box width="calc(50% - 8px)">
           <InfoItem>
             <InfoLabel>매물 종류</InfoLabel>
-            <InfoValue>
-              <Chip
-                label={getCategoryName(property.realCategory)}
-                size="small"
-                className="font-medium text-sm"
-                sx={{
-                  backgroundColor: getCategoryChipColor(property.realCategory),
-                  color: getCategoryTextColor(property.realCategory),
-                }}
-              />
-            </InfoValue>
+
+            <Chip
+              label={getCategoryName(property.realCategory)}
+              size="small"
+              className="flex w-min font-medium text-sm"
+              sx={{
+                backgroundColor: getCategoryChipColor(property.realCategory),
+                color: getCategoryTextColor(property.realCategory),
+              }}
+            />
           </InfoItem>
         </Box>
 

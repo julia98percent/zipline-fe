@@ -81,7 +81,7 @@ const ContractCard = ({ contract, onRowClick }: ContractCardProps) => {
   };
 
   const getCategoryChip = (category: string | null) => {
-    if (!category) return null;
+    if (!category || category === "null") return null;
 
     // 영어 카테고리를 한글로 변환
     const getCategoryLabel = (cat: string) => {

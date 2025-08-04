@@ -44,6 +44,7 @@ export interface Counsel {
   >;
   property: Property;
   customerName: string;
+  customerPhoneNo: string;
   dueDate: string;
   propertyUid: number;
   title: string;

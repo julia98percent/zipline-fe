@@ -32,7 +32,7 @@ const CounselSearchFilters = ({
         <MuiTextField
           fullWidth
           size="small"
-          placeholder="제목으로 검색"
+          placeholder="고객 이름 또는 전화번호로 검색"
           value={search}
           onChange={(e) => onSearchChange(e.target.value)}
           onKeyDown={(e) => {

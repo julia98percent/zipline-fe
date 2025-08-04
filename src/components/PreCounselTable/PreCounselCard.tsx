@@ -15,7 +15,7 @@ const PreCounselCard = ({ counsel, onRowClick }: PreCounselCardProps) => {
     >
       {/* 이름 */}
       <Typography variant="h6" className="font-medium text-gray-900 mb-2">
-        {counsel.name}
+        {counsel.name || <span className="text-gray-400">이름 없음</span>}
       </Typography>
 
       {/* 상담 정보 */}

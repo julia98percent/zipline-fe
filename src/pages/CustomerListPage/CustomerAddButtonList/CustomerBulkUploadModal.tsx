@@ -261,7 +261,7 @@ function CustomerBulkUploadModal({
         )}
       </DialogContent>
       <DialogActions>
-        <Button onClick={handleClose} disabled={isLoading}>
+        <Button onClick={handleClose} disabled={isLoading} variant="outlined">
           취소
         </Button>
         <Button

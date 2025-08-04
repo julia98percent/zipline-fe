@@ -26,11 +26,11 @@ const CounselPropertyInfo = ({
               property.type}
           </span>
         </div>
-        {property.price && (
+        {property.price !== null && (
           <div className={styles.infoItem}>
             <span className={styles.infoLabel}>매매가</span>
             <span className={styles.infoValue}>
-              {property.price.toLocaleString()}원
+              {property.price ? `${property.price.toLocaleString()}원` : "-"}
             </span>
           </div>
         )}
@@ -38,7 +38,9 @@ const CounselPropertyInfo = ({
           <div className={styles.infoItem}>
             <span className={styles.infoLabel}>보증금</span>
             <span className={styles.infoValue}>
-              {property.deposit.toLocaleString()}원
+              {property.deposit
+                ? `${property.deposit.toLocaleString()}원`
+                : "-"}
             </span>
           </div>
         )}
@@ -46,7 +48,9 @@ const CounselPropertyInfo = ({
           <div className={styles.infoItem}>
             <span className={styles.infoLabel}>월세</span>
             <span className={styles.infoValue}>
-              {property.monthlyRent.toLocaleString()}원
+              {property.monthlyRent
+                ? `${property.monthlyRent.toLocaleString()}원`
+                : "-"}
             </span>
           </div>
         )}
@@ -65,7 +69,7 @@ const CounselPropertyInfo = ({
         <div className={styles.infoItem}>
           <span className={styles.infoLabel}>건축년도</span>
           <span className={styles.infoValue}>
-            {property.constructionYear}년
+            {property.constructionYear ? `${property.constructionYear}년` : "-"}
           </span>
         </div>
         <div className={styles.infoItem}>

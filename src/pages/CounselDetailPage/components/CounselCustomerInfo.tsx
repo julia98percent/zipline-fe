@@ -113,6 +113,11 @@ const CounselCustomerInfo = ({ customer }: CounselCustomerInfoProps) => {
                 }}
               />
             )}
+            {!customer.seller &&
+              !customer.landlord &&
+              !customer.buyer &&
+              !customer.tenant &&
+              "-"}
           </Box>
         </div>
       </div>

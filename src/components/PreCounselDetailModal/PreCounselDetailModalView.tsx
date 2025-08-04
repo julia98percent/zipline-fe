@@ -153,15 +153,20 @@ const PreCounselDetailModal = ({
       </DialogContent>
       <DialogActions className="p-4 gap-2 justify-end">
         <Button
+          onClick={onClose}
+          color="info"
+          variant="outlined"
+          className="ml-0"
+        >
+          닫기
+        </Button>
+        <Button
           onClick={onRegisterCustomer}
           variant="outlined"
           color="primary"
           disabled={isRegistering || !preCounselDetail}
         >
           {isRegistering ? "등록 중..." : "고객 등록하기"}
-        </Button>
-        <Button onClick={onClose} color="info" variant="outlined">
-          닫기
         </Button>
       </DialogActions>
     </Dialog>

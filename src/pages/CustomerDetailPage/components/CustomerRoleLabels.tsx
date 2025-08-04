@@ -36,7 +36,7 @@ const CustomerRoleLabels = ({
   onLabelInputChange,
 }: CustomerRoleLabelsProps) => {
   return (
-    <Paper elevation={0} className="flex-1 p-6 rounded-lg mt-2">
+    <Paper elevation={0} className="flex-1 p-6 rounded-lg shadow-sm mt-2">
       {/* 역할 정보 영역 */}
       <Box className="mb-8">
         <Typography variant="h6" className="mb-4 font-bold text-primary">

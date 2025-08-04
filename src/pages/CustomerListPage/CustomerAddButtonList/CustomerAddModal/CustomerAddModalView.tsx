@@ -140,7 +140,7 @@ export default function CustomerAddModalView({
         />
       </DialogContent>
 
-      <DialogActions className="flex flex-row-reverse items-center justify-between p-6 border-t border-[#E0E0E0]">
+      <DialogActions className="flex flex-row-reverse items-center justify-between p-6 border-t border-gray-200">
         <div className="flex gap-2">
           <Button onClick={onClose} variant="outlined">
             취소

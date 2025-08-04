@@ -34,7 +34,7 @@ function PropertyEditModal({
   initialData,
 }: PropertyEditModalProps) {
   const [customerUid, setCustomerUid] = useState<number | null>(null);
-  const [custoemrUid, setcustoemrUid] = useState<
+  const [customerList, setCustomerList] = useState<
     { uid: number; name: string }[]
   >([]);
   const [address, setAddress] = useState<string | null>("");
@@ -138,14 +138,13 @@ function PropertyEditModal({
       )
         setHasElevator(initialData.hasElevator);
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [open, initialData]);
 
   useEffect(() => {
     const loadCustomers = async () => {
       try {
         const customers = await fetchCustomerList();
-        setcustoemrUid(customers);
+        setCustomerList(customers);
 
         // 고객 이름 → UID 매핑
         if (initialData?.customer) {
@@ -260,7 +259,7 @@ function PropertyEditModal({
 
         <CustomerSelectSection
           customerUid={customerUid}
-          customers={custoemrUid}
+          customers={customerList}
           onCustomerChange={(uid: string) => setCustomerUid(Number(uid))}
         />
 

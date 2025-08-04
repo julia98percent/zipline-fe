@@ -60,7 +60,7 @@ const PreCounselTable = ({
           columns={columns}
           bodyList={counsels.map((counsel) => ({
             ...counsel,
-            id: counsel.surveyResponseUid,
+            id: counsel.surveyResponseUid + counsel.name,
           }))}
           handleRowClick={(rowData) =>
             onRowClick(rowData.surveyResponseUid as number)

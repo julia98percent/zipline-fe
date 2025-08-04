@@ -31,31 +31,36 @@ const ContractAddModal = ({ open, handleClose, fetchContractData }: Props) => {
   const [expectedContractEndDate, setExpectedContractEndDate] =
     useState<Dayjs | null>(null);
 
-  const [
-    deposit,
-    setDeposit,
-    depositError,
-    setDepositManually,
-    handleDepositBlur,
-  ] = useNumericInput("", {
+  const {
+    value: deposit,
+    handleChange: setDeposit,
+    error: depositError,
+    setValueManually: setDepositManually,
+    handleBlur: handleDepositBlur,
+  } = useNumericInput("", {
     max: MAX_PROPERTY_PRICE,
     allowNegative: false,
   });
-  const [
-    monthlyRent,
-    setMonthlyRent,
-    monthlyError,
-    setMonthlyRentManually,
-    handleMonthlyRentBlur,
-  ] = useNumericInput("", {
+  const {
+    value: monthlyRent,
+    handleChange: setMonthlyRent,
+    error: monthlyError,
+    setValueManually: setMonthlyRentManually,
+    handleBlur: handleMonthlyRentBlur,
+  } = useNumericInput("", {
     max: MAX_PROPERTY_PRICE,
     allowNegative: false,
   });
-  const [price, setPrice, priceError, setPriceManually, handlePriceBlur] =
-    useNumericInput("", {
-      max: MAX_PROPERTY_PRICE,
-      allowNegative: false,
-    });
+  const {
+    value: price,
+    handleChange: setPrice,
+    error: priceError,
+    setValueManually: setPriceManually,
+    handleBlur: handlePriceBlur,
+  } = useNumericInput("", {
+    max: MAX_PROPERTY_PRICE,
+    allowNegative: false,
+  });
 
   const [lessorUids, setLessorUids] = useState<number[]>([]);
   const [lesseeUids, setLesseeUids] = useState<number[]>([]);

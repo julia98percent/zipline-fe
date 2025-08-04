@@ -1,6 +1,5 @@
-import { CircularProgress, SelectChangeEvent, IconButton } from "@mui/material";
+import { CircularProgress, SelectChangeEvent } from "@mui/material";
 import FilterListIcon from "@mui/icons-material/FilterList";
-import RefreshIcon from "@mui/icons-material/Refresh";
 import { useNavigate } from "react-router-dom";
 import PageHeader from "@components/PageHeader/PageHeader";
 import Select, { MenuItem } from "@components/Select";
@@ -46,7 +45,7 @@ interface AgentPropertyListPageViewProps {
   onRowsPerPageChange: (newSize: number) => void;
   onFilterModalToggle: () => void;
   onFilterModalClose: () => void;
-  onRefresh: () => void;
+  onReset: () => void;
   onSaveProperty: () => void;
   onMobileMenuToggle?: () => void;
 }
@@ -75,7 +74,7 @@ const AgentPropertyListPageView = ({
   onRowsPerPageChange,
   onFilterModalToggle,
   onFilterModalClose,
-  onRefresh,
+  onReset,
   onSaveProperty,
   onMobileMenuToggle,
 }: AgentPropertyListPageViewProps) => {
@@ -175,17 +174,11 @@ const AgentPropertyListPageView = ({
               </Button>
             </div>
 
-            <div className="flex gap-4">
-              <div className="flex-1">
-                <PropertyAddButtonList fetchPropertyData={onSaveProperty} />
-              </div>
-              <IconButton
-                onClick={onRefresh}
-                className="border border-gray-300 text-gray-600 rounded-lg hover:bg-gray-50 p-3 min-w-[48px]"
-                aria-label="새로고침"
-              >
-                <RefreshIcon fontSize="small" />
-              </IconButton>
+            <div className="flex flex-row-reverse gap-4 justify-between items-center">
+              <PropertyAddButtonList fetchPropertyData={onSaveProperty} />
+              <Button variant="text" onClick={onReset}>
+                필터 초기화
+              </Button>
             </div>
           </div>
 
@@ -257,12 +250,12 @@ const AgentPropertyListPageView = ({
                 <Button
                   variant="outlined"
                   onClick={onFilterModalToggle}
-                  className="min-w-10 px-3 rounded-3xl"
+                  className="min-w-10 px-3 rounded-3xl gap-2"
                 >
-                  <FilterListIcon className="mr-2" />
+                  <FilterListIcon />
                   상세 필터
                 </Button>
-                <Button variant="text" onClick={onRefresh} className="min-w-10">
+                <Button variant="text" onClick={onReset}>
                   필터 초기화
                 </Button>
               </div>

@@ -214,10 +214,32 @@ const AgentPropertyFilterModal = ({
     setDepositRange([adjustedMin, adjustedMax]);
   };
 
+  const handleClose = () => {
+    setHasElevator(
+      filters.hasElevator === true
+        ? "true"
+        : filters.hasElevator === false
+        ? "false"
+        : "all"
+    );
+    setPetsAllowed(
+      filters.petsAllowed === true
+        ? "true"
+        : filters.petsAllowed === false
+        ? "false"
+        : "all"
+    );
+    setNetAreaRange([filters.minNetArea || 0, filters.maxNetArea || 200]);
+    setTotalAreaRange([filters.minTotalArea || 0, filters.maxTotalArea || 300]);
+    setPriceRange([filters.minPrice || 0, filters.maxPrice || 100000]);
+    setDepositRange([filters.minDeposit || 0, filters.maxDeposit || 50000]);
+    onClose();
+  };
+
   return (
     <AgentPropertyFilterModalView
       open={open}
-      onClose={onClose}
+      onClose={handleClose}
       onApply={handleApply}
       onReset={handleReset}
       hasElevator={hasElevator}

@@ -19,21 +19,13 @@ function PropertyAddButtonList({ fetchPropertyData }: Props) {
 
   return (
     <>
-      <div className="flex flex-col sm:flex-row gap-2 sm:gap-0">
-        <Button
-          variant="contained"
-          onClick={handleOpen}
-          className="w-full sm:w-auto"
-        >
+      <div className="flex gap-2">
+        <Button variant="contained" onClick={handleOpen} className="gap-2">
           <AddIcon fontSize="small" />
           매물 등록
         </Button>
 
-        <Button
-          variant="outlined"
-          onClick={handleOpenBulkUpload}
-          className="text-[#164F9E] min-h-[32px] border-[#164F9E] sm:ml-3 hover:border-primary-dark hover:text-primary-dark hover:bg-[rgba(22,79,158,0.08)] w-full sm:w-auto"
-        >
+        <Button variant="outlined" onClick={handleOpenBulkUpload}>
           매물 데이터 일괄 등록(.csv)
         </Button>
       </div>

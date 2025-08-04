@@ -289,9 +289,13 @@ function AgentPropertyListPage() {
     setShowFilterModal(false);
   }, []);
 
-  const handleRefresh = useCallback(() => {
-    fetchProperties(searchParams);
-  }, [fetchProperties, searchParams]);
+  const handleReset = useCallback(() => {
+    setSearchParams(DEFAULT_SEARCH_PARAMS);
+    setSelectedSido("");
+    setSelectedGu("");
+    setSelectedDong("");
+    fetchProperties(DEFAULT_SEARCH_PARAMS);
+  }, [fetchProperties]);
 
   const handleSaveProperty = useCallback(() => {
     // 매물 저장 후 목록 새로고침
@@ -347,7 +351,7 @@ function AgentPropertyListPage() {
       onRowsPerPageChange={handleRowsPerPageChange}
       onFilterModalToggle={handleFilterModalToggle}
       onFilterModalClose={handleFilterModalClose}
-      onRefresh={handleRefresh}
+      onReset={handleReset}
       onSaveProperty={handleSaveProperty}
       onMobileMenuToggle={onMobileMenuToggle}
     />

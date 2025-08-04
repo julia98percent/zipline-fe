@@ -22,6 +22,8 @@ const DEFAULT_SEARCH_PARAMS: AgentPropertySearchParams = {
   sortFields: {},
 };
 
+const STORAGE_KEY = 'agentPropertyFilters';
+
 const CATEGORY_OPTIONS = [
   { value: "ONE_ROOM", label: "원룸" },
   { value: "TWO_ROOM", label: "투룸" },
@@ -41,12 +43,21 @@ const TYPE_OPTIONS = [
 function AgentPropertyListPage() {
   const { onMobileMenuToggle } = useOutletContext<OutletContext>();
 
+  const [storedFilters] = useState(() => {
+    try {
+      const stored = sessionStorage.getItem(STORAGE_KEY);
+      return stored ? JSON.parse(stored) : null;
+    } catch {
+      return null;
+    }
+  });
+
   // 상태 관리
   const [loading, setLoading] = useState(false);
   const [agentPropertyList, setAgentPropertyList] = useState<Property[]>([]);
   const [totalElements, setTotalElements] = useState(0);
   const [searchParams, setSearchParams] = useState<AgentPropertySearchParams>(
-    DEFAULT_SEARCH_PARAMS
+    storedFilters?.searchParams || DEFAULT_SEARCH_PARAMS
   );
   const [showFilterModal, setShowFilterModal] = useState(false);
 
@@ -54,9 +65,9 @@ function AgentPropertyListPage() {
   const [regions, setRegions] = useState<Region[]>([]);
   const [sigunguOptions, setSigunguOptions] = useState<Region[]>([]);
   const [dongOptions, setDongOptions] = useState<Region[]>([]);
-  const [selectedSido, setSelectedSido] = useState("");
-  const [selectedGu, setSelectedGu] = useState("");
-  const [selectedDong, setSelectedDong] = useState("");
+  const [selectedSido, setSelectedSido] = useState(storedFilters?.selectedSido || "");
+  const [selectedGu, setSelectedGu] = useState(storedFilters?.selectedGu || "");
+  const [selectedDong, setSelectedDong] = useState(storedFilters?.selectedDong || "");
 
   // API 호출 함수
   const fetchProperties = useCallback(
@@ -278,11 +289,33 @@ function AgentPropertyListPage() {
     fetchProperties(searchParams);
   }, [fetchProperties, searchParams]);
 
+  useEffect(() => {
+    const filtersToStore = {
+      searchParams,
+      selectedSido,
+      selectedGu,
+      selectedDong,
+    };
+    sessionStorage.setItem(STORAGE_KEY, JSON.stringify(filtersToStore));
+  }, [searchParams, selectedSido, selectedGu, selectedDong]);
+
   // 초기 데이터 로드
   useEffect(() => {
-    fetchProperties(DEFAULT_SEARCH_PARAMS);
+    const initialParams = storedFilters?.searchParams || DEFAULT_SEARCH_PARAMS;
+    fetchProperties(initialParams);
     loadRegions();
   }, [fetchProperties, loadRegions]);
+
+  useEffect(() => {
+    if (storedFilters) {
+      if (storedFilters.selectedSido) {
+        loadSigunguOptions(storedFilters.selectedSido);
+      }
+      if (storedFilters.selectedGu) {
+        loadDongOptions(storedFilters.selectedGu);
+      }
+    }
+  }, [loadSigunguOptions, loadDongOptions]);
 
   return (
     <AgentPropertyListPageView

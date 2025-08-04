@@ -1,9 +1,11 @@
 import { Chip } from "@mui/material";
-import { Label, CustomerFilter } from "@ts/customer";
+import { Label, CustomerBaseFilter } from "@ts/customer";
 
 interface Props {
   setFiltersTemp: (
-    filters: CustomerFilter | ((prev: CustomerFilter) => CustomerFilter)
+    filters:
+      | CustomerBaseFilter
+      | ((prev: CustomerBaseFilter) => CustomerBaseFilter)
   ) => void;
   labels: Label[];
   selectedLabels: Label[];

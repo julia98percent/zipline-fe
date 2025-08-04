@@ -1,20 +1,41 @@
 import { TextField, InputAdornment } from "@mui/material";
-import { FilterSectionProps } from "@ts/customer";
+import { NumericInputResponse } from "@hooks/useNumericInput";
 
-const PriceFilters = ({ filtersTemp, setFiltersTemp }: FilterSectionProps) => {
-  const handleChange =
-    (name: string) => (event: React.ChangeEvent<HTMLInputElement>) => {
-      const value = event.target.value;
-      setFiltersTemp((prev) => ({
-        ...prev,
-        [name]: value,
-      }));
-    };
-
+interface Props {
+  minPriceInput: NumericInputResponse;
+  maxPriceInput: NumericInputResponse;
+  minRentInput: NumericInputResponse;
+  maxRentInput: NumericInputResponse;
+  minDepositInput: NumericInputResponse;
+  maxDepositInput: NumericInputResponse;
+}
+const PriceFilters = ({
+  minPriceInput,
+  maxPriceInput,
+  minRentInput,
+  maxRentInput,
+  minDepositInput,
+  maxDepositInput,
+}: Props) => {
   const priceCategories = [
-    { label: "매매가", fields: ["Price"] },
-    { label: "보증금", fields: ["Deposit"] },
-    { label: "임대료", fields: ["Rent"] },
+    {
+      label: "매매가",
+      min: minPriceInput,
+      max: maxPriceInput,
+      fields: ["Price"],
+    },
+    {
+      label: "보증금",
+      min: minDepositInput,
+      max: maxDepositInput,
+      fields: ["Deposit"],
+    },
+    {
+      label: "임대료",
+      min: minRentInput,
+      max: maxRentInput,
+      fields: ["Rent"],
+    },
   ];
 
   return (
@@ -23,18 +44,14 @@ const PriceFilters = ({ filtersTemp, setFiltersTemp }: FilterSectionProps) => {
       {priceCategories.map((category) => (
         <div key={category.label} className="flex flex-col mb-2">
           <h6 className="font-semibold mb-2">{category.label}</h6>
-
-          <div className="flex gap-4 items-center">
+          <div className="flex items-start justify-center gap-4 items-center">
             <TextField
               label="최소"
-              type="text"
-              inputMode="numeric"
-              value={
-                filtersTemp[
-                  `min${category.fields[0]}` as keyof typeof filtersTemp
-                ] || ""
-              }
-              onChange={handleChange(`min${category.fields[0]}`)}
+              value={category.min.value || ""}
+              onChange={category.min.handleChange}
+              onBlur={category.min.handleBlur}
+              error={!!category.min.error}
+              helperText={category.min.error}
               fullWidth
               InputProps={{
                 endAdornment: (
@@ -42,17 +59,17 @@ const PriceFilters = ({ filtersTemp, setFiltersTemp }: FilterSectionProps) => {
                 ),
               }}
             />
-            <span>~</span>
+
+            <span className="mt-4">~</span>
             <TextField
               label="최대"
               type="text"
               inputMode="numeric"
-              value={
-                filtersTemp[
-                  `max${category.fields[0]}` as keyof typeof filtersTemp
-                ] || ""
-              }
-              onChange={handleChange(`max${category.fields[0]}`)}
+              value={category.max.value || ""}
+              onChange={category.max.handleChange}
+              onBlur={category.max.handleBlur}
+              error={!!category.max.error}
+              helperText={category.max.error}
               fullWidth
               InputProps={{
                 endAdornment: (

@@ -85,9 +85,11 @@ export interface CustomerFormData {
 }
 
 export interface FilterSectionProps {
-  filtersTemp: CustomerFilter;
+  filtersTemp: CustomerBaseFilter;
   setFiltersTemp: (
-    filters: CustomerFilter | ((prev: CustomerFilter) => CustomerFilter)
+    filters:
+      | CustomerBaseFilter
+      | ((prev: CustomerBaseFilter) => CustomerBaseFilter)
   ) => void;
 }
 

@@ -146,7 +146,7 @@ function AddScheduleModal({ open, onClose, onSubmit }: AddScheduleModalProps) {
         일정 등록
       </DialogTitle>
 
-      <DialogContent className=" p-7">
+      <DialogContent className="p-7">
         <div className="grid grid-cols-1 gap-4">
           <FormControl fullWidth>
             <Autocomplete

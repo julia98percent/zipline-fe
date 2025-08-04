@@ -73,17 +73,10 @@ const PublicPropertyCard = ({
         <Box className="flex gap-2 mb-3 items-center">
           <Chip
             label={property.platform}
+            color="success"
+            variant="outlined"
             size="small"
-            className="text-xs h-6"
-            style={{
-              backgroundColor: "#f3f4f6",
-              color: "#374151",
-            }}
-            sx={{
-              "& .MuiChip-label": {
-                padding: "0 8px",
-              },
-            }}
+            className="font-medium"
           />
           <Chip
             label={getCategoryText(property.category)}

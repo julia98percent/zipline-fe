@@ -1,4 +1,4 @@
-import { Box, Typography, Tabs, Tab, Chip } from "@mui/material";
+import { Tabs, Tab, Chip } from "@mui/material";
 import { InfoCard } from "../styles/AgentPropertyDetailPage.styles";
 import {
   ContractHistoryItem,
@@ -99,39 +99,39 @@ const PropertyHistorySection = ({
 
       {tab === 0 && (
         <>
-          <Box className="flex font-bold text-sm border-b border-gray-200 pb-2 mb-2">
-            <Box className="flex-1 text-center">임대인/매도인</Box>
-            <Box className="flex-1 text-center">임차인/매수인</Box>
-            <Box className="flex-1 text-center">카테고리</Box>
-            <Box className="flex-1 text-center">상태</Box>
-            <Box className="flex-1 text-center">변경일</Box>
-          </Box>
+          <div className="flex font-bold text-sm border-b border-gray-200 pb-2 ">
+            <div className="flex-1 text-center">임대인/매도인</div>
+            <div className="flex-1 text-center">임차인/매수인</div>
+            <div className="flex-1 text-center">카테고리</div>
+            <div className="flex-1 text-center">상태</div>
+            <div className="flex-1 text-center">변경일</div>
+          </div>
           {contractHistories.length === 0 ? (
-            <Typography color="text.secondary" align="center">
+            <h5 color="text.secondary" className="text-center text-sm">
               매물과 관련된 계약 히스토리가 없습니다.
-            </Typography>
+            </h5>
           ) : (
             contractHistories.map((history, idx) => (
-              <Box
+              <div
                 key={idx}
                 className="flex items-center text-sm border-b border-gray-200 py-2"
               >
-                <Box className="flex-1 text-center">
+                <div className="flex-1 text-center">
                   {getCustomerSummary(history.customers, "LESSOR_OR_SELLER")}
-                </Box>
-                <Box className="flex-1 text-center">
+                </div>
+                <div className="flex-1 text-center">
                   {getCustomerSummary(history.customers, "LESSEE_OR_BUYER")}
-                </Box>
-                <Box className="flex-1 text-center">
+                </div>
+                <div className="flex-1 text-center">
                   {getCategoryChip(history.contractCategory)}
-                </Box>
-                <Box className="flex-1 text-center">
+                </div>
+                <div className="flex-1 text-center">
                   {getStatusChip(history.contractStatus)}
-                </Box>
-                <Box className="flex-1 text-center">
+                </div>
+                <div className="flex-1 text-center">
                   {dayjs(history.endDate).format("YYYY.MM.DD")}
-                </Box>
-              </Box>
+                </div>
+              </div>
             ))
           )}
         </>
@@ -139,29 +139,29 @@ const PropertyHistorySection = ({
 
       {tab === 1 && (
         <>
-          <Box className="flex font-bold text-sm border-b border-gray-200 pb-2 mb-2">
-            <Box className="flex-1 text-center">상담 제목</Box>
-            <Box className="flex-1 text-center">상담일</Box>
-            <Box className="flex-1 text-center">고객명</Box>
-            <Box className="flex-1 text-center">연락처</Box>
-          </Box>
+          <div className="flex font-bold text-sm border-b border-gray-200 pb-2 mb-2">
+            <div className="flex-1 text-center">상담 제목</div>
+            <div className="flex-1 text-center">상담일</div>
+            <div className="flex-1 text-center">고객명</div>
+            <div className="flex-1 text-center">연락처</div>
+          </div>
           {counselHistories.length === 0 ? (
-            <Typography color="text.secondary" align="center">
+            <h5 color="text.secondary" className="text-center text-sm">
               매물과 관련된 상담 히스토리가 없습니다.
-            </Typography>
+            </h5>
           ) : (
             counselHistories.map((counsel) => (
-              <Box
+              <div
                 key={counsel.counselUid}
                 className="flex items-center text-sm border-b border-gray-200 py-2"
               >
-                <Box className="flex-1 text-center">{counsel.counselTitle}</Box>
-                <Box className="flex-1 text-center">{counsel.counselDate}</Box>
-                <Box className="flex-1 text-center">{counsel.customerName}</Box>
-                <Box className="flex-1 text-center">
+                <div className="flex-1 text-center">{counsel.counselTitle}</div>
+                <div className="flex-1 text-center">{counsel.counselDate}</div>
+                <div className="flex-1 text-center">{counsel.customerName}</div>
+                <div className="flex-1 text-center">
                   {counsel.customerPhoneNo}
-                </Box>
-              </Box>
+                </div>
+              </div>
             ))
           )}
         </>

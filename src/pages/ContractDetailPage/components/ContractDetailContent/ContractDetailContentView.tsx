@@ -307,7 +307,7 @@ const InfoRow = ({
   label: string;
   value: React.ReactNode;
 }) => (
-  <Box className="flex flex-col mb-3 min-h-10">
+  <Box className="flex flex-col mb-3 min-h-10 break-all">
     <Typography
       color="text.secondary"
       className="text-xs font-medium mb-1 leading-tight"

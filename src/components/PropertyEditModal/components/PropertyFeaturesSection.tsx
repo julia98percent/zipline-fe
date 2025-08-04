@@ -15,7 +15,6 @@ const PropertyFeaturesSection = ({
 }: PropertyFeaturesSectionProps) => {
   return (
     <>
-      {/* 반려동물 여부 */}
       <Typography variant="subtitle1" className="mt-4">
         반려동물 여부
       </Typography>
@@ -28,7 +27,6 @@ const PropertyFeaturesSection = ({
         <FormControlLabel value={"false"} control={<Radio />} label="불가" />
       </RadioGroup>
 
-      {/* 건물 엘리베이터 여부 */}
       <Typography variant="subtitle1" className="mt-4">
         건물 엘리베이터 여부
       </Typography>

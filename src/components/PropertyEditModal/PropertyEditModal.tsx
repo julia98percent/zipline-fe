@@ -1,9 +1,15 @@
 import axios from "axios";
 import { useEffect, useState } from "react";
 import Button from "@components/Button";
-import { Modal, Box, Typography } from "@mui/material";
+import {
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  DialogActions,
+  Tooltip,
+} from "@mui/material";
 import dayjs, { Dayjs } from "dayjs";
-import { showToast } from "@components/Toast/Toast";
+import { showToast } from "@components/Toast";
 import { useNumericInput, useRawNumericInput } from "@hooks/useNumericInput";
 import { updateProperty } from "@apis/propertyService";
 import { fetchCustomerList } from "@apis/customerService";
@@ -93,6 +99,22 @@ function PropertyEditModal({
   const [petsAllowed, setPetsAllowed] = useState(false);
   const [hasElevator, setHasElevator] = useState(false);
 
+  const getValidationErrors = () => {
+    const errors: string[] = [];
+    if (!customerUid) errors.push("고객을 선택해주세요.");
+    if (!address) errors.push("주소를 입력해주세요.");
+    if (!realCategory) errors.push("매물 유형을 선택해주세요.");
+    if (!netArea || Number(netArea) <= 0)
+      errors.push("전용 면적을 입력해주세요.");
+    if (!totalArea || Number(totalArea) <= 0)
+      errors.push("공급 면적을 입력해주세요.");
+
+    return errors;
+  };
+
+  const validationErrors = getValidationErrors();
+  const isSubmitButtonDisabled = validationErrors.length > 0;
+
   useEffect(() => {
     if (open && initialData) {
       if (initialData.address) setAddress(initialData.address);
@@ -160,6 +182,7 @@ function PropertyEditModal({
 
     loadCustomers();
   }, [initialData]);
+
   useEffect(() => {
     if (!address) return;
     axios
@@ -180,37 +203,8 @@ function PropertyEditModal({
         }
       });
   }, [address]);
+
   const handleSubmit = async () => {
-    if (!customerUid)
-      return showToast({
-        message: "고객을 선택해주세요.",
-        type: "error",
-      });
-    if (!address)
-      return showToast({
-        message: "주소를 입력해주세요.",
-        type: "error",
-      });
-    if (!realCategory)
-      return showToast({
-        message: "매물 유형을 선택해주세요.",
-        type: "error",
-      });
-    if (hasElevator === null || hasElevator === undefined)
-      return showToast({
-        message: "엘리베이터 유무를 선택해주세요.",
-        type: "error",
-      });
-    if (!netArea || Number(netArea) <= 0)
-      return showToast({
-        message: "공급면적을 입력해주세요.",
-        type: "error",
-      });
-    if (!totalArea || Number(totalArea) <= 0)
-      return showToast({
-        message: "공급면적을 입력해주세요.",
-        type: "error",
-      });
     const parseNumber = (str: string) => Number(str.replace(/,/g, ""));
 
     const payload = {
@@ -253,10 +247,18 @@ function PropertyEditModal({
   };
 
   return (
-    <Modal open={open} onClose={handleClose}>
-      <Box className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-[50vw] bg-white p-8 rounded-lg max-h-[80vh] overflow-y-auto">
-        <Typography variant="h6">매물 수정</Typography>
-
+    <Dialog
+      open={open}
+      onClose={handleClose}
+      maxWidth={false}
+      PaperProps={{
+        className: "w-200 h-175 max-h-[90vh] bg-white rounded-lg",
+      }}
+    >
+      <DialogTitle className="border-b text-primary font-bold border-gray-200">
+        매물 수정
+      </DialogTitle>
+      <DialogContent className="flex flex-col gap-6 p-7">
         <CustomerSelectSection
           customerUid={customerUid}
           customers={customerList}
@@ -290,9 +292,11 @@ function PropertyEditModal({
           totalArea={totalArea}
           netArea={netArea}
           floor={floor}
+          constructionYear={constructionYear}
           onTotalAreaChange={handleChangeTotalArea}
           onNetAreaChange={handleChangeNetArea}
           onFloorChange={handleChangeFloor}
+          onConstructionYearChange={handleChangeConstructionYear}
         />
 
         <PropertyFeaturesSection
@@ -304,20 +308,53 @@ function PropertyEditModal({
 
         <AdditionalInfoSection
           moveInDate={moveInDate}
-          constructionYear={constructionYear}
           parkingCapacity={parkingCapacity}
           details={details}
           onMoveInDateChange={setMoveInDate}
-          onConstructionYearChange={handleChangeConstructionYear}
           onParkingCapacityChange={handleChangeParkingCapacity}
           onDetailsChange={(e) => setDetails(e.target.value)}
         />
+      </DialogContent>
 
-        <Button onClick={handleSubmit} color="primary" className="mt-8">
-          수정
-        </Button>
-      </Box>
-    </Modal>
+      <DialogActions className="flex flex-row-reverse items-center justify-between p-6 border-t border-gray-200">
+        <div className="flex gap-2">
+          <Button onClick={handleClose} variant="outlined">
+            취소
+          </Button>
+          <Button
+            onClick={handleSubmit}
+            variant="contained"
+            disabled={isSubmitButtonDisabled}
+          >
+            저장
+          </Button>
+        </div>
+        {isSubmitButtonDisabled && validationErrors.length > 0 && (
+          <Tooltip
+            title={
+              <div>
+                {validationErrors.map((error, index) => (
+                  <div key={index}>• {error}</div>
+                ))}
+              </div>
+            }
+            arrow
+            placement="top"
+          >
+            <div className="text-sm text-red-600 cursor-help">
+              <ul className="list-disc list-inside">
+                {validationErrors.slice(0, 1).map((error, index) => (
+                  <li key={index}>{error}</li>
+                ))}
+                {validationErrors.length > 1 && (
+                  <li>외 {validationErrors.length - 1}개 항목</li>
+                )}
+              </ul>
+            </div>
+          </Tooltip>
+        )}
+      </DialogActions>
+    </Dialog>
   );
 }
 

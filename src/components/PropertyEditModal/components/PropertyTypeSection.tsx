@@ -1,4 +1,4 @@
-import { Typography, RadioGroup, FormControlLabel, Radio } from "@mui/material";
+import { RadioGroup, FormControlLabel, Radio } from "@mui/material";
 
 interface PropertyTypeSectionProps {
   realCategory: string;
@@ -10,32 +10,37 @@ const PropertyTypeSection = ({
   onRealCategoryChange,
 }: PropertyTypeSectionProps) => {
   return (
-    <>
-      <Typography variant="subtitle1" className="mt-4">
-        부동산 유형 선택
-      </Typography>
-      <RadioGroup
-        row
-        value={realCategory}
-        onChange={(event) => onRealCategoryChange(event.target.value)}
-      >
-        <FormControlLabel value="ONE_ROOM" control={<Radio />} label="원룸" />
-        <FormControlLabel value="TWO_ROOM" control={<Radio />} label="투룸" />
-        <FormControlLabel
-          value="APARTMENT"
-          control={<Radio />}
-          label="아파트"
-        />
-        <FormControlLabel value="VILLA" control={<Radio />} label="빌라" />
-        <FormControlLabel value="HOUSE" control={<Radio />} label="주택" />
-        <FormControlLabel
-          value="OFFICETEL"
-          control={<Radio />}
-          label="오피스텔"
-        />
-        <FormControlLabel value="COMMERCIAL" control={<Radio />} label="상가" />
-      </RadioGroup>
-    </>
+    <div>
+      <h6 className="font-semibold">부동산 유형 선택</h6>
+
+      <div className="flex flex-col gap-4">
+        <RadioGroup
+          row
+          value={realCategory}
+          onChange={(event) => onRealCategoryChange(event.target.value)}
+        >
+          <FormControlLabel value="ONE_ROOM" control={<Radio />} label="원룸" />
+          <FormControlLabel value="TWO_ROOM" control={<Radio />} label="투룸" />
+          <FormControlLabel
+            value="APARTMENT"
+            control={<Radio />}
+            label="아파트"
+          />
+          <FormControlLabel value="VILLA" control={<Radio />} label="빌라" />
+          <FormControlLabel value="HOUSE" control={<Radio />} label="주택" />
+          <FormControlLabel
+            value="OFFICETEL"
+            control={<Radio />}
+            label="오피스텔"
+          />
+          <FormControlLabel
+            value="COMMERCIAL"
+            control={<Radio />}
+            label="상가"
+          />
+        </RadioGroup>
+      </div>
+    </div>
   );
 };
 

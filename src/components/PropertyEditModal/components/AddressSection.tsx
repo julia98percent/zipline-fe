@@ -16,14 +16,13 @@ const AddressSection = ({
   onDetailAddressChange,
 }: AddressSectionProps) => {
   return (
-    <>
+    <div className="flex flex-col items-start">
       <TextField
         label="주소"
         value={address ?? ""}
         variant="outlined"
         disabled
         fullWidth
-        className="mt-4"
       />
       <DaumPost setAddress={onAddressChange} />
       <TextField
@@ -33,9 +32,8 @@ const AddressSection = ({
         disabled={!address}
         variant="outlined"
         fullWidth
-        className="mt-4"
       />
-    </>
+    </div>
   );
 };
 

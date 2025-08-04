@@ -1,4 +1,4 @@
-import { Typography, RadioGroup, FormControlLabel, Radio } from "@mui/material";
+import { RadioGroup, FormControlLabel, Radio } from "@mui/material";
 import TextField from "@components/TextField";
 import { PropertyType } from "@ts/property";
 
@@ -24,58 +24,54 @@ const TransactionTypeSection = ({
   onMonthlyRentChange,
 }: TransactionTypeSectionProps) => {
   return (
-    <>
-      <Typography variant="subtitle1" className="mt-4">
-        거래 유형
-      </Typography>
-      <RadioGroup
-        row
-        value={type}
-        onChange={(event) => onTypeChange(event.target.value as PropertyType)}
-      >
-        <FormControlLabel value="SALE" control={<Radio />} label="매매" />
-        <FormControlLabel value="DEPOSIT" control={<Radio />} label="전세" />
-        <FormControlLabel value="MONTHLY" control={<Radio />} label="월세" />
-      </RadioGroup>
+    <div>
+      <h6 className="font-semibold">거래 유형</h6>
 
-      {/* 조건부 TextField 렌더링 */}
-      {type === "SALE" && (
-        <TextField
-          label="매매 가격"
-          value={price}
-          onChange={onPriceChange}
-          className="mt-4"
-          fullWidth
-        />
-      )}
-      {type === "DEPOSIT" && (
-        <TextField
-          label="보증금"
-          value={deposit}
-          onChange={onDepositChange}
-          className="mt-4"
-          fullWidth
-        />
-      )}
-      {type === "MONTHLY" && (
-        <>
+      <div className="flex flex-col gap-4">
+        <RadioGroup
+          row
+          value={type}
+          onChange={(event) => onTypeChange(event.target.value as PropertyType)}
+        >
+          <FormControlLabel value="SALE" control={<Radio />} label="매매" />
+          <FormControlLabel value="DEPOSIT" control={<Radio />} label="전세" />
+          <FormControlLabel value="MONTHLY" control={<Radio />} label="월세" />
+        </RadioGroup>
+
+        {type === "SALE" && (
+          <TextField
+            label="매매 가격"
+            value={price}
+            onChange={onPriceChange}
+            fullWidth
+          />
+        )}
+        {type === "DEPOSIT" && (
           <TextField
             label="보증금"
             value={deposit}
             onChange={onDepositChange}
-            className="mt-4"
             fullWidth
           />
-          <TextField
-            label="월세"
-            value={monthlyRent}
-            onChange={onMonthlyRentChange}
-            className="mt-4"
-            fullWidth
-          />
-        </>
-      )}
-    </>
+        )}
+        {type === "MONTHLY" && (
+          <>
+            <TextField
+              label="보증금"
+              value={deposit}
+              onChange={onDepositChange}
+              fullWidth
+            />
+            <TextField
+              label="월세"
+              value={monthlyRent}
+              onChange={onMonthlyRentChange}
+              fullWidth
+            />
+          </>
+        )}
+      </div>
+    </div>
   );
 };
 

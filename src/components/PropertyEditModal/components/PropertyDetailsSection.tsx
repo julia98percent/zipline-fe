@@ -4,9 +4,11 @@ interface PropertyDetailsSectionProps {
   totalArea: string;
   netArea: string;
   floor: string;
+  constructionYear: string;
   onTotalAreaChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
   onNetAreaChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
   onFloorChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
+  onConstructionYearChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
 }
 
 const PropertyDetailsSection = ({
@@ -16,31 +18,39 @@ const PropertyDetailsSection = ({
   onTotalAreaChange,
   onNetAreaChange,
   onFloorChange,
+  constructionYear,
+  onConstructionYearChange,
 }: PropertyDetailsSectionProps) => {
   return (
-    <>
+    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
       <TextField
         label="공급 면적"
         value={totalArea}
         onChange={onTotalAreaChange}
-        className="mt-4"
         fullWidth
       />
       <TextField
         label="전용 면적"
         value={netArea}
         onChange={onNetAreaChange}
-        className="mt-4"
         fullWidth
       />
+
       <TextField
         label="층수"
         value={floor}
         onChange={onFloorChange}
-        className="mt-4"
         fullWidth
       />
-    </>
+      <TextField
+        label="건축년도"
+        value={constructionYear}
+        onChange={onConstructionYearChange}
+        fullWidth
+        placeholder="2010"
+        inputProps={{ maxLength: 4 }}
+      />
+    </div>
   );
 };
 

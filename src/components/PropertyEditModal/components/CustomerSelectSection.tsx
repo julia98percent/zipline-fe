@@ -22,8 +22,8 @@ const CustomerSelectSection = ({
       value={customerUid !== null ? customerUid.toString() : ""}
       onChange={(e) => onCustomerChange(e.target.value)}
       fullWidth
-      className="mt-2"
       showEmptyOption={true}
+      size="medium"
     >
       {customers.map((customer) => (
         <MenuItem key={customer.uid} value={customer.uid.toString()}>

@@ -1,4 +1,4 @@
-import { Typography, RadioGroup, FormControlLabel, Radio } from "@mui/material";
+import { RadioGroup, FormControlLabel, Radio } from "@mui/material";
 
 interface PropertyFeaturesSectionProps {
   petsAllowed: boolean;
@@ -14,31 +14,30 @@ const PropertyFeaturesSection = ({
   onHasElevatorChange,
 }: PropertyFeaturesSectionProps) => {
   return (
-    <>
-      <Typography variant="subtitle1" className="mt-4">
-        반려동물 여부
-      </Typography>
-      <RadioGroup
-        row
-        value={petsAllowed.toString()}
-        onChange={(e) => onPetsAllowedChange(e.target.value === "true")}
-      >
-        <FormControlLabel value={"true"} control={<Radio />} label="허용" />
-        <FormControlLabel value={"false"} control={<Radio />} label="불가" />
-      </RadioGroup>
-
-      <Typography variant="subtitle1" className="mt-4">
-        건물 엘리베이터 여부
-      </Typography>
-      <RadioGroup
-        row
-        value={hasElevator.toString()}
-        onChange={(e) => onHasElevatorChange(e.target.value === "true")}
-      >
-        <FormControlLabel value="true" control={<Radio />} label="있음" />
-        <FormControlLabel value="false" control={<Radio />} label="없음" />
-      </RadioGroup>
-    </>
+    <div className="grid grid-cols-2 gap-4">
+      <div>
+        <h6 className="font-semibold">반려동물 가능 여부</h6>
+        <RadioGroup
+          row
+          value={petsAllowed.toString()}
+          onChange={(e) => onPetsAllowedChange(e.target.value === "true")}
+        >
+          <FormControlLabel value={"true"} control={<Radio />} label="허용" />
+          <FormControlLabel value={"false"} control={<Radio />} label="불가" />
+        </RadioGroup>
+      </div>
+      <div>
+        <h6 className="font-semibold">건물 엘리베이터 여부</h6>
+        <RadioGroup
+          row
+          value={hasElevator.toString()}
+          onChange={(e) => onHasElevatorChange(e.target.value === "true")}
+        >
+          <FormControlLabel value="true" control={<Radio />} label="있음" />
+          <FormControlLabel value="false" control={<Radio />} label="없음" />
+        </RadioGroup>
+      </div>
+    </div>
   );
 };
 

@@ -11,6 +11,7 @@ import "./main.css";
 import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import { koKR } from "@mui/x-date-pickers/locales";
+import ToastProvider from "@components/Toast/Toast";
 
 const theme = createTheme({
   palette: {
@@ -34,6 +35,7 @@ createRoot(document.getElementById("root")!).render(
     <StyledEngineProvider enableCssLayer>
       <ThemeProvider theme={theme}>
         <GlobalStyles styles="@layer theme, base, mui, components, utilities;" />
+        <ToastProvider />
         <BrowserRouter>
           <App />
         </BrowserRouter>

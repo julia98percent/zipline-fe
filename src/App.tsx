@@ -1,5 +1,4 @@
 import { Routes, Route, Navigate } from "react-router-dom";
-import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import PrivateRoute from "./components/layout/PrivateRoute";
 import GuestRoute from "./components/layout/GuestRoute";
@@ -30,76 +29,56 @@ import PreCounselListPage from "@pages/PreCounselListPage";
 
 const App = () => {
   return (
-    <>
-      <ToastContainer
-        position="top-right"
-        autoClose={3000}
-        hideProgressBar={false}
-        newestOnTop={false}
-        closeOnClick
-        rtl={false}
-        pauseOnFocusLoss
-        draggable
-        pauseOnHover
-        theme="light"
-      />
-      <Routes>
-        <Route path="form" element={<Navigate to="/error" replace />} />
-        <Route path=":surveyId" element={<NewbieSurveyRoute />}>
-          <Route index element={<SubmitSurveyPage />} />
-          <Route path="thank-you" element={<SubmitSurveySuccessPage />} />
+    <Routes>
+      <Route path="form" element={<Navigate to="/error" replace />} />
+      <Route path=":surveyId" element={<NewbieSurveyRoute />}>
+        <Route index element={<SubmitSurveyPage />} />
+        <Route path="thank-you" element={<SubmitSurveySuccessPage />} />
+      </Route>
+
+      <Route element={<PrivateRoute />}>
+        <Route index element={<DashboardPage />} />
+        <Route path="customers" element={<CustomerListPage />} />
+        <Route path="customers/:customerId" element={<CustomerDetailPage />} />
+
+        <Route path="properties/agent" element={<AgentPropertyListPage />} />
+        <Route
+          path="/properties/:propertyUid"
+          element={<AgentPropertyDetailPage />}
+        />
+        <Route path="properties/public" element={<PublicPropertyListPage />} />
+
+        <Route path="messages/templates" element={<MessageTemplatePage />} />
+        <Route path="messages/bulk" element={<BulkMessagePage />} />
+        <Route path="messages/history" element={<MessageHistoryPage />} />
+
+        <Route path="counsels" element={<CounselListPage />} />
+        <Route path="/counsels/:counselUid" element={<CounselDetailPage />} />
+        <Route path="counsels/pre" element={<PreCounselListPage />} />
+
+        <Route path="/contracts" element={<ContractListPage />} />
+        <Route
+          path="/contracts/:contractUid"
+          element={<ContractDetailPage />}
+        />
+
+        <Route path="my">
+          <Route index element={<MyPage />} />
+          <Route path="edit-survey" element={<EditSurveyPage />} />
         </Route>
 
-        <Route element={<PrivateRoute />}>
-          <Route index element={<DashboardPage />} />
-          <Route path="customers" element={<CustomerListPage />} />
-          <Route
-            path="customers/:customerId"
-            element={<CustomerDetailPage />}
-          />
+        <Route path="schedules" element={<SchedulePage />} />
+        <Route path="templates" element={<MessageTemplatePage />} />
+      </Route>
 
-          <Route path="properties/agent" element={<AgentPropertyListPage />} />
-          <Route
-            path="/properties/:propertyUid"
-            element={<AgentPropertyDetailPage />}
-          />
-          <Route
-            path="properties/public"
-            element={<PublicPropertyListPage />}
-          />
+      <Route element={<GuestRoute />}>
+        <Route path="sign-up" element={<SignUpPage />} />
+        <Route path="sign-in" element={<SignInPage />} />
+        <Route path="find-account" element={<FindAccountPage />} />
+      </Route>
 
-          <Route path="messages/templates" element={<MessageTemplatePage />} />
-          <Route path="messages/bulk" element={<BulkMessagePage />} />
-          <Route path="messages/history" element={<MessageHistoryPage />} />
-
-          <Route path="counsels" element={<CounselListPage />} />
-          <Route path="/counsels/:counselUid" element={<CounselDetailPage />} />
-          <Route path="counsels/pre" element={<PreCounselListPage />} />
-
-          <Route path="/contracts" element={<ContractListPage />} />
-          <Route
-            path="/contracts/:contractUid"
-            element={<ContractDetailPage />}
-          />
-
-          <Route path="my">
-            <Route index element={<MyPage />} />
-            <Route path="edit-survey" element={<EditSurveyPage />} />
-          </Route>
-
-          <Route path="schedules" element={<SchedulePage />} />
-          <Route path="templates" element={<MessageTemplatePage />} />
-        </Route>
-
-        <Route element={<GuestRoute />}>
-          <Route path="sign-up" element={<SignUpPage />} />
-          <Route path="sign-in" element={<SignInPage />} />
-          <Route path="find-account" element={<FindAccountPage />} />
-        </Route>
-
-        <Route path="error" element={<ErrorPage />} />
-      </Routes>
-    </>
+      <Route path="error" element={<ErrorPage />} />
+    </Routes>
   );
 };
 

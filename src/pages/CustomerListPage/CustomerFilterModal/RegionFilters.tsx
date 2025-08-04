@@ -1,4 +1,4 @@
-import { Box, Typography, SelectChangeEvent } from "@mui/material";
+import { SelectChangeEvent } from "@mui/material";
 import RegionSelector from "@components/RegionSelector";
 import { RegionState } from "@ts/region";
 
@@ -39,16 +39,15 @@ const RegionFilters = ({
     };
 
   return (
-    <Box className="mb-6">
-      <Typography variant="h6" className="mb-4 font-semibold">
-        지역
-      </Typography>
-      <Box className="flex gap-4">
+    <div>
+      <h5 className="text-lg font-bold mb-4">지역</h5>
+      <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
         <RegionSelector
           label="시/도"
           value={region.selectedSido || ""}
           regions={region.sido || []}
           onChange={handleRegionChange("sido")}
+          size="medium"
         />
         <RegionSelector
           label="시/군/구"
@@ -56,6 +55,7 @@ const RegionFilters = ({
           regions={region.sigungu || []}
           onChange={handleRegionChange("sigungu")}
           disabled={!region.selectedSido}
+          size="medium"
         />
         <RegionSelector
           label="동/읍/면"
@@ -63,9 +63,10 @@ const RegionFilters = ({
           regions={region.dong || []}
           onChange={handleRegionChange("dong")}
           disabled={!region.selectedSigungu}
+          size="medium"
         />
-      </Box>
-    </Box>
+      </div>
+    </div>
   );
 };
 

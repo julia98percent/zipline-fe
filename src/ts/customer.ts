@@ -42,23 +42,27 @@ export interface CustomerUpdateData extends CustomerBase {
 
 export type CustomerListData = PaginatedResponse<"customers", Customer[]>;
 
-export interface CustomerFilter {
-  tenant: boolean;
-  landlord: boolean;
-  buyer: boolean;
-  seller: boolean;
+export interface PriceFilter {
   minPrice: number | null;
   maxPrice: number | null;
   minRent: number | null;
   maxRent: number | null;
   minDeposit: number | null;
   maxDeposit: number | null;
+}
+export interface CustomerBaseFilter {
+  tenant: boolean;
+  landlord: boolean;
+  buyer: boolean;
+  seller: boolean;
   labelUids: number[];
   telProvider: string;
   preferredRegion: string;
   trafficSource: string;
   noRole: boolean;
 }
+
+export type CustomerFilter = PriceFilter & CustomerBaseFilter;
 
 export interface CustomerFormData {
   name: string;

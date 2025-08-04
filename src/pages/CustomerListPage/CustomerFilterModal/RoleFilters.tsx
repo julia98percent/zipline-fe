@@ -1,4 +1,4 @@
-import { Box, Typography, FormControlLabel, Checkbox } from "@mui/material";
+import { FormControlLabel, Checkbox } from "@mui/material";
 import { FilterSectionProps } from "@ts/customer";
 import { useCallback } from "react";
 
@@ -50,11 +50,9 @@ const RoleFilters = ({ filtersTemp, setFiltersTemp }: FilterSectionProps) => {
   );
 
   return (
-    <Box className="mb-6">
-      <Typography variant="h6" className="mb-4 font-semibold">
-        역할
-      </Typography>
-      <Box className="flex flex-col gap-2">
+    <div>
+      <h5 className="text-lg font-bold mb-4">역할</h5>
+      <div className="grid grid-cols-2 sm:grid-cols-4">
         {ROLES.map((role) => {
           const isChecked = filtersTemp[
             role as keyof typeof filtersTemp
@@ -83,8 +81,8 @@ const RoleFilters = ({ filtersTemp, setFiltersTemp }: FilterSectionProps) => {
           }
           label="역할 없음"
         />
-      </Box>
-    </Box>
+      </div>
+    </div>
   );
 };
 

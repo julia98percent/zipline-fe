@@ -1,4 +1,4 @@
-import { Box, Typography, TextField, InputAdornment } from "@mui/material";
+import { TextField, InputAdornment } from "@mui/material";
 import { FilterSectionProps } from "@ts/customer";
 
 const PriceFilters = ({ filtersTemp, setFiltersTemp }: FilterSectionProps) => {
@@ -18,16 +18,13 @@ const PriceFilters = ({ filtersTemp, setFiltersTemp }: FilterSectionProps) => {
   ];
 
   return (
-    <Box className="mb-6">
-      <Typography variant="h6" className="mb-4 font-semibold">
-        금액 조건
-      </Typography>
+    <div>
+      <h5 className="text-lg font-bold mb-2">금액 조건</h5>
       {priceCategories.map((category) => (
-        <Box key={category.label} className="mb-4">
-          <Typography variant="subtitle2" className="mb-2">
-            {category.label}
-          </Typography>
-          <Box className="flex gap-4 items-center">
+        <div key={category.label} className="flex flex-col mb-2">
+          <h6 className="font-semibold mb-2">{category.label}</h6>
+
+          <div className="flex gap-4 items-center">
             <TextField
               label="최소"
               type="text"
@@ -45,7 +42,7 @@ const PriceFilters = ({ filtersTemp, setFiltersTemp }: FilterSectionProps) => {
                 ),
               }}
             />
-            <Typography>~</Typography>
+            <span>~</span>
             <TextField
               label="최대"
               type="text"
@@ -63,10 +60,10 @@ const PriceFilters = ({ filtersTemp, setFiltersTemp }: FilterSectionProps) => {
                 ),
               }}
             />
-          </Box>
-        </Box>
+          </div>
+        </div>
       ))}
-    </Box>
+    </div>
   );
 };
 

@@ -1,4 +1,9 @@
-import { Modal, Box, Typography } from "@mui/material";
+import {
+  Dialog,
+  DialogActions,
+  DialogContent,
+  DialogTitle,
+} from "@mui/material";
 import { useState, useEffect, useCallback } from "react";
 import { fetchLabels } from "@apis/customerService";
 import { fetchSido, fetchSigungu, fetchDong } from "@apis/regionService";
@@ -199,16 +204,11 @@ const CustomerFilterModal = ({
   };
 
   return (
-    <Modal open={open} onClose={onClose}>
-      <Box
-        className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 
-                w-[80%] max-w-[800px] max-h-[90%] bg-white shadow-2xl 
-                p-8 rounded-lg overflow-auto"
-      >
-        <Typography variant="h5" className="mb-6 font-semibold">
-          고객 필터
-        </Typography>
-
+    <Dialog open={open} onClose={onClose}>
+      <DialogTitle className="border-b text-primary font-bold border-gray-200">
+        고객 필터
+      </DialogTitle>
+      <DialogContent className="flex flex-col p-6 gap-6">
         <RoleFilters
           filtersTemp={filtersTemp}
           setFiltersTemp={setFiltersTemp}
@@ -232,10 +232,12 @@ const CustomerFilterModal = ({
           filtersTemp={filtersTemp}
           setFiltersTemp={setFiltersTemp}
         />
+      </DialogContent>
 
-        <Box className="flex justify-end mt-8">
-          <Button variant="outlined" onClick={handleReset}>
-            초기화
+      <DialogActions className="flex flex-row-reverse items-center justify-between p-6 border-t border-gray-200">
+        <div className="flex gap-2">
+          <Button variant="outlined" color="info" onClick={handleReset}>
+            필터 초기화
           </Button>
           <Button variant="outlined" onClick={onClose}>
             취소
@@ -243,9 +245,9 @@ const CustomerFilterModal = ({
           <Button variant="contained" onClick={handleApply}>
             적용
           </Button>
-        </Box>
-      </Box>
-    </Modal>
+        </div>
+      </DialogActions>
+    </Dialog>
   );
 };
 

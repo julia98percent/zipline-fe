@@ -3,12 +3,13 @@ import "react-toastify/dist/ReactToastify.css";
 
 interface ToastProps {
   message: string;
-  type: "success" | "error";
+  type: "success" | "error" | "info" | "warning";
+  duration?: number;
 }
 
-export const showToast = ({ message, type }: ToastProps) => {
+export const showToast = ({ message, type, duration = 2000 }: ToastProps) => {
   toast[type](message, {
-    autoClose: 2000,
+    autoClose: duration,
     hideProgressBar: false,
     closeOnClick: true,
     pauseOnHover: true,

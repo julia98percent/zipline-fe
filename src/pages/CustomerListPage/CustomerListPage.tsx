@@ -48,7 +48,7 @@ const CustomerListPage = () => {
         };
 
         if (searchQuery) {
-          params.searchTerm = searchQuery;
+          params.search = searchQuery;
         }
 
         if (filters.tenant) params.tenant = true;
@@ -68,7 +68,7 @@ const CustomerListPage = () => {
         }
         if (filters.telProvider) params.telProvider = filters.telProvider;
         if (filters.preferredRegion)
-          params.preferredRegion = filters.preferredRegion;
+          params.regionCode = filters.preferredRegion;
         if (filters.trafficSource) params.trafficSource = filters.trafficSource;
 
         return params;
@@ -142,14 +142,10 @@ const CustomerListPage = () => {
     setFilters(newFilters);
   }, []);
 
-  const handleFilterApply = useCallback(
-    (appliedFilters: CustomerFilter) => {
-      setFilters(appliedFilters);
-      setFilterModalOpen(false);
-      fetchCustomerList(true);
-    },
-    [fetchCustomerList]
-  );
+  const handleFilterApply = useCallback((appliedFilters: CustomerFilter) => {
+    setFilters(appliedFilters);
+    setFilterModalOpen(false);
+  }, []);
 
   const handleSearchSubmit = useCallback(() => {
     setSearchQuery(searchTerm);

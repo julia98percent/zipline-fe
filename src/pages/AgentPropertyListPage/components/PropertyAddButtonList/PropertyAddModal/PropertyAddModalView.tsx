@@ -13,14 +13,7 @@ import CustomerAddressSection from "./CustomerAddressSection";
 import PropertyTypeAndPriceSection from "./PropertyTypeAndPriceSection";
 import PropertyDetailsSection from "./PropertyDetailsSection";
 import PropertyOptionsSection from "./PropertyOptionsSection";
-
-export type NumericInputTuple = [
-  string,
-  (e: React.ChangeEvent<HTMLInputElement>) => void,
-  string | null,
-  (value: string) => void,
-  (e: React.FocusEvent<HTMLInputElement>) => void
-];
+import { NumericInputResponse } from "@hooks/useNumericInput";
 
 interface CustomerData {
   uid: number | null;
@@ -44,14 +37,14 @@ interface PropertyTypeData {
 }
 
 interface NumericInputs {
-  price: NumericInputTuple;
-  deposit: NumericInputTuple;
-  monthlyRent: NumericInputTuple;
-  netArea: NumericInputTuple;
-  totalArea: NumericInputTuple;
-  floor: NumericInputTuple;
-  constructionYear: NumericInputTuple;
-  parkingCapacity: NumericInputTuple;
+  price: NumericInputResponse;
+  deposit: NumericInputResponse;
+  monthlyRent: NumericInputResponse;
+  netArea: NumericInputResponse;
+  totalArea: NumericInputResponse;
+  floor: NumericInputResponse;
+  constructionYear: NumericInputResponse;
+  parkingCapacity: NumericInputResponse;
 }
 
 interface OtherData {
@@ -92,7 +85,6 @@ const PropertyAddModalView = ({
   isFormValid,
   validationErrors,
 }: PropertyAddModalViewProps) => {
-  // Extract price-related inputs
   const priceInputs = {
     price: numericInputs.price,
     deposit: numericInputs.deposit,

@@ -94,20 +94,21 @@ const PropertyAddModal = ({
     if (!type) errors.push("거래 유형을 선택해주세요");
     if (hasElevator === null || hasElevator === undefined)
       errors.push("엘리베이터 유무를 선택해주세요");
-    if (!netAreaInput[0] || Number(netAreaInput[0]) <= 0)
+    if (!netAreaInput.value || Number(netAreaInput.value) <= 0)
       errors.push("전용면적을 입력해주세요");
-    if (!totalAreaInput[0] || Number(totalAreaInput[0]) <= 0)
+    if (!totalAreaInput.value || Number(totalAreaInput.value) <= 0)
       errors.push("공급면적을 입력해주세요");
 
-    if (netAreaInput[2]) errors.push("유효한 전용 면적을 입력해주세요");
-    if (totalAreaInput[2]) errors.push("유효한 공급 면적을 입력해주세요");
-    if (floorInput[2]) errors.push("유효한 층수를 입력해주세요");
-    if (constructionYearInput[2]) errors.push("유효한 건축년도를 입력해주세요");
-    if (parkingCapacityInput[2])
+    if (netAreaInput.error) errors.push("유효한 전용 면적을 입력해주세요");
+    if (totalAreaInput.error) errors.push("유효한 공급 면적을 입력해주세요");
+    if (floorInput.error) errors.push("유효한 층수를 입력해주세요");
+    if (constructionYearInput.error)
+      errors.push("유효한 건축년도를 입력해주세요");
+    if (parkingCapacityInput.error)
       errors.push("유효한 주차 가능 대수를 입력해주세요");
-    if (priceInput[2]) errors.push("유효한 가격을 입력해주세요");
-    if (depositInput[2]) errors.push("유효한 보증금을 입력해주세요");
-    if (monthlyRentInput[2]) errors.push("유효한 월세를 입력해주세요");
+    if (priceInput.error) errors.push("유효한 가격을 입력해주세요");
+    if (depositInput.error) errors.push("유효한 보증금을 입력해주세요");
+    if (monthlyRentInput.error) errors.push("유효한 월세를 입력해주세요");
 
     return errors;
   };
@@ -136,23 +137,23 @@ const PropertyAddModal = ({
       address: address!,
       detailAddress: extraAddress,
       legalDistrictCode,
-      deposit: parseNumber(depositInput[0]),
-      monthlyRent: parseNumber(monthlyRentInput[0]),
-      price: parseNumber(priceInput[0]),
+      deposit: parseNumber(depositInput.value),
+      monthlyRent: parseNumber(monthlyRentInput.value),
+      price: parseNumber(priceInput.value),
       type: type,
       longitude,
       latitude,
       moveInDate: moveInDate?.format("YYYY-MM-DD") || null,
       realCategory,
       petsAllowed,
-      floor: Number(floorInput[0]),
+      floor: Number(floorInput.value),
       hasElevator,
-      constructionYear: constructionYearInput[0]
-        ? Number(constructionYearInput[0])
+      constructionYear: constructionYearInput.value
+        ? Number(constructionYearInput.value)
         : null,
-      parkingCapacity: Number(parkingCapacityInput[0]),
-      netArea: Number(netAreaInput[0]),
-      totalArea: Number(totalAreaInput[0]),
+      parkingCapacity: Number(parkingCapacityInput.value),
+      netArea: Number(netAreaInput.value),
+      totalArea: Number(totalAreaInput.value),
       details,
       createContract,
     };
@@ -175,13 +176,13 @@ const PropertyAddModal = ({
       }
 
       const errorMap: Record<string, (msg: string) => void> = {
-        보증금: (msg) => depositInput[3](msg),
-        월세: (msg) => monthlyRentInput[3](msg),
-        "매매 가격": (msg) => priceInput[3](msg),
-        "전용 면적": (msg) => netAreaInput[3](msg),
-        "공급 면적": (msg) => totalAreaInput[3](msg),
-        층수: (msg) => floorInput[3](msg),
-        건축년도: (msg) => constructionYearInput[3](msg),
+        보증금: (msg) => depositInput.setValueManually(msg),
+        월세: (msg) => monthlyRentInput.setValueManually(msg),
+        "매매 가격": (msg) => priceInput.setValueManually(msg),
+        "전용 면적": (msg) => netAreaInput.setValueManually(msg),
+        "공급 면적": (msg) => totalAreaInput.setValueManually(msg),
+        층수: (msg) => floorInput.setValueManually(msg),
+        건축년도: (msg) => constructionYearInput.setValueManually(msg),
         주소: (msg) => showToast({ message: msg, type: "error" }),
         고객: () => showToast({ message, type: "error" }),
         "이미 등록되어있는 매물입니다.": () =>

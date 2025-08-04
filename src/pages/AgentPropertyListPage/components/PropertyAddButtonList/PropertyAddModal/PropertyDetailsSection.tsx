@@ -1,40 +1,53 @@
 import TextField from "@components/TextField";
-import { NumericInputTuple } from "./PropertyAddModalView";
+import { NumericInputResponse } from "@hooks/useNumericInput";
 
 interface DetailInputs {
-  netArea: NumericInputTuple;
-  totalArea: NumericInputTuple;
-  floor: NumericInputTuple;
-  constructionYear: NumericInputTuple;
-  parkingCapacity: NumericInputTuple;
-}
-
-interface PropertyDetailsSectionProps {
-  detailInputs: DetailInputs;
+  netArea: NumericInputResponse;
+  totalArea: NumericInputResponse;
+  floor: NumericInputResponse;
+  constructionYear: NumericInputResponse;
+  parkingCapacity: NumericInputResponse;
 }
 
 const PropertyDetailsSection = ({
   detailInputs,
-}: PropertyDetailsSectionProps) => {
-  const [netArea, onNetAreaChange, netAreaError, , onNetAreaBlur] =
-    detailInputs.netArea;
-  const [totalArea, onTotalAreaChange, totalAreaError, , onTotalAreaBlur] =
-    detailInputs.totalArea;
-  const [floor, onFloorChange, floorError, , onFloorBlur] = detailInputs.floor;
-  const [
-    constructionYear,
-    onConstructionYearChange,
-    constructionYearError,
-    ,
-    onConstructionYearBlur,
-  ] = detailInputs.constructionYear;
-  const [
-    parkingCapacity,
-    onParkingCapacityChange,
-    parkingCapacityError,
-    ,
-    onParkingCapacityBlur,
-  ] = detailInputs.parkingCapacity;
+}: {
+  detailInputs: DetailInputs;
+}) => {
+  const {
+    value: netArea,
+    handleChange: onNetAreaChange,
+    error: netAreaError,
+    handleBlur: onNetAreaBlur,
+  } = detailInputs.netArea;
+
+  const {
+    value: totalArea,
+    handleChange: onTotalAreaChange,
+    error: totalAreaError,
+    handleBlur: onTotalAreaBlur,
+  } = detailInputs.totalArea;
+
+  const {
+    value: floor,
+    handleChange: onFloorChange,
+    error: floorError,
+    handleBlur: onFloorBlur,
+  } = detailInputs.floor;
+
+  const {
+    value: constructionYear,
+    handleChange: onConstructionYearChange,
+    error: constructionYearError,
+    handleBlur: onConstructionYearBlur,
+  } = detailInputs.constructionYear;
+
+  const {
+    value: parkingCapacity,
+    handleChange: onParkingCapacityChange,
+    error: parkingCapacityError,
+    handleBlur: onParkingCapacityBlur,
+  } = detailInputs.parkingCapacity;
 
   return (
     <div>

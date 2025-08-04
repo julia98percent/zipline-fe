@@ -40,29 +40,49 @@ function PropertyEditModal({
   const [address, setAddress] = useState<string | null>("");
   const [detailAddress, setdetailAddress] = useState("");
   const [legalDistrictCode, setLegalDistrictCode] = useState("");
-  const [deposit, handleChangeDeposit, , setDepositManually] =
-    useNumericInput("");
-  const [monthlyRent, handleChangeMonthlyRent, , setMonthlyRentManually] =
-    useNumericInput("");
-  const [price, handleChangePrice, , setPriceManually] = useNumericInput("");
+  const {
+    value: deposit,
+    handleChange: handleChangeDeposit,
+    setValueManually: setDepositManually,
+  } = useNumericInput("");
+  const {
+    value: monthlyRent,
+    handleChange: handleChangeMonthlyRent,
+    setValueManually: setMonthlyRentManually,
+  } = useNumericInput("");
+  const {
+    value: price,
+    handleChange: handleChangePrice,
+    setValueManually: setPriceManually,
+  } = useNumericInput("");
 
-  const [netArea, handleChangeNetArea, , setNetAreaManually] =
-    useRawNumericInput("");
-  const [totalArea, handleChangeTotalArea, , setTotalAreaManually] =
-    useRawNumericInput("");
-  const [floor, handleChangeFloor, , setFloorManually] = useRawNumericInput("");
-  const [
-    constructionYear,
-    handleChangeConstructionYear,
-    ,
-    setConstructionYearManually,
-  ] = useRawNumericInput("");
-  const [
-    parkingCapacity,
-    handleChangeParkingCapacity,
-    ,
-    setParkingCapacityManually,
-  ] = useRawNumericInput("");
+  const {
+    value: netArea,
+    handleChange: handleChangeNetArea,
+    setValueManually: setNetAreaManually,
+  } = useRawNumericInput("");
+  const {
+    value: totalArea,
+    handleChange: handleChangeTotalArea,
+    setValueManually: setTotalAreaManually,
+  } = useRawNumericInput("");
+  const {
+    value: floor,
+    handleChange: handleChangeFloor,
+    setValueManually: setFloorManually,
+  } = useRawNumericInput("");
+
+  const {
+    value: constructionYear,
+    handleChange: handleChangeConstructionYear,
+    setValueManually: setConstructionYearManually,
+  } = useRawNumericInput("");
+
+  const {
+    value: parkingCapacity,
+    handleChange: handleChangeParkingCapacity,
+    setValueManually: setParkingCapacityManually,
+  } = useRawNumericInput("");
 
   const [details, setDetails] = useState("");
   const [type, setType] = useState<PropertyType>("SALE");

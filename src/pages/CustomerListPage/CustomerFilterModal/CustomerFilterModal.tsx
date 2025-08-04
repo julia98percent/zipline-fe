@@ -1,14 +1,22 @@
-import { Modal, Box, Typography } from "@mui/material";
+import {
+  Dialog,
+  DialogActions,
+  DialogContent,
+  DialogTitle,
+  Tooltip,
+} from "@mui/material";
 import { useState, useEffect, useCallback } from "react";
 import { fetchLabels } from "@apis/customerService";
 import { fetchSido, fetchSigungu, fetchDong } from "@apis/regionService";
 import { RegionState } from "@ts/region";
-import { CustomerFilter, Label } from "@ts/customer";
+import { CustomerBaseFilter, CustomerFilter, Label } from "@ts/customer";
 import RoleFilters from "./RoleFilters";
 import RegionFilters from "./RegionFilters";
 import PriceFilters from "./PriceFilters";
 import LabelFilters from "./LabelFilters";
 import Button from "@components/Button";
+import { useNumericInput } from "@hooks/useNumericInput";
+import { MAX_PROPERTY_PRICE } from "@constants/property";
 
 interface CustomerFilterModalProps {
   open: boolean;
@@ -24,18 +32,12 @@ const CustomerFilterModal = ({
   filters,
   onApply,
 }: CustomerFilterModalProps) => {
-  const [filtersTemp, setFiltersTemp] = useState<CustomerFilter>({
+  const [filtersTemp, setFiltersTemp] = useState<CustomerBaseFilter>({
     tenant: false,
     landlord: false,
     buyer: false,
     seller: false,
     noRole: false,
-    minPrice: null,
-    maxPrice: null,
-    minRent: null,
-    maxRent: null,
-    minDeposit: null,
-    maxDeposit: null,
     labelUids: [],
     telProvider: "",
     preferredRegion: "",
@@ -51,6 +53,13 @@ const CustomerFilterModal = ({
   });
   const [labels, setLabels] = useState<Label[]>([]);
   const [selectedLabels, setSelectedLabels] = useState<Label[]>([]);
+
+  const minPriceInput = useNumericInput("", { max: MAX_PROPERTY_PRICE });
+  const maxPriceInput = useNumericInput("", { max: MAX_PROPERTY_PRICE });
+  const minRentInput = useNumericInput("", { max: MAX_PROPERTY_PRICE });
+  const maxRentInput = useNumericInput("", { max: MAX_PROPERTY_PRICE });
+  const minDepositInput = useNumericInput("", { max: MAX_PROPERTY_PRICE });
+  const maxDepositInput = useNumericInput("", { max: MAX_PROPERTY_PRICE });
 
   const fetchLabelsData = useCallback(async () => {
     try {
@@ -130,13 +139,6 @@ const CustomerFilterModal = ({
   }, [open, filters.labelUids, labels]);
 
   const handleApply = () => {
-    const parsePrice = (price: string | number | null) => {
-      if (!price) return null;
-      const priceStr = typeof price === "string" ? price : String(price);
-      const parsed = Number(priceStr.replace(/[^0-9]/g, ""));
-      return parsed || null;
-    };
-
     let regionCode: string | undefined;
     if (region.selectedDong) {
       regionCode = String(region.selectedDong);
@@ -152,12 +154,12 @@ const CustomerFilterModal = ({
       landlord: filtersTemp.noRole ? false : filtersTemp.landlord,
       buyer: filtersTemp.noRole ? false : filtersTemp.buyer,
       seller: filtersTemp.noRole ? false : filtersTemp.seller,
-      minPrice: parsePrice(filtersTemp.minPrice),
-      maxPrice: parsePrice(filtersTemp.maxPrice),
-      minRent: parsePrice(filtersTemp.minRent),
-      maxRent: parsePrice(filtersTemp.maxRent),
-      minDeposit: parsePrice(filtersTemp.minDeposit),
-      maxDeposit: parsePrice(filtersTemp.maxDeposit),
+      minPrice: minPriceInput.value ? Number(minPriceInput.value) : null,
+      maxPrice: maxPriceInput.value ? Number(maxPriceInput.value) : null,
+      minRent: minRentInput.value ? Number(minRentInput.value) : null,
+      maxRent: maxRentInput.value ? Number(maxRentInput.value) : null,
+      minDeposit: minDepositInput.value ? Number(minDepositInput.value) : null,
+      maxDeposit: maxDepositInput.value ? Number(maxDepositInput.value) : null,
       labelUids: selectedLabels.map((label) => label.uid),
       telProvider: filtersTemp.telProvider || "",
       preferredRegion: regionCode || "",
@@ -176,12 +178,6 @@ const CustomerFilterModal = ({
       buyer: false,
       seller: false,
       noRole: false,
-      minPrice: null,
-      maxPrice: null,
-      minDeposit: null,
-      maxDeposit: null,
-      minRent: null,
-      maxRent: null,
       labelUids: [],
       telProvider: "",
       preferredRegion: "",
@@ -196,19 +192,37 @@ const CustomerFilterModal = ({
       selectedSigungu: null,
       selectedDong: null,
     });
+    minPriceInput.setValueManually("");
+    maxPriceInput.setValueManually("");
+    minRentInput.setValueManually("");
+    maxRentInput.setValueManually("");
+    minDepositInput.setValueManually("");
+    maxDepositInput.setValueManually("");
   };
 
-  return (
-    <Modal open={open} onClose={onClose}>
-      <Box
-        className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 
-                w-[80%] max-w-[800px] max-h-[90%] bg-white shadow-2xl 
-                p-8 rounded-lg overflow-auto"
-      >
-        <Typography variant="h5" className="mb-6 font-semibold">
-          고객 필터
-        </Typography>
+  const getValuationErrors = () => {
+    const errors: string[] = [];
+    if (minPriceInput.error) errors.push("유효한 최소 가격을 입력해주세요.");
+    if (maxPriceInput.error) errors.push("유효한 최대 가격을 입력해주세요.");
+    if (minRentInput.error)
+      errors.push("유효한 최소 월세 가격을 입력해주세요.");
+    if (maxRentInput.error)
+      errors.push("유효한 최대 월세 가격을 입력해주세요.");
+    if (minDepositInput.error)
+      errors.push("유효한 최소 보증금을 입력해주세요.");
+    if (maxDepositInput.error)
+      errors.push("유효한 최대 보증금을 입력해주세요.");
+    return errors;
+  };
+  const validationErrors = getValuationErrors();
+  const isSubmitButtonDisabled = validationErrors.length > 0;
 
+  return (
+    <Dialog open={open} onClose={onClose}>
+      <DialogTitle className="border-b text-primary font-bold border-gray-200">
+        고객 필터
+      </DialogTitle>
+      <DialogContent className="flex flex-col p-6 gap-6">
         <RoleFilters
           filtersTemp={filtersTemp}
           setFiltersTemp={setFiltersTemp}
@@ -229,23 +243,57 @@ const CustomerFilterModal = ({
         />
 
         <PriceFilters
-          filtersTemp={filtersTemp}
-          setFiltersTemp={setFiltersTemp}
+          minPriceInput={minPriceInput}
+          maxPriceInput={maxPriceInput}
+          minRentInput={minRentInput}
+          maxRentInput={maxRentInput}
+          minDepositInput={minDepositInput}
+          maxDepositInput={maxDepositInput}
         />
+      </DialogContent>
 
-        <Box className="flex justify-end mt-8">
-          <Button variant="outlined" onClick={handleReset}>
-            초기화
+      <DialogActions className="flex flex-row-reverse items-center justify-between p-6 border-t border-gray-200">
+        <div className="flex gap-2">
+          <Button variant="outlined" color="info" onClick={handleReset}>
+            필터 초기화
           </Button>
           <Button variant="outlined" onClick={onClose}>
             취소
           </Button>
-          <Button variant="contained" onClick={handleApply}>
+          <Button
+            variant="contained"
+            onClick={handleApply}
+            disabled={isSubmitButtonDisabled}
+          >
             적용
           </Button>
-        </Box>
-      </Box>
-    </Modal>
+        </div>
+        {isSubmitButtonDisabled && validationErrors.length > 0 && (
+          <Tooltip
+            title={
+              <div>
+                {validationErrors.map((error, index) => (
+                  <div key={index}>• {error}</div>
+                ))}
+              </div>
+            }
+            arrow
+            placement="top"
+          >
+            <div className="text-sm text-red-600 cursor-help">
+              <ul className="list-disc list-inside">
+                {validationErrors.slice(0, 1).map((error, index) => (
+                  <li key={index}>{error}</li>
+                ))}
+                {validationErrors.length > 1 && (
+                  <li>외 {validationErrors.length - 1}개 항목</li>
+                )}
+              </ul>
+            </div>
+          </Tooltip>
+        )}
+      </DialogActions>
+    </Dialog>
   );
 };
 

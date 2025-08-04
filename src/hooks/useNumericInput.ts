@@ -6,17 +6,18 @@ interface NumericInputOptions {
   allowDecimal?: boolean;
   allowNegative?: boolean;
 }
+export interface NumericInputResponse {
+  value: string;
+  handleChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
+  error: string | null;
+  setValueManually: (value: string) => void;
+  handleBlur: (e: React.FocusEvent<HTMLInputElement>) => void;
+}
 
 export function useNumericInput(
   initialValue: string | number | null = "",
   options?: NumericInputOptions
-): [
-  string,
-  (e: React.ChangeEvent<HTMLInputElement>) => void,
-  string | null,
-  (value: string) => void,
-  (e: React.FocusEvent<HTMLInputElement>) => void
-] {
+): NumericInputResponse {
   const [value, setValue] = useState<string>(initialValue?.toString() ?? "");
   const [error, setError] = useState<string | null>(null);
 
@@ -125,19 +126,13 @@ export function useNumericInput(
     setError(null);
   };
 
-  return [value, handleChange, error, setValueManually, handleBlur];
+  return { value, handleChange, error, setValueManually, handleBlur };
 }
 
 export function useRawNumericInput(
   initialValue: string | number | null = "",
   options?: NumericInputOptions
-): [
-  string,
-  (e: React.ChangeEvent<HTMLInputElement>) => void,
-  string | null,
-  (value: string) => void,
-  (e: React.FocusEvent<HTMLInputElement>) => void
-] {
+): NumericInputResponse {
   const [value, setValue] = useState<string>(initialValue?.toString() ?? "");
   const [error, setError] = useState<string | null>(null);
 
@@ -226,5 +221,5 @@ export function useRawNumericInput(
     setError(null);
   };
 
-  return [value, handleChange, error, setValueManually, handleBlur];
+  return { value, handleChange, error, setValueManually, handleBlur };
 }

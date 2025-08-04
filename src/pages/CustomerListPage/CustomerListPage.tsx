@@ -1,5 +1,6 @@
 import { useState, useEffect, useCallback } from "react";
 import { useOutletContext } from "react-router-dom";
+import usePageFilters from "@hooks/usePageFilters";
 import { Customer, CustomerFilter } from "@ts/customer";
 import { searchCustomers, updateCustomer } from "@apis/customerService";
 import { showToast } from "@components/Toast/Toast";
@@ -28,29 +29,33 @@ const INITIAL_FILTERS: CustomerFilter = {
   noRole: false,
 };
 
-const CUSTOMER_STORAGE_KEY = 'customerFilters';
+const CUSTOMER_STORAGE_KEY = "customerFilters";
 
 const CustomerListPage = () => {
   const { onMobileMenuToggle } = useOutletContext<OutletContext>();
 
-  const [storedData] = useState(() => {
-    try {
-      const stored = sessionStorage.getItem(CUSTOMER_STORAGE_KEY);
-      return stored ? JSON.parse(stored) : null;
-    } catch {
-      return null;
-    }
-  });
+  const initialPageData = {
+    page: 0,
+    rowsPerPage: DEFAULT_ROWS_PER_PAGE,
+    searchTerm: "",
+    searchQuery: "",
+    filters: INITIAL_FILTERS,
+  };
+
+  const { storedData, saveFilters } = usePageFilters(
+    CUSTOMER_STORAGE_KEY,
+    initialPageData
+  );
 
   const [loading, setLoading] = useState(true);
   const [customerList, setCustomerList] = useState<Customer[]>([]);
   const [totalCount, setTotalCount] = useState(0);
-  const [page, setPage] = useState(storedData?.page || 0);
-  const [rowsPerPage, setRowsPerPage] = useState(storedData?.rowsPerPage || DEFAULT_ROWS_PER_PAGE);
-  const [searchTerm, setSearchTerm] = useState(storedData?.searchTerm || "");
-  const [searchQuery, setSearchQuery] = useState(storedData?.searchQuery || ""); // 실제 검색에 사용되는 값
+  const [page, setPage] = useState(storedData.page);
+  const [rowsPerPage, setRowsPerPage] = useState(storedData.rowsPerPage);
+  const [searchTerm, setSearchTerm] = useState(storedData.searchTerm);
+  const [searchQuery, setSearchQuery] = useState(storedData.searchQuery);
   const [filterModalOpen, setFilterModalOpen] = useState(false);
-  const [filters, setFilters] = useState<CustomerFilter>(storedData?.filters || INITIAL_FILTERS);
+  const [filters, setFilters] = useState<CustomerFilter>(storedData.filters);
 
   const fetchCustomerList = useCallback(
     async (reset = true) => {
@@ -196,15 +201,15 @@ const CustomerListPage = () => {
   }, []);
 
   useEffect(() => {
-    const dataToStore = {
-      filters,
+    const currentData = {
       page,
       rowsPerPage,
       searchTerm,
       searchQuery,
+      filters,
     };
-    sessionStorage.setItem(CUSTOMER_STORAGE_KEY, JSON.stringify(dataToStore));
-  }, [filters, page, rowsPerPage, searchTerm, searchQuery]);
+    saveFilters(currentData);
+  }, [page, rowsPerPage, searchTerm, searchQuery, filters, saveFilters]);
 
   // 컴포넌트 마운트 시 초기 로드, searchQuery 변경 시 검색
   useEffect(() => {

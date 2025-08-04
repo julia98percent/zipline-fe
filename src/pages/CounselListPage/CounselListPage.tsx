@@ -6,43 +6,62 @@ import CounselListPageView from "./CounselListPageView";
 import { Counsel } from "@ts/counsel";
 import { DEFAULT_ROWS_PER_PAGE } from "@components/Table/Table";
 import dayjs, { Dayjs } from "dayjs";
+import usePageFilters from "@hooks/usePageFilters";
 
 interface OutletContext {
   onMobileMenuToggle: () => void;
 }
 
-const COUNSEL_STORAGE_KEY = 'counselFilters';
+interface CounselFilters {
+  page: number;
+  rowsPerPage: number;
+  search: string;
+  startDate: string | null;
+  endDate: string | null;
+  selectedType: string | null;
+  selectedCompleted: boolean | null;
+}
+
+const COUNSEL_STORAGE_KEY = "counselFilters";
 
 function CounselListPage() {
   const { onMobileMenuToggle } = useOutletContext<OutletContext>();
   const navigate = useNavigate();
 
-  const [storedData] = useState(() => {
-    try {
-      const stored = sessionStorage.getItem(COUNSEL_STORAGE_KEY);
-      return stored ? JSON.parse(stored) : null;
-    } catch {
-      return null;
-    }
-  });
+  const initialPageData: CounselFilters = {
+    page: 0,
+    rowsPerPage: DEFAULT_ROWS_PER_PAGE,
+    search: "",
+    startDate: null,
+    endDate: null,
+    selectedType: null,
+    selectedCompleted: null,
+  };
+
+  const { storedData, saveFilters } = usePageFilters<CounselFilters>(
+    COUNSEL_STORAGE_KEY,
+    initialPageData
+  );
 
   const [counsels, setCounsels] = useState<Counsel[]>([]);
-  const [page, setPage] = useState(storedData?.page || 0);
-  const [rowsPerPage, setRowsPerPage] = useState(storedData?.rowsPerPage || DEFAULT_ROWS_PER_PAGE);
+  const [page, setPage] = useState(storedData.page);
+  const [rowsPerPage, setRowsPerPage] = useState(storedData.rowsPerPage);
   const [totalElements, setTotalElements] = useState(0);
   const [isLoading, setIsLoading] = useState(true);
   const [isModalOpen, setIsModalOpen] = useState(false);
 
-  const [search, setSearch] = useState(storedData?.search || "");
+  const [search, setSearch] = useState(storedData.search);
   const [startDate, setStartDate] = useState<Dayjs | null>(
-    storedData?.startDate ? dayjs(storedData.startDate) : null
+    storedData.startDate ? dayjs(storedData.startDate) : null
   );
   const [endDate, setEndDate] = useState<Dayjs | null>(
-    storedData?.endDate ? dayjs(storedData.endDate) : null
+    storedData.endDate ? dayjs(storedData.endDate) : null
   );
-  const [selectedType, setSelectedType] = useState<string | null>(storedData?.selectedType || null);
+  const [selectedType, setSelectedType] = useState<string | null>(
+    storedData.selectedType
+  );
   const [selectedCompleted, setSelectedCompleted] = useState<boolean | null>(
-    storedData?.selectedCompleted ?? null
+    storedData.selectedCompleted
   );
 
   const fetchCounsels = useCallback(async () => {
@@ -76,7 +95,7 @@ function CounselListPage() {
   ]);
 
   useEffect(() => {
-    const dataToStore = {
+    const dataToStore: CounselFilters = {
       page,
       rowsPerPage,
       search,
@@ -85,8 +104,17 @@ function CounselListPage() {
       selectedType,
       selectedCompleted,
     };
-    sessionStorage.setItem(COUNSEL_STORAGE_KEY, JSON.stringify(dataToStore));
-  }, [page, rowsPerPage, search, startDate, endDate, selectedType, selectedCompleted]);
+    saveFilters(dataToStore);
+  }, [
+    page,
+    rowsPerPage,
+    search,
+    startDate,
+    endDate,
+    selectedType,
+    selectedCompleted,
+    saveFilters,
+  ]);
 
   useEffect(() => {
     fetchCounsels();

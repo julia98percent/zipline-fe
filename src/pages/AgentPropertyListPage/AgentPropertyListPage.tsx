@@ -1,6 +1,7 @@
 import { useEffect, useState, useCallback } from "react";
 import { SelectChangeEvent } from "@mui/material";
 import { useOutletContext } from "react-router-dom";
+import usePageFilters from "@hooks/usePageFilters";
 import AgentPropertyListPageView from "./AgentPropertyListPageView";
 import {
   searchAgentProperties,
@@ -16,13 +17,19 @@ interface OutletContext {
   onMobileMenuToggle: () => void;
 }
 
+interface PropertyFilters {
+  searchParams: AgentPropertySearchParams;
+  selectedSido: string;
+  selectedGu: string;
+  selectedDong: string;
+}
 const DEFAULT_SEARCH_PARAMS: AgentPropertySearchParams = {
   page: 0,
   size: DEFAULT_ROWS_PER_PAGE,
   sortFields: {},
 };
 
-const STORAGE_KEY = 'agentPropertyFilters';
+const STORAGE_KEY = "agentPropertyFilters";
 
 const CATEGORY_OPTIONS = [
   { value: "ONE_ROOM", label: "원룸" },
@@ -43,21 +50,24 @@ const TYPE_OPTIONS = [
 function AgentPropertyListPage() {
   const { onMobileMenuToggle } = useOutletContext<OutletContext>();
 
-  const [storedFilters] = useState(() => {
-    try {
-      const stored = sessionStorage.getItem(STORAGE_KEY);
-      return stored ? JSON.parse(stored) : null;
-    } catch {
-      return null;
-    }
-  });
+  const initialPageData: PropertyFilters = {
+    searchParams: DEFAULT_SEARCH_PARAMS,
+    selectedSido: "",
+    selectedGu: "",
+    selectedDong: "",
+  };
+
+  const { storedData, saveFilters } = usePageFilters<PropertyFilters>(
+    STORAGE_KEY,
+    initialPageData
+  );
 
   // 상태 관리
   const [loading, setLoading] = useState(false);
   const [agentPropertyList, setAgentPropertyList] = useState<Property[]>([]);
   const [totalElements, setTotalElements] = useState(0);
   const [searchParams, setSearchParams] = useState<AgentPropertySearchParams>(
-    storedFilters?.searchParams || DEFAULT_SEARCH_PARAMS
+    storedData.searchParams
   );
   const [showFilterModal, setShowFilterModal] = useState(false);
 
@@ -65,11 +75,10 @@ function AgentPropertyListPage() {
   const [regions, setRegions] = useState<Region[]>([]);
   const [sigunguOptions, setSigunguOptions] = useState<Region[]>([]);
   const [dongOptions, setDongOptions] = useState<Region[]>([]);
-  const [selectedSido, setSelectedSido] = useState(storedFilters?.selectedSido || "");
-  const [selectedGu, setSelectedGu] = useState(storedFilters?.selectedGu || "");
-  const [selectedDong, setSelectedDong] = useState(storedFilters?.selectedDong || "");
+  const [selectedSido, setSelectedSido] = useState(storedData.selectedSido);
+  const [selectedGu, setSelectedGu] = useState(storedData.selectedGu);
+  const [selectedDong, setSelectedDong] = useState(storedData.selectedDong);
 
-  // API 호출 함수
   const fetchProperties = useCallback(
     async (params: AgentPropertySearchParams) => {
       try {
@@ -290,30 +299,26 @@ function AgentPropertyListPage() {
   }, [fetchProperties, searchParams]);
 
   useEffect(() => {
-    const filtersToStore = {
+    const currentData: PropertyFilters = {
       searchParams,
       selectedSido,
       selectedGu,
       selectedDong,
     };
-    sessionStorage.setItem(STORAGE_KEY, JSON.stringify(filtersToStore));
-  }, [searchParams, selectedSido, selectedGu, selectedDong]);
+    saveFilters(currentData);
+  }, [searchParams, selectedSido, selectedGu, selectedDong, saveFilters]);
 
-  // 초기 데이터 로드
   useEffect(() => {
-    const initialParams = storedFilters?.searchParams || DEFAULT_SEARCH_PARAMS;
-    fetchProperties(initialParams);
+    fetchProperties(storedData.searchParams);
     loadRegions();
   }, [fetchProperties, loadRegions]);
 
   useEffect(() => {
-    if (storedFilters) {
-      if (storedFilters.selectedSido) {
-        loadSigunguOptions(storedFilters.selectedSido);
-      }
-      if (storedFilters.selectedGu) {
-        loadDongOptions(storedFilters.selectedGu);
-      }
+    if (storedData.selectedSido) {
+      loadSigunguOptions(storedData.selectedSido);
+    }
+    if (storedData.selectedGu) {
+      loadDongOptions(storedData.selectedGu);
     }
   }, [loadSigunguOptions, loadDongOptions]);
 

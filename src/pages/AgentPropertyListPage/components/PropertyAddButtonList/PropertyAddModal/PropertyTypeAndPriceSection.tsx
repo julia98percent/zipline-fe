@@ -1,7 +1,7 @@
 import TextField from "@components/TextField";
 import { RadioGroup, FormControlLabel, Radio, Checkbox } from "@mui/material";
 import { PropertyType } from "@ts/property";
-import { NumericInputTuple } from "./PropertyAddModalView";
+import { NumericInputResponse } from "@hooks/useNumericInput";
 
 interface PropertyTypeData {
   type: PropertyType;
@@ -11,9 +11,9 @@ interface PropertyTypeData {
 }
 
 interface PriceInputs {
-  price: NumericInputTuple;
-  deposit: NumericInputTuple;
-  monthlyRent: NumericInputTuple;
+  price: NumericInputResponse;
+  deposit: NumericInputResponse;
+  monthlyRent: NumericInputResponse;
 }
 
 interface PropertyTypeAndPriceSectionProps {
@@ -32,16 +32,26 @@ const PropertyTypeAndPriceSection = ({
   const { type, realCategory, onTypeChange, onRealCategoryChange } =
     propertyTypeData;
 
-  const [price, onPriceChange, priceError, , onPriceBlur] = priceInputs.price;
-  const [deposit, onDepositChange, depositError, , onDepositBlur] =
-    priceInputs.deposit;
-  const [
-    monthlyRent,
-    onMonthlyRentChange,
-    monthlyRentError,
-    ,
-    onMonthlyRentBlur,
-  ] = priceInputs.monthlyRent;
+  const {
+    value: price,
+    handleChange: onPriceChange,
+    error: priceError,
+    handleBlur: onPriceBlur,
+  } = priceInputs.price;
+
+  const {
+    value: deposit,
+    handleChange: onDepositChange,
+    error: depositError,
+    handleBlur: onDepositBlur,
+  } = priceInputs.deposit;
+
+  const {
+    value: monthlyRent,
+    handleChange: onMonthlyRentChange,
+    error: monthlyRentError,
+    handleBlur: onMonthlyRentBlur,
+  } = priceInputs.monthlyRent;
 
   return (
     <div className="flex flex-col border-b border-gray-200 pb-7 mb-7 gap-5">

@@ -31,7 +31,8 @@ const SignInPage = () => {
           type: "success",
         });
 
-        navigate("/");
+        const redirectPath = localStorage.getItem("redirectAfterLogin");
+        navigate(redirectPath || "/");
       }
     } catch (e) {
       const error = e as AxiosError<{ message?: string }>;

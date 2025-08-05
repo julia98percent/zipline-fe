@@ -1,7 +1,8 @@
-import { ChangeEvent } from "react";
+import { ChangeEvent, useState, useEffect } from "react";
 import { Tooltip } from "@mui/material";
 import ErrorOutlineIcon from "@mui/icons-material/ErrorOutline";
 import TextField from "@components/TextField";
+import CapsLockWarning from "@components/CapsLockWarning";
 
 export interface PasswordInputProps {
   password: string;
@@ -29,6 +30,9 @@ const PasswordInput = ({
   onBlur,
   onKeyDown,
 }: PasswordInputProps) => {
+  const [showCapsLockWarning, setShowCapsLockWarning] = useState(false);
+  const [showCapsLockWarningCheck, setShowCapsLockWarningCheck] = useState(false);
+
   const isPasswordError =
     error || Boolean(password && !isValidPassword(password));
   const isPasswordCheckError =
@@ -46,9 +50,56 @@ const PasswordInput = ({
       ? "비밀번호가 일치하지 않습니다"
       : "");
 
+  const handleKeyPress = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    const isCapsLockOn = e.getModifierState("CapsLock");
+    const isEnglishLetter = /^[a-zA-Z]$/.test(e.key);
+
+    if (isCapsLockOn && isEnglishLetter && !showCapsLockWarning) {
+      setShowCapsLockWarning(true);
+    }
+
+    if (onKeyDown) {
+      onKeyDown(e);
+    }
+  };
+
+  const handleKeyPressCheck = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    const isCapsLockOn = e.getModifierState("CapsLock");
+    const isEnglishLetter = /^[a-zA-Z]$/.test(e.key);
+
+    if (isCapsLockOn && isEnglishLetter && !showCapsLockWarningCheck) {
+      setShowCapsLockWarningCheck(true);
+    }
+
+    if (onKeyDown) {
+      onKeyDown(e);
+    }
+  };
+
+  useEffect(() => {
+    if (showCapsLockWarning) {
+      const timer = setTimeout(() => {
+        setShowCapsLockWarning(false);
+      }, 2000);
+
+      return () => clearTimeout(timer);
+    }
+  }, [showCapsLockWarning]);
+
+  useEffect(() => {
+    if (showCapsLockWarningCheck) {
+      const timer = setTimeout(() => {
+        setShowCapsLockWarningCheck(false);
+      }, 2000);
+
+      return () => clearTimeout(timer);
+    }
+  }, [showCapsLockWarningCheck]);
+
   return (
     <>
       <div style={{ position: "relative" }}>
+        <CapsLockWarning show={showCapsLockWarning} />
         <TextField
           fullWidth
           required
@@ -66,10 +117,11 @@ const PasswordInput = ({
               </Tooltip>
             ),
           }}
-          onKeyDown={onKeyDown}
+          onKeyDown={handleKeyPress}
         />
       </div>
       <div style={{ position: "relative" }}>
+        <CapsLockWarning show={showCapsLockWarningCheck} />
         <TextField
           fullWidth
           required
@@ -79,7 +131,7 @@ const PasswordInput = ({
           onChange={handleChangePasswordCheck}
           onBlur={onBlur}
           error={isPasswordCheckError}
-          placeholder="비밀번호를 다시 입력해주세요"
+          placeholder="비밀번호를 한 번 더 입력해주세요"
           InputProps={{
             endAdornment: isPasswordCheckError && (
               <Tooltip
@@ -91,7 +143,7 @@ const PasswordInput = ({
               </Tooltip>
             ),
           }}
-          onKeyDown={onKeyDown}
+          onKeyDown={handleKeyPressCheck}
         />
       </div>
     </>

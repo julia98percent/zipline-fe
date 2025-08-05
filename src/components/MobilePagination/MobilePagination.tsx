@@ -11,6 +11,8 @@ interface MobilePaginationProps {
   onPageChange: (event: unknown, newPage: number) => void;
 }
 
+const MAX_VISIBLE_PAGES = 5;
+
 const MobilePagination = ({
   page,
   totalElements,
@@ -23,10 +25,33 @@ const MobilePagination = ({
 
   const totalPages = Math.ceil(totalElements / rowsPerPage);
   const currentPage = page;
-  const startPage = Math.max(0, currentPage - 1);
-  const endPage = Math.min(totalPages - 1, currentPage + 1);
-  const pages = [];
 
+  let startPage: number;
+  let endPage: number;
+
+  if (totalPages <= MAX_VISIBLE_PAGES) {
+    startPage = 0;
+    endPage = totalPages - 1;
+  } else {
+    const halfRange = Math.floor(MAX_VISIBLE_PAGES / 2);
+    startPage = currentPage - halfRange;
+    endPage = currentPage + halfRange;
+
+    if (startPage < 0) {
+      startPage = 0;
+      endPage = MAX_VISIBLE_PAGES - 1;
+    }
+
+    if (endPage >= totalPages) {
+      endPage = totalPages - 1;
+      startPage = totalPages - MAX_VISIBLE_PAGES;
+    }
+
+    startPage = Math.max(0, startPage);
+    endPage = Math.min(totalPages - 1, endPage);
+  }
+
+  const pages = [];
   for (let i = startPage; i <= endPage; i++) {
     pages.push(i);
   }

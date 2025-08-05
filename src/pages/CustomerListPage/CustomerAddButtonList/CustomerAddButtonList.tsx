@@ -19,19 +19,27 @@ function CustomerAddButtonList({ fetchCustomerData }: Props) {
 
   return (
     <>
-      <div className="hidden lg:flex gap-2">
-        <Button variant="contained" onClick={handleOpen}>
-          <AddIcon fontSize="small" />
+      <div className="hidden sm:flex sm:justify-end gap-2">
+        <Button
+          variant="contained"
+          className="whitespace-nowrap"
+          onClick={handleOpen}
+        >
+          <AddIcon fontSize="small" className="flex md:hidden lg:flex" />
           고객 등록
         </Button>
 
-        <Button variant="outlined" onClick={handleOpenBulkUpload}>
+        <Button
+          variant="outlined"
+          onClick={handleOpenBulkUpload}
+          className="whitespace-nowrap"
+        >
           고객 데이터 일괄 등록(.csv)
         </Button>
       </div>
 
       {/* Mobile view - below 768px */}
-      <div className="flex lg:hidden flex-col gap-3 w-full">
+      <div className="flex sm:hidden flex-col gap-3 w-full">
         <Button
           variant="contained"
           onClick={handleOpen}

@@ -87,68 +87,107 @@ const CustomerListPageView = ({
 
       <div className="p-5 max-w-full mx-auto">
         <div className="bg-white rounded-lg shadow-sm p-3">
-          <div className="flex flex-col gap-4">
-            <TextField
-              fullWidth
-              size="small"
-              placeholder="전화번호 또는 고객 이름으로 검색"
-              value={searchTerm}
-              onChange={(e) => onSearchChange(e.target.value)}
-              onKeyDown={(e) => {
-                if (e.key === "Enter") {
-                  e.preventDefault();
-                  onSearchSubmit();
-                }
-              }}
-              InputProps={{
-                endAdornment: (
-                  <InputAdornment position="end">
-                    <IconButton size="small" onClick={onSearchSubmit}>
-                      <SearchIcon fontSize="small" />
-                    </IconButton>
-                  </InputAdornment>
-                ),
-              }}
-            />
-
-            <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4 lg:gap-2">
-              <div className="hidden lg:block">
-                <Button
-                  variant="outlined"
-                  onClick={onFilterModalOpen}
-                  startIcon={<FilterListIcon />}
-                >
-                  상세 필터
-                </Button>
-                <Button
-                  variant="text"
-                  onClick={onFilterReset}
-                  className="min-w-10"
-                >
-                  필터 초기화
-                </Button>
+          <div className="flex flex-col sm:gap-4">
+            {/* 작은/중간 화면 레이아웃 */}
+            <div className="sm:hidden">
+              <div className="grid grid-cols-1 sm:grid-cols-[3fr_2fr] gap-2 mb-4">
+                <TextField
+                  fullWidth
+                  size="small"
+                  placeholder="전화번호 / 고객 이름으로 검색"
+                  value={searchTerm}
+                  onChange={(e) => onSearchChange(e.target.value)}
+                  onKeyDown={(e) => {
+                    if (e.key === "Enter") {
+                      e.preventDefault();
+                      onSearchSubmit();
+                    }
+                  }}
+                  InputProps={{
+                    endAdornment: (
+                      <InputAdornment position="end">
+                        <IconButton size="small" onClick={onSearchSubmit}>
+                          <SearchIcon fontSize="small" />
+                        </IconButton>
+                      </InputAdornment>
+                    ),
+                  }}
+                />
+                <div className="flex justify-between sm:justify-end gap-1 sm:gap-2 text-wrap">
+                  <Button
+                    variant="outlined"
+                    onClick={onFilterModalOpen}
+                    startIcon={<FilterListIcon />}
+                    className="whitespace-nowrap w-[50%] sm:w-fit"
+                  >
+                    상세 필터
+                  </Button>
+                  <Button
+                    variant="text"
+                    className="whitespace-nowrap w-[50%] sm:w-fit sm:p-1!"
+                    onClick={onFilterReset}
+                  >
+                    필터 초기화
+                  </Button>
+                </div>
               </div>
-
-              {/* Mobile filter buttons */}
-              <div className="flex lg:hidden gap-2">
-                <Button
-                  variant="outlined"
-                  onClick={onFilterModalOpen}
-                  startIcon={<FilterListIcon />}
-                  className="flex-1"
-                >
-                  상세 필터
-                </Button>
-                <Button
-                  variant="text"
-                  onClick={onFilterReset}
-                  className="flex-1"
-                >
-                  필터 초기화
-                </Button>
-              </div>
-
               <CustomerAddButtonList fetchCustomerData={onCustomerCreate} />
+            </div>
+
+            {/* 큰 화면 레이아웃 */}
+            <div className="hidden sm:block">
+              {/* 첫 번째 줄: 검색창만 */}
+              <div className="mb-4">
+                <TextField
+                  fullWidth
+                  size="small"
+                  placeholder="전화번호 / 고객 이름으로 검색"
+                  value={searchTerm}
+                  onChange={(e) => onSearchChange(e.target.value)}
+                  onKeyDown={(e) => {
+                    if (e.key === "Enter") {
+                      e.preventDefault();
+                      onSearchSubmit();
+                    }
+                  }}
+                  InputProps={{
+                    endAdornment: (
+                      <InputAdornment position="end">
+                        <IconButton size="small" onClick={onSearchSubmit}>
+                          <SearchIcon fontSize="small" />
+                        </IconButton>
+                      </InputAdornment>
+                    ),
+                  }}
+                />
+              </div>
+
+              {/* 두 번째 줄: 고객 등록 버튼들 + 필터 버튼들 */}
+              <div className="flex justify-between items-center">
+                <div className="flex gap-2">
+                  <Button
+                    variant="outlined"
+                    onClick={onFilterModalOpen}
+                    className="break-keep whitespace-nowrap"
+                    startIcon={
+                      <FilterListIcon
+                        fontSize="small"
+                        className="flex md:hidden lg:flex"
+                      />
+                    }
+                  >
+                    상세 필터
+                  </Button>
+                  <Button
+                    variant="text"
+                    className="break-keep whitespace-nowrap"
+                    onClick={onFilterReset}
+                  >
+                    필터 초기화
+                  </Button>
+                </div>
+                <CustomerAddButtonList fetchCustomerData={onCustomerCreate} />
+              </div>
             </div>
           </div>
         </div>

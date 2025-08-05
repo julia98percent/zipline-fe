@@ -3,7 +3,7 @@ import { fetchPreCounselDetail } from "@apis/preCounselService";
 import { PreCounselDetail } from "@ts/counsel";
 import PreCounselDetailModalView from "./PreCounselDetailModalView";
 import { createCustomer } from "@apis/customerService";
-import { showToast } from "@components/Toast/Toast";
+import { showToast } from "@components/Toast";
 
 interface PreCounselDetailModalContainerProps {
   open: boolean;

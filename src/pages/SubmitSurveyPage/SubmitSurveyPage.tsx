@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { useNavigate, useParams } from "react-router-dom";
-import { showToast } from "@components/Toast/Toast";
+import { showToast } from "@components/Toast";
 import {
   getSurveyQuestions,
   submitSurveyAnswers,

@@ -7,7 +7,7 @@ import { useNavigate } from "react-router-dom";
 import { useState, useEffect } from "react";
 import DeleteConfirmModal from "@components/DeleteConfirm/DeleteConfirmModal";
 import Table, { ColumnConfig } from "@components/Table/Table";
-import { showToast } from "@components/Toast/Toast";
+import { showToast } from "@components/Toast";
 import { Customer, Label } from "@ts/customer";
 import { deleteCustomer } from "@apis/customerService";
 import { CUSTOMER_TABLE_COLUMNS } from "./constants";

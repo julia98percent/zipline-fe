@@ -1,7 +1,7 @@
 import { useEffect, useState, useCallback } from "react";
 import { useNavigate, useOutletContext } from "react-router-dom";
 import { fetchCounselList } from "@apis/counselService";
-import { showToast } from "@components/Toast/Toast";
+import { showToast } from "@components/Toast";
 import CounselListPageView from "./CounselListPageView";
 import { Counsel } from "@ts/counsel";
 import { DEFAULT_ROWS_PER_PAGE } from "@components/Table/Table";

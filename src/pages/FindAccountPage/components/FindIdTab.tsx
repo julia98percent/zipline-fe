@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { Typography, RadioGroup, FormControlLabel, Radio } from "@mui/material";
 import Button from "@components/Button";
 import TextField from "@components/TextField";
-import { showToast } from "@components/Toast/Toast";
+import { showToast } from "@components/Toast";
 import { findUserId, FindIdRequest } from "@apis/userService";
 import { formatPhoneNumber } from "@utils/numberUtil";
 import { API_ERROR_MESSAGES } from "@ts/apiResponse";

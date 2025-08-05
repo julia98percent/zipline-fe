@@ -6,7 +6,7 @@ import { Header, UserIdInput, PasswordInput, AuthLinks } from "./components";
 import Button from "@components/Button";
 import { Box, Typography } from "@mui/material";
 import signInImage from "@assets/sign-up.png";
-import { showToast } from "@components/Toast/Toast";
+import { showToast } from "@components/Toast";
 import useAuthStore from "@stores/useAuthStore";
 import { USER_ERROR_MESSAGES } from "@constants/clientErrorMessage";
 

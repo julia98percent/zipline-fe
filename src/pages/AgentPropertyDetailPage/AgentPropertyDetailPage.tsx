@@ -11,7 +11,7 @@ import {
   fetchPropertyCounselHistory,
   deleteProperty,
 } from "@apis/propertyService";
-import { showToast } from "@components/Toast/Toast";
+import { showToast } from "@components/Toast";
 import AgentPropertyDetailPageView from "./AgentPropertyDetailPageView";
 
 interface OutletContext {

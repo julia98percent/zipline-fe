@@ -6,7 +6,7 @@ import {
   updateMessageTemplate,
   deleteMessageTemplate,
 } from "@apis/messageService";
-import { showToast } from "@components/Toast/Toast";
+import { showToast } from "@components/Toast";
 import MessageTemplatePageView from "./MessageTemplatePageView";
 import { MessageTemplate, MessageTemplateList } from "@ts/message";
 

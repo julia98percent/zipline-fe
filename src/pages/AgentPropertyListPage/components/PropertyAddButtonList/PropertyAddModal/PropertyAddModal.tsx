@@ -5,7 +5,7 @@ import { createProperty, PropertyAddData } from "@apis/propertyService";
 import { fetchCustomerList } from "@apis/customerService";
 import { Customer } from "@ts/customer";
 import { PropertyType } from "@ts/property";
-import { showToast } from "@components/Toast/Toast";
+import { showToast } from "@components/Toast";
 import { useNumericInput, useRawNumericInput } from "@hooks/useNumericInput";
 import useInput from "@hooks/useInput";
 import PropertyAddModalView from "./PropertyAddModalView";

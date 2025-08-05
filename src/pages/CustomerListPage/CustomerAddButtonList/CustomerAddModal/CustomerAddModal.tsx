@@ -9,7 +9,7 @@ import {
   createLabel,
 } from "@apis/customerService";
 import { fetchRegions } from "@apis/regionService";
-import { showToast } from "@components/Toast/Toast";
+import { showToast } from "@components/Toast";
 import { formatPhoneNumber } from "@utils/numberUtil";
 import CustomerAddModalView from "./CustomerAddModalView";
 

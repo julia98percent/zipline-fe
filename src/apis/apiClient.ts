@@ -1,5 +1,5 @@
 import axios, { AxiosInstance } from "axios";
-import { showToast } from "@components/Toast/Toast";
+import { showToast } from "@components/Toast";
 
 const apiClient: AxiosInstance = axios.create({
   baseURL: import.meta.env.VITE_SERVER_URL,

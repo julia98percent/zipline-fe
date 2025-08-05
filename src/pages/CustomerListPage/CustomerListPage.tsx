@@ -3,7 +3,7 @@ import { useOutletContext } from "react-router-dom";
 import usePageFilters from "@hooks/usePageFilters";
 import { Customer, CustomerFilter } from "@ts/customer";
 import { searchCustomers, updateCustomer } from "@apis/customerService";
-import { showToast } from "@components/Toast/Toast";
+import { showToast } from "@components/Toast";
 import CustomerListPageView from "./CustomerListPageView";
 import { DEFAULT_ROWS_PER_PAGE } from "@components/Table/Table";
 

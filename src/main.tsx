@@ -11,7 +11,7 @@ import "./main.css";
 import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import { koKR } from "@mui/x-date-pickers/locales";
-import ToastProvider from "@components/Toast/Toast";
+import ToastProvider from "@components/Toast";
 
 const theme = createTheme({
   palette: {

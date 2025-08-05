@@ -8,7 +8,7 @@ import {
   createLabel,
 } from "@apis/customerService";
 import { formatPhoneNumber } from "@utils/numberUtil";
-import { showToast } from "@components/Toast/Toast";
+import { showToast } from "@components/Toast";
 import CustomerDetailPageView from "./CustomerDetailPageView";
 import { Customer, CustomerUpdateData, Label } from "@ts/customer";
 import { API_ERROR_MESSAGES } from "@ts/apiResponse";

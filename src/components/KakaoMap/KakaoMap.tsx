@@ -1,5 +1,5 @@
 import { useRef, useEffect } from "react";
-import { showToast } from "@components/Toast/Toast";
+import { showToast } from "@components/Toast";
 
 interface KakaoMapProps {
   lat: number;

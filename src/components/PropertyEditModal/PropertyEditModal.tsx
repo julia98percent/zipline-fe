@@ -44,7 +44,7 @@ function PropertyEditModal({
     { uid: number; name: string }[]
   >([]);
   const [address, setAddress] = useState<string | null>("");
-  const [detailAddress, setdetailAddress] = useState("");
+  const [detailAddress, setDetailAddress] = useState("");
   const [legalDistrictCode, setLegalDistrictCode] = useState("");
   const {
     value: deposit,
@@ -119,7 +119,7 @@ function PropertyEditModal({
     if (open && initialData) {
       if (initialData.address) setAddress(initialData.address);
       if (initialData.detailAddress)
-        setdetailAddress(initialData.detailAddress);
+        setDetailAddress(initialData.detailAddress);
       if (initialData.legalDistrictCode)
         setLegalDistrictCode(initialData.legalDistrictCode);
 
@@ -269,7 +269,7 @@ function PropertyEditModal({
           address={address}
           detailAddress={detailAddress}
           onAddressChange={setAddress}
-          onDetailAddressChange={setdetailAddress}
+          onDetailAddressChange={setDetailAddress}
         />
 
         <TransactionTypeSection

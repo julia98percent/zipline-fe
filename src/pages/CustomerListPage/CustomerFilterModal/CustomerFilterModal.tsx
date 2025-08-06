@@ -122,22 +122,24 @@ const CustomerFilterModal = ({
     }
   }, [open, fetchLabelsData, handleOpen, labels.length]);
 
+  const padRegionCode = (regionCode: string): string => {
+    if (regionCode.length === 2) {
+      return regionCode + "00000000"; // 시도: 12 -> 1200000000
+    } else if (regionCode.length === 5) {
+      return regionCode + "00000"; // 시군구: 12345 -> 1234500000
+    } else if (regionCode.length === 8) {
+      return regionCode + "00"; // 동: 12345678 -> 1234567800
+    }
+    return regionCode;
+  };
+
   useEffect(() => {
     if (open) {
       setFiltersTemp({ ...filters });
 
       if (filters.preferredRegion) {
-        let regionCode = filters.preferredRegion;
-
-        if (regionCode.length === 2) {
-          regionCode = regionCode + "00000000"; // 시도: 12 -> 1200000000
-        } else if (regionCode.length === 5) {
-          regionCode = regionCode + "00000"; // 시군구: 12345 -> 1234500000
-        } else if (regionCode.length === 8) {
-          regionCode = regionCode + "00"; // 동: 12345678 -> 1234567800
-        }
-
-        const parsedRegion = parseRegionCode(regionCode);
+        const paddedRegionCode = padRegionCode(filters.preferredRegion);
+        const parsedRegion = parseRegionCode(paddedRegionCode);
         setRegion((prev) => ({
           ...prev,
           selectedSido: parsedRegion.sidoCode || null,

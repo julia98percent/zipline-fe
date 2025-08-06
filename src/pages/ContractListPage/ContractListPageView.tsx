@@ -41,6 +41,7 @@ interface ContractListPageViewProps {
   onAddModalClose: () => void;
   onRefreshData: () => void;
   onMobileMenuToggle?: () => void;
+  handleClearFilters: () => void;
 }
 
 const ContractListPageView = ({
@@ -71,6 +72,7 @@ const ContractListPageView = ({
   onAddModalClose,
   onRefreshData,
   onMobileMenuToggle,
+  handleClearFilters,
 }: ContractListPageViewProps) => {
   return (
     <div className="bg-gray-100 min-h-screen">
@@ -142,7 +144,10 @@ const ContractListPageView = ({
                 ))}
               </div>
             </div>
-            <div className="flex justify-end w-full">
+            <div className="flex justify-between w-full">
+              <Button variant="text" onClick={handleClearFilters}>
+                필터 초기화
+              </Button>
               <Button variant="contained" onClick={onAddModalOpen}>
                 <AddIcon fontSize="small" />
                 계약 등록

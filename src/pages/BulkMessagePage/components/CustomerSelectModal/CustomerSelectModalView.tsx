@@ -1,5 +1,4 @@
 import {
-  Typography,
   Dialog,
   DialogTitle,
   DialogContent,
@@ -72,16 +71,17 @@ export default function CustomerSelectModalView({
       maxWidth="md"
       fullWidth
       PaperProps={{
-        className: "rounded-lg",
+        sx: {
+          borderRadius: "8px",
+          maxHeight: "90vh",
+        },
       }}
     >
-      <DialogTitle className="pb-2">
-        <Typography className="text-xl font-bold text-primary mb-4">
-          문자 발송 대상 고객 선택
-        </Typography>
+      <DialogTitle className="border-b text-primary font-bold border-gray-200">
+        문자 발송 대상 고객 선택
       </DialogTitle>
 
-      <DialogContent className="pb-0">
+      <DialogContent className="mt-4 p-7 pt-0">
         <CustomerFilters
           search={search}
           region={region}
@@ -117,7 +117,7 @@ export default function CustomerSelectModalView({
         />
       </DialogContent>
 
-      <DialogActions className="p-4">
+      <DialogActions className="flex items-center justify-end p-6 border-t border-gray-200">
         <Button onClick={onClose} variant="outlined" color="info">
           취소
         </Button>

@@ -45,73 +45,73 @@ const CustomerFilters = ({
   onLabelFilterChange,
 }: CustomerFiltersProps) => {
   return (
-    <div className="mb-6 flex flex-col gap-7">
-      <div className="flex gap-7 items-center flex-wrap">
-        {/* 검색창 */}
-        <TextField
-          size="small"
-          placeholder="이름, 전화번호 검색"
-          value={search}
-          onChange={(e) => onSearchChange(e.target.value)}
-          className="min-w-[180px]"
-        />
+    <div className="flex flex-col gap-4 border-b border-gray-200 pb-4">
+      <TextField
+        size="small"
+        placeholder="이름, 전화번호 검색"
+        value={search}
+        onChange={(e) => onSearchChange(e.target.value)}
+        className="min-w-[180px]"
+        fullWidth
+      />
 
-        {/* 지역 선택 */}
-        <div className="flex gap-4 items-center">
-          <div className="text-sm text-gray-600 min-w-[60px]">지역</div>
+      {/* 지역 선택 */}
+      <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-10">
+        <h6 className="whitespace-nowrap font-semibold">지역</h6>
+        <div className="flex gap-2">
+          <RegionSelector
+            value={region.selectedSido || ""}
+            regions={region.sido}
+            onChange={onRegionChange("sido")}
+            label="시/도"
+          />
+          <RegionSelector
+            value={region.selectedSigungu || ""}
+            regions={region.sigungu}
+            onChange={onRegionChange("sigungu")}
+            disabled={!region.selectedSido}
+            label="시/군/구"
+          />
+          <RegionSelector
+            value={region.selectedDong || ""}
+            regions={region.dong}
+            onChange={onRegionChange("dong")}
+            disabled={!region.selectedSigungu}
+            label="읍/면/동"
+          />
+        </div>
+      </div>
+
+      <div className="flex flex-col gap-4">
+        {/* 역할 필터 */}
+        <div className="flex flex-col sm:flex-row sm:items-center gap-2">
+          <h6 className="font-semibold">고객 역할</h6>
           <div className="flex gap-2">
-            <RegionSelector
-              value={region.selectedSido || ""}
-              regions={region.sido}
-              onChange={onRegionChange("sido")}
-              label="시/도"
-              className="min-w-[120px]"
-            />
-            <RegionSelector
-              value={region.selectedSigungu || ""}
-              regions={region.sigungu}
-              onChange={onRegionChange("sigungu")}
-              disabled={!region.selectedSido}
-              label="시/군/구"
-              className="min-w-[120px]"
-            />
-            <RegionSelector
-              value={region.selectedDong || ""}
-              regions={region.dong}
-              onChange={onRegionChange("dong")}
-              disabled={!region.selectedSigungu}
-              label="읍/면/동"
-              className="min-w-[120px]"
-            />
+            {(Object.keys(roleFilters) as (keyof typeof roleFilters)[]).map(
+              (role) => (
+                <Chip
+                  key={role}
+                  text={ROLE_LABELS[role]}
+                  onClick={() => onRoleFilterChange(role)}
+                  color={roleFilters[role] ? "primary" : "default"}
+                />
+              )
+            )}
           </div>
         </div>
 
-        {/* 역할 필터 */}
-        <div className="flex gap-2 items-center">
-          <div className="text-sm text-gray-600 min-w-[60px]">고객 역할</div>
-          {(Object.keys(roleFilters) as (keyof typeof roleFilters)[]).map(
-            (role) => (
+        <div className="flex flex-col sm:flex-row sm:items-center gap-2">
+          <h6 className="font-semibold">고객 라벨</h6>
+          <div>
+            {labels.map((label) => (
               <Chip
-                key={role}
-                text={ROLE_LABELS[role]}
-                onClick={() => onRoleFilterChange(role)}
-                color={roleFilters[role] ? "primary" : "default"}
+                key={label.uid}
+                text={label.name}
+                onClick={() => onLabelFilterChange(label.uid)}
+                color={labelUids.includes(label.uid) ? "primary" : "default"}
               />
-            )
-          )}
-        </div>
-
-        {/* 라벨 필터 */}
-        <div className="flex gap-2 items-center">
-          <div className="text-sm text-gray-600 min-w-[60px]">고객 라벨</div>
-          {labels.map((label) => (
-            <Chip
-              key={label.uid}
-              text={label.name}
-              onClick={() => onLabelFilterChange(label.uid)}
-              color={labelUids.includes(label.uid) ? "primary" : "default"}
-            />
-          ))}
+            ))}
+          </div>
         </div>
       </div>
     </div>

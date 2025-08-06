@@ -1,4 +1,4 @@
-import { Box, IconButton } from "@mui/material";
+import { IconButton } from "@mui/material";
 import {
   ChevronLeft as ChevronLeftIcon,
   ChevronRight as ChevronRightIcon,
@@ -57,42 +57,40 @@ const MobilePagination = ({
   }
 
   return (
-    <Box className="flex justify-center items-center mt-6 gap-1">
-      {/* 이전 페이지 버튼 */}
+    <div className="flex justify-center items-center mt-6 gap-1">
       <IconButton
         size="small"
         onClick={() => handleChangePage(null, page - 1)}
         disabled={page === 0}
-        className="w-8 h-8 border border-gray-300 rounded mr-2 disabled:opacity-50"
+        className="bg-white w-8 h-8 border border-gray-300 rounded disabled:opacity-50"
       >
         <ChevronLeftIcon fontSize="small" />
       </IconButton>
 
-      {/* 페이지 번호들 */}
       {pages.map((pageIndex) => (
-        <Box
+        <IconButton
           key={pageIndex}
           onClick={() => handleChangePage(null, pageIndex)}
-          className={`w-8 h-8 flex items-center justify-center border rounded cursor-pointer text-sm ${
-            page === pageIndex
-              ? "border-blue-500 bg-blue-500 text-white font-bold hover:bg-blue-600"
-              : "border-gray-300 bg-transparent text-gray-900 font-normal hover:bg-gray-100"
+          disabled={pageIndex === page}
+          className={`w-8 h-8 border rounded text-sm font-normal ${
+            pageIndex === page
+              ? "border-primary bg-primary text-white font-bold hover:bg-primary-dark hover:border-primary-dark"
+              : "border-gray-300 bg-white text-gray-900 hover:bg-gray-100 hover:border-primary"
           }`}
         >
           {pageIndex + 1}
-        </Box>
+        </IconButton>
       ))}
 
-      {/* 다음 페이지 버튼 */}
       <IconButton
         size="small"
         onClick={() => handleChangePage(null, page + 1)}
         disabled={page >= totalPages - 1}
-        className="w-8 h-8 border border-gray-300 rounded ml-2 disabled:opacity-50"
+        className="bg-white w-8 h-8 border border-gray-300 rounded disabled:opacity-50"
       >
         <ChevronRightIcon fontSize="small" />
       </IconButton>
-    </Box>
+    </div>
   );
 };
 

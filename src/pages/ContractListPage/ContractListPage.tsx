@@ -4,40 +4,17 @@ import { searchContracts } from "@apis/contractService";
 import { Contract, ContractCategory } from "@ts/contract";
 import { CONTRACT_STATUS_OPTION_LIST } from "@constants/contract";
 import ContractListPageView from "./ContractListPageView";
-import { DEFAULT_ROWS_PER_PAGE } from "@components/Table/Table";
-import usePageFilters from "@hooks/usePageFilters";
+import { useUrlPagination } from "@hooks/useUrlPagination";
+import { useUrlFilters } from "@hooks/useUrlFilters";
 
 interface OutletContext {
   onMobileMenuToggle: () => void;
 }
 
-interface ContractFilters {
-  selectedPeriod: string | null;
-  selectedStatus: string;
-  searchKeyword: string;
-  selectedSort: string;
-  page: number;
-  rowsPerPage: number;
-}
-
-const CONTRACT_STORAGE_KEY = "contractFilters";
-
 function ContractListPage() {
   const { onMobileMenuToggle } = useOutletContext<OutletContext>();
-
-  const initialPageData: ContractFilters = {
-    selectedPeriod: null,
-    selectedStatus: "",
-    searchKeyword: "",
-    selectedSort: "LATEST",
-    page: 0,
-    rowsPerPage: DEFAULT_ROWS_PER_PAGE,
-  };
-
-  const { storedData, saveFilters } = usePageFilters<ContractFilters>(
-    CONTRACT_STORAGE_KEY,
-    initialPageData
-  );
+  const { page, rowsPerPage, setPage, setRowsPerPage } = useUrlPagination();
+  const { getParam, setParam, setParams, clearAllFilters } = useUrlFilters();
 
   const periodMapping: Record<string, string> = {
     "6개월 이내 만료 예정": "6개월 이내",
@@ -59,26 +36,19 @@ function ContractListPage() {
 
   // State
   const [contractList, setContractList] = useState<Contract[]>([]);
-  const [selectedPeriod, setSelectedPeriod] = useState<string | null>(
-    storedData.selectedPeriod
-  );
-  const [selectedStatus, setSelectedStatus] = useState<string>(
-    storedData.selectedStatus
-  );
   const [filterModalOpen, setFilterModalOpen] = useState(false);
   const [, setLoading] = useState<boolean>(true);
-  const [searchKeyword, setSearchKeyword] = useState<string>(
-    storedData.searchKeyword
-  );
-  const [selectedSort, setSelectedSort] = useState<string>(
-    storedData.selectedSort
-  );
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
-  const [page, setPage] = useState(storedData.page);
-  const [rowsPerPage, setRowsPerPage] = useState(storedData.rowsPerPage);
   const [totalElements, setTotalElements] = useState(0);
 
-  const mappedCategory = categoryKeywordMap[searchKeyword] || "";
+  const [searchKeyword, setSearchKeyword] = useState("");
+  const searchQuery = getParam("q") || "";
+
+  const selectedPeriod = getParam("period") || null;
+  const selectedStatus = getParam("status") || "";
+  const selectedSort = getParam("sort") || "LATEST";
+
+  const mappedCategory = categoryKeywordMap[searchQuery] || "";
   const navigate = useNavigate();
 
   const fetchContractData = useCallback(async () => {
@@ -86,8 +56,8 @@ function ContractListPage() {
     try {
       const { contracts, totalElements } = await searchContracts({
         category: mappedCategory,
-        customerName: searchKeyword,
-        address: searchKeyword,
+        customerName: searchQuery,
+        address: searchQuery,
         period: selectedPeriod || "",
         status: selectedStatus,
         sort: selectedSort,
@@ -107,7 +77,7 @@ function ContractListPage() {
     }
   }, [
     mappedCategory,
-    searchKeyword,
+    searchQuery,
     selectedPeriod,
     selectedStatus,
     selectedSort,
@@ -118,11 +88,12 @@ function ContractListPage() {
   // Event Handlers
   const handlePeriodClick = (label: string) => {
     const backendValue = periodMapping[label];
-    setSelectedPeriod((prev) => (prev === backendValue ? null : backendValue));
+    const newValue = selectedPeriod === backendValue ? null : backendValue;
+    setParam("period", newValue || "");
   };
 
   const handleSortChange = (value: string) => {
-    setSelectedSort(value);
+    setParam("sort", value);
   };
 
   const handleSearchKeywordChange = (keyword: string) => {
@@ -130,11 +101,11 @@ function ContractListPage() {
   };
 
   const handleSearchSubmit = () => {
-    fetchContractData();
+    setParam("q", searchKeyword);
   };
 
   const handleStatusChange = (status: string) => {
-    setSelectedStatus(status);
+    setParam("status", status);
   };
 
   const handleAddModalOpen = () => {
@@ -147,7 +118,6 @@ function ContractListPage() {
 
   const handleRowsPerPageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setRowsPerPage(parseInt(e.target.value, 10));
-    setPage(0);
   };
 
   const handleRowClick = (contract: Contract) => {
@@ -165,8 +135,10 @@ function ContractListPage() {
     period: string;
     status: string;
   }) => {
-    setSelectedPeriod(period || null);
-    setSelectedStatus(status);
+    setParams({
+      period: period || null,
+      status: status || null,
+    });
   };
 
   const handleAddModalClose = () => {
@@ -174,24 +146,8 @@ function ContractListPage() {
   };
 
   useEffect(() => {
-    const currentData = {
-      selectedPeriod,
-      selectedStatus,
-      searchKeyword,
-      selectedSort,
-      page,
-      rowsPerPage,
-    };
-    saveFilters(currentData);
-  }, [
-    selectedPeriod,
-    selectedStatus,
-    searchKeyword,
-    selectedSort,
-    page,
-    rowsPerPage,
-    saveFilters,
-  ]);
+    setSearchKeyword(searchQuery);
+  }, [searchQuery]);
 
   // Effects
   useEffect(() => {
@@ -227,6 +183,7 @@ function ContractListPage() {
       onAddModalClose={handleAddModalClose}
       onRefreshData={fetchContractData}
       onMobileMenuToggle={onMobileMenuToggle}
+      handleClearFilters={clearAllFilters}
     />
   );
 }

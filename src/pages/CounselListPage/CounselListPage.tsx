@@ -1,68 +1,49 @@
-import { useEffect, useState, useCallback } from "react";
+import { useEffect, useState, useCallback, useMemo } from "react";
 import { useNavigate, useOutletContext } from "react-router-dom";
 import { fetchCounselList } from "@apis/counselService";
 import { showToast } from "@components/Toast";
 import CounselListPageView from "./CounselListPageView";
 import { Counsel } from "@ts/counsel";
-import { DEFAULT_ROWS_PER_PAGE } from "@components/Table/Table";
+import { useUrlPagination } from "@hooks/useUrlPagination";
+import { useUrlFilters } from "@hooks/useUrlFilters";
 import dayjs, { Dayjs } from "dayjs";
-import usePageFilters from "@hooks/usePageFilters";
 
 interface OutletContext {
   onMobileMenuToggle: () => void;
 }
 
-interface CounselFilters {
-  page: number;
-  rowsPerPage: number;
-  search: string;
-  startDate: string | null;
-  endDate: string | null;
-  selectedType: string | null;
-  selectedCompleted: boolean | null;
-}
-
-const COUNSEL_STORAGE_KEY = "counselFilters";
-
 function CounselListPage() {
   const { onMobileMenuToggle } = useOutletContext<OutletContext>();
   const navigate = useNavigate();
-
-  const initialPageData: CounselFilters = {
-    page: 0,
-    rowsPerPage: DEFAULT_ROWS_PER_PAGE,
-    search: "",
-    startDate: null,
-    endDate: null,
-    selectedType: null,
-    selectedCompleted: null,
-  };
-
-  const { storedData, saveFilters } = usePageFilters<CounselFilters>(
-    COUNSEL_STORAGE_KEY,
-    initialPageData
-  );
+  const { page, rowsPerPage, setPage, setRowsPerPage } = useUrlPagination();
+  const {
+    getParam,
+    getBooleanParam,
+    setParam,
+    setParams,
+    clearAllFilters,
+    searchParams,
+  } = useUrlFilters();
 
   const [counsels, setCounsels] = useState<Counsel[]>([]);
-  const [page, setPage] = useState(storedData.page);
-  const [rowsPerPage, setRowsPerPage] = useState(storedData.rowsPerPage);
   const [totalElements, setTotalElements] = useState(0);
   const [isLoading, setIsLoading] = useState(true);
   const [isModalOpen, setIsModalOpen] = useState(false);
 
-  const [search, setSearch] = useState(storedData.search);
-  const [startDate, setStartDate] = useState<Dayjs | null>(
-    storedData.startDate ? dayjs(storedData.startDate) : null
-  );
-  const [endDate, setEndDate] = useState<Dayjs | null>(
-    storedData.endDate ? dayjs(storedData.endDate) : null
-  );
-  const [selectedType, setSelectedType] = useState<string | null>(
-    storedData.selectedType
-  );
-  const [selectedCompleted, setSelectedCompleted] = useState<boolean | null>(
-    storedData.selectedCompleted
-  );
+  const [search, setSearch] = useState("");
+  const searchQuery = getParam("q") || "";
+  const startDate = useMemo(() => {
+    const dateStr = getParam("startDate");
+    return dateStr ? dayjs(dateStr) : null;
+  }, [searchParams]);
+  const endDate = useMemo(() => {
+    const dateStr = getParam("endDate");
+    return dateStr ? dayjs(dateStr) : null;
+  }, [searchParams]);
+  const selectedType = getParam("type") || null;
+  const selectedCompleted = getParam("completed")
+    ? getBooleanParam("completed")
+    : null;
 
   const fetchCounsels = useCallback(async () => {
     setIsLoading(true);
@@ -70,7 +51,7 @@ function CounselListPage() {
       const result = await fetchCounselList({
         page,
         size: rowsPerPage,
-        search: search || undefined,
+        search: searchQuery || undefined,
         startDate: startDate || undefined,
         endDate: endDate || undefined,
         type: selectedType || undefined,
@@ -87,7 +68,7 @@ function CounselListPage() {
   }, [
     page,
     rowsPerPage,
-    search,
+    searchQuery,
     startDate,
     endDate,
     selectedType,
@@ -95,26 +76,8 @@ function CounselListPage() {
   ]);
 
   useEffect(() => {
-    const dataToStore: CounselFilters = {
-      page,
-      rowsPerPage,
-      search,
-      startDate: startDate ? startDate.toISOString() : null,
-      endDate: endDate ? endDate.toISOString() : null,
-      selectedType,
-      selectedCompleted,
-    };
-    saveFilters(dataToStore);
-  }, [
-    page,
-    rowsPerPage,
-    search,
-    startDate,
-    endDate,
-    selectedType,
-    selectedCompleted,
-    saveFilters,
-  ]);
+    setSearch(searchQuery);
+  }, [searchQuery]);
 
   useEffect(() => {
     fetchCounsels();
@@ -129,19 +92,54 @@ function CounselListPage() {
       return;
     }
 
-    setPage(0);
-    fetchCounsels();
+    setParams({
+      q: search || null,
+      startDate: startDate ? startDate.format("YYYY-MM-DD") : null,
+      endDate: endDate ? endDate.format("YYYY-MM-DD") : null,
+      type: selectedType || null,
+      completed: selectedCompleted !== null ? selectedCompleted : null,
+    });
   };
 
   const handleResetClick = () => {
+    clearAllFilters();
     setSearch("");
-    setStartDate(null);
-    setEndDate(null);
-    setSelectedType(null);
-    setSelectedCompleted(null);
-    setPage(0);
-    fetchCounsels();
   };
+
+  const handleSearchChange = useCallback((newSearch: string) => {
+    setSearch(newSearch);
+  }, []);
+
+  const handleStartDateChange = useCallback(
+    (newStartDate: Dayjs | null) => {
+      setParam(
+        "startDate",
+        newStartDate ? newStartDate.format("YYYY-MM-DD") : ""
+      );
+    },
+    [setParam]
+  );
+
+  const handleEndDateChange = useCallback(
+    (newEndDate: Dayjs | null) => {
+      setParam("endDate", newEndDate ? newEndDate.format("YYYY-MM-DD") : "");
+    },
+    [setParam]
+  );
+
+  const handleTypeChange = useCallback(
+    (newType: string | null) => {
+      setParam("type", newType || "");
+    },
+    [setParam]
+  );
+
+  const handleCompletedChange = useCallback(
+    (newCompleted: boolean | null) => {
+      setParam("completed", newCompleted !== null ? newCompleted : "");
+    },
+    [setParam]
+  );
 
   const handleChangePage = (_event: unknown, newPage: number) => {
     setPage(newPage);
@@ -151,7 +149,6 @@ function CounselListPage() {
     event: React.ChangeEvent<HTMLInputElement>
   ) => {
     setRowsPerPage(parseInt(event.target.value, 10));
-    setPage(0);
   };
 
   const handleRowClick = (counselUid: number) => {
@@ -180,11 +177,11 @@ function CounselListPage() {
       endDate={endDate}
       selectedType={selectedType}
       selectedCompleted={selectedCompleted}
-      onSearchChange={setSearch}
-      onStartDateChange={setStartDate}
-      onEndDateChange={setEndDate}
-      onTypeChange={setSelectedType}
-      onCompletedChange={setSelectedCompleted}
+      onSearchChange={handleSearchChange}
+      onStartDateChange={handleStartDateChange}
+      onEndDateChange={handleEndDateChange}
+      onTypeChange={handleTypeChange}
+      onCompletedChange={handleCompletedChange}
       onSearchClick={handleSearchClick}
       onResetClick={handleResetClick}
       onPageChange={handleChangePage}

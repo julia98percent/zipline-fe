@@ -1,7 +1,8 @@
-import { useEffect, useState, useCallback } from "react";
+import { useEffect, useState, useCallback, useMemo } from "react";
 import { SelectChangeEvent } from "@mui/material";
 import { useOutletContext } from "react-router-dom";
-import usePageFilters from "@hooks/usePageFilters";
+import { useUrlPagination } from "@hooks/useUrlPagination";
+import { useUrlFilters } from "@hooks/useUrlFilters";
 import AgentPropertyListPageView from "./AgentPropertyListPageView";
 import {
   searchAgentProperties,
@@ -11,25 +12,10 @@ import { fetchSido, fetchSigungu, fetchDong } from "@apis/regionService";
 import { Property, PropertyType, PropertyCategoryType } from "@ts/property";
 import { Region } from "@ts/region";
 import { showToast } from "@components/Toast";
-import { DEFAULT_ROWS_PER_PAGE } from "@components/Table/Table";
 
 interface OutletContext {
   onMobileMenuToggle: () => void;
 }
-
-interface PropertyFilters {
-  searchParams: AgentPropertySearchParams;
-  selectedSido: string;
-  selectedGu: string;
-  selectedDong: string;
-}
-const DEFAULT_SEARCH_PARAMS: AgentPropertySearchParams = {
-  page: 0,
-  size: DEFAULT_ROWS_PER_PAGE,
-  sortFields: {},
-};
-
-const STORAGE_KEY = "agentPropertyFilters";
 
 const CATEGORY_OPTIONS = [
   { value: "ONE_ROOM", label: "원룸" },
@@ -49,35 +35,70 @@ const TYPE_OPTIONS = [
 
 function AgentPropertyListPage() {
   const { onMobileMenuToggle } = useOutletContext<OutletContext>();
-
-  const initialPageData: PropertyFilters = {
-    searchParams: DEFAULT_SEARCH_PARAMS,
-    selectedSido: "",
-    selectedGu: "",
-    selectedDong: "",
-  };
-
-  const { storedData, saveFilters } = usePageFilters<PropertyFilters>(
-    STORAGE_KEY,
-    initialPageData
-  );
+  const { page, rowsPerPage, setPage, setRowsPerPage } = useUrlPagination();
+  const {
+    getParam,
+    setParam,
+    setParams,
+    clearAllFilters,
+    searchParams: urlSearchParams,
+  } = useUrlFilters();
 
   // 상태 관리
   const [loading, setLoading] = useState(false);
   const [agentPropertyList, setAgentPropertyList] = useState<Property[]>([]);
   const [totalElements, setTotalElements] = useState(0);
-  const [searchParams, setSearchParams] = useState<AgentPropertySearchParams>(
-    storedData.searchParams
-  );
   const [showFilterModal, setShowFilterModal] = useState(false);
 
   // 지역 관련 상태
   const [regions, setRegions] = useState<Region[]>([]);
   const [sigunguOptions, setSigunguOptions] = useState<Region[]>([]);
   const [dongOptions, setDongOptions] = useState<Region[]>([]);
-  const [selectedSido, setSelectedSido] = useState(storedData.selectedSido);
-  const [selectedGu, setSelectedGu] = useState(storedData.selectedGu);
-  const [selectedDong, setSelectedDong] = useState(storedData.selectedDong);
+  const selectedSido = getParam("sido");
+  const selectedGu = getParam("gu");
+  const selectedDong = getParam("dong");
+
+  const searchParams = useMemo(
+    () => ({
+      page,
+      size: rowsPerPage,
+      sortFields: {},
+      category: (getParam("category") as PropertyCategoryType) || undefined,
+      type: (getParam("type") as PropertyType) || undefined,
+      legalDistrictCode: getParam("legalDistrictCode") || undefined,
+      minPrice: getParam("minPrice")
+        ? parseInt(getParam("minPrice"))
+        : undefined,
+      maxPrice: getParam("maxPrice")
+        ? parseInt(getParam("maxPrice"))
+        : undefined,
+      minDeposit: getParam("minDeposit")
+        ? parseInt(getParam("minDeposit"))
+        : undefined,
+      maxDeposit: getParam("maxDeposit")
+        ? parseInt(getParam("maxDeposit"))
+        : undefined,
+      minNetArea: getParam("minNetArea")
+        ? parseInt(getParam("minNetArea"))
+        : undefined,
+      maxNetArea: getParam("maxNetArea")
+        ? parseInt(getParam("maxNetArea"))
+        : undefined,
+      minTotalArea: getParam("minTotalArea")
+        ? parseInt(getParam("minTotalArea"))
+        : undefined,
+      maxTotalArea: getParam("maxTotalArea")
+        ? parseInt(getParam("maxTotalArea"))
+        : undefined,
+      hasElevator: getParam("hasElevator")
+        ? getParam("hasElevator") === "true"
+        : undefined,
+      petsAllowed: getParam("petsAllowed")
+        ? getParam("petsAllowed") === "true"
+        : undefined,
+    }),
+    [page, rowsPerPage, urlSearchParams]
+  );
 
   const fetchProperties = useCallback(
     async (params: AgentPropertySearchParams) => {
@@ -141,144 +162,127 @@ function AgentPropertyListPage() {
     }
   }, []);
 
-  // 이벤트 핸들러
   const handleSidoChange = useCallback(
     async (e: SelectChangeEvent) => {
       const newSido = String(e.target.value);
-      setSelectedSido(newSido);
-      setSelectedGu("");
-      setSelectedDong("");
-
       await loadSigunguOptions(newSido);
       setDongOptions([]);
 
-      const newParams = {
-        ...searchParams,
-        page: 0,
-        legalDistrictCode: newSido ? newSido.slice(0, 2) : undefined,
-      };
-      setSearchParams(newParams);
-      fetchProperties(newParams);
+      setParams({
+        sido: newSido || null,
+        gu: null,
+        dong: null,
+        legalDistrictCode: newSido ? newSido.slice(0, 2) : null,
+      });
     },
-    [searchParams, fetchProperties, loadSigunguOptions]
+    [setParams, loadSigunguOptions]
   );
 
   const handleGuChange = useCallback(
     async (e: SelectChangeEvent) => {
       const newGu = String(e.target.value);
-      setSelectedGu(newGu);
-      setSelectedDong("");
-
       await loadDongOptions(newGu);
 
-      const newParams = {
-        ...searchParams,
-        page: 0,
+      setParams({
+        gu: newGu || null,
+        dong: null,
         legalDistrictCode: newGu
           ? newGu.slice(0, 5)
           : selectedSido
           ? selectedSido.slice(0, 2)
-          : undefined,
-      };
-      setSearchParams(newParams);
-      fetchProperties(newParams);
+          : null,
+      });
     },
-    [searchParams, fetchProperties, selectedSido, loadDongOptions]
+    [setParams, selectedSido, loadDongOptions]
   );
 
   const handleDongChange = useCallback(
     async (e: SelectChangeEvent) => {
       const newDong = String(e.target.value);
-      setSelectedDong(newDong);
 
-      const newParams = {
-        ...searchParams,
-        page: 0,
+      setParams({
+        dong: newDong || null,
         legalDistrictCode: newDong
           ? newDong.slice(0, 8)
           : selectedGu
           ? selectedGu.slice(0, 5)
           : selectedSido
           ? selectedSido.slice(0, 2)
-          : undefined,
-      };
-      setSearchParams(newParams);
-      fetchProperties(newParams);
+          : null,
+      });
     },
-    [searchParams, fetchProperties, selectedSido, selectedGu]
+    [setParams, selectedSido, selectedGu]
   );
 
   const handleCategoryChange = useCallback(
     (e: SelectChangeEvent<unknown>) => {
       const value =
-        (e.target.value as string) === ""
-          ? undefined
-          : (e.target.value as PropertyCategoryType);
-      const newParams = {
-        ...searchParams,
-        page: 0,
-        category: value,
-      };
-      setSearchParams(newParams);
-      fetchProperties(newParams);
+        (e.target.value as string) === "" ? null : (e.target.value as string);
+      setParam("category", value || "");
     },
-    [searchParams, fetchProperties]
+    [setParam]
   );
 
   const handleTypeChange = useCallback(
     (e: SelectChangeEvent<unknown>) => {
       const value =
-        (e.target.value as string) === ""
-          ? undefined
-          : (e.target.value as PropertyType);
-      const newParams = {
-        ...searchParams,
-        page: 0,
-        type: value,
-      };
-      setSearchParams(newParams);
-      fetchProperties(newParams);
+        (e.target.value as string) === "" ? null : (e.target.value as string);
+      setParam("type", value || "");
     },
-    [searchParams, fetchProperties]
+    [setParam]
   );
 
   const handleFilterApply = useCallback(
     (newFilters: Partial<AgentPropertySearchParams>) => {
-      const newParams = {
-        ...searchParams,
-        ...newFilters,
-        page: 0,
-      };
-      setSearchParams(newParams);
-      fetchProperties(newParams);
+      const filterParams: Record<string, string | number | boolean | null> = {};
+
+      if (newFilters.minPrice !== undefined)
+        filterParams.minPrice = newFilters.minPrice || null;
+      if (newFilters.maxPrice !== undefined)
+        filterParams.maxPrice = newFilters.maxPrice || null;
+      if (newFilters.minDeposit !== undefined)
+        filterParams.minDeposit = newFilters.minDeposit || null;
+      if (newFilters.maxDeposit !== undefined)
+        filterParams.maxDeposit = newFilters.maxDeposit || null;
+      if (newFilters.minRent !== undefined)
+        filterParams.minRent = newFilters.minRent || null;
+      if (newFilters.maxRent !== undefined)
+        filterParams.maxRent = newFilters.maxRent || null;
+
+      if (newFilters.minNetArea !== undefined)
+        filterParams.minNetArea = newFilters.minNetArea || null;
+      if (newFilters.maxNetArea !== undefined)
+        filterParams.maxNetArea = newFilters.maxNetArea || null;
+      if (newFilters.minTotalArea !== undefined)
+        filterParams.minTotalArea = newFilters.minTotalArea || null;
+      if (newFilters.maxTotalArea !== undefined)
+        filterParams.maxTotalArea = newFilters.maxTotalArea || null;
+
+      if (newFilters.hasElevator !== undefined)
+        filterParams.hasElevator =
+          newFilters.hasElevator !== undefined ? newFilters.hasElevator : null;
+      if (newFilters.petsAllowed !== undefined)
+        filterParams.petsAllowed =
+          newFilters.petsAllowed !== undefined ? newFilters.petsAllowed : null;
+
+      setParams(filterParams);
       setShowFilterModal(false);
     },
-    [searchParams, fetchProperties]
+    [setParams]
   );
 
   const handlePageChange = useCallback(
     (newPage: number) => {
-      const newParams = {
-        ...searchParams,
-        page: newPage,
-      };
-      setSearchParams(newParams);
-      fetchProperties(newParams);
+      setPage(newPage);
     },
-    [searchParams, fetchProperties]
+    [setPage]
   );
 
   const handleRowsPerPageChange = useCallback(
     (newSize: number) => {
-      const newParams = {
-        ...searchParams,
-        page: 0,
-        size: newSize,
-      };
-      setSearchParams(newParams);
-      fetchProperties(newParams);
+      setRowsPerPage(newSize);
     },
-    [searchParams, fetchProperties]
+    [setRowsPerPage]
   );
 
   const handleFilterModalToggle = useCallback(() => {
@@ -290,12 +294,8 @@ function AgentPropertyListPage() {
   }, []);
 
   const handleReset = useCallback(() => {
-    setSearchParams(DEFAULT_SEARCH_PARAMS);
-    setSelectedSido("");
-    setSelectedGu("");
-    setSelectedDong("");
-    fetchProperties(DEFAULT_SEARCH_PARAMS);
-  }, [fetchProperties]);
+    clearAllFilters();
+  }, [clearAllFilters]);
 
   const handleSaveProperty = useCallback(() => {
     // 매물 저장 후 목록 새로고침
@@ -303,28 +303,24 @@ function AgentPropertyListPage() {
   }, [fetchProperties, searchParams]);
 
   useEffect(() => {
-    const currentData: PropertyFilters = {
-      searchParams,
-      selectedSido,
-      selectedGu,
-      selectedDong,
-    };
-    saveFilters(currentData);
-  }, [searchParams, selectedSido, selectedGu, selectedDong, saveFilters]);
+    fetchProperties(searchParams);
+  }, [fetchProperties, searchParams]);
 
   useEffect(() => {
-    fetchProperties(storedData.searchParams);
     loadRegions();
-  }, [fetchProperties, loadRegions]);
+  }, [loadRegions]);
 
   useEffect(() => {
-    if (storedData.selectedSido) {
-      loadSigunguOptions(storedData.selectedSido);
+    if (selectedSido) {
+      loadSigunguOptions(selectedSido);
     }
-    if (storedData.selectedGu) {
-      loadDongOptions(storedData.selectedGu);
+  }, [selectedSido, loadSigunguOptions]);
+
+  useEffect(() => {
+    if (selectedGu) {
+      loadDongOptions(selectedGu);
     }
-  }, [loadSigunguOptions, loadDongOptions]);
+  }, [selectedGu, loadDongOptions]);
 
   return (
     <AgentPropertyListPageView

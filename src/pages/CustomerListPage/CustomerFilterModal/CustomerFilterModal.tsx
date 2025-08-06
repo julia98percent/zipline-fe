@@ -10,6 +10,7 @@ import { fetchLabels } from "@apis/customerService";
 import { fetchSido, fetchSigungu, fetchDong } from "@apis/regionService";
 import { RegionState } from "@ts/region";
 import { CustomerBaseFilter, CustomerFilter, Label } from "@ts/customer";
+import { parseRegionCode } from "@utils/regionUtil";
 import RoleFilters from "./RoleFilters";
 import RegionFilters from "./RegionFilters";
 import PriceFilters from "./PriceFilters";
@@ -114,7 +115,6 @@ const CustomerFilterModal = ({
 
   useEffect(() => {
     if (open) {
-      // labels가 없을 때만 fetchLabelsData 호출
       if (labels.length === 0) {
         fetchLabelsData();
       }
@@ -122,10 +122,57 @@ const CustomerFilterModal = ({
     }
   }, [open, fetchLabelsData, handleOpen, labels.length]);
 
-  // filters가 변경될 때만 filtersTemp 업데이트
+  const padRegionCode = (regionCode: string): string => {
+    if (regionCode.length === 2) {
+      return regionCode + "00000000"; // 시도: 12 -> 1200000000
+    } else if (regionCode.length === 5) {
+      return regionCode + "00000"; // 시군구: 12345 -> 1234500000
+    } else if (regionCode.length === 8) {
+      return regionCode + "00"; // 동: 12345678 -> 1234567800
+    }
+    return regionCode;
+  };
+
   useEffect(() => {
     if (open) {
       setFiltersTemp({ ...filters });
+
+      if (filters.preferredRegion) {
+        const paddedRegionCode = padRegionCode(filters.preferredRegion);
+        const parsedRegion = parseRegionCode(paddedRegionCode);
+        setRegion((prev) => ({
+          ...prev,
+          selectedSido: parsedRegion.sidoCode || null,
+          selectedSigungu: parsedRegion.sigunguCode || null,
+          selectedDong: parsedRegion.dongCode || null,
+        }));
+      } else {
+        setRegion((prev) => ({
+          ...prev,
+          selectedSido: null,
+          selectedSigungu: null,
+          selectedDong: null,
+        }));
+      }
+
+      minPriceInput.setValueManually(
+        filters.minPrice ? String(filters.minPrice) : ""
+      );
+      maxPriceInput.setValueManually(
+        filters.maxPrice ? String(filters.maxPrice) : ""
+      );
+      minRentInput.setValueManually(
+        filters.minRent ? String(filters.minRent) : ""
+      );
+      maxRentInput.setValueManually(
+        filters.maxRent ? String(filters.maxRent) : ""
+      );
+      minDepositInput.setValueManually(
+        filters.minDeposit ? String(filters.minDeposit) : ""
+      );
+      maxDepositInput.setValueManually(
+        filters.maxDeposit ? String(filters.maxDeposit) : ""
+      );
     }
   }, [open, filters]);
 
@@ -137,6 +184,18 @@ const CustomerFilterModal = ({
       setSelectedLabels(selectedLabelsData);
     }
   }, [open, filters.labelUids, labels]);
+
+  useEffect(() => {
+    if (open && region.selectedSido && region.sido.length > 0) {
+      loadSigunguData(region.selectedSido);
+    }
+  }, [open, region.selectedSido, region.sido.length, loadSigunguData]);
+
+  useEffect(() => {
+    if (open && region.selectedSigungu && region.sigungu.length > 0) {
+      loadDongData(region.selectedSigungu);
+    }
+  }, [open, region.selectedSigungu, region.sigungu.length, loadDongData]);
 
   const handleApply = () => {
     let regionCode: string | undefined;

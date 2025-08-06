@@ -5,6 +5,7 @@ import RefreshIcon from "@mui/icons-material/Refresh";
 import PageHeader from "@components/PageHeader/PageHeader";
 import Button from "@components/Button";
 import MobilePagination from "@components/MobilePagination";
+import { useUrlPagination } from "@hooks/useUrlPagination";
 import dayjs from "dayjs";
 import MessageDetailModal from "./MessageDetailModal";
 import MessageHistoryCard from "./MessageHistoryCard";
@@ -13,7 +14,6 @@ import Status from "@components/Status";
 import { MessageHistory } from "@ts/message";
 import { fetchMessages } from "@apis/messageService";
 import Table, { ColumnConfig } from "@components/Table";
-import { DEFAULT_ROWS_PER_PAGE } from "@components/Table/Table";
 
 interface OutletContext {
   onMobileMenuToggle: () => void;
@@ -28,14 +28,12 @@ interface TableRowData {
 
 const MessageHistoryPage = () => {
   const { onMobileMenuToggle } = useOutletContext<OutletContext>();
+  const { page, rowsPerPage, setPage, setRowsPerPage } = useUrlPagination();
+  
   const [messages, setMessages] = useState<MessageHistory[]>([]);
-  const [selectedMessageHistory, setSelectedMessageHistory] =
-    useState<MessageHistory | null>(null);
+  const [selectedMessageHistory, setSelectedMessageHistory] = useState<MessageHistory | null>(null);
   const [isLoading, setIsLoading] = useState(false);
-  const [page, setPage] = useState(0);
-  const [rowsPerPage, setRowsPerPage] = useState(DEFAULT_ROWS_PER_PAGE);
   const [totalElements, setTotalElements] = useState(0);
-
   const [detailModalOpen, setDetailModalOpen] = useState(false);
 
   const columns: ColumnConfig<TableRowData>[] = [
@@ -85,11 +83,10 @@ const MessageHistoryPage = () => {
   };
 
   const handleModalClose = () => setDetailModalOpen(false);
+
   const fetchData = async () => {
     setIsLoading(true);
-
     const messageArray = await fetchMessages();
-
     setMessages(messageArray);
     setTotalElements(messageArray.length);
     setIsLoading(false);
@@ -103,11 +100,8 @@ const MessageHistoryPage = () => {
     setPage(newPage);
   };
 
-  const handleChangeRowsPerPage = (
-    event: React.ChangeEvent<HTMLInputElement>
-  ) => {
+  const handleChangeRowsPerPage = (event: React.ChangeEvent<HTMLInputElement>) => {
     setRowsPerPage(parseInt(event.target.value, 10));
-    setPage(0);
   };
 
   const formatDate = (dateString: string) => {
@@ -116,7 +110,7 @@ const MessageHistoryPage = () => {
 
   useEffect(() => {
     fetchData();
-  }, [page]);
+  }, []);
 
   return (
     <Box className="grow bg-gray-100 min-h-screen">

@@ -1,11 +1,11 @@
 import { useState, useEffect, useCallback } from "react";
 import { useOutletContext } from "react-router-dom";
+import { useUrlPagination } from "@hooks/useUrlPagination";
 import PreCounselDetailModal from "@components/PreCounselDetailModal";
 import PageHeader from "@components/PageHeader";
 import PreCounselTable from "@components/PreCounselTable/PreCounselTable";
 import { PreCounsel } from "@ts/counsel";
 import { fetchCounsels } from "@apis/counselService";
-import { DEFAULT_ROWS_PER_PAGE } from "@components/Table/Table";
 
 interface OutletContext {
   onMobileMenuToggle: () => void;
@@ -13,9 +13,9 @@ interface OutletContext {
 
 function PreCounselListPage() {
   const { onMobileMenuToggle } = useOutletContext<OutletContext>();
+  const { page, rowsPerPage, setPage, setRowsPerPage } = useUrlPagination();
+  
   const [counsels, setCounsels] = useState<PreCounsel[]>([]);
-  const [page, setPage] = useState(0);
-  const [rowsPerPage, setRowsPerPage] = useState(DEFAULT_ROWS_PER_PAGE);
   const [isLoading, setIsLoading] = useState(true);
   const [totalElements, setTotalElements] = useState(0);
   const [isSurveyDetailModalOpen, setIsSurveyDetailModalOpen] = useState(false);
@@ -30,11 +30,8 @@ function PreCounselListPage() {
     setPage(newPage);
   };
 
-  const handleChangeRowsPerPage = (
-    event: React.ChangeEvent<HTMLInputElement>
-  ) => {
+  const handleChangeRowsPerPage = (event: React.ChangeEvent<HTMLInputElement>) => {
     setRowsPerPage(parseInt(event.target.value));
-    setPage(0);
   };
 
   const fetchData = useCallback(async () => {

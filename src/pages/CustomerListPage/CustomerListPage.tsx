@@ -1,119 +1,110 @@
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, useMemo } from "react";
 import { useOutletContext } from "react-router-dom";
-import usePageFilters from "@hooks/usePageFilters";
+import { useUrlPagination } from "@hooks/useUrlPagination";
+import { useUrlFilters } from "@hooks/useUrlFilters";
 import { Customer, CustomerFilter } from "@ts/customer";
 import { searchCustomers, updateCustomer } from "@apis/customerService";
 import { showToast } from "@components/Toast";
 import CustomerListPageView from "./CustomerListPageView";
-import { DEFAULT_ROWS_PER_PAGE } from "@components/Table/Table";
 
 interface OutletContext {
   onMobileMenuToggle: () => void;
 }
 
-const INITIAL_FILTERS: CustomerFilter = {
-  tenant: false,
-  landlord: false,
-  buyer: false,
-  seller: false,
-  minPrice: null,
-  maxPrice: null,
-  minRent: null,
-  maxRent: null,
-  minDeposit: null,
-  maxDeposit: null,
-  labelUids: [],
-  telProvider: "",
-  preferredRegion: "",
-  trafficSource: "",
-  noRole: false,
-};
-
-const CUSTOMER_STORAGE_KEY = "customerFilters";
-
 const CustomerListPage = () => {
   const { onMobileMenuToggle } = useOutletContext<OutletContext>();
-
-  const initialPageData = {
-    page: 0,
-    rowsPerPage: DEFAULT_ROWS_PER_PAGE,
-    searchTerm: "",
-    searchQuery: "",
-    filters: INITIAL_FILTERS,
-  };
-
-  const { storedData, saveFilters } = usePageFilters(
-    CUSTOMER_STORAGE_KEY,
-    initialPageData
-  );
+  const { page, rowsPerPage, setPage, setRowsPerPage, resetToFirstPage } =
+    useUrlPagination();
+  const {
+    getParam,
+    getBooleanParam,
+    getNumberParam,
+    setParam,
+    setParams,
+    clearAllFilters,
+    searchParams,
+  } = useUrlFilters();
 
   const [loading, setLoading] = useState(true);
   const [customerList, setCustomerList] = useState<Customer[]>([]);
   const [totalCount, setTotalCount] = useState(0);
-  const [page, setPage] = useState(storedData.page);
-  const [rowsPerPage, setRowsPerPage] = useState(storedData.rowsPerPage);
-  const [searchTerm, setSearchTerm] = useState(storedData.searchTerm);
-  const [searchQuery, setSearchQuery] = useState(storedData.searchQuery);
   const [filterModalOpen, setFilterModalOpen] = useState(false);
-  const [filters, setFilters] = useState<CustomerFilter>(storedData.filters);
 
-  const fetchCustomerList = useCallback(
-    async (reset = true) => {
-      const buildApiParams = (): Record<string, string | number | boolean> => {
-        const params: Record<string, string | number | boolean> = {
-          page: page + 1,
-          pageSize: rowsPerPage,
-        };
+  const [searchTerm, setSearchTerm] = useState("");
+  const searchQuery = getParam("q");
 
-        if (searchQuery) {
-          params.search = searchQuery;
-        }
+  const filters: CustomerFilter = useMemo(
+    () => ({
+      tenant: getBooleanParam("tenant"),
+      landlord: getBooleanParam("landlord"),
+      buyer: getBooleanParam("buyer"),
+      seller: getBooleanParam("seller"),
+      minPrice: getNumberParam("minPrice") || null,
+      maxPrice: getNumberParam("maxPrice") || null,
+      minRent: getNumberParam("minRent") || null,
+      maxRent: getNumberParam("maxRent") || null,
+      minDeposit: getNumberParam("minDeposit") || null,
+      maxDeposit: getNumberParam("maxDeposit") || null,
+      labelUids: getParam("labels")
+        ? getParam("labels").split(",").map(Number)
+        : [],
+      telProvider: getParam("telProvider"),
+      preferredRegion: getParam("region"),
+      trafficSource: getParam("source"),
+      noRole: getBooleanParam("noRole"),
+    }),
+    [searchParams]
+  );
 
-        if (filters.tenant) params.tenant = true;
-        if (filters.landlord) params.landlord = true;
-        if (filters.buyer) params.buyer = true;
-        if (filters.seller) params.seller = true;
-        if (filters.minPrice) params.minPrice = filters.minPrice;
-        if (filters.maxPrice) params.maxPrice = filters.maxPrice;
-        if (filters.minRent) params.minRent = filters.minRent;
-        if (filters.maxRent) params.maxRent = filters.maxRent;
-        if (filters.minDeposit) params.minDeposit = filters.minDeposit;
-        if (filters.maxDeposit) params.maxDeposit = filters.maxDeposit;
-        if (filters.labelUids && filters.labelUids.length > 0)
-          params.labelUids = filters.labelUids.join(",");
-        if (filters.noRole) {
-          params.noRole = true;
-        }
-        if (filters.telProvider) params.telProvider = filters.telProvider;
-        if (filters.preferredRegion)
-          params.regionCode = filters.preferredRegion;
-        if (filters.trafficSource) params.trafficSource = filters.trafficSource;
-
-        return params;
+  const fetchCustomerList = useCallback(async () => {
+    const buildApiParams = (): Record<string, string | number | boolean> => {
+      const params: Record<string, string | number | boolean> = {
+        page: page + 1,
+        size: rowsPerPage,
       };
 
-      try {
-        setLoading(true);
-        if (reset) {
-          setPage(0);
-        }
-
-        const params = buildApiParams();
-        const searchParams = new URLSearchParams(
-          params as Record<string, string>
-        );
-        const response = await searchCustomers(searchParams);
-
-        setCustomerList(response.customers);
-        setTotalCount(response.totalCount);
-      } catch (error) {
-        console.error("Failed to fetch customers:", error);
-      } finally {
-        setLoading(false);
+      if (searchQuery) {
+        params.search = searchQuery;
       }
-    },
-    [page, rowsPerPage, searchQuery, filters]
-  );
+
+      if (filters.tenant) params.tenant = true;
+      if (filters.landlord) params.landlord = true;
+      if (filters.buyer) params.buyer = true;
+      if (filters.seller) params.seller = true;
+      if (filters.minPrice) params.minPrice = filters.minPrice;
+      if (filters.maxPrice) params.maxPrice = filters.maxPrice;
+      if (filters.minRent) params.minRent = filters.minRent;
+      if (filters.maxRent) params.maxRent = filters.maxRent;
+      if (filters.minDeposit) params.minDeposit = filters.minDeposit;
+      if (filters.maxDeposit) params.maxDeposit = filters.maxDeposit;
+      if (filters.labelUids && filters.labelUids.length > 0)
+        params.labelUids = filters.labelUids.join(",");
+      if (filters.noRole) {
+        params.noRole = true;
+      }
+      if (filters.telProvider) params.telProvider = filters.telProvider;
+      if (filters.preferredRegion) params.regionCode = filters.preferredRegion;
+      if (filters.trafficSource) params.trafficSource = filters.trafficSource;
+
+      return params;
+    };
+
+    try {
+      setLoading(true);
+      const params = buildApiParams();
+      const searchParams = new URLSearchParams(
+        params as Record<string, string>
+      );
+      const response = await searchCustomers(searchParams);
+
+      setCustomerList(response.customers);
+      setTotalCount(response.totalCount);
+    } catch (error) {
+      console.error("Failed to fetch customers:", error);
+    } finally {
+      setLoading(false);
+    }
+  }, [page, rowsPerPage, searchQuery, filters]);
 
   const handleCustomerUpdate = async (updatedCustomer: Customer) => {
     try {
@@ -156,65 +147,88 @@ const CustomerListPage = () => {
     }
   };
 
-  const handleFiltersChange = useCallback((newFilters: CustomerFilter) => {
-    setFilters(newFilters);
-  }, []);
+  const handleFiltersChange = useCallback(
+    (newFilters: CustomerFilter) => {
+      setParams({
+        tenant: newFilters.tenant,
+        landlord: newFilters.landlord,
+        buyer: newFilters.buyer,
+        seller: newFilters.seller,
+        minPrice: newFilters.minPrice,
+        maxPrice: newFilters.maxPrice,
+        minRent: newFilters.minRent,
+        maxRent: newFilters.maxRent,
+        minDeposit: newFilters.minDeposit,
+        maxDeposit: newFilters.maxDeposit,
+        labels: newFilters.labelUids?.length
+          ? newFilters.labelUids.join(",")
+          : null,
+        telProvider: newFilters.telProvider,
+        region: newFilters.preferredRegion,
+        source: newFilters.trafficSource,
+        noRole: newFilters.noRole,
+      });
+    },
+    [setParams]
+  );
 
-  const handleFilterApply = useCallback((appliedFilters: CustomerFilter) => {
-    setFilters(appliedFilters);
-    setFilterModalOpen(false);
-  }, []);
+  const handleFilterApply = useCallback(
+    (appliedFilters: CustomerFilter) => {
+      handleFiltersChange(appliedFilters);
+      setFilterModalOpen(false);
+    },
+    [handleFiltersChange]
+  );
 
   const handleSearchSubmit = useCallback(() => {
-    setSearchQuery(searchTerm);
-    setPage(0);
-  }, [searchTerm]);
+    setParam("q", searchTerm);
+  }, [searchTerm, setParam]);
 
-  const handlePageChange = useCallback((newPage: number) => {
-    setPage(newPage);
+  const handleSearchChange = useCallback((newSearchTerm: string) => {
+    setSearchTerm(newSearchTerm);
   }, []);
 
-  const handleRowsPerPageChange = useCallback((newRowsPerPage: number) => {
-    setRowsPerPage(newRowsPerPage);
-    setPage(0);
-  }, []);
+  const handlePageChange = useCallback(
+    (newPage: number) => {
+      setPage(newPage);
+    },
+    [setPage]
+  );
+
+  const handleRowsPerPageChange = useCallback(
+    (newRowsPerPage: number) => {
+      setRowsPerPage(newRowsPerPage);
+    },
+    [setRowsPerPage]
+  );
 
   const handleFilterModalOpen = useCallback(() => setFilterModalOpen(true), []);
   const handleFilterModalClose = useCallback(
     () => setFilterModalOpen(false),
     []
   );
+
   const handleRefresh = useCallback(
-    () => fetchCustomerList(false),
+    () => fetchCustomerList(),
     [fetchCustomerList]
   );
-  const handleCustomerCreate = useCallback(
-    () => fetchCustomerList(true),
-    [fetchCustomerList]
-  );
+  const handleCustomerCreate = useCallback(() => {
+    resetToFirstPage();
+    fetchCustomerList();
+  }, [fetchCustomerList, resetToFirstPage]);
 
   const handleFilterReset = useCallback(() => {
-    setFilters(INITIAL_FILTERS);
+    clearAllFilters();
     setSearchTerm("");
-    setSearchQuery("");
-    setPage(0);
-  }, []);
+  }, [clearAllFilters]);
 
   useEffect(() => {
-    const currentData = {
-      page,
-      rowsPerPage,
-      searchTerm,
-      searchQuery,
-      filters,
-    };
-    saveFilters(currentData);
-  }, [page, rowsPerPage, searchTerm, searchQuery, filters, saveFilters]);
+    setSearchTerm(searchQuery || "");
+  }, [searchQuery]);
 
-  // 컴포넌트 마운트 시 초기 로드, searchQuery 변경 시 검색
   useEffect(() => {
-    fetchCustomerList(!!searchQuery && searchQuery.trim() !== "");
-  }, [fetchCustomerList, searchQuery]);
+    fetchCustomerList();
+  }, [fetchCustomerList]);
 
   return (
     <CustomerListPageView
@@ -226,7 +240,7 @@ const CustomerListPage = () => {
       searchTerm={searchTerm}
       filterModalOpen={filterModalOpen}
       filters={filters}
-      onSearchChange={setSearchTerm}
+      onSearchChange={handleSearchChange}
       onFilterModalOpen={handleFilterModalOpen}
       onFilterModalClose={handleFilterModalClose}
       onFiltersChange={handleFiltersChange}

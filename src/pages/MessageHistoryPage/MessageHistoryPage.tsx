@@ -29,9 +29,10 @@ interface TableRowData {
 const MessageHistoryPage = () => {
   const { onMobileMenuToggle } = useOutletContext<OutletContext>();
   const { page, rowsPerPage, setPage, setRowsPerPage } = useUrlPagination();
-  
+
   const [messages, setMessages] = useState<MessageHistory[]>([]);
-  const [selectedMessageHistory, setSelectedMessageHistory] = useState<MessageHistory | null>(null);
+  const [selectedMessageHistory, setSelectedMessageHistory] =
+    useState<MessageHistory | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [totalElements, setTotalElements] = useState(0);
   const [detailModalOpen, setDetailModalOpen] = useState(false);
@@ -100,7 +101,9 @@ const MessageHistoryPage = () => {
     setPage(newPage);
   };
 
-  const handleChangeRowsPerPage = (event: React.ChangeEvent<HTMLInputElement>) => {
+  const handleChangeRowsPerPage = (
+    event: React.ChangeEvent<HTMLInputElement>
+  ) => {
     setRowsPerPage(parseInt(event.target.value, 10));
   };
 

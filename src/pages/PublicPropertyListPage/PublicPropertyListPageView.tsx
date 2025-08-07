@@ -91,51 +91,6 @@ const PublicPropertyListPageView = ({
       <div className="p-5">
         {/* 상단 필터 바 */}
         <div className="flex flex-col gap-4 bg-white rounded-lg p-3 shadow-sm mb-5">
-          {/* 모바일 필터 레이아웃 (md 미만) */}
-          <div className="lg:hidden space-y-3">
-            {/* 주소 검색 */}
-            <TextField
-              fullWidth
-              size="small"
-              placeholder="주소 검색 (예: 강남구, 도산대로)"
-              value={searchAddress}
-              onChange={onAddressSearch}
-              onKeyDown={(e) => {
-                if (e.key === "Enter") {
-                  e.preventDefault();
-                  onAddressSearchSubmit();
-                }
-              }}
-              InputProps={{
-                endAdornment: (
-                  <InputAdornment position="end">
-                    <IconButton size="small" onClick={onAddressSearchSubmit}>
-                      <SearchIcon fontSize="small" />
-                    </IconButton>
-                  </InputAdornment>
-                ),
-              }}
-            />
-
-            <div className="flex gap-2">
-              <Button
-                variant="outlined"
-                onClick={onFilterModalToggle}
-                className="text-sm px-3 py-2"
-              >
-                <FilterListIcon className="mr-1 text-sm" />
-                상세 필터
-              </Button>
-              <Button
-                variant="text"
-                onClick={onSortReset}
-                className="text-sm px-3 py-2"
-              >
-                필터 초기화
-              </Button>
-            </div>
-          </div>
-
           <div className="block space-y-4">
             {/* 첫 번째 줄: 주소 검색 */}
             <div className="flex items-center gap-2">

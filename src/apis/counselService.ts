@@ -36,7 +36,7 @@ export const fetchCounselList = async (params: CounselListParams) => {
       "/counsels",
       {
         params: {
-          page: params.page + 1,
+          page: params.page,
           size: params.size,
           search: params.search,
           startDate: params.startDate
@@ -68,7 +68,7 @@ export const fetchCounsels = async (page: number, rowsPerPage: number) => {
     const { data: response } = await apiClient.get<
       ApiResponse<PreCounselListData>
     >("/surveys/responses", {
-      params: { page: page + 1, size: rowsPerPage },
+      params: { page, size: rowsPerPage },
     });
 
     return handleApiResponse(response, COUNSEL_ERROR_MESSAGES.FETCH_FAILED);

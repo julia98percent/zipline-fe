@@ -61,7 +61,7 @@ function ContractListPage() {
         period: selectedPeriod || "",
         status: selectedStatus,
         sort: selectedSort,
-        page: page + 1,
+        page,
         size: rowsPerPage,
       });
 

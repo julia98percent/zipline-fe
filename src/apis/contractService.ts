@@ -193,7 +193,7 @@ export const fetchRecentContractsForDashboard = async (
 ) => {
   return fetchDashboardContracts({
     recent: true,
-    page: page + 1,
+    page,
     size,
   });
 };
@@ -204,7 +204,7 @@ export const fetchOngoingContractsForDashboard = async (
 ) => {
   return fetchDashboardContracts({
     progress: true,
-    page: page + 1,
+    page,
     size,
   });
 };
@@ -215,7 +215,7 @@ export const fetchCompletedContractsForDashboard = async (
 ) => {
   return fetchDashboardContracts({
     progress: false,
-    page: page + 1,
+    page,
     size,
   });
 };

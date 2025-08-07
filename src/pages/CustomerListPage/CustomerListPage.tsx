@@ -59,7 +59,7 @@ const CustomerListPage = () => {
   const fetchCustomerList = useCallback(async () => {
     const buildApiParams = (): Record<string, string | number | boolean> => {
       const params: Record<string, string | number | boolean> = {
-        page: page + 1,
+        page,
         size: rowsPerPage,
       };
 

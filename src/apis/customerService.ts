@@ -164,7 +164,7 @@ export const fetchCustomerConsultations = async (
       data: ConsultationResponse;
     }>(`/customers/${customerId}/counsels`, {
       params: {
-        page: page + 1,
+        page,
         size,
       },
     });
@@ -188,7 +188,7 @@ export const fetchCustomerProperties = async (
       `/customers/${customerId}/properties`,
       {
         params: {
-          page: page + 1,
+          page,
           size,
         },
       }
@@ -213,7 +213,7 @@ export const fetchCustomerContracts = async (
       `/customers/${customerId}/contracts`,
       {
         params: {
-          page: page + 1,
+          page,
           size,
         },
       }

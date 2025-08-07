@@ -5,44 +5,9 @@ export function isNumberOrNumericString(value: number | string): boolean {
   );
 }
 
-// 가격을 1,234,567원 (일백이십이만...) 형태로 반환
 export function formatPriceWithKorean(value: number | null): string {
   if (value === null || value === undefined) return "-";
-  const formatted = new Intl.NumberFormat("ko-KR").format(value) + "원";
-  const korean = numberToKorean(value) + " 원";
-  return `${formatted} (${korean})`;
-}
-
-// 숫자를 한글로 읽는 함수 (간단 버전)
-function numberToKorean(num: number): string {
-  if (num === 0) return "영";
-  const units = ["", "만", "억", "조", "경"];
-  const nums = ["", "일", "이", "삼", "사", "오", "육", "칠", "팔", "구"];
-  let result = "";
-  let unitPos = 0;
-  while (num > 0) {
-    const part = num % 10000;
-    if (part > 0) {
-      let partStr = "";
-      let n = part;
-      let pos = 0;
-      while (n > 0) {
-        const digit = n % 10;
-        if (digit > 0) {
-          partStr =
-            nums[digit] +
-            (pos > 0 ? ["", "십", "백", "천"][pos] : "") +
-            partStr;
-        }
-        n = Math.floor(n / 10);
-        pos++;
-      }
-      result = partStr + units[unitPos] + result;
-    }
-    num = Math.floor(num / 10000);
-    unitPos++;
-  }
-  return result;
+  return new Intl.NumberFormat("ko-KR").format(value) + "원";
 }
 
 export function formatPhoneNumber(input: string): string {
@@ -82,11 +47,28 @@ export function formatPhoneNumber(input: string): string {
   return formattedNumber;
 }
 
-export const formatPublicPropertyPrice = (value: number) => {
-  if (value === 0) return "-";
-  return value >= 10000
-    ? `${Math.floor(value / 10000)}억 ${
-        value % 10000 > 0 ? `${value % 10000}만` : ""
-      }`
-    : `${value}만`;
+export const formatKoreanPrice = (value: number | string | null) => {
+  const numValue = typeof value === "string" ? parseInt(value, 10) : value;
+  
+  if (!numValue || numValue === 0 || isNaN(numValue)) return "";
+  
+  if (numValue >= 10000) {
+    const eok = Math.floor(numValue / 10000);
+    const remainder = numValue % 10000;
+    if (remainder === 0) {
+      return `${eok}억원`;
+    } else if (remainder >= 1000) {
+      const thousand = Math.floor(remainder / 1000);
+      const man = remainder % 1000;
+      return man > 0 ? `${eok}억 ${thousand}천 ${man}만원` : `${eok}억 ${thousand}천만원`;
+    } else {
+      return `${eok}억 ${remainder}만원`;
+    }
+  } else if (numValue >= 1000) {
+    const thousand = Math.floor(numValue / 1000);
+    const remainder = numValue % 1000;
+    return remainder > 0 ? `${thousand}천 ${remainder}만원` : `${thousand}천만원`;
+  } else {
+    return `${numValue}만원`;
+  }
 };

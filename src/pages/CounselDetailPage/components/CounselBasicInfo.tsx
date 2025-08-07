@@ -41,7 +41,6 @@ const CounselBasicInfo = ({
               value={data.title}
               onChange={(e) => onInputChange("title", e.target.value)}
               fullWidth
-              size="small"
             />
           ) : (
             <span className={styles.infoValue}>{data.title}</span>
@@ -53,6 +52,7 @@ const CounselBasicInfo = ({
             <StringBooleanSelect
               value={data.type}
               onChange={(e) => onInputChange("type", e.target.value)}
+              size="medium"
             >
               {Object.entries(COUNSEL_TYPES).map(([key, value]) => (
                 <MenuItem key={key} value={key}>

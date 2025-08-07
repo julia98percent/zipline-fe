@@ -148,8 +148,11 @@ const ContractListPageView = ({
               <Button variant="text" onClick={handleClearFilters}>
                 필터 초기화
               </Button>
-              <Button variant="contained" onClick={onAddModalOpen}>
-                <AddIcon fontSize="small" />
+              <Button
+                variant="contained"
+                onClick={onAddModalOpen}
+                startIcon={<AddIcon />}
+              >
                 계약 등록
               </Button>
             </div>

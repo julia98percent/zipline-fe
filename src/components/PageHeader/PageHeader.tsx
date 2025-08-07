@@ -158,7 +158,7 @@ const PageHeader = ({ title, onMobileMenuToggle }: PageHeaderProps) => {
         <Button
           onClick={handleUserMenuClick}
           variant="text"
-          className="text-neutral-900 flex items-center gap-2"
+          className="text-neutral-900"
           startIcon={<AccountCircleIcon />}
         >
           {user?.name || "사용자"}

@@ -57,24 +57,18 @@ const WeeklyScheduleCalendar: React.FC<WeeklyScheduleCalendarProps> = ({
             <OpenInFull fontSize="small" />
           </IconButton>
         </div>
+
         <div className="flex items-center">
-          <Button
-            variant="text"
-            onClick={handlePrevWeek}
-            className="p-1 rounded hover:bg-gray-100 transition-colors"
-          >
+          <IconButton size="small" onClick={handlePrevWeek}>
             <ChevronLeft className="w-5 h-5" />
-          </Button>
+          </IconButton>
+          {/* 현재 주 범위 표시 */}
           <div className="min-w-[200px] text-center text-sm">
             {currentWeekRange()}
           </div>
-          <Button
-            variant="text"
-            onClick={handleNextWeek}
-            className="p-1 rounded hover:bg-gray-100 transition-colors"
-          >
+          <IconButton size="small" onClick={handleNextWeek}>
             <ChevronRight className="w-5 h-5" />
-          </Button>
+          </IconButton>
         </div>
       </div>
 
@@ -149,7 +143,7 @@ const WeeklyScheduleCalendar: React.FC<WeeklyScheduleCalendarProps> = ({
                             date.format("YYYY-MM-DD")
                           )
                         }
-                        className="text-[10px] min-h-[20px] p-1 text-blue-600 hover:text-blue-800 transition-colors"
+                        className="text-xs"
                       >
                         +
                         {daySchedules.length -
@@ -233,7 +227,7 @@ const WeeklyScheduleCalendar: React.FC<WeeklyScheduleCalendarProps> = ({
                                 date.format("YYYY-MM-DD")
                               )
                             }
-                            className="text-[11px] min-h-[24px] p-1 text-blue-600 hover:text-blue-800 transition-colors"
+                            className="text-xs"
                           >
                             +
                             {daySchedules.length -

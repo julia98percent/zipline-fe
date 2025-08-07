@@ -17,12 +17,7 @@ function ErrorPage() {
       <Typography variant="body1" className="mb-8">
         요청하신 페이지가 존재하지 않거나 이동되었습니다.
       </Typography>
-      <Button
-        onClick={handleGoHome}
-        className="bg-[#164F9E] text-white hover:bg-primary-dark px-3 py-1 rounded"
-      >
-        홈으로 돌아가기
-      </Button>
+      <Button onClick={handleGoHome}>홈으로 돌아가기</Button>
     </Box>
   );
 }

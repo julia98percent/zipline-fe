@@ -118,13 +118,13 @@ const CustomerListPageView = ({
                     variant="outlined"
                     onClick={onFilterModalOpen}
                     startIcon={<FilterListIcon />}
-                    className="whitespace-nowrap w-[50%] sm:w-fit"
+                    className="w-[50%] sm:w-fit"
                   >
                     상세 필터
                   </Button>
                   <Button
                     variant="text"
-                    className="whitespace-nowrap w-[50%] sm:w-fit sm:p-1!"
+                    className="w-[50%] sm:w-fit sm:p-1!"
                     onClick={onFilterReset}
                   >
                     필터 초기화
@@ -168,21 +168,11 @@ const CustomerListPageView = ({
                   <Button
                     variant="outlined"
                     onClick={onFilterModalOpen}
-                    className="break-keep whitespace-nowrap"
-                    startIcon={
-                      <FilterListIcon
-                        fontSize="small"
-                        className="flex md:hidden lg:flex"
-                      />
-                    }
+                    startIcon={<FilterListIcon />}
                   >
                     상세 필터
                   </Button>
-                  <Button
-                    variant="text"
-                    className="break-keep whitespace-nowrap"
-                    onClick={onFilterReset}
-                  >
+                  <Button variant="text" onClick={onFilterReset}>
                     필터 초기화
                   </Button>
                 </div>

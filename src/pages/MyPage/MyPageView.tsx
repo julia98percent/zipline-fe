@@ -1,6 +1,12 @@
 import { ChangeEvent } from "react";
 import { Link } from "react-router-dom";
-import { Box, TextField, Typography, Collapse } from "@mui/material";
+import {
+  Box,
+  TextField,
+  Typography,
+  Collapse,
+  IconButton,
+} from "@mui/material";
 import AccountCircleIcon from "@mui/icons-material/AccountCircle";
 import AccessTimeIcon from "@mui/icons-material/AccessTime";
 import Button from "@components/Button";
@@ -85,11 +91,7 @@ const MyPageView = ({
                 회원 정보 수정
               </Typography>
             </Box>
-            <Button
-              onClick={onToggleEdit}
-              variant="outlined"
-              className="text-sm px-3 py-1"
-            >
+            <Button onClick={onToggleEdit} variant="text">
               {editOpen ? "닫기" : "수정하기"}
             </Button>
           </Box>
@@ -118,7 +120,8 @@ const MyPageView = ({
               />
               <Button
                 onClick={onInfoUpdate}
-                className="px-4 py-2 h-[46px] max-w-fit self-end"
+                variant="contained"
+                className="max-w-fit self-end"
               >
                 설정 저장하기
               </Button>
@@ -135,11 +138,7 @@ const MyPageView = ({
                 문자 발송 설정
               </Typography>
             </Box>
-            <Button
-              onClick={onToggleNoticeEdit}
-              variant="outlined"
-              className="text-sm px-3 py-1"
-            >
+            <Button onClick={onToggleNoticeEdit} variant="text">
               {noticeOpen ? "닫기" : "수정하기"}
             </Button>
           </Box>
@@ -163,10 +162,7 @@ const MyPageView = ({
                 InputLabelProps={{ shrink: true }}
                 inputProps={{ step: 60 }}
               />
-              <Button
-                onClick={onNoticeUpdate}
-                className="px-4 py-2 h-[46px] max-w-fit self-end"
-              >
+              <Button onClick={onNoticeUpdate} className="max-w-fit self-end">
                 설정 저장하기
               </Button>
             </Box>
@@ -200,12 +196,12 @@ const MyPageView = ({
                 size="small"
                 InputProps={{ readOnly: true }}
               />
-              <Button
+              <IconButton
                 onClick={onCopyUrl}
-                className="min-w-10 h-10 border border-gray-300 bg-white hover:bg-gray-50 rounded transition-colors"
+                className="min-w-10 h-10 border border-[rgba(0,_0,_0,_0.23)] hover:bg-gray-50 rounded transition-colors"
               >
                 📋
-              </Button>
+              </IconButton>
             </Box>
           </Box>
         </Box>
@@ -222,9 +218,7 @@ const MyPageView = ({
             </Typography>
           </Box>
           <Link to="edit-survey">
-            <Button variant="outlined" className="px-4 py-2">
-              수정하기
-            </Button>
+            <Button variant="text">수정하기</Button>
           </Link>
         </Box>
       </Box>

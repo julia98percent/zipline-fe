@@ -253,7 +253,6 @@ const ContractDetailContentView = ({
                       rel="noopener"
                       variant="outlined"
                       size="small"
-                      className="min-w-auto px-2"
                     >
                       <a href={doc.fileUrl}>다운로드</a>
                     </Button>

@@ -124,9 +124,8 @@ const MessageHistoryPage = () => {
           <Button
             variant="outlined"
             onClick={handleRefresh}
-            className="flex gap-1"
+            startIcon={<RefreshIcon />}
           >
-            <RefreshIcon />
             새로고침
           </Button>
         </Box>

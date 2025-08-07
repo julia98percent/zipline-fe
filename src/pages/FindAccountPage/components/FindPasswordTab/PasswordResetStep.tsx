@@ -80,7 +80,7 @@ const PasswordResetStep: React.FC<PasswordResetStepProps> = ({
           fullWidth
           onClick={onResetPassword}
           disabled={!isValidForm || isLoading}
-          className="h-[46px] rounded-lg text-base"
+          className="h-[46px]"
         >
           {isLoading ? "비밀번호 변경 중..." : "비밀번호 변경"}
         </Button>

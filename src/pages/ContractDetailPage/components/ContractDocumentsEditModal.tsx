@@ -294,7 +294,7 @@ const ContractDocumentsEditModal = ({
             <input
               ref={fileInputRef}
               accept="*/*"
-              style={{ display: "none" }}
+              className="hidden"
               type="file"
               multiple
               onChange={handleFileUpload}
@@ -302,7 +302,7 @@ const ContractDocumentsEditModal = ({
             <Button
               variant="outlined"
               startIcon={<UploadFileIcon />}
-              className={"min-w-[200px]"}
+              className="min-w-[200px]"
               disabled={isLoading}
               onClick={handleFileInputClick}
             >

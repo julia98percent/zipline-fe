@@ -80,7 +80,9 @@ const TemplateList: React.FC<TemplateListProps> = ({
       </List>
       <Button
         onClick={onAddNewTemplate}
-        className="w-full mt-2 border border-[#164F9E] bg-white text-[#164F9E] rounded px-4 py-2 hover:border-primary-dark hover:bg-[rgba(22,79,158,0.04)] transition-colors"
+        variant="outlined"
+        fullWidth
+        className="mt-2"
       >
         템플릿 추가하기
       </Button>

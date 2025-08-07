@@ -94,8 +94,11 @@ function CounselListPageView({
               <Button variant="text" onClick={onResetClick}>
                 필터 초기화
               </Button>
-              <Button variant="contained" onClick={onModalOpen}>
-                <AddIcon fontSize="small" />
+              <Button
+                variant="contained"
+                onClick={onModalOpen}
+                startIcon={<AddIcon />}
+              >
                 상담 등록
               </Button>
             </div>

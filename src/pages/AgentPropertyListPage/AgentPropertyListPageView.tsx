@@ -152,16 +152,11 @@ const AgentPropertyListPageView = ({
               <Button
                 variant="outlined"
                 onClick={onFilterModalToggle}
-                className="text-sm px-2 py-2"
+                startIcon={<FilterListIcon />}
               >
-                <FilterListIcon className="mr-1 text-sm" />
                 상세 필터
               </Button>
-              <Button
-                variant="text"
-                onClick={onReset}
-                className="text-sm px-2 py-2"
-              >
+              <Button variant="text" onClick={onReset}>
                 필터 초기화
               </Button>
             </div>
@@ -222,9 +217,8 @@ const AgentPropertyListPageView = ({
                 <Button
                   variant="outlined"
                   onClick={onFilterModalToggle}
-                  className="min-w-10 px-3 rounded-3xl gap-2"
+                  startIcon={<FilterListIcon />}
                 >
-                  <FilterListIcon />
                   상세 필터
                 </Button>
                 <Button variant="text" onClick={onReset}>

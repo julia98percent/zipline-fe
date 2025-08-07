@@ -96,8 +96,12 @@ const ScheduleView: React.FC<ScheduleViewProps> = ({
       <div className="p-5">
         {/* Add Schedule Button */}
         <div className="flex justify-end mb-5">
-          <Button onClick={handleAddSchedule}>
-            <AddIcon fontSize="small" />
+          <Button
+            onClick={handleAddSchedule}
+            startIcon={<AddIcon />}
+            variant="contained"
+            color="primary"
+          >
             일정 등록
           </Button>
         </div>

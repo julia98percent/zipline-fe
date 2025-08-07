@@ -125,7 +125,7 @@ const SubmitSurveyPageView = ({
                     className="mt-2"
                   />
                 ) : (
-                  <Box className="flex items-center mt-2">
+                  <Box className="flex items-center mt-2 gap-2">
                     <Typography variant="body2">
                       선택된 파일: {answers[questionIndex].file?.name}
                     </Typography>
@@ -143,14 +143,12 @@ const SubmitSurveyPageView = ({
                         };
                         fileInput.click();
                       }}
-                      className="ml-2"
                     >
                       파일 변경
                     </Button>
                     <Button
                       onClick={() => onFileRemove(questionIndex)}
                       color="error"
-                      className="ml-1"
                     >
                       제거
                     </Button>

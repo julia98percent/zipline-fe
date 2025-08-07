@@ -106,7 +106,7 @@ const CodeVerificationStep: React.FC<CodeVerificationStepProps> = ({
           fullWidth
           onClick={onVerifyCode}
           disabled={!isValidCode || isLoading || isTimeExpired}
-          className="h-[46px] rounded-lg text-base"
+          className="h-[46px]"
         >
           {isLoading ? "인증 확인 중..." : "인증 확인"}
         </Button>
@@ -116,7 +116,7 @@ const CodeVerificationStep: React.FC<CodeVerificationStepProps> = ({
           fullWidth
           onClick={onResendCode}
           disabled={isLoading}
-          className="h-[46px] rounded-lg text-base"
+          className="h-[46px]"
         >
           {isLoading ? "재발송 중..." : "인증번호 재발송"}
         </Button>

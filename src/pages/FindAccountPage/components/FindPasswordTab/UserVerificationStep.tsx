@@ -155,7 +155,7 @@ const UserVerificationStep: React.FC<UserVerificationStepProps> = ({
         fullWidth
         onClick={onSendCode}
         disabled={!isValidForm() || isLoading}
-        className="h-[46px] rounded-lg text-base"
+        className="h-[46px]"
       >
         {isLoading ? "인증번호 발송 중..." : "인증번호 발송"}
       </Button>

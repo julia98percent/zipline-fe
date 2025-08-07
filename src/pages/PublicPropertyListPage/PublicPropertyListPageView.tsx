@@ -136,8 +136,7 @@ const PublicPropertyListPageView = ({
             </div>
           </div>
 
-          {/* 데스크톱/태블릿 필터 레이아웃 (md 이상) */}
-          <div className="hidden lg:block space-y-4">
+          <div className="block space-y-4">
             {/* 첫 번째 줄: 주소 검색 */}
             <div className="flex items-center gap-2">
               <TextField
@@ -164,22 +163,16 @@ const PublicPropertyListPageView = ({
               />
             </div>
 
-            {/* 두 번째 줄: 필터 초기화, 상세 필터 */}
             <div className="flex justify-between items-center">
               <div className="flex items-center gap-2">
                 <Button
                   variant="outlined"
                   onClick={onFilterModalToggle}
-                  className="min-w-10 px-3 rounded-3xl"
+                  startIcon={<FilterListIcon />}
                 >
-                  <FilterListIcon className="mr-2" />
                   상세 필터
                 </Button>
-                <Button
-                  variant="text"
-                  onClick={onSortReset}
-                  className="min-w-10"
-                >
+                <Button variant="text" onClick={onSortReset}>
                   필터 초기화
                 </Button>
               </div>

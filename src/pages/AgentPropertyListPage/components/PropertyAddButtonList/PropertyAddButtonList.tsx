@@ -20,8 +20,11 @@ function PropertyAddButtonList({ fetchPropertyData }: Props) {
   return (
     <>
       <div className="flex gap-2">
-        <Button variant="contained" onClick={handleOpen} className="gap-2">
-          <AddIcon fontSize="small" />
+        <Button
+          variant="contained"
+          onClick={handleOpen}
+          startIcon={<AddIcon />}
+        >
           매물 등록
         </Button>
 

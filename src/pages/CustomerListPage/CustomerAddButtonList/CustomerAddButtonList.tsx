@@ -20,20 +20,12 @@ function CustomerAddButtonList({ fetchCustomerData }: Props) {
   return (
     <>
       <div className="hidden sm:flex sm:justify-end gap-2">
-        <Button
-          variant="contained"
-          className="whitespace-nowrap"
-          onClick={handleOpen}
-        >
-          <AddIcon fontSize="small" className="flex md:hidden lg:flex" />
+        <Button variant="contained" onClick={handleOpen}>
+          <AddIcon />
           고객 등록
         </Button>
 
-        <Button
-          variant="outlined"
-          onClick={handleOpenBulkUpload}
-          className="whitespace-nowrap"
-        >
+        <Button variant="outlined" onClick={handleOpenBulkUpload}>
           고객 데이터 일괄 등록(.csv)
         </Button>
       </div>
@@ -43,17 +35,12 @@ function CustomerAddButtonList({ fetchCustomerData }: Props) {
         <Button
           variant="contained"
           onClick={handleOpen}
-          className="w-full py-4 text-base font-medium"
+          startIcon={<AddIcon />}
         >
-          <AddIcon fontSize="small" className="mr-2" />
           고객 등록
         </Button>
 
-        <Button
-          variant="outlined"
-          onClick={handleOpenBulkUpload}
-          className="w-full py-4 text-base font-medium"
-        >
+        <Button variant="outlined" onClick={handleOpenBulkUpload}>
           고객 데이터 일괄 등록(.csv)
         </Button>
       </div>

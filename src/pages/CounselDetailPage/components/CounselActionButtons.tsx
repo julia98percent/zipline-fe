@@ -51,14 +51,14 @@ const CounselActionButtons = ({
         <>
           <Button
             variant="outlined"
-            color="inherit"
+            color="info"
             startIcon={<CloseIcon />}
             onClick={onCancelEdit}
           >
             취소
           </Button>
           <Button
-            variant="outlined"
+            variant="contained"
             color="primary"
             startIcon={<SaveIcon />}
             onClick={onSave}

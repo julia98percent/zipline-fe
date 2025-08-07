@@ -106,7 +106,7 @@ export default function PublicPropertyFilterModalView({
         </Box>
       </DialogContent>
       <DialogActions>
-        <Button variant="outlined" color="info" onClick={onReset}>
+        <Button variant="text" color="info" onClick={onReset}>
           초기화
         </Button>
         <Button variant="outlined" onClick={onClose}>

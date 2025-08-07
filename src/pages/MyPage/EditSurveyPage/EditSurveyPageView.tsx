@@ -205,7 +205,6 @@ const EditSurveyPageView = ({
                 <Button
                   color="error"
                   onClick={() => onDeleteQuestion(questionIndex)}
-                  className="px-4 py-2"
                 >
                   질문 삭제
                 </Button>

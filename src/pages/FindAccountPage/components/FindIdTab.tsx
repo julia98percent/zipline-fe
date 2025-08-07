@@ -204,7 +204,7 @@ const FindIdTab = ({ isActive, onSwitchToPasswordTab }: FindIdTabProps) => {
           fullWidth
           onClick={handleFindId}
           disabled={!isFormValid() || isLoading}
-          className="h-[46px] rounded-lg text-base"
+          className="h-[46px]"
         >
           {isLoading ? "아이디 찾는 중..." : "아이디 찾기"}
         </Button>
@@ -233,7 +233,7 @@ const FindIdTab = ({ isActive, onSwitchToPasswordTab }: FindIdTabProps) => {
           color="primary"
           fullWidth
           onClick={() => navigate("/sign-in")}
-          className="h-[46px] rounded-lg text-base"
+          className="h-[46px]"
         >
           로그인하기
         </Button>
@@ -241,7 +241,7 @@ const FindIdTab = ({ isActive, onSwitchToPasswordTab }: FindIdTabProps) => {
           variant="outlined"
           fullWidth
           onClick={onSwitchToPasswordTab}
-          className="h-[46px] rounded-lg text-base"
+          className="h-[46px]"
         >
           비밀번호 찾기
         </Button>

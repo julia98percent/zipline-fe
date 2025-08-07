@@ -21,42 +21,40 @@ const CustomerActionButtons = ({
   return (
     <Box className="flex justify-end mb-4">
       {isEditing ? (
-        <div className="mt-4 flex">
+        <div className="mt-4 flex gap-2">
           <Button
             variant="outlined"
-            color="inherit"
+            color="info"
+            className="min-w-[83px]"
             onClick={onCancelEdit}
-            className="mr-2 bg-white min-w-[81px] hover:bg-gray-50"
           >
             취소
           </Button>
           <Button
             variant="contained"
             color="primary"
+            className="min-w-[83px]"
             onClick={onSaveEdit}
-            className="shadow-none bg-[#164F9E] min-w-[81px] hover:bg-[#164F9E] hover:opacity-90 hover:shadow-none"
           >
             저장
           </Button>
         </div>
       ) : (
-        <div className="flex justify-end mt-4">
+        <div className="flex justify-end mt-4 gap-2">
           <Button
             variant="outlined"
             color="primary"
             onClick={onEditClick}
-            className="mr-2 text-[#164F9E] min-h-[32px] ml-3 bg-white border-[#164F9E] hover:bg-blue-50 flex items-center gap-2"
+            startIcon={<EditIcon />}
           >
-            <EditIcon fontSize="small" />
             수정
           </Button>
           <Button
             variant="outlined"
             color="error"
             onClick={onDeleteClick}
-            className="bg-white border-red-600 text-red-600 hover:bg-red-50 flex items-center gap-2"
+            startIcon={<DeleteIcon />}
           >
-            <DeleteIcon fontSize="small" />
             삭제
           </Button>
         </div>

@@ -118,7 +118,7 @@ const SignUpView = ({
               disabled={!isFormValid}
               color="primary"
               fullWidth
-              className="mt-5 h-[46px] rounded-lg text-base transition-all duration-200 ease-in-out disabled:transform-none"
+              className="mt-5 h-[46px]"
             >
               가입하기
             </Button>

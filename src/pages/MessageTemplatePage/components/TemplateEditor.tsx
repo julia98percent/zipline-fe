@@ -87,21 +87,12 @@ const TemplateEditor: React.FC<TemplateEditorProps> = ({
 
       <div className="flex justify-end gap-3 mt-4">
         {selectedTemplate && (
-          <Button
-            variant="outlined"
-            onClick={onAddNewTemplate}
-            className="border-gray-300 text-gray-600 hover:border-gray-500 hover:bg-black/[0.04]"
-          >
+          <Button variant="text" onClick={onAddNewTemplate} color="info">
             취소
           </Button>
         )}
         {selectedTemplate && selectedTemplate.category === "GENERAL" && (
-          <Button
-            variant="outlined"
-            color="error"
-            onClick={onOpenDeleteDialog}
-            className="border-red-400 text-red-400 hover:border-red-500 hover:bg-red-400/[0.04]"
-          >
+          <Button variant="outlined" color="error" onClick={onOpenDeleteDialog}>
             삭제하기
           </Button>
         )}
@@ -115,7 +106,6 @@ const TemplateEditor: React.FC<TemplateEditorProps> = ({
             !selectedCategory ||
             hasBrokenVariable
           }
-          className="bg-[#164F9E] shadow-none hover:shadow-none hover:bg-primary-dark disabled:bg-[#164F9E]/40 disabled:text-white"
         >
           {selectedTemplate ? "수정하기" : "저장하기"}
         </Button>

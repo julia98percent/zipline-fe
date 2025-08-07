@@ -94,7 +94,7 @@ const SignInPage = () => {
               fullWidth
               onClick={handleClickSignInButton}
               disabled={isSignInButtonDisabled}
-              className="mt-8 h-[46px] rounded-lg text-base transition-all duration-200 ease-in-out"
+              className="mt-8 h-[46px]"
             >
               로그인
             </Button>

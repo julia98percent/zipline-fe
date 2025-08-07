@@ -313,7 +313,7 @@ const CustomerFilterModal = ({
 
       <DialogActions className="flex flex-row-reverse items-center justify-between p-6 border-t border-gray-200">
         <div className="flex gap-2">
-          <Button variant="outlined" color="info" onClick={handleReset}>
+          <Button variant="text" color="info" onClick={handleReset}>
             입력 값 초기화
           </Button>
           <Button variant="outlined" onClick={onClose}>

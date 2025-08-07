@@ -102,18 +102,16 @@ function AgentPropertyDetailPageView({
             <Button
               variant="outlined"
               onClick={onEdit}
-              className="mr-2 flex items-center gap-2"
+              startIcon={<EditIcon />}
             >
-              <EditIcon fontSize="small" />
               수정
             </Button>
             <Button
               variant="outlined"
               color="error"
               onClick={onDelete}
-              className="flex items-center gap-2"
+              startIcon={<DeleteIcon />}
             >
-              <DeleteIcon fontSize="small" />
               삭제
             </Button>
           </Box>

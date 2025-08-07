@@ -1,6 +1,6 @@
 import { PublicPropertyItem } from "@ts/property";
 import { Typography, Chip, Box, Card, CardContent } from "@mui/material";
-import { formatPublicPropertyPrice } from "@utils/numberUtil";
+import { formatKoreanPrice } from "@utils/numberUtil";
 
 interface PublicPropertyCardProps {
   property: PublicPropertyItem;
@@ -13,17 +13,15 @@ const PublicPropertyCard = ({
 }: PublicPropertyCardProps) => {
   const getPriceText = (property: PublicPropertyItem) => {
     if (property.category === "SALE") {
-      return property.price ? formatPublicPropertyPrice(property.price) : "-";
+      return property.price ? formatKoreanPrice(property.price) : "-";
     } else if (property.category === "DEPOSIT") {
-      return property.deposit
-        ? formatPublicPropertyPrice(property.deposit)
-        : "-";
+      return property.deposit ? formatKoreanPrice(property.deposit) : "-";
     } else {
       const deposit = property.deposit
-        ? formatPublicPropertyPrice(property.deposit)
+        ? formatKoreanPrice(property.deposit)
         : "0";
       const monthly = property.monthlyRent
-        ? formatPublicPropertyPrice(property.monthlyRent)
+        ? formatKoreanPrice(property.monthlyRent)
         : "0";
       return `${deposit}/${monthly}`;
     }

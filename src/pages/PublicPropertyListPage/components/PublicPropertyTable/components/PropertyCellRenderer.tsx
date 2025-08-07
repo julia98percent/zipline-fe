@@ -4,7 +4,7 @@ import {
   getPropertyTypeColors,
   getPropertyCategoryColors,
 } from "@constants/property";
-import { formatPublicPropertyPrice } from "@utils/numberUtil";
+import { formatKoreanPrice } from "@utils/numberUtil";
 
 // 색상을 가져오는 유틸리티 함수
 const getColors = (type: string) => {
@@ -98,7 +98,7 @@ const PropertyCellRenderer = {
   ),
 
   Price: ({ price }: { price: number }) => (
-    <span>{formatPublicPropertyPrice(price)}</span>
+    <span>{formatKoreanPrice(price)}</span>
   ),
 
   MonthlyRent: ({ monthlyRent }: { monthlyRent: number }) => (

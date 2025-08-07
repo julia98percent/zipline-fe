@@ -39,9 +39,9 @@ const PropertyAddModal = ({
   const [extraAddress, handleChangeDetailAddress] = useInput<string>("");
   const [createContract, setCreateContract] = useState<boolean>(false);
 
-  const priceInput = useNumericInput("", { max: MAX_PROPERTY_PRICE });
-  const depositInput = useNumericInput("", { max: MAX_PROPERTY_PRICE });
-  const monthlyRentInput = useNumericInput("", { max: MAX_PROPERTY_PRICE });
+  const priceInput = useRawNumericInput("", { max: MAX_PROPERTY_PRICE });
+  const depositInput = useRawNumericInput("", { max: MAX_PROPERTY_PRICE });
+  const monthlyRentInput = useRawNumericInput("", { max: MAX_PROPERTY_PRICE });
   const netAreaInput = useNumericInput("", {
     max: MAX_PROPERTY_AREA,
     min: MIN_PROPERTY_AREA,

@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { CustomerFormData, CustomerUpdateData } from "@ts/customer";
+import { CustomerBaseFormData, CustomerUpdateData } from "@ts/customer";
 import { RegionState } from "@ts/region";
 import { Label } from "@ts/customer";
 import { SelectChangeEvent } from "@mui/material";
@@ -12,6 +12,8 @@ import { fetchRegions } from "@apis/regionService";
 import { showToast } from "@components/Toast";
 import { formatPhoneNumber } from "@utils/numberUtil";
 import CustomerAddModalView from "./CustomerAddModalView";
+import { useRawNumericInput } from "@hooks/useNumericInput";
+import { MAX_PROPERTY_PRICE } from "@constants/property";
 
 interface CustomerAddModalProps {
   open: boolean;
@@ -19,7 +21,7 @@ interface CustomerAddModalProps {
   fetchCustomerList: () => void;
 }
 
-const initialFormData: CustomerFormData = {
+const initialFormData: CustomerBaseFormData = {
   name: "",
   phoneNo: "",
   birthday: "",
@@ -30,12 +32,6 @@ const initialFormData: CustomerFormData = {
   buyer: false,
   tenant: false,
   landlord: false,
-  minPrice: "",
-  maxPrice: "",
-  minRent: "",
-  maxRent: "",
-  minDeposit: "",
-  maxDeposit: "",
   labelUids: [],
 };
 
@@ -44,7 +40,8 @@ function CustomerAddModal({
   handleClose,
   fetchCustomerList,
 }: CustomerAddModalProps) {
-  const [formData, setFormData] = useState<CustomerFormData>(initialFormData);
+  const [formData, setFormData] =
+    useState<CustomerBaseFormData>(initialFormData);
   const [region, setRegion] = useState<RegionState>({
     sido: [],
     sigungu: [],
@@ -58,45 +55,64 @@ function CustomerAddModal({
   const [isAddingLabel, setIsAddingLabel] = useState(false);
   const [newLabelName, setNewLabelName] = useState("");
 
+  const minPriceInput = useRawNumericInput("", { max: MAX_PROPERTY_PRICE });
+  const maxPriceInput = useRawNumericInput("", { max: MAX_PROPERTY_PRICE });
+  const minRentInput = useRawNumericInput("", { max: MAX_PROPERTY_PRICE });
+  const maxRentInput = useRawNumericInput("", { max: MAX_PROPERTY_PRICE });
+  const minDepositInput = useRawNumericInput("", { max: MAX_PROPERTY_PRICE });
+  const maxDepositInput = useRawNumericInput("", { max: MAX_PROPERTY_PRICE });
+
   const handleFieldChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value, type, checked } = e.target;
 
-    setFormData((prev: CustomerFormData) => ({
+    setFormData((prev: CustomerBaseFormData) => ({
       ...prev,
       [name]: type === "checkbox" ? checked : value,
     }));
   };
 
   const handleNameChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setFormData((prev) => ({ ...prev, name: e.target.value }));
+    setFormData((prev: CustomerBaseFormData) => ({
+      ...prev,
+      name: e.target.value,
+    }));
   };
 
   const handlePhoneChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const formattedNumber = formatPhoneNumber(e.target.value);
-    setFormData((prev) => ({ ...prev, phoneNo: formattedNumber }));
+    setFormData((prev: CustomerBaseFormData) => ({
+      ...prev,
+      phoneNo: formattedNumber,
+    }));
   };
 
   const handleBirthdayChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value.replace(/\D/g, "");
     if (value.length <= 8) {
-      setFormData((prev) => ({ ...prev, birthday: value }));
+      setFormData((prev: CustomerBaseFormData) => ({
+        ...prev,
+        birthday: value,
+      }));
     }
   };
 
   const handleTelProviderChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setFormData((prev) => ({ ...prev, telProvider: e.target.value }));
+    setFormData((prev: CustomerBaseFormData) => ({
+      ...prev,
+      telProvider: e.target.value,
+    }));
   };
 
   const handleRoleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, checked } = e.target;
-    setFormData((prev) => ({ ...prev, [name]: checked }));
+    setFormData((prev: CustomerBaseFormData) => ({ ...prev, [name]: checked }));
   };
   const handleFieldBlur = (e: React.FocusEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
 
     if (name === "phoneNo") {
       const formattedNumber = formatPhoneNumber(value);
-      setFormData((prev: CustomerFormData) => ({
+      setFormData((prev: CustomerBaseFormData) => ({
         ...prev,
         [name]: formattedNumber,
       }));
@@ -142,12 +158,6 @@ function CustomerAddModal({
       const selectedRegion =
         region.selectedDong || region.selectedSigungu || region.selectedSido;
 
-      // 쉼표가 포함된 문자열에서 숫자만 추출
-      const parsePrice = (price: string) => {
-        if (!price) return null;
-        return Number(price.replace(/[^0-9]/g, ""));
-      };
-
       const customerData: CustomerUpdateData = {
         name: formData.name,
         phoneNo: formData.phoneNo,
@@ -159,12 +169,12 @@ function CustomerAddModal({
         tenant: formData.tenant,
         buyer: formData.buyer,
         seller: formData.seller,
-        minPrice: parsePrice(formData.minPrice),
-        maxPrice: parsePrice(formData.maxPrice),
-        minRent: parsePrice(formData.minRent),
-        maxRent: parsePrice(formData.maxRent),
-        minDeposit: parsePrice(formData.minDeposit),
-        maxDeposit: parsePrice(formData.maxDeposit),
+        minPrice: parseInt(minPriceInput.value) || null,
+        maxPrice: parseInt(maxPriceInput.value) || null,
+        minRent: parseInt(minRentInput.value) || null,
+        maxRent: parseInt(maxRentInput.value) || null,
+        minDeposit: parseInt(minDepositInput.value) || null,
+        maxDeposit: parseInt(maxDepositInput.value) || null,
         labelUids: formData.labelUids,
       };
 
@@ -238,7 +248,7 @@ function CustomerAddModal({
     }
 
     setSelectedLabels(newSelectedLabels);
-    setFormData((prev: CustomerFormData) => ({
+    setFormData((prev: CustomerBaseFormData) => ({
       ...prev,
       labelUids: newSelectedLabels.map((l) => l.uid),
     }));
@@ -307,6 +317,12 @@ function CustomerAddModal({
     <CustomerAddModalView
       open={open}
       formData={formData}
+      minPriceInput={minPriceInput}
+      minRentInput={minRentInput}
+      minDepositInput={minDepositInput}
+      maxPriceInput={maxPriceInput}
+      maxRentInput={maxRentInput}
+      maxDepositInput={maxDepositInput}
       regionState={region}
       labels={labels}
       selectedLabels={selectedLabels}

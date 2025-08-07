@@ -1,7 +1,14 @@
 import TextField from "@components/TextField";
-import { RadioGroup, FormControlLabel, Radio, Checkbox } from "@mui/material";
+import {
+  RadioGroup,
+  FormControlLabel,
+  Radio,
+  Checkbox,
+  InputAdornment,
+} from "@mui/material";
 import { PropertyType } from "@ts/property";
 import { NumericInputResponse } from "@hooks/useNumericInput";
+import { formatKoreanPrice } from "@utils/numberUtil";
 
 interface PropertyTypeData {
   type: PropertyType;
@@ -61,6 +68,7 @@ const PropertyTypeAndPriceSection = ({
           row
           value={type}
           onChange={(event) => onTypeChange(event.target.value as PropertyType)}
+          className="mb-2"
         >
           <FormControlLabel value="SALE" control={<Radio />} label="매매" />
           <FormControlLabel value="DEPOSIT" control={<Radio />} label="전세" />
@@ -75,8 +83,13 @@ const PropertyTypeAndPriceSection = ({
             fullWidth
             placeholder="숫자만 입력하세요"
             error={!!priceError}
-            helperText={priceError ?? undefined}
+            helperText={priceError || formatKoreanPrice(price)}
             onBlur={onPriceBlur}
+            InputProps={{
+              endAdornment: (
+                <InputAdornment position="end">만원</InputAdornment>
+              ),
+            }}
           />
         )}
         {type === "DEPOSIT" && (
@@ -87,8 +100,13 @@ const PropertyTypeAndPriceSection = ({
             fullWidth
             placeholder="숫자만 입력하세요"
             error={!!depositError}
-            helperText={depositError ?? undefined}
+            helperText={depositError || formatKoreanPrice(deposit)}
             onBlur={onDepositBlur}
+            InputProps={{
+              endAdornment: (
+                <InputAdornment position="end">만원</InputAdornment>
+              ),
+            }}
           />
         )}
         {type === "MONTHLY" && (
@@ -100,8 +118,13 @@ const PropertyTypeAndPriceSection = ({
               fullWidth
               placeholder="숫자만 입력하세요"
               error={!!depositError}
-              helperText={depositError ?? undefined}
+              helperText={depositError || formatKoreanPrice(deposit)}
               onBlur={onDepositBlur}
+              InputProps={{
+                endAdornment: (
+                  <InputAdornment position="end">만원</InputAdornment>
+                ),
+              }}
             />
             <TextField
               label="월세"
@@ -110,8 +133,13 @@ const PropertyTypeAndPriceSection = ({
               fullWidth
               placeholder="숫자만 입력하세요"
               error={!!monthlyRentError}
-              helperText={monthlyRentError ?? undefined}
+              helperText={monthlyRentError || formatKoreanPrice(monthlyRent)}
               onBlur={onMonthlyRentBlur}
+              InputProps={{
+                endAdornment: (
+                  <InputAdornment position="end">만원</InputAdornment>
+                ),
+              }}
             />
           </div>
         )}

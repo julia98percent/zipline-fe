@@ -1,39 +1,42 @@
-import { TextField } from "@mui/material";
+import { InputAdornment, TextField } from "@mui/material";
+import { NumericInputResponse } from "@hooks/useNumericInput";
+import { formatKoreanPrice } from "@utils/numberUtil";
 
 interface Props {
-  deposit: string;
-  setDeposit: (e: React.ChangeEvent<HTMLInputElement>) => void;
-  monthlyRent: string;
-  setMonthlyRent: (e: React.ChangeEvent<HTMLInputElement>) => void;
-  price: string;
-  setPrice: (e: React.ChangeEvent<HTMLInputElement>) => void;
   category?: string | null;
-  handleDepositBlur: (e: React.FocusEvent<HTMLInputElement>) => void;
-  handleMonthlyRentBlur: (e: React.FocusEvent<HTMLInputElement>) => void;
-  handlePriceBlur: (e: React.FocusEvent<HTMLInputElement>) => void;
-  depositError: string | null;
-  monthlyError: string | null;
-  priceError: string | null;
+  depositInput: NumericInputResponse;
+  monthlyRentInput: NumericInputResponse;
+  priceInput: NumericInputResponse;
 }
 
 const ContractPriceSection = ({
-  deposit,
-  setDeposit,
-  monthlyRent,
-  setMonthlyRent,
-  price,
-  setPrice,
   category,
-  handleDepositBlur,
-  handleMonthlyRentBlur,
-  handlePriceBlur,
-  depositError,
-  monthlyError,
-  priceError,
+  depositInput,
+  monthlyRentInput,
+  priceInput,
 }: Props) => {
   if (!category) {
     return null;
   }
+
+  const {
+    value: deposit,
+    handleChange: setDeposit,
+    error: depositError,
+    handleBlur: handleDepositBlur,
+  } = depositInput;
+  const {
+    value: monthlyRent,
+    handleChange: setMonthlyRent,
+    error: monthlyError,
+    handleBlur: handleMonthlyRentBlur,
+  } = monthlyRentInput;
+  const {
+    value: price,
+    handleChange: setPrice,
+    error: priceError,
+    handleBlur: handlePriceBlur,
+  } = priceInput;
 
   return (
     <div className="flex flex-col gap-4">
@@ -45,7 +48,10 @@ const ContractPriceSection = ({
           fullWidth
           onBlur={handlePriceBlur}
           error={!!priceError}
-          helperText={priceError}
+          helperText={priceError || formatKoreanPrice(price)}
+          InputProps={{
+            endAdornment: <InputAdornment position="end">만원</InputAdornment>,
+          }}
         />
       )}
 
@@ -57,7 +63,10 @@ const ContractPriceSection = ({
           fullWidth
           onBlur={handleDepositBlur}
           error={!!depositError}
-          helperText={depositError}
+          helperText={depositError || formatKoreanPrice(deposit)}
+          InputProps={{
+            endAdornment: <InputAdornment position="end">만원</InputAdornment>,
+          }}
         />
       )}
 
@@ -70,7 +79,12 @@ const ContractPriceSection = ({
             fullWidth
             onBlur={handleDepositBlur}
             error={!!depositError}
-            helperText={depositError}
+            helperText={depositError || formatKoreanPrice(deposit)}
+            InputProps={{
+              endAdornment: (
+                <InputAdornment position="end">만원</InputAdornment>
+              ),
+            }}
           />
           <TextField
             label="월세"
@@ -79,7 +93,12 @@ const ContractPriceSection = ({
             fullWidth
             onBlur={handleMonthlyRentBlur}
             error={!!monthlyError}
-            helperText={monthlyError}
+            helperText={monthlyError || formatKoreanPrice(monthlyRent)}
+            InputProps={{
+              endAdornment: (
+                <InputAdornment position="end">만원</InputAdornment>
+              ),
+            }}
           />
         </>
       )}

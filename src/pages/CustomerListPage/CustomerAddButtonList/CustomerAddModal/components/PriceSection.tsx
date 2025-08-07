@@ -1,178 +1,98 @@
 import { InputAdornment } from "@mui/material";
 import TextField from "@components/TextField";
+import { NumericInputResponse } from "@hooks/useNumericInput";
+import { formatKoreanPrice } from "@utils/numberUtil";
 
 interface PriceSectionProps {
   showSalePrice: boolean;
   showRentPrice: boolean;
-  minPrice: string;
-  maxPrice: string;
-  minRent: string;
-  maxRent: string;
-  minDeposit: string;
-  maxDeposit: string;
+  minPriceInput: NumericInputResponse;
+  minRentInput: NumericInputResponse;
+  minDepositInput: NumericInputResponse;
+  maxPriceInput: NumericInputResponse;
+  maxRentInput: NumericInputResponse;
+  maxDepositInput: NumericInputResponse;
   onFieldChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
 }
-
-const formatNumberField = (e: React.FormEvent<HTMLInputElement>) => {
-  const value = e.currentTarget.value.replace(/[^0-9]/g, "");
-  e.currentTarget.value = value
-    ? new Intl.NumberFormat("ko-KR").format(Number(value))
-    : "";
-};
 
 export default function PriceSection({
   showSalePrice,
   showRentPrice,
-  minPrice,
-  maxPrice,
-  minRent,
-  maxRent,
-  minDeposit,
-  maxDeposit,
-  onFieldChange,
+  minPriceInput,
+  minRentInput,
+  minDepositInput,
+  maxPriceInput,
+  maxRentInput,
+  maxDepositInput,
 }: PriceSectionProps) {
-  return (
-    <div className="flex flex-col pb-7 mb-4 border-b border-gray-200 gap-4">
-      {/* 매매가 범위 - 매도인 또는 매수인 선택 시 */}
-      {showSalePrice && (
-        <div>
-          <h6 className="mb-2 font-medium">희망 매매가 범위</h6>
+  const allCategories = [
+    {
+      label: "매매가",
+      min: minPriceInput,
+      max: maxPriceInput,
+      fields: ["Price"],
+      show: showSalePrice,
+    },
+    {
+      label: "보증금",
+      min: minDepositInput,
+      max: maxDepositInput,
+      fields: ["Deposit"],
+      show: showRentPrice,
+    },
+    {
+      label: "임대료",
+      min: minRentInput,
+      max: maxRentInput,
+      fields: ["Rent"],
+      show: showRentPrice,
+    },
+  ];
 
-          <div className="flex gap-4">
+  const priceCategories = allCategories.filter((category) => category.show);
+
+  return (
+    <div className="flex flex-col pb-7 mb-4 border-b border-gray-200 mt-2">
+      {priceCategories.map((category) => (
+        <div key={category.label} className="flex flex-col mb-3">
+          <div className="flex items-start justify-center gap-4 items-center">
             <TextField
-              name="minPrice"
-              value={minPrice}
-              onChange={onFieldChange}
-              placeholder="최소 금액"
-              size="small"
+              label={`최소 ${category.label}`}
+              value={category.min.value || ""}
+              onChange={category.min.handleChange}
+              onBlur={category.min.handleBlur}
+              error={!!category.min.error}
+              helperText={
+                category.min.error || formatKoreanPrice(category.min.value)
+              }
               fullWidth
               InputProps={{
                 endAdornment: (
-                  <InputAdornment position="end">원</InputAdornment>
+                  <InputAdornment position="end">만원</InputAdornment>
                 ),
-              }}
-              inputProps={{
-                type: "text",
-                pattern: "[0-9]*",
-                inputMode: "numeric",
-                onChange: formatNumberField,
               }}
             />
+
+            <span className="mt-4">~</span>
             <TextField
-              name="maxPrice"
-              value={maxPrice}
-              onChange={onFieldChange}
-              placeholder="최대 금액"
-              size="small"
+              label={`최대 ${category.label}`}
+              value={category.max.value || ""}
+              onChange={category.max.handleChange}
+              onBlur={category.max.handleBlur}
+              error={!!category.max.error}
+              helperText={
+                category.max.error || formatKoreanPrice(category.max.value)
+              }
               fullWidth
               InputProps={{
                 endAdornment: (
-                  <InputAdornment position="end">원</InputAdornment>
+                  <InputAdornment position="end">만원</InputAdornment>
                 ),
-              }}
-              inputProps={{
-                type: "text",
-                pattern: "[0-9]*",
-                inputMode: "numeric",
-                onChange: formatNumberField,
               }}
             />
           </div>
         </div>
-      )}
-
-      {/* 월세 및 보증금 범위 - 임차인 또는 임대인 선택 시 */}
-      {showRentPrice && (
-        <>
-          <div>
-            <h6 className="mb-2 font-medium">희망 월세 범위</h6>
-            <div className="flex gap-4">
-              <TextField
-                name="minRent"
-                value={minRent}
-                onChange={onFieldChange}
-                placeholder="최소 금액"
-                size="small"
-                fullWidth
-                InputProps={{
-                  endAdornment: (
-                    <InputAdornment position="end">원</InputAdornment>
-                  ),
-                }}
-                inputProps={{
-                  type: "text",
-                  pattern: "[0-9]*",
-                  inputMode: "numeric",
-                  onChange: formatNumberField,
-                }}
-              />
-              <TextField
-                name="maxRent"
-                value={maxRent}
-                onChange={onFieldChange}
-                placeholder="최대 금액"
-                size="small"
-                fullWidth
-                InputProps={{
-                  endAdornment: (
-                    <InputAdornment position="end">원</InputAdornment>
-                  ),
-                }}
-                inputProps={{
-                  type: "text",
-                  pattern: "[0-9]*",
-                  inputMode: "numeric",
-                  onChange: formatNumberField,
-                }}
-              />
-            </div>
-          </div>
-
-          <div>
-            <h6 className="mb-2 font-medium">희망 보증금 범위</h6>
-            <div className="flex gap-4">
-              <TextField
-                name="minDeposit"
-                value={minDeposit}
-                onChange={onFieldChange}
-                placeholder="최소 금액"
-                size="small"
-                fullWidth
-                InputProps={{
-                  endAdornment: (
-                    <InputAdornment position="end">원</InputAdornment>
-                  ),
-                }}
-                inputProps={{
-                  type: "text",
-                  pattern: "[0-9]*",
-                  inputMode: "numeric",
-                  onChange: formatNumberField,
-                }}
-              />
-              <TextField
-                name="maxDeposit"
-                value={maxDeposit}
-                onChange={onFieldChange}
-                placeholder="최대 금액"
-                size="small"
-                fullWidth
-                InputProps={{
-                  endAdornment: (
-                    <InputAdornment position="end">원</InputAdornment>
-                  ),
-                }}
-                inputProps={{
-                  type: "text",
-                  pattern: "[0-9]*",
-                  inputMode: "numeric",
-                  onChange: formatNumberField,
-                }}
-              />
-            </div>
-          </div>
-        </>
-      )}
+      ))}
     </div>
   );
 }

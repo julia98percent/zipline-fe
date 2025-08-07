@@ -16,6 +16,7 @@ import {
   ContractActionButtons,
 } from "./components";
 import { ContractStatus } from "@ts/contract";
+import { NumericInputResponse } from "@hooks/useNumericInput";
 
 interface Props {
   open: boolean;
@@ -30,12 +31,6 @@ interface Props {
   setContractEndDate: (date: Dayjs | null) => void;
   expectedContractEndDate: Dayjs | null;
   setExpectedContractEndDate: (date: Dayjs | null) => void;
-  deposit: string;
-  setDeposit: (e: React.ChangeEvent<HTMLInputElement>) => void;
-  monthlyRent: string;
-  setMonthlyRent: (e: React.ChangeEvent<HTMLInputElement>) => void;
-  price: string;
-  setPrice: (e: React.ChangeEvent<HTMLInputElement>) => void;
   lessorUids: number[];
   setLessorUids: (uids: number[]) => void;
   lesseeUids: number[];
@@ -52,12 +47,9 @@ interface Props {
   validationErrors: string[];
   isSubmitButtonDisabled: boolean;
   errorMessage: string;
-  handleDepositBlur: (e: React.FocusEvent<HTMLInputElement>) => void;
-  handleMonthlyRentBlur: (e: React.FocusEvent<HTMLInputElement>) => void;
-  handlePriceBlur: (e: React.FocusEvent<HTMLInputElement>) => void;
-  depositError: string | null;
-  monthlyError: string | null;
-  priceError: string | null;
+  priceInput: NumericInputResponse;
+  monthlyRentInput: NumericInputResponse;
+  depositInput: NumericInputResponse;
 }
 
 const ContractAddModalView = ({
@@ -73,12 +65,9 @@ const ContractAddModalView = ({
   setContractEndDate,
   expectedContractEndDate,
   setExpectedContractEndDate,
-  deposit,
-  setDeposit,
-  monthlyRent,
-  setMonthlyRent,
-  price,
-  setPrice,
+  depositInput,
+  monthlyRentInput,
+  priceInput,
   lessorUids,
   setLessorUids,
   lesseeUids,
@@ -95,12 +84,6 @@ const ContractAddModalView = ({
   validationErrors,
   isSubmitButtonDisabled,
   errorMessage,
-  handleDepositBlur,
-  handleMonthlyRentBlur,
-  handlePriceBlur,
-  depositError,
-  monthlyError,
-  priceError,
 }: Props) => {
   return (
     <Dialog
@@ -145,19 +128,10 @@ const ContractAddModalView = ({
         />
 
         <ContractPriceSection
-          deposit={deposit}
-          setDeposit={setDeposit}
-          monthlyRent={monthlyRent}
-          setMonthlyRent={setMonthlyRent}
-          price={price}
-          setPrice={setPrice}
-          handleDepositBlur={handleDepositBlur}
-          handleMonthlyRentBlur={handleMonthlyRentBlur}
-          handlePriceBlur={handlePriceBlur}
           category={category}
-          depositError={depositError}
-          monthlyError={monthlyError}
-          priceError={priceError}
+          priceInput={priceInput}
+          monthlyRentInput={monthlyRentInput}
+          depositInput={depositInput}
         />
 
         <ContractFileUploadSection

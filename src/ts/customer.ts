@@ -64,7 +64,7 @@ export interface CustomerBaseFilter {
 
 export type CustomerFilter = PriceFilter & CustomerBaseFilter;
 
-export interface CustomerFormData {
+export interface CustomerBaseFormData {
   name: string;
   phoneNo: string;
   birthday: string;
@@ -75,14 +75,10 @@ export interface CustomerFormData {
   buyer: boolean;
   tenant: boolean;
   landlord: boolean;
-  minPrice: string;
-  maxPrice: string;
-  minRent: string;
-  maxRent: string;
-  minDeposit: string;
-  maxDeposit: string;
   labelUids: number[];
 }
+
+export type CustomerFormData = PriceFilter & CustomerBaseFormData;
 
 export interface FilterSectionProps {
   filtersTemp: CustomerBaseFilter;

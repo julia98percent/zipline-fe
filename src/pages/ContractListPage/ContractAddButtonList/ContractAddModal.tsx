@@ -10,7 +10,7 @@ import {
   CustomerResponse,
 } from "@apis/contractService";
 import ContractAddModalView from "./ContractAddModalView";
-import { useNumericInput } from "@hooks/useNumericInput";
+import { useNumericInput, useRawNumericInput } from "@hooks/useNumericInput";
 import { MAX_PROPERTY_PRICE } from "@constants/property";
 
 type ContractStatus = (typeof CONTRACT_STATUS_OPTION_LIST)[number]["value"];
@@ -31,35 +31,14 @@ const ContractAddModal = ({ open, handleClose, fetchContractData }: Props) => {
   const [expectedContractEndDate, setExpectedContractEndDate] =
     useState<Dayjs | null>(null);
 
-  const {
-    value: deposit,
-    handleChange: setDeposit,
-    error: depositError,
-    setValueManually: setDepositManually,
-    handleBlur: handleDepositBlur,
-  } = useNumericInput("", {
+  const depositInput = useRawNumericInput("", {
     max: MAX_PROPERTY_PRICE,
-    allowNegative: false,
   });
-  const {
-    value: monthlyRent,
-    handleChange: setMonthlyRent,
-    error: monthlyError,
-    setValueManually: setMonthlyRentManually,
-    handleBlur: handleMonthlyRentBlur,
-  } = useNumericInput("", {
+  const monthlyRentInput = useNumericInput("", {
     max: MAX_PROPERTY_PRICE,
-    allowNegative: false,
   });
-  const {
-    value: price,
-    handleChange: setPrice,
-    error: priceError,
-    setValueManually: setPriceManually,
-    handleBlur: handlePriceBlur,
-  } = useNumericInput("", {
+  const priceInput = useNumericInput("", {
     max: MAX_PROPERTY_PRICE,
-    allowNegative: false,
   });
 
   const [lessorUids, setLessorUids] = useState<number[]>([]);
@@ -128,9 +107,9 @@ const ContractAddModal = ({ open, handleClose, fetchContractData }: Props) => {
     }
     if (!propertyUid) errors.push("매물을 선택해 주세요.");
     if (!status) errors.push("계약 상태를 선택해 주세요.");
-    if (priceError) errors.push("유효한 가격을 입력해주세요");
-    if (depositError) errors.push("유효한 보증금을 입력해주세요");
-    if (monthlyError) errors.push("유효한 월세를 입력해주세요");
+    if (priceInput.error) errors.push("유효한 가격을 입력해주세요");
+    if (depositInput.error) errors.push("유효한 보증금을 입력해주세요");
+    if (monthlyRentInput.error) errors.push("유효한 월세를 입력해주세요");
 
     return errors;
   };
@@ -138,13 +117,13 @@ const ContractAddModal = ({ open, handleClose, fetchContractData }: Props) => {
   const handleCategoryChange = (value: string | null) => {
     setCategory(value);
     if (value === "SALE") {
-      setDepositManually("");
-      setMonthlyRentManually("");
+      depositInput.setValueManually("");
+      monthlyRentInput.setValueManually("");
     } else if (value === "DEPOSIT") {
-      setMonthlyRentManually("");
-      setPriceManually("");
+      monthlyRentInput.setValueManually("");
+      priceInput.setValueManually("");
     } else if (value === "MONTHLY") {
-      setPriceManually("");
+      priceInput.setValueManually("");
     }
   };
 
@@ -161,9 +140,11 @@ const ContractAddModal = ({ open, handleClose, fetchContractData }: Props) => {
       expectedContractEndDate: expectedContractEndDate
         ? expectedContractEndDate.format("YYYY-MM-DD")
         : null,
-      deposit: deposit ? parseInt(deposit, 10) : 0,
-      monthlyRent: monthlyRent ? parseInt(monthlyRent, 10) : 0,
-      price: price ? parseInt(price, 10) : 0,
+      deposit: depositInput.value ? parseInt(depositInput.value, 10) : 0,
+      monthlyRent: monthlyRentInput.value
+        ? parseInt(monthlyRentInput.value, 10)
+        : 0,
+      price: priceInput.value ? parseInt(priceInput.value, 10) : 0,
       lessorOrSellerUids: lessorUids,
       lesseeOrBuyerUids: lesseeUids,
       propertyUid,
@@ -230,9 +211,9 @@ const ContractAddModal = ({ open, handleClose, fetchContractData }: Props) => {
     setContractStartDate(null);
     setContractEndDate(null);
     setExpectedContractEndDate(null);
-    setDepositManually("");
-    setMonthlyRentManually("");
-    setPriceManually("");
+    depositInput.setValueManually("");
+    monthlyRentInput.setValueManually("");
+    priceInput.setValueManually("");
     setLessorUids([]);
     setLesseeUids([]);
     setPropertyUid(null);
@@ -256,12 +237,9 @@ const ContractAddModal = ({ open, handleClose, fetchContractData }: Props) => {
       setContractEndDate={setContractEndDate}
       expectedContractEndDate={expectedContractEndDate}
       setExpectedContractEndDate={setExpectedContractEndDate}
-      deposit={deposit}
-      setDeposit={setDeposit}
-      monthlyRent={monthlyRent}
-      setMonthlyRent={setMonthlyRent}
-      price={price}
-      setPrice={setPrice}
+      depositInput={depositInput}
+      monthlyRentInput={monthlyRentInput}
+      priceInput={priceInput}
       lessorUids={lessorUids}
       setLessorUids={setLessorUids}
       lesseeUids={lesseeUids}
@@ -278,12 +256,6 @@ const ContractAddModal = ({ open, handleClose, fetchContractData }: Props) => {
       isSubmitButtonDisabled={isSubmitButtonDisabled}
       errorMessage={errorMessage}
       validationErrors={validationErrors}
-      handleDepositBlur={handleDepositBlur}
-      handleMonthlyRentBlur={handleMonthlyRentBlur}
-      handlePriceBlur={handlePriceBlur}
-      depositError={depositError}
-      monthlyError={monthlyError}
-      priceError={priceError}
     />
   );
 };

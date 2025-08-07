@@ -8,7 +8,7 @@ import {
 } from "@mui/material";
 import Button from "@components/Button";
 import { Label } from "@ts/customer";
-import { CustomerFormData } from "@ts/customer";
+import { CustomerBaseFormData } from "@ts/customer";
 import { RegionState } from "@ts/region";
 import {
   BasicInfoSection,
@@ -17,10 +17,17 @@ import {
   AdditionalInfoSection,
   RoleSection,
 } from "./components";
+import { NumericInputResponse } from "@hooks/useNumericInput";
 
 interface CustomerAddModalViewProps {
   open: boolean;
-  formData: CustomerFormData;
+  formData: CustomerBaseFormData;
+  minPriceInput: NumericInputResponse;
+  minRentInput: NumericInputResponse;
+  minDepositInput: NumericInputResponse;
+  maxPriceInput: NumericInputResponse;
+  maxRentInput: NumericInputResponse;
+  maxDepositInput: NumericInputResponse;
   regionState: RegionState;
   labels: Label[];
   selectedLabels: Label[];
@@ -49,6 +56,12 @@ interface CustomerAddModalViewProps {
 export default function CustomerAddModalView({
   open,
   formData,
+  minPriceInput,
+  minRentInput,
+  minDepositInput,
+  maxPriceInput,
+  maxRentInput,
+  maxDepositInput,
   regionState,
   labels,
   selectedLabels,
@@ -119,12 +132,12 @@ export default function CustomerAddModalView({
         <PriceSection
           showSalePrice={formData.seller || formData.buyer}
           showRentPrice={formData.tenant || formData.landlord}
-          minPrice={formData.minPrice}
-          maxPrice={formData.maxPrice}
-          minRent={formData.minRent}
-          maxRent={formData.maxRent}
-          minDeposit={formData.minDeposit}
-          maxDeposit={formData.maxDeposit}
+          minPriceInput={minPriceInput}
+          maxPriceInput={maxPriceInput}
+          minRentInput={minRentInput}
+          maxRentInput={maxRentInput}
+          minDepositInput={minDepositInput}
+          maxDepositInput={maxDepositInput}
           onFieldChange={onFieldChange}
         />
 

@@ -73,6 +73,14 @@ export function useNumericInput(
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const rawValue = e.target.value.replace(/,/g, "");
 
+    if (max !== undefined && rawValue) {
+      const maxDigitsFromMax = max.toString().length;
+      const numericPart = rawValue.replace(/[-.]/, "");
+      if (numericPart.length > maxDigitsFromMax) {
+        return;
+      }
+    }
+
     // 입력 중에는 형식만 검증 (범위 검증은 onBlur에서)
     const validation = validateFormat(rawValue);
     if (!validation.isValid) {
@@ -182,6 +190,14 @@ export function useRawNumericInput(
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const rawValue = e.target.value;
+
+    if (max !== undefined && rawValue) {
+      const maxDigitsFromMax = max.toString().length;
+      const numericPart = rawValue.replace(/[-.]/, "");
+      if (numericPart.length > maxDigitsFromMax) {
+        return;
+      }
+    }
 
     // 입력 중에는 형식만 검증 (범위 검증은 onBlur에서)
     const validation = validateFormat(rawValue);

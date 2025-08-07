@@ -3,7 +3,10 @@ import { IconButton } from "@mui/material";
 import { ChevronLeft, ChevronRight, OpenInFull } from "@mui/icons-material";
 import dayjs from "dayjs";
 import { Schedule } from "@ts/schedule";
-import { WEEKLY_SCHEDULE_MAX_ITEMS_PER_DAY } from "@constants/schedule";
+import {
+  WEEKLY_SCHEDULE_MAX_ITEMS_PER_DAY,
+  WEEKLY_SCHEDULE_MAX_ITEMS_PER_DAY_MOBILE,
+} from "@constants/schedule";
 import Button from "@components/Button";
 
 interface WeeklyScheduleCalendarProps {
@@ -197,7 +200,7 @@ const WeeklyScheduleCalendar: React.FC<WeeklyScheduleCalendarProps> = ({
                     ) : (
                       <>
                         {daySchedules
-                          .slice(0, WEEKLY_SCHEDULE_MAX_ITEMS_PER_DAY)
+                          .slice(0, WEEKLY_SCHEDULE_MAX_ITEMS_PER_DAY_MOBILE)
                           .map((schedule) => (
                             <div
                               key={schedule.uid}
@@ -218,7 +221,7 @@ const WeeklyScheduleCalendar: React.FC<WeeklyScheduleCalendarProps> = ({
                             </div>
                           ))}
                         {daySchedules.length >
-                          WEEKLY_SCHEDULE_MAX_ITEMS_PER_DAY && (
+                          WEEKLY_SCHEDULE_MAX_ITEMS_PER_DAY_MOBILE && (
                           <Button
                             variant="text"
                             onClick={() =>
@@ -231,7 +234,7 @@ const WeeklyScheduleCalendar: React.FC<WeeklyScheduleCalendarProps> = ({
                           >
                             +
                             {daySchedules.length -
-                              WEEKLY_SCHEDULE_MAX_ITEMS_PER_DAY}
+                              WEEKLY_SCHEDULE_MAX_ITEMS_PER_DAY_MOBILE}
                             개 더보기
                           </Button>
                         )}

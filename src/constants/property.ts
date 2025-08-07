@@ -69,7 +69,7 @@ export const getPropertyCategoryColors = (category: string) => {
   );
 };
 
-export const MAX_PROPERTY_PRICE = 50000000000; // 500억
+export const MAX_PROPERTY_PRICE = 5000000; // 500만 (만원 단위 -> 5백억)
 export const MAX_PROPERTY_AREA = 10000; // 최대 면적 10,000㎡
 export const MIN_PROPERTY_AREA = 1; // 최소 면적 1㎡
 export const MAX_PROPERTY_FLOOR = 100; // 최대 층수 100층

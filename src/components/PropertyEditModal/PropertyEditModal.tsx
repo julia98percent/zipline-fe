@@ -10,7 +10,7 @@ import {
 } from "@mui/material";
 import dayjs, { Dayjs } from "dayjs";
 import { showToast } from "@components/Toast";
-import { useNumericInput, useRawNumericInput } from "@hooks/useNumericInput";
+import { useRawNumericInput } from "@hooks/useNumericInput";
 import { updateProperty } from "@apis/propertyService";
 import { fetchCustomerList } from "@apis/customerService";
 import {
@@ -23,6 +23,7 @@ import {
   AdditionalInfoSection,
 } from "./components";
 import { Property, PropertyType } from "@ts/property";
+import { MAX_PROPERTY_PRICE } from "@constants/property";
 
 interface PropertyEditModalProps {
   open: boolean;
@@ -50,17 +51,23 @@ function PropertyEditModal({
     value: deposit,
     handleChange: handleChangeDeposit,
     setValueManually: setDepositManually,
-  } = useNumericInput("");
+    error: depositError,
+    handleBlur: onDepositBlur,
+  } = useRawNumericInput("", { max: MAX_PROPERTY_PRICE });
   const {
     value: monthlyRent,
     handleChange: handleChangeMonthlyRent,
     setValueManually: setMonthlyRentManually,
-  } = useNumericInput("");
+    error: monthlyRentError,
+    handleBlur: onMonthlyRentBlur,
+  } = useRawNumericInput("", { max: MAX_PROPERTY_PRICE });
   const {
     value: price,
     handleChange: handleChangePrice,
     setValueManually: setPriceManually,
-  } = useNumericInput("");
+    error: priceError,
+    handleBlur: onPriceBlur,
+  } = useRawNumericInput("", { max: MAX_PROPERTY_PRICE });
 
   const {
     value: netArea,
@@ -108,7 +115,9 @@ function PropertyEditModal({
       errors.push("전용 면적을 입력해주세요.");
     if (!totalArea || Number(totalArea) <= 0)
       errors.push("공급 면적을 입력해주세요.");
-
+    if (priceError) errors.push("유효한 가격을 입력해주세요");
+    if (depositError) errors.push("유효한 보증금을 입력해주세요");
+    if (monthlyRentError) errors.push("유효한 월세를 입력해주세요");
     return errors;
   };
 
@@ -281,6 +290,12 @@ function PropertyEditModal({
           onPriceChange={handleChangePrice}
           onDepositChange={handleChangeDeposit}
           onMonthlyRentChange={handleChangeMonthlyRent}
+          onPriceBlur={onPriceBlur}
+          onDepositBlur={onDepositBlur}
+          onMonthlyRentBlur={onMonthlyRentBlur}
+          priceError={priceError}
+          depositError={depositError}
+          monthlyRentError={monthlyRentError}
         />
 
         <PropertyTypeSection

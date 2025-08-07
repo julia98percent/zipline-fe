@@ -1,6 +1,7 @@
-import { Box, Paper, Typography, TextField } from "@mui/material";
-import { formatPriceWithKorean } from "@utils/numberUtil";
+import { Paper, Typography, TextField, InputAdornment } from "@mui/material";
+import { formatKoreanPrice } from "@utils/numberUtil";
 import { Customer } from "@ts/customer";
+import { MAX_PROPERTY_PRICE } from "@constants/property";
 
 interface CustomerPriceInfoProps {
   customer: Customer;
@@ -12,54 +13,45 @@ interface CustomerPriceInfoProps {
   ) => void;
 }
 
-export const MAX_PRICE_LENGTH = 15; // 천조 단위까지 허용 (999조)
-
 const CustomerPriceInfo = ({
   customer,
   isEditing,
   editedCustomer,
   onInputChange,
 }: CustomerPriceInfoProps) => {
-  const formatSafePrice = (price: number | null | undefined): string => {
-    if (price === undefined || price === null) return "-";
-    const priceStr = price.toString();
-    if (priceStr.length > MAX_PRICE_LENGTH) {
-      return "금액이 너무 큽니다";
-    }
-    return formatPriceWithKorean(price) || "-";
-  };
-
   const renderPriceField = (
     label: string,
     field: keyof Customer,
     value: number | null | undefined,
-    editedValue: number | null | undefined
+    editedValue: number | null
   ) => (
     <div className="flex-[0_0_calc(50%-8px)]">
-      <Typography variant="subtitle2" color="textSecondary">
-        {label}
-      </Typography>
+      <div className="text-sm text-gray-600 mb-1">{label}</div>
       {isEditing ? (
-        <>
-          <TextField
-            fullWidth
-            size="small"
-            value={editedValue || ""}
-            onChange={(e) => {
-              const inputValue = e.target.value.replace(/[^0-9]/g, "");
-              if (inputValue.length <= MAX_PRICE_LENGTH) {
-                onInputChange(field, inputValue ? Number(inputValue) : null);
-              }
-            }}
-            placeholder="숫자만 입력"
-            inputProps={{ maxLength: MAX_PRICE_LENGTH }}
-          />
-          <Typography variant="caption" className="text-gray-600 mt-1 block">
-            {formatSafePrice(editedValue)}
-          </Typography>
-        </>
+        <TextField
+          fullWidth
+          size="small"
+          value={editedValue || ""}
+          onChange={(e) => {
+            const rawValue = e.target.value.replace(/[^0-9]/g, "");
+            const numValue = rawValue ? Number(rawValue) : null;
+
+            if (numValue && numValue > MAX_PROPERTY_PRICE) return;
+
+            onInputChange(field, numValue);
+          }}
+          placeholder="숫자만 입력하세요"
+          helperText={formatKoreanPrice(editedValue)}
+          slotProps={{
+            input: {
+              endAdornment: (
+                <InputAdornment position="end">만원</InputAdornment>
+              ),
+            },
+          }}
+        />
       ) : (
-        <Typography variant="body1">{formatSafePrice(value)}</Typography>
+        <p className="font-medium">{formatKoreanPrice(value)}</p>
       )}
     </div>
   );
@@ -69,44 +61,44 @@ const CustomerPriceInfo = ({
       <Typography variant="h6" className="mb-4 text-primary font-bold">
         희망 거래 가격
       </Typography>
-      <Box className="flex flex-wrap gap-4">
+      <div className="flex flex-wrap gap-4">
         {renderPriceField(
           "최소 매매가",
           "minPrice",
           customer.minPrice,
-          editedCustomer?.minPrice
+          editedCustomer?.minPrice ?? null
         )}
         {renderPriceField(
           "최대 매매가",
           "maxPrice",
           customer.maxPrice,
-          editedCustomer?.maxPrice
+          editedCustomer?.maxPrice ?? null
         )}
         {renderPriceField(
           "최소 보증금",
           "minDeposit",
           customer.minDeposit,
-          editedCustomer?.minDeposit
+          editedCustomer?.minDeposit ?? null
         )}
         {renderPriceField(
           "최대 보증금",
           "maxDeposit",
           customer.maxDeposit,
-          editedCustomer?.maxDeposit
+          editedCustomer?.maxDeposit ?? null
         )}
         {renderPriceField(
           "최소 임대료",
           "minRent",
           customer.minRent,
-          editedCustomer?.minRent
+          editedCustomer?.minRent ?? null
         )}
         {renderPriceField(
           "최대 임대료",
           "maxRent",
           customer.maxRent,
-          editedCustomer?.maxRent
+          editedCustomer?.maxRent ?? null
         )}
-      </Box>
+      </div>
     </Paper>
   );
 };

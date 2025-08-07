@@ -7,6 +7,7 @@ import {
   Autocomplete,
   Chip,
   Tooltip,
+  InputAdornment,
 } from "@mui/material";
 import { MenuItem, StringSelect } from "@components/Select";
 import {
@@ -19,45 +20,39 @@ import { AgentPropertyResponse, CustomerResponse } from "@apis/contractService";
 import Button from "@components/Button";
 import dayjs, { Dayjs } from "dayjs";
 import DatePicker from "@components/DatePicker";
+import { NumericInputResponse } from "@hooks/useNumericInput";
+import { formatKoreanPrice } from "@utils/numberUtil";
 
 interface ContractBasicInfoEditModalViewProps {
   open: boolean;
   onClose: () => void;
   isLoading: boolean;
-
   category: ContractCategoryType | null;
   status: string;
   contractStartDate: Dayjs;
   contractDate: Dayjs | null;
   contractEndDate: Dayjs;
   expectedContractEndDate: Dayjs | null;
-  deposit: string;
-  monthlyRent: string;
-  price: string;
+  priceInput: NumericInputResponse;
+  monthlyRentInput: NumericInputResponse;
+  depositInput: NumericInputResponse;
   other: string;
   selectedLessors: CustomerResponse[];
   selectedLessees: CustomerResponse[];
   selectedPropertyUid: string;
-
   propertyOptions: AgentPropertyResponse[];
   customerOptions: CustomerResponse[];
-
   onCategoryChange: (value: ContractCategoryType) => void;
   onStatusChange: (value: string) => void;
   onContractStartDateChange: (value: Dayjs | null) => void;
   onContractDateChange: (value: Dayjs | null) => void;
   onContractEndDateChange: (value: Dayjs | null) => void;
   onExpectedContractEndDateChange: (value: Dayjs | null) => void;
-  onDepositChange: (value: string) => void;
-  onMonthlyRentChange: (value: string) => void;
-  onPriceChange: (value: string) => void;
   onOtherChange: (value: string) => void;
   onSelectedLessorsChange: (value: CustomerResponse[]) => void;
   onSelectedLesseesChange: (value: CustomerResponse[]) => void;
   onSelectedPropertyUidChange: (value: string) => void;
   onSubmit: () => void;
-
-  formatPrice: (value: string) => string;
   getCustomerDisplayName: (customer: CustomerResponse) => string;
 }
 
@@ -71,9 +66,9 @@ const ContractBasicInfoEditModalView = ({
   contractDate,
   contractEndDate,
   expectedContractEndDate,
-  deposit,
-  monthlyRent,
-  price,
+  depositInput,
+  monthlyRentInput,
+  priceInput,
   other,
   selectedLessors,
   selectedLessees,
@@ -86,17 +81,34 @@ const ContractBasicInfoEditModalView = ({
   onContractDateChange,
   onContractEndDateChange,
   onExpectedContractEndDateChange,
-  onDepositChange,
-  onMonthlyRentChange,
-  onPriceChange,
   onOtherChange,
   onSelectedLessorsChange,
   onSelectedLesseesChange,
   onSelectedPropertyUidChange,
   onSubmit,
-  formatPrice,
   getCustomerDisplayName,
 }: ContractBasicInfoEditModalViewProps) => {
+  const {
+    value: deposit,
+    handleChange: handleDepositChange,
+    error: depositError,
+    handleBlur: handleDepositBlur,
+  } = depositInput;
+
+  const {
+    value: monthlyRent,
+    handleChange: handleMonthlyRentChange,
+    error: monthlyError,
+    handleBlur: handleMonthlyRentBlur,
+  } = monthlyRentInput;
+
+  const {
+    value: price,
+    handleChange: handlePriceChange,
+    error: priceError,
+    handleBlur: handlePriceBlur,
+  } = priceInput;
+
   const getValidationErrors = () => {
     const errors: string[] = [];
     if (!status) errors.push("상태를 선택해주세요.");
@@ -195,49 +207,73 @@ const ContractBasicInfoEditModalView = ({
             <div className="grid grid-cols-[repeat(auto-fill)] gap-4">
               {category == ContractCategoryKeys.SALE && (
                 <TextField
-                  label="매매가 (원)"
-                  value={formatPrice(price)}
-                  onChange={(e) =>
-                    onPriceChange(e.target.value.replace(/,/g, ""))
-                  }
+                  label="매매가"
+                  value={price}
+                  onChange={handlePriceChange}
+                  onBlur={handlePriceBlur}
+                  error={!!priceError}
+                  helperText={priceError || formatKoreanPrice(price)}
                   fullWidth
                   placeholder="0"
+                  InputProps={{
+                    endAdornment: (
+                      <InputAdornment position="end">만원</InputAdornment>
+                    ),
+                  }}
                 />
               )}
 
               {category == ContractCategoryKeys.DEPOSIT && (
                 <TextField
-                  label="보증금 (원)"
-                  value={formatPrice(deposit)}
-                  onChange={(e) =>
-                    onDepositChange(e.target.value.replace(/,/g, ""))
-                  }
+                  label="보증금"
+                  value={deposit}
+                  onChange={handleDepositChange}
+                  onBlur={handleDepositBlur}
+                  error={!!depositError}
+                  helperText={depositError || formatKoreanPrice(deposit)}
                   fullWidth
                   placeholder="0"
+                  InputProps={{
+                    endAdornment: (
+                      <InputAdornment position="end">만원</InputAdornment>
+                    ),
+                  }}
                 />
               )}
 
               {category == ContractCategoryKeys.MONTHLY && (
-                <>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   <TextField
-                    label="보증금 (원)"
-                    value={formatPrice(deposit)}
-                    onChange={(e) =>
-                      onDepositChange(e.target.value.replace(/,/g, ""))
-                    }
+                    label="보증금"
+                    value={deposit}
+                    onChange={handleDepositChange}
+                    onBlur={handleDepositBlur}
+                    error={!!depositError}
+                    helperText={depositError || formatKoreanPrice(deposit)}
                     fullWidth
                     placeholder="0"
+                    InputProps={{
+                      endAdornment: (
+                        <InputAdornment position="end">만원</InputAdornment>
+                      ),
+                    }}
                   />
                   <TextField
-                    label="월세 (원)"
-                    value={formatPrice(monthlyRent)}
-                    onChange={(e) =>
-                      onMonthlyRentChange(e.target.value.replace(/,/g, ""))
-                    }
+                    label="월세"
+                    value={monthlyRent}
+                    onChange={handleMonthlyRentChange}
+                    onBlur={handleMonthlyRentBlur}
+                    error={!!monthlyError}
+                    helperText={monthlyError || formatKoreanPrice(monthlyRent)}
                     fullWidth
                     placeholder="0"
+                    InputProps={{
+                      endAdornment: (
+                        <InputAdornment position="end">만원</InputAdornment>
+                      ),
+                    }}
                   />
-                </>
+                </div>
               )}
             </div>
           )}

@@ -17,6 +17,7 @@ import {
 } from "@ts/contract";
 import Table, { ColumnConfig } from "@components/Table";
 import Button from "@components/Button";
+import { formatKoreanPrice } from "@utils/numberUtil";
 
 interface CustomerInfo {
   name: string;
@@ -30,7 +31,6 @@ interface ContractDetailContentViewProps {
   getStatusLabel: (statusValue: string) => string;
   getStatusColor: (statusValue: string) => string;
   getCustomerNamesDisplay: (names: CustomerInfo[]) => string;
-  formatPrice: (price: number | null | undefined, suffix?: string) => string;
   onEditBasicInfo: () => void;
   onEditDocuments: () => void;
   onStatusChange?: (newStatus: "CANCELLED" | "TERMINATED") => void;
@@ -51,7 +51,6 @@ const ContractDetailContentView = ({
   getStatusLabel,
   getStatusColor,
   getCustomerNamesDisplay,
-  formatPrice,
   onEditBasicInfo,
   onEditDocuments,
   onStatusChange,
@@ -199,13 +198,16 @@ const ContractDetailContentView = ({
                   <InfoRow label="매물 주소" value={contract.propertyAddress} />
                   <InfoRow
                     label="보증금"
-                    value={formatPrice(contract.deposit)}
+                    value={formatKoreanPrice(contract.deposit)}
                   />
                   <InfoRow
                     label="월세"
-                    value={formatPrice(contract.monthlyRent)}
+                    value={formatKoreanPrice(contract.monthlyRent)}
                   />
-                  <InfoRow label="매매가" value={formatPrice(contract.price)} />
+                  <InfoRow
+                    label="매매가"
+                    value={formatKoreanPrice(contract.price)}
+                  />
                   <InfoRow
                     label="임대/매도인"
                     value={getCustomerNamesDisplay(contract.lessorOrSellerInfo)}

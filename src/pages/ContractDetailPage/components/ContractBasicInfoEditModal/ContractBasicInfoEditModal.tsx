@@ -10,6 +10,8 @@ import {
 } from "@apis/contractService";
 import { showToast } from "@components/Toast";
 import ContractBasicInfoEditModalView from "./ContractBasicInfoEditModalView";
+import { useRawNumericInput } from "@hooks/useNumericInput";
+import { MAX_PROPERTY_PRICE } from "@constants/property";
 
 interface ContractBasicInfoEditModalProps {
   open: boolean;
@@ -32,9 +34,11 @@ const ContractBasicInfoEditModal = ({
   const [contractEndDate, setContractEndDate] = useState<string>("");
   const [expectedContractEndDate, setExpectedContractEndDate] =
     useState<string>("");
-  const [deposit, setDeposit] = useState<string>("");
-  const [monthlyRent, setMonthlyRent] = useState<string>("");
-  const [price, setPrice] = useState<string>("");
+
+  const depositInput = useRawNumericInput("", { max: MAX_PROPERTY_PRICE });
+  const monthlyRentInput = useRawNumericInput("", { max: MAX_PROPERTY_PRICE });
+  const priceInput = useRawNumericInput("", { max: MAX_PROPERTY_PRICE });
+
   const [other, setOther] = useState<string>("");
   const [selectedLessors, setSelectedLessors] = useState<CustomerResponse[]>(
     []
@@ -63,9 +67,9 @@ const ContractBasicInfoEditModal = ({
       setContractStartDate(contract.contractStartDate || "");
       setContractEndDate(contract.contractEndDate || "");
       setExpectedContractEndDate(contract.expectedContractEndDate || "");
-      setDeposit(contract.deposit?.toString() || "");
-      setMonthlyRent(contract.monthlyRent?.toString() || "");
-      setPrice(contract.price?.toString() || "");
+      depositInput.setValueManually(contract.deposit?.toString() || "");
+      monthlyRentInput.setValueManually(contract.monthlyRent?.toString() || "");
+      priceInput.setValueManually(contract.price?.toString() || "");
       setOther(contract.other || "");
     }
   }, [open, contract]);
@@ -151,18 +155,6 @@ const ContractBasicInfoEditModal = ({
     setExpectedContractEndDate(value);
   }, []);
 
-  const handleDepositChange = useCallback((value: string) => {
-    setDeposit(value);
-  }, []);
-
-  const handleMonthlyRentChange = useCallback((value: string) => {
-    setMonthlyRent(value);
-  }, []);
-
-  const handlePriceChange = useCallback((value: string) => {
-    setPrice(value);
-  }, []);
-
   const handleOtherChange = useCallback((value: string) => {
     setOther(value);
   }, []);
@@ -198,9 +190,9 @@ const ContractBasicInfoEditModal = ({
         contractStartDate,
         contractEndDate,
         expectedContractEndDate,
-        deposit: deposit ? parseInt(deposit.replace(/,/g, "")) : 0,
-        monthlyRent: monthlyRent ? parseInt(monthlyRent.replace(/,/g, "")) : 0,
-        price: price ? parseInt(price.replace(/,/g, "")) : 0,
+        deposit: parseInt(depositInput.value || "0"),
+        monthlyRent: parseInt(monthlyRentInput.value || "0"),
+        price: parseInt(priceInput.value || "0"),
         lessorOrSellerUids: finalLessorUids,
         lesseeOrBuyerUids: finalLesseeUids,
         propertyUid: contract.propertyUid,
@@ -244,24 +236,18 @@ const ContractBasicInfoEditModal = ({
     contractStartDate,
     contractEndDate,
     expectedContractEndDate,
-    deposit,
-    monthlyRent,
-    price,
     status,
     other,
     onSuccess,
     onClose,
+    depositInput.value,
+    monthlyRentInput.value,
+    priceInput.value,
   ]);
 
   const handleClose = useCallback(() => {
     onClose();
   }, [onClose]);
-
-  // Helper functions
-  const formatPrice = useCallback((value: string) => {
-    const numericValue = value.replace(/[^0-9]/g, "");
-    return numericValue.replace(/\B(?=(\d{3})+(?!\d))/g, ",");
-  }, []);
 
   const getCustomerDisplayName = useCallback(
     (customer: CustomerResponse): string => {
@@ -286,9 +272,9 @@ const ContractBasicInfoEditModal = ({
       contractDate={contractDate}
       contractEndDate={contractEndDate}
       expectedContractEndDate={expectedContractEndDate}
-      deposit={deposit}
-      monthlyRent={monthlyRent}
-      price={price}
+      depositInput={depositInput}
+      monthlyRentInput={monthlyRentInput}
+      priceInput={priceInput}
       other={other}
       selectedLessors={selectedLessors}
       selectedLessees={selectedLessees}
@@ -301,15 +287,11 @@ const ContractBasicInfoEditModal = ({
       onContractDateChange={handleContractDateChange}
       onContractEndDateChange={handleContractEndDateChange}
       onExpectedContractEndDateChange={handleExpectedContractEndDateChange}
-      onDepositChange={handleDepositChange}
-      onMonthlyRentChange={handleMonthlyRentChange}
-      onPriceChange={handlePriceChange}
       onOtherChange={handleOtherChange}
       onSelectedLessorsChange={handleSelectedLessorsChange}
       onSelectedLesseesChange={handleSelectedLesseesChange}
       onSelectedPropertyUidChange={handleSelectedPropertyUidChange}
       onSubmit={handleSubmit}
-      formatPrice={formatPrice}
       getCustomerDisplayName={getCustomerDisplayName}
     />
   );

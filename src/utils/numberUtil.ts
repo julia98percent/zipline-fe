@@ -47,11 +47,11 @@ export function formatPhoneNumber(input: string): string {
   return formattedNumber;
 }
 
-export const formatKoreanPrice = (value: number | string | null) => {
+export const formatKoreanPrice = (value?: number | string | null) => {
   const numValue = typeof value === "string" ? parseInt(value, 10) : value;
-  
+
   if (!numValue || numValue === 0 || isNaN(numValue)) return "";
-  
+
   if (numValue >= 10000) {
     const eok = Math.floor(numValue / 10000);
     const remainder = numValue % 10000;
@@ -60,14 +60,18 @@ export const formatKoreanPrice = (value: number | string | null) => {
     } else if (remainder >= 1000) {
       const thousand = Math.floor(remainder / 1000);
       const man = remainder % 1000;
-      return man > 0 ? `${eok}억 ${thousand}천 ${man}만원` : `${eok}억 ${thousand}천만원`;
+      return man > 0
+        ? `${eok}억 ${thousand}천 ${man}만원`
+        : `${eok}억 ${thousand}천만원`;
     } else {
       return `${eok}억 ${remainder}만원`;
     }
   } else if (numValue >= 1000) {
     const thousand = Math.floor(numValue / 1000);
     const remainder = numValue % 1000;
-    return remainder > 0 ? `${thousand}천 ${remainder}만원` : `${thousand}천만원`;
+    return remainder > 0
+      ? `${thousand}천 ${remainder}만원`
+      : `${thousand}천만원`;
   } else {
     return `${numValue}만원`;
   }

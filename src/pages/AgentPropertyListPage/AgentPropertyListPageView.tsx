@@ -134,31 +134,16 @@ const AgentPropertyListPageView = ({
               />
             </div>
 
-            {/* 두 번째 줄: 카테고리, 판매유형, 상세필터 */}
+            {/* 두 번째 줄: 카테고리, 상세 필터, 필터 초기화 */}
             <div className="grid grid-cols-3 gap-2">
               <Select
                 size="small"
+                label="매물 카테고리"
                 value={searchParams.category || ""}
                 onChange={onCategoryChange}
-                displayEmpty
-                aria-label="카테고리"
+                aria-label="매물 카테고리"
               >
                 {categoryOptions.map((opt) => (
-                  <MenuItem key={opt.value} value={opt.value || ""}>
-                    {opt.label}
-                  </MenuItem>
-                ))}
-              </Select>
-              <Select
-                size="small"
-                value={searchParams.type || ""}
-                onChange={onTypeChange}
-                displayEmpty
-                showEmptyOption={false}
-                aria-label="판매유형"
-              >
-                <MenuItem value="">판매유형</MenuItem>
-                {typeOptions.map((opt) => (
                   <MenuItem key={opt.value} value={opt.value || ""}>
                     {opt.label}
                   </MenuItem>
@@ -167,25 +152,29 @@ const AgentPropertyListPageView = ({
               <Button
                 variant="outlined"
                 onClick={onFilterModalToggle}
-                className="text-sm px-3 py-2"
+                className="text-sm px-2 py-2"
               >
                 <FilterListIcon className="mr-1 text-sm" />
                 상세 필터
               </Button>
-            </div>
-
-            <div className="flex flex-row-reverse gap-4 justify-between items-center">
-              <PropertyAddButtonList fetchPropertyData={onSaveProperty} />
-              <Button variant="text" onClick={onReset}>
+              <Button
+                variant="text"
+                onClick={onReset}
+                className="text-sm px-2 py-2"
+              >
                 필터 초기화
               </Button>
+            </div>
+
+            <div className="flex justify-end">
+              <PropertyAddButtonList fetchPropertyData={onSaveProperty} />
             </div>
           </div>
 
           {/* 데스크톱/태블릿 필터 레이아웃 (lg 이상) */}
           <div className="hidden lg:block space-y-4">
-            {/* 첫 번째 줄: 지역 선택, 카테고리, 판매유형 */}
-            <div className="flex items-center gap-2">
+            {/* 첫 번째 줄: 지역 선택, 카테고리 */}
+            <div className="flex items-center gap-4">
               <div className="flex items-center gap-2 pr-4 border-r border-gray-300">
                 <RegionSelector
                   label="시/도"
@@ -212,31 +201,14 @@ const AgentPropertyListPageView = ({
               </div>
 
               <Select
-                size="small"
+                label="매물 카테고리"
                 value={searchParams.category || ""}
                 onChange={onCategoryChange}
-                displayEmpty
                 showEmptyOption={false}
-                aria-label="카테고리"
+                aria-label="매물 카테고리"
+                className="min-w-36"
               >
-                <MenuItem value="">카테고리</MenuItem>
                 {categoryOptions.map((opt) => (
-                  <MenuItem key={opt.value} value={opt.value || ""}>
-                    {opt.label}
-                  </MenuItem>
-                ))}
-              </Select>
-
-              <Select
-                size="small"
-                value={searchParams.type || ""}
-                onChange={onTypeChange}
-                displayEmpty
-                showEmptyOption={false}
-                aria-label="판매유형"
-              >
-                <MenuItem value="">판매유형</MenuItem>
-                {typeOptions.map((opt) => (
                   <MenuItem key={opt.value} value={opt.value || ""}>
                     {opt.label}
                   </MenuItem>
@@ -291,9 +263,11 @@ const AgentPropertyListPageView = ({
           selectedSido={selectedSido}
           selectedGu={selectedGu}
           selectedDong={selectedDong}
+          typeOptions={typeOptions}
           onSidoChange={onSidoChange}
           onGuChange={onGuChange}
           onDongChange={onDongChange}
+          onTypeChange={onTypeChange}
         />
       </div>
     </div>

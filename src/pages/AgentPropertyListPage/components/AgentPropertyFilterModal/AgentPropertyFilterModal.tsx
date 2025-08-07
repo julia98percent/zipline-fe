@@ -12,9 +12,11 @@ interface AgentPropertyFilterModalProps {
   selectedSido: string;
   selectedGu: string;
   selectedDong: string;
+  typeOptions: TypeOption[];
   onSidoChange: (event: SelectChangeEvent<number>) => void;
   onGuChange: (event: SelectChangeEvent<number>) => void;
   onDongChange: (event: SelectChangeEvent<number>) => void;
+  onTypeChange: (event: SelectChangeEvent<unknown>) => void;
 }
 
 const AgentPropertyFilterModal = ({
@@ -22,6 +24,8 @@ const AgentPropertyFilterModal = ({
   onClose,
   onApply,
   filters,
+  typeOptions,
+  onTypeChange,
 }: AgentPropertyFilterModalProps) => {
   const [hasElevator, setHasElevator] = useState<string>(
     filters.hasElevator === true
@@ -82,6 +86,7 @@ const AgentPropertyFilterModal = ({
     setTotalAreaRange([filters.minTotalArea || 0, filters.maxTotalArea || 300]);
     setPriceRange([filters.minPrice || 0, filters.maxPrice || 100000]);
     setDepositRange([filters.minDeposit || 0, filters.maxDeposit || 50000]);
+    setSelectedType(filters.type || "");
   }, [filters]);
 
   const handleApply = () => {
@@ -136,6 +141,12 @@ const AgentPropertyFilterModal = ({
       cleanedFilters.maxDeposit = undefined;
     }
 
+    if (selectedType) {
+      cleanedFilters.type = selectedType as any;
+    } else {
+      cleanedFilters.type = undefined;
+    }
+
     onApply(cleanedFilters);
     onClose();
   };
@@ -147,6 +158,7 @@ const AgentPropertyFilterModal = ({
     setTotalAreaRange([0, 300]);
     setPriceRange([0, 100000]);
     setDepositRange([0, 50000]);
+    setSelectedType("");
   };
 
   const formatPrice = (value: number, isMaxValue?: boolean) => {
@@ -233,6 +245,7 @@ const AgentPropertyFilterModal = ({
     setTotalAreaRange([filters.minTotalArea || 0, filters.maxTotalArea || 300]);
     setPriceRange([filters.minPrice || 0, filters.maxPrice || 100000]);
     setDepositRange([filters.minDeposit || 0, filters.maxDeposit || 50000]);
+    setSelectedType(filters.type || "");
     onClose();
   };
 
@@ -256,6 +269,9 @@ const AgentPropertyFilterModal = ({
       handleDepositRangeChange={handleDepositRangeChange}
       formatPrice={formatPrice}
       formatPriceForSlider={formatPriceForSlider}
+      selectedType={selectedType}
+      typeOptions={typeOptions}
+      onTypeChange={setSelectedType}
     />
   );
 };

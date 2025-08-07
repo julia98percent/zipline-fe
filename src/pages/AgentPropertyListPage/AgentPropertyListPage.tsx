@@ -265,6 +265,9 @@ function AgentPropertyListPage() {
         filterParams.petsAllowed =
           newFilters.petsAllowed !== undefined ? newFilters.petsAllowed : null;
 
+      if (newFilters.type !== undefined)
+        filterParams.type = newFilters.type || null;
+
       setParams(filterParams);
       setShowFilterModal(false);
     },

@@ -10,6 +10,10 @@ import {
 } from "@mui/material";
 
 import Button from "@components/Button";
+interface TypeOption {
+  value: string;
+  label: string;
+}
 
 interface AgentPropertyFilterModalViewProps {
   open: boolean;
@@ -24,6 +28,8 @@ interface AgentPropertyFilterModalViewProps {
   totalAreaRange: number[];
   priceRange: number[];
   depositRange: number[];
+  selectedType: string;
+  typeOptions: TypeOption[];
 
   // 상태 변경 함수들
   setHasElevator: (value: string) => void;
@@ -32,6 +38,7 @@ interface AgentPropertyFilterModalViewProps {
   setTotalAreaRange: (value: number[]) => void;
   handlePriceRangeChange: (newValue: number | number[]) => void;
   handleDepositRangeChange: (newValue: number | number[]) => void;
+  onTypeChange: (value: string) => void;
 
   // 유틸리티 함수들
   formatPrice: (value: number, isMaxValue?: boolean) => string;
@@ -49,6 +56,8 @@ const AgentPropertyFilterModalView = ({
   totalAreaRange,
   priceRange,
   depositRange,
+  selectedType,
+  typeOptions,
   setHasElevator,
   setPetsAllowed,
   setNetAreaRange,
@@ -57,6 +66,7 @@ const AgentPropertyFilterModalView = ({
   handleDepositRangeChange,
   formatPrice,
   formatPriceForSlider,
+  onTypeChange,
 }: AgentPropertyFilterModalViewProps) => {
   return (
     <Dialog
@@ -72,6 +82,130 @@ const AgentPropertyFilterModalView = ({
       </DialogTitle>
 
       <DialogContent className="flex flex-col gap-6 mx-4 p-7">
+        <div className="flex flex-col gap-2">
+          <h6 className="font-semibold">판매 유형</h6>
+          <div className="flex gap-2">
+            <Button
+              variant={selectedType === "" ? "contained" : "outlined"}
+              onClick={() => onTypeChange("")}
+              size="small"
+              className="flex-1"
+            >
+              전체
+            </Button>
+            {typeOptions.map((opt) => (
+              <Button
+                key={opt.value}
+                variant={selectedType === opt.value ? "contained" : "outlined"}
+                onClick={() => onTypeChange(opt.value)}
+                size="small"
+                className="flex-1"
+              >
+                {opt.label}
+              </Button>
+            ))}
+          </div>
+        </div>
+
+        <div>
+          <div className="flex justify-between items-center mb-4">
+            <h6 className="font-semibold">가격 범위</h6>
+            <Button
+              variant="text"
+              onClick={() => {
+                handlePriceRangeChange([
+                  FILTER_DEFAULTS_MIN,
+                  FILTER_DEFAULTS.PRICE_MAX,
+                ]);
+                handleDepositRangeChange([
+                  FILTER_DEFAULTS_MIN,
+                  FILTER_DEFAULTS.DEPOSIT_MAX,
+                ]);
+                handleRentRangeChange([
+                  FILTER_DEFAULTS_MIN,
+                  FILTER_DEFAULTS.MONTHLY_RENT_MAX,
+                ]);
+              }}
+              className="p-0!"
+            >
+              초기화
+            </Button>
+          </div>
+
+          <div className="mx-4">
+            {/* 매매가 - 전체 또는 매매일 때만 표시 */}
+            {(selectedType === "" || selectedType === "SALE") && (
+              <>
+                <p className="text-sm mb-2 text-gray-600">
+                  매매가: {formatPrice(priceRange[0])} -{" "}
+                  {formatPrice(
+                    priceRange[1],
+                    priceRange[1] === FILTER_DEFAULTS.PRICE_MAX
+                  )}
+                </p>
+                <Slider
+                  value={priceRange}
+                  onChange={(_, newValue) => handlePriceRangeChange(newValue)}
+                  valueLabelDisplay="auto"
+                  min={FILTER_DEFAULTS_MIN}
+                  max={FILTER_DEFAULTS.PRICE_MAX}
+                  valueLabelFormat={(value) =>
+                    formatPriceForSlider(value, FILTER_DEFAULTS.PRICE_MAX)
+                  }
+                  className="mb-4"
+                />
+              </>
+            )}
+
+            {/* 보증금 - 전체, 전세, 월세일 때 표시 */}
+            {(selectedType === "" || selectedType === "DEPOSIT" || selectedType === "MONTHLY") && (
+              <>
+                <p className="text-sm mb-2 text-gray-600">
+                  보증금: {formatPrice(depositRange[0])} -{" "}
+                  {formatPrice(
+                    depositRange[1],
+                    depositRange[1] === FILTER_DEFAULTS.DEPOSIT_MAX
+                  )}
+                </p>
+                <Slider
+                  value={depositRange}
+                  onChange={(_, newValue) => handleDepositRangeChange(newValue)}
+                  valueLabelDisplay="auto"
+                  min={0}
+                  max={FILTER_DEFAULTS.DEPOSIT_MAX}
+                  valueLabelFormat={(value) =>
+                    formatPriceForSlider(value, FILTER_DEFAULTS.DEPOSIT_MAX)
+                  }
+                  className="mb-4"
+                />
+              </>
+            )}
+
+            {/* 월세 - 전체 또는 월세일 때만 표시 */}
+            {(selectedType === "" || selectedType === "MONTHLY") && (
+              <>
+                <p className="text-sm mb-2 text-gray-600">
+                  월세: {formatPrice(rentRange[0])} -{" "}
+                  {formatPrice(
+                    rentRange[1],
+                    rentRange[1] === FILTER_DEFAULTS.MONTHLY_RENT_MAX
+                  )}
+                </p>
+                <Slider
+                  value={rentRange}
+                  onChange={(_, newValue) => handleRentRangeChange(newValue)}
+                  valueLabelDisplay="auto"
+                  min={0}
+                  max={FILTER_DEFAULTS.MONTHLY_RENT_MAX}
+                  valueLabelFormat={(value) =>
+                    formatPriceForSlider(value, FILTER_DEFAULTS.MONTHLY_RENT_MAX)
+                  }
+                />
+              </>
+            )}
+          </div>
+        </div>
+
         <div className="grid grid-cols-2 gap-4">
           <div className="flex flex-col gap-2">
             <h6 className="font-semibold">엘리베이터 여부</h6>
@@ -79,7 +213,6 @@ const AgentPropertyFilterModalView = ({
               value={hasElevator}
               onChange={(e) => setHasElevator(e.target.value)}
               row
-              className="gap-4"
             >
               <FormControlLabel
                 value="all"
@@ -181,54 +314,6 @@ const AgentPropertyFilterModalView = ({
           </div>
         </div>
 
-        <div>
-          <div className="flex justify-between items-center mb-4">
-            <h6 className="font-semibold">가격 범위</h6>
-            <Button
-              variant="text"
-              onClick={() => {
-                handlePriceRangeChange([0, 100000]);
-                handleDepositRangeChange([0, 50000]);
-              }}
-              className="p-0!"
-            >
-              초기화
-            </Button>
-          </div>
-
-          {/* 매매가 */}
-          <div className="mx-4">
-            <p className="text-sm mb-2 text-gray-600">
-              매매가: {formatPrice(priceRange[0])} -{" "}
-              {formatPrice(priceRange[1], priceRange[1] === 100000)}
-            </p>
-            <Slider
-              value={priceRange}
-              onChange={(_, newValue) => handlePriceRangeChange(newValue)}
-              valueLabelDisplay="auto"
-              min={0}
-              max={100000}
-              step={100}
-              valueLabelFormat={(value) => formatPriceForSlider(value, 100000)}
-            />
-          </div>
-
-          <div className="mx-4">
-            <p className="text-sm mb-2 text-gray-600">
-              보증금: {formatPrice(depositRange[0])} -{" "}
-              {formatPrice(depositRange[1], depositRange[1] === 50000)}
-            </p>
-            <Slider
-              value={depositRange}
-              onChange={(_, newValue) => handleDepositRangeChange(newValue)}
-              valueLabelDisplay="auto"
-              min={0}
-              max={50000}
-              step={100}
-              valueLabelFormat={(value) => formatPriceForSlider(value, 50000)}
-            />
-          </div>
-        </div>
       </DialogContent>
 
       <DialogActions className="flex flex-row-reverse items-center justify-between p-6 border-t border-gray-200">

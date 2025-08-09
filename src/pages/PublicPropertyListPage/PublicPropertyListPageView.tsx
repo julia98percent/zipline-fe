@@ -152,24 +152,30 @@ const PublicPropertyListPageView = ({
           />
         </div>
 
-        <PublicPropertyTable
-          propertyList={publicPropertyList}
-          hasMore={hasNext}
-          isLoading={loading}
-          loadMore={onLoadMore}
-          onSort={onSort}
-          sortField={
-            searchParams && "sortField" in searchParams
-              ? searchParams.sortField
-              : undefined
-          }
-          isAscending={
-            searchParams && "isAscending" in searchParams
-              ? searchParams.isAscending
-              : undefined
-          }
-          useMetric={useMetric}
-        />
+        {publicPropertyList.length > 0 ? (
+          <PublicPropertyTable
+            propertyList={publicPropertyList}
+            hasMore={hasNext}
+            isLoading={loading}
+            loadMore={onLoadMore}
+            onSort={onSort}
+            sortField={
+              searchParams && "sortField" in searchParams
+                ? searchParams.sortField
+                : undefined
+            }
+            isAscending={
+              searchParams && "isAscending" in searchParams
+                ? searchParams.isAscending
+                : undefined
+            }
+            useMetric={useMetric}
+          />
+        ) : (
+          <div className="flex flex-1 items-center justify-center text-gray-500">
+            검색 조건을 만족하는 매물이 없습니다.
+          </div>
+        )}
 
         <PublicPropertyFilterModal
           open={showFilterModal}

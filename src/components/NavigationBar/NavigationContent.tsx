@@ -35,7 +35,7 @@ interface MenuItem {
 const MENU_INFO: MenuItem[] = [
   {
     name: "매물",
-    key: "agent-properties",
+    key: "properties",
     submenu: [
       { name: "개인 매물", to: "/properties/agent" },
       { name: "공개 매물", to: "/properties/public" },
@@ -48,7 +48,7 @@ const MENU_INFO: MenuItem[] = [
     name: "상담",
     key: "counsels",
     submenu: [
-      { name: "일반 상담", to: "/counsels" },
+      { name: "일반 상담", to: "/counsels/general" },
       { name: "사전 상담", to: "/counsels/pre" },
     ],
   },
@@ -63,7 +63,7 @@ const MENU_INFO: MenuItem[] = [
   },
 ];
 
-const getMenuIcon = (name: ParentMenuName, isActive: boolean) => {
+const getMenuIcon = (name: ParentMenuName, isActive = false) => {
   const iconColor = isActive ? "#164F9E" : "#222222";
 
   switch (name) {
@@ -109,7 +109,7 @@ const NavigationContent = ({ onItemClick }: NavigationContentProps) => {
       </Box>
       <List className="pt-1">
         <ListItem disablePadding>
-          <Link to="/" style={{ width: "100%", textDecoration: "none" }}>
+          <Link to="/" className="w-full no-underline">
             <ListItemButton
               onClick={onItemClick}
               className="hover:bg-gray-50 px-4 justify-start"
@@ -157,9 +157,7 @@ const NavigationContent = ({ onItemClick }: NavigationContentProps) => {
         {MENU_INFO.map(({ name, key, to, submenu }) => {
           const hasSubmenu = Boolean(submenu);
           const isActive = hasSubmenu
-            ? submenu?.some((sub) => currentPath === sub.to) ||
-              (currentPath.startsWith(submenu![0].to) &&
-                !submenu?.some((sub) => currentPath === sub.to))
+            ? submenu?.some((sub) => currentPath.startsWith(sub.to))
             : currentPath.startsWith(to!);
 
           return (
@@ -170,10 +168,7 @@ const NavigationContent = ({ onItemClick }: NavigationContentProps) => {
             >
               {hasSubmenu ? (
                 <Box className="w-full">
-                  <Link
-                    to={submenu![0].to}
-                    style={{ width: "100%", textDecoration: "none" }}
-                  >
+                  <Link to={submenu![0].to} className="w-full no-underline">
                     <ListItemButton
                       onClick={onItemClick}
                       className="hover:bg-gray-50"
@@ -202,30 +197,30 @@ const NavigationContent = ({ onItemClick }: NavigationContentProps) => {
                       <Link
                         to={sub.to}
                         key={`${sub.to}-submenu`}
-                        style={{ textDecoration: "none" }}
+                        className="no-underline"
                       >
                         <ListItemButton
                           onClick={onItemClick}
                           className="hover:bg-gray-50 justify-start px-4 py-1 mb-1 ml-8"
                           style={{
-                            borderLeft:
-                              currentPath === sub.to
-                                ? "4px solid #164F9E"
-                                : "none",
-                            backgroundColor:
-                              currentPath === sub.to
-                                ? "rgba(22, 79, 158, 0.04)"
-                                : "transparent",
+                            borderLeft: currentPath.startsWith(sub.to)
+                              ? "4px solid #164F9E"
+                              : "none",
+                            backgroundColor: currentPath.startsWith(sub.to)
+                              ? "rgba(22, 79, 158, 0.04)"
+                              : "transparent",
                           }}
                         >
                           <ListItemText
                             primary={sub.name}
                             className="text-sm"
                             style={{
-                              color:
-                                currentPath === sub.to ? "#164F9E" : "#222222",
-                              fontWeight:
-                                currentPath === sub.to ? "bold" : "normal",
+                              color: currentPath.startsWith(sub.to)
+                                ? "#164F9E"
+                                : "#222222",
+                              fontWeight: currentPath.startsWith(sub.to)
+                                ? "bold"
+                                : "normal",
                             }}
                           />
                         </ListItemButton>
@@ -234,10 +229,7 @@ const NavigationContent = ({ onItemClick }: NavigationContentProps) => {
                   </List>
                 </Box>
               ) : (
-                <Link
-                  to={to!}
-                  style={{ width: "100%", textDecoration: "none" }}
-                >
+                <Link to={to!} className="no-underline w-full">
                   <ListItemButton
                     onClick={onItemClick}
                     className="hover:bg-gray-50"

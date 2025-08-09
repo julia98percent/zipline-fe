@@ -152,7 +152,7 @@ function CounselListPage() {
   };
 
   const handleRowClick = (counselUid: number) => {
-    navigate(`/counsels/${counselUid}`);
+    navigate(`/counsels/general/${counselUid}`);
   };
 
   const handleModalSuccess = () => {

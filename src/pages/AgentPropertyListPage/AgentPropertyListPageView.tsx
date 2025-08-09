@@ -79,7 +79,7 @@ const AgentPropertyListPageView = ({
   const navigate = useNavigate();
 
   const handleRowClick = (property: Property) => {
-    navigate(`/properties/${property.uid}`);
+    navigate(`/properties/agent/${property.uid}`);
   };
 
   if (loading) {

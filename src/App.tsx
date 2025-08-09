@@ -43,7 +43,7 @@ const App = () => {
 
         <Route path="properties/agent" element={<AgentPropertyListPage />} />
         <Route
-          path="/properties/:propertyUid"
+          path="/properties/agent/:propertyUid"
           element={<AgentPropertyDetailPage />}
         />
         <Route path="properties/public" element={<PublicPropertyListPage />} />
@@ -52,8 +52,11 @@ const App = () => {
         <Route path="messages/bulk" element={<BulkMessagePage />} />
         <Route path="messages/history" element={<MessageHistoryPage />} />
 
-        <Route path="counsels" element={<CounselListPage />} />
-        <Route path="/counsels/:counselUid" element={<CounselDetailPage />} />
+        <Route path="counsels/general" element={<CounselListPage />} />
+        <Route
+          path="/counsels/general/:counselUid"
+          element={<CounselDetailPage />}
+        />
         <Route path="counsels/pre" element={<PreCounselListPage />} />
 
         <Route path="/contracts" element={<ContractListPage />} />

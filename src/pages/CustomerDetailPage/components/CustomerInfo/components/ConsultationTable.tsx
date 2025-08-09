@@ -26,7 +26,7 @@ function ConsultationTable({
   const navigate = useNavigate();
 
   const handleRowClick = (rowData: ConsultationRowData) => {
-    navigate(`/counsels/${rowData.counselUid}`);
+    navigate(`/counsels/general/${rowData.counselUid}`);
   };
 
   const columns: ColumnConfig<ConsultationRowData>[] = [

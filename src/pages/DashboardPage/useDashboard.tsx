@@ -275,7 +275,7 @@ export const useDashboard = (): DashboardData => {
 
   const handleCounselClick = useCallback(
     (counselId: number) => {
-      navigate(`/counsels/${counselId}`);
+      navigate(`/counsels/general/${counselId}`);
     },
     [navigate]
   );

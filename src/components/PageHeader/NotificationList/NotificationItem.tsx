@@ -2,10 +2,11 @@ import React from "react";
 import { translateNotificationCategory } from "@utils/stringUtil";
 import { formatDateTimeToKorean } from "@utils/dateUtil";
 import {
-  deleteNotification,
+  deleteNotification as deleteNotificationApi,
   readNotification,
 } from "@apis/notificationService";
 import type { Notification } from "@stores/useNotificationStore";
+import useNotificationStore from "@stores/useNotificationStore";
 import ClearIcon from "@mui/icons-material/Clear";
 import { IconButton } from "@mui/material";
 
@@ -18,10 +19,12 @@ function NotificationItem({
   notification,
   onPreCounselClick,
 }: NotificationItemProps) {
+  const { updateNotification, deleteNotification } = useNotificationStore();
   const handleClick = () => {
     if (notification.category === "NEW_SURVEY") {
       onPreCounselClick(notification.url);
       readNotification(notification.uid);
+      updateNotification(notification.uid, { read: true });
     } else {
       console.log("Navigate to:", notification.url);
     }
@@ -30,7 +33,8 @@ function NotificationItem({
   const handleDelete = async (e: React.MouseEvent) => {
     e.stopPropagation();
     try {
-      await deleteNotification(notification.uid);
+      await deleteNotificationApi(notification.uid);
+      deleteNotification(notification.uid);
     } catch (error) {
       console.error("Failed to delete notification:", error);
     }

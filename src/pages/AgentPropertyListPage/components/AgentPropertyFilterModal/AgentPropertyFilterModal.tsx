@@ -2,6 +2,19 @@ import { useState, useEffect } from "react";
 import { SelectChangeEvent } from "@mui/material";
 import { AgentPropertySearchParams } from "@apis/propertyService";
 import AgentPropertyFilterModalView from "./AgentPropertyFilterModalView";
+import { PropertyType } from "@ts/property";
+import {
+  FILTER_DEFAULTS_MIN,
+  FILTER_DEFAULTS,
+  PRICE_STEPS,
+  MAX_PRICE_SLIDER_VALUE,
+  MAX_MONTHLY_RENT_SLIDER_VALUE,
+} from "@utils/filterUtil";
+
+interface TypeOption {
+  value: string;
+  label: string;
+}
 
 interface AgentPropertyFilterModalProps {
   open: boolean;
@@ -16,7 +29,6 @@ interface AgentPropertyFilterModalProps {
   onSidoChange: (event: SelectChangeEvent<number>) => void;
   onGuChange: (event: SelectChangeEvent<number>) => void;
   onDongChange: (event: SelectChangeEvent<number>) => void;
-  onTypeChange: (event: SelectChangeEvent<unknown>) => void;
 }
 
 const AgentPropertyFilterModal = ({
@@ -25,7 +37,6 @@ const AgentPropertyFilterModal = ({
   onApply,
   filters,
   typeOptions,
-  onTypeChange,
 }: AgentPropertyFilterModalProps) => {
   const [hasElevator, setHasElevator] = useState<string>(
     filters.hasElevator === true
@@ -42,31 +53,57 @@ const AgentPropertyFilterModal = ({
       : "all"
   );
 
-  // 면적 범위 (전용 면적)
   const [netAreaRange, setNetAreaRange] = useState<number[]>([
-    filters.minNetArea || 0,
-    filters.maxNetArea || 200,
+    filters.minNetArea || FILTER_DEFAULTS_MIN,
+    filters.maxNetArea || FILTER_DEFAULTS.NET_AREA_MAX,
   ]);
 
-  // 면적 범위 (공급 면적)
   const [totalAreaRange, setTotalAreaRange] = useState<number[]>([
-    filters.minTotalArea || 0,
-    filters.maxTotalArea || 300,
+    filters.minTotalArea || FILTER_DEFAULTS_MIN,
+    filters.maxTotalArea || FILTER_DEFAULTS.TOTAL_AREA_MAX,
   ]);
 
-  // 가격 범위 (매매가)
   const [priceRange, setPriceRange] = useState<number[]>([
-    filters.minPrice || 0,
-    filters.maxPrice || 100000,
+    filters.minPrice
+      ? Math.round(filters.minPrice / 1000)
+      : FILTER_DEFAULTS_MIN,
+    filters.maxPrice
+      ? Math.round(filters.maxPrice / 1000)
+      : FILTER_DEFAULTS.PRICE_MAX,
   ]);
 
-  // 가격 범위 (보증금)
   const [depositRange, setDepositRange] = useState<number[]>([
-    filters.minDeposit || 0,
-    filters.maxDeposit || 50000,
+    filters.minDeposit
+      ? Math.round(filters.minDeposit / 1000)
+      : FILTER_DEFAULTS_MIN,
+    filters.maxDeposit
+      ? Math.round(filters.maxDeposit / 1000)
+      : FILTER_DEFAULTS.DEPOSIT_MAX,
   ]);
 
-  // filters prop이 변경될 때마다 상태 업데이트
+  const [rentRange, setRentRange] = useState<number[]>([
+    filters.minRent ? Math.round(filters.minRent / 1000) : FILTER_DEFAULTS_MIN,
+    filters.maxRent
+      ? Math.round(filters.maxRent / 1000)
+      : FILTER_DEFAULTS.MONTHLY_RENT_MAX,
+  ]);
+
+  const [selectedType, setSelectedType] = useState<string>(filters.type || "");
+
+  const handleTypeChange = (newType: string) => {
+    setSelectedType(newType);
+
+    if (newType === "SALE") {
+      setDepositRange([FILTER_DEFAULTS_MIN, FILTER_DEFAULTS.DEPOSIT_MAX]);
+      setRentRange([FILTER_DEFAULTS_MIN, FILTER_DEFAULTS.MONTHLY_RENT_MAX]);
+    } else if (newType === "DEPOSIT") {
+      setPriceRange([FILTER_DEFAULTS_MIN, FILTER_DEFAULTS.PRICE_MAX]);
+      setRentRange([FILTER_DEFAULTS_MIN, FILTER_DEFAULTS.MONTHLY_RENT_MAX]);
+    } else if (newType === "MONTHLY") {
+      setPriceRange([FILTER_DEFAULTS_MIN, FILTER_DEFAULTS.PRICE_MAX]);
+    }
+  };
+
   useEffect(() => {
     setHasElevator(
       filters.hasElevator === true
@@ -82,10 +119,26 @@ const AgentPropertyFilterModal = ({
         ? "false"
         : "all"
     );
-    setNetAreaRange([filters.minNetArea || 0, filters.maxNetArea || 200]);
-    setTotalAreaRange([filters.minTotalArea || 0, filters.maxTotalArea || 300]);
-    setPriceRange([filters.minPrice || 0, filters.maxPrice || 100000]);
-    setDepositRange([filters.minDeposit || 0, filters.maxDeposit || 50000]);
+    setNetAreaRange([
+      filters.minNetArea || FILTER_DEFAULTS_MIN,
+      filters.maxNetArea || FILTER_DEFAULTS.NET_AREA_MAX,
+    ]);
+    setTotalAreaRange([
+      filters.minTotalArea || FILTER_DEFAULTS_MIN,
+      filters.maxTotalArea || FILTER_DEFAULTS.TOTAL_AREA_MAX,
+    ]);
+    setPriceRange([
+      filters.minPrice || FILTER_DEFAULTS_MIN,
+      filters.maxPrice || MAX_PRICE_SLIDER_VALUE,
+    ]);
+    setDepositRange([
+      filters.minDeposit || FILTER_DEFAULTS_MIN,
+      filters.maxDeposit || MAX_PRICE_SLIDER_VALUE,
+    ]);
+    setRentRange([
+      filters.minRent || FILTER_DEFAULTS_MIN,
+      filters.maxRent || MAX_MONTHLY_RENT_SLIDER_VALUE,
+    ]);
     setSelectedType(filters.type || "");
   }, [filters]);
 
@@ -109,7 +162,10 @@ const AgentPropertyFilterModal = ({
       cleanedFilters.petsAllowed = undefined;
     }
 
-    if (netAreaRange[0] > 0 || netAreaRange[1] < 200) {
+    if (
+      netAreaRange[0] > FILTER_DEFAULTS_MIN ||
+      netAreaRange[1] < FILTER_DEFAULTS.NET_AREA_MAX
+    ) {
       cleanedFilters.minNetArea = netAreaRange[0];
       cleanedFilters.maxNetArea = netAreaRange[1];
     } else {
@@ -117,7 +173,10 @@ const AgentPropertyFilterModal = ({
       cleanedFilters.maxNetArea = undefined;
     }
 
-    if (totalAreaRange[0] > 0 || totalAreaRange[1] < 300) {
+    if (
+      totalAreaRange[0] > FILTER_DEFAULTS_MIN ||
+      totalAreaRange[1] < FILTER_DEFAULTS.TOTAL_AREA_MAX
+    ) {
       cleanedFilters.minTotalArea = totalAreaRange[0];
       cleanedFilters.maxTotalArea = totalAreaRange[1];
     } else {
@@ -125,24 +184,28 @@ const AgentPropertyFilterModal = ({
       cleanedFilters.maxTotalArea = undefined;
     }
 
-    if (priceRange[0] > 0 || priceRange[1] < 100000) {
-      cleanedFilters.minPrice = priceRange[0];
-      cleanedFilters.maxPrice = priceRange[1];
-    } else {
-      cleanedFilters.minPrice = undefined;
-      cleanedFilters.maxPrice = undefined;
-    }
+    // 매매가 필터 처리
+    cleanedFilters.minPrice = priceRange[0] > 0 ? priceRange[0] : undefined;
+    cleanedFilters.maxPrice =
+      priceRange[1] >= FILTER_DEFAULTS.PRICE_MAX ? undefined : priceRange[1];
 
-    if (depositRange[0] > 0 || depositRange[1] < 50000) {
-      cleanedFilters.minDeposit = depositRange[0];
-      cleanedFilters.maxDeposit = depositRange[1];
-    } else {
-      cleanedFilters.minDeposit = undefined;
-      cleanedFilters.maxDeposit = undefined;
-    }
+    // 보증금 필터 처리
+    cleanedFilters.minDeposit =
+      depositRange[0] > 0 ? depositRange[0] : undefined;
+    cleanedFilters.maxDeposit =
+      depositRange[1] >= FILTER_DEFAULTS.DEPOSIT_MAX
+        ? undefined
+        : depositRange[1];
+
+    // 월세 필터 처리
+    cleanedFilters.minRent = rentRange[0] > 0 ? rentRange[0] : undefined;
+    cleanedFilters.maxRent =
+      rentRange[1] >= FILTER_DEFAULTS.MONTHLY_RENT_MAX
+        ? undefined
+        : rentRange[1];
 
     if (selectedType) {
-      cleanedFilters.type = selectedType as any;
+      cleanedFilters.type = selectedType as PropertyType;
     } else {
       cleanedFilters.type = undefined;
     }
@@ -154,59 +217,40 @@ const AgentPropertyFilterModal = ({
   const handleReset = () => {
     setHasElevator("all");
     setPetsAllowed("all");
-    setNetAreaRange([0, 200]);
-    setTotalAreaRange([0, 300]);
-    setPriceRange([0, 100000]);
-    setDepositRange([0, 50000]);
     setSelectedType("");
+    setNetAreaRange([FILTER_DEFAULTS_MIN, FILTER_DEFAULTS.NET_AREA_MAX]);
+    setTotalAreaRange([FILTER_DEFAULTS_MIN, FILTER_DEFAULTS.TOTAL_AREA_MAX]);
+    setPriceRange([FILTER_DEFAULTS_MIN, MAX_PRICE_SLIDER_VALUE]);
+    setDepositRange([FILTER_DEFAULTS_MIN, MAX_PRICE_SLIDER_VALUE]);
+    setRentRange([FILTER_DEFAULTS_MIN, MAX_MONTHLY_RENT_SLIDER_VALUE]);
   };
 
-  const formatPrice = (value: number, isMaxValue?: boolean) => {
-    let formatted = "";
-    if (value >= 10000) {
-      formatted = `${(value / 10000).toFixed(0)}억원`;
-    } else if (value >= 1000) {
-      formatted = `${(value / 1000).toFixed(0)}천만원`;
-    } else {
-      formatted = `${value}만원`;
+  const getPriceStep = ({
+    isMonthlyRent = false,
+    value,
+  }: {
+    isMonthlyRent?: boolean;
+    value: number;
+  }) => {
+    if (isMonthlyRent) {
+      if (value <= PRICE_STEPS.MONTHLY_RENT.LOW_THRESHOLD)
+        return PRICE_STEPS.MONTHLY_RENT.LOW_STEP;
+      return PRICE_STEPS.MONTHLY_RENT.HIGH_STEP;
     }
-
-    if (isMaxValue) {
-      formatted += "~";
-    }
-
-    return formatted;
-  };
-
-  const formatPriceForSlider = (value: number, max?: number) => {
-    let formatted = "";
-    if (value >= 10000) {
-      formatted = `${(value / 10000).toFixed(0)}억원`;
-    } else if (value >= 1000) {
-      formatted = `${(value / 1000).toFixed(0)}천만원`;
-    } else {
-      formatted = `${value}만원`;
-    }
-
-    if (max && value === max) {
-      formatted += "~";
-    }
-
-    return formatted;
-  };
-
-  const getPriceStep = (value: number) => {
-    if (value <= 1000) return 100; // 1천만원까지는 100만원 단위
-    if (value <= 5000) return 500; // 5천만원까지는 500만원 단위
-    if (value <= 10000) return 1000; // 1억까지는 1천만원 단위
-    return 5000; // 1억 이후는 5천만원 단위
+    if (value <= PRICE_STEPS.GENERAL.LEVEL1_THRESHOLD)
+      return PRICE_STEPS.GENERAL.LEVEL1_STEP;
+    if (value <= PRICE_STEPS.GENERAL.LEVEL2_THRESHOLD)
+      return PRICE_STEPS.GENERAL.LEVEL2_STEP;
+    if (value <= PRICE_STEPS.GENERAL.LEVEL3_THRESHOLD)
+      return PRICE_STEPS.GENERAL.LEVEL3_STEP;
+    return PRICE_STEPS.GENERAL.LEVEL4_STEP;
   };
 
   const handlePriceRangeChange = (newValue: number | number[]) => {
     const range = Array.isArray(newValue) ? newValue : [newValue, newValue];
     const [min, max] = range;
-    const minStep = getPriceStep(min);
-    const maxStep = getPriceStep(max);
+    const minStep = getPriceStep({ value: min });
+    const maxStep = getPriceStep({ value: max });
 
     const adjustedMin = Math.round(min / minStep) * minStep;
     const adjustedMax = Math.round(max / maxStep) * maxStep;
@@ -217,13 +261,25 @@ const AgentPropertyFilterModal = ({
   const handleDepositRangeChange = (newValue: number | number[]) => {
     const range = Array.isArray(newValue) ? newValue : [newValue, newValue];
     const [min, max] = range;
-    const minStep = getPriceStep(min);
-    const maxStep = getPriceStep(max);
+    const minStep = getPriceStep({ value: min });
+    const maxStep = getPriceStep({ value: max });
 
     const adjustedMin = Math.round(min / minStep) * minStep;
     const adjustedMax = Math.round(max / maxStep) * maxStep;
 
     setDepositRange([adjustedMin, adjustedMax]);
+  };
+
+  const handleRentRangeChange = (newValue: number | number[]) => {
+    const range = Array.isArray(newValue) ? newValue : [newValue, newValue];
+    const [min, max] = range;
+    const minStep = getPriceStep({ isMonthlyRent: true, value: min });
+    const maxStep = getPriceStep({ isMonthlyRent: true, value: max });
+
+    const adjustedMin = Math.round(min / minStep) * minStep;
+    const adjustedMax = Math.round(max / maxStep) * maxStep;
+
+    setRentRange([adjustedMin, adjustedMax]);
   };
 
   const handleClose = () => {
@@ -241,10 +297,26 @@ const AgentPropertyFilterModal = ({
         ? "false"
         : "all"
     );
-    setNetAreaRange([filters.minNetArea || 0, filters.maxNetArea || 200]);
-    setTotalAreaRange([filters.minTotalArea || 0, filters.maxTotalArea || 300]);
-    setPriceRange([filters.minPrice || 0, filters.maxPrice || 100000]);
-    setDepositRange([filters.minDeposit || 0, filters.maxDeposit || 50000]);
+    setNetAreaRange([
+      filters.minNetArea || FILTER_DEFAULTS_MIN,
+      filters.maxNetArea || FILTER_DEFAULTS.NET_AREA_MAX,
+    ]);
+    setTotalAreaRange([
+      filters.minTotalArea || FILTER_DEFAULTS_MIN,
+      filters.maxTotalArea || FILTER_DEFAULTS.TOTAL_AREA_MAX,
+    ]);
+    setPriceRange([
+      filters.minPrice || FILTER_DEFAULTS_MIN,
+      filters.maxPrice || FILTER_DEFAULTS.PRICE_MAX,
+    ]);
+    setDepositRange([
+      filters.minDeposit || FILTER_DEFAULTS_MIN,
+      filters.maxDeposit || FILTER_DEFAULTS.DEPOSIT_MAX,
+    ]);
+    setRentRange([
+      filters.minRent || FILTER_DEFAULTS_MIN,
+      filters.maxRent || FILTER_DEFAULTS.MONTHLY_RENT_MAX,
+    ]);
     setSelectedType(filters.type || "");
     onClose();
   };
@@ -267,11 +339,11 @@ const AgentPropertyFilterModal = ({
       setTotalAreaRange={setTotalAreaRange}
       handlePriceRangeChange={handlePriceRangeChange}
       handleDepositRangeChange={handleDepositRangeChange}
-      formatPrice={formatPrice}
-      formatPriceForSlider={formatPriceForSlider}
+      handleRentRangeChange={handleRentRangeChange}
+      rentRange={rentRange}
       selectedType={selectedType}
       typeOptions={typeOptions}
-      onTypeChange={setSelectedType}
+      onTypeChange={handleTypeChange}
     />
   );
 };

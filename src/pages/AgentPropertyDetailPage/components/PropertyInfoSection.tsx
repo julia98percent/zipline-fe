@@ -10,6 +10,7 @@ import {
   getPropertyTypeColors,
   getPropertyCategoryColors,
 } from "@constants/property";
+import { formatKoreanPrice } from "@utils/numberUtil";
 
 interface PropertyInfoSectionProps {
   property: AgentPropertyDetail;
@@ -55,7 +56,7 @@ const PropertyInfoSection = ({ property }: PropertyInfoSectionProps) => {
   };
 
   const formatPrice = (price: number | null) => {
-    return price ? price.toLocaleString() + "원" : "-";
+    return price ? formatKoreanPrice(price) : "-";
   };
 
   return (

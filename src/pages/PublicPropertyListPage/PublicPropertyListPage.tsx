@@ -1,129 +1,218 @@
 import { SelectChangeEvent } from "@mui/material";
-import { useCallback, useEffect, useState, useRef } from "react";
+import { useCallback, useEffect, useState, useRef, useMemo } from "react";
 import { useOutletContext } from "react-router-dom";
 import { PublicPropertyItem, PublicPropertySearchParams } from "@ts/property";
 import { getPublicProperties } from "@apis/propertyService";
 import PublicPropertyListPageView from "./PublicPropertyListPageView";
-import { DEFAULT_ROWS_PER_PAGE } from "@components/Table/Table";
-
+import { useUrlPagination } from "@hooks/useUrlPagination";
+import { useUrlFilters } from "@hooks/useUrlFilters";
+import {
+  FILTER_DEFAULTS_MIN,
+  FILTER_DEFAULTS,
+  MAX_PRICE_SLIDER_VALUE,
+  MAX_MONTHLY_RENT_SLIDER_VALUE,
+} from "@utils/filterUtil";
 interface OutletContext {
   onMobileMenuToggle: () => void;
 }
-
-const INITIAL_SEARCH_PARAMS: PublicPropertySearchParams = {
-  cursorId: null,
-  size: DEFAULT_ROWS_PER_PAGE,
-  sortField: "id",
-  isAscending: true,
-  category: undefined,
-  buildingType: undefined,
-  buildingName: undefined,
-  address: undefined,
-  minPrice: undefined,
-  maxPrice: undefined,
-  minDeposit: undefined,
-  maxDeposit: undefined,
-  minMonthlyRent: undefined,
-  maxMonthlyRent: undefined,
-  minNetArea: undefined,
-  maxNetArea: undefined,
-  minTotalArea: undefined,
-  maxTotalArea: undefined,
-};
 
 const PublicPropertyListPage = () => {
   const [hasNext, setHasNext] = useState<boolean>(true);
   const [cursorId, setCursorId] = useState<string | null>(null);
 
   const { onMobileMenuToggle } = useOutletContext<OutletContext>();
+  const { rowsPerPage } = useUrlPagination();
+  const {
+    getParam,
+    setParams,
+    clearAllFilters,
+    searchParams: urlSearchParams,
+  } = useUrlFilters();
+
   const [publicPropertyList, setPublicPropertyList] = useState<
     PublicPropertyItem[]
   >([]);
   const [loading, setLoading] = useState<boolean>(false);
   const [showFilterModal, setShowFilterModal] = useState<boolean>(false);
   const [searchAddress, setSearchAddress] = useState<string>("");
-
-  const [selectedSido, setSelectedSido] = useState("");
-  const [selectedGu, setSelectedGu] = useState("");
-  const [selectedDong, setSelectedDong] = useState("");
+  const [searchAddressQuery, setSearchAddressQuery] = useState<string>("");
 
   const [useMetric, setUseMetric] = useState(true);
 
-  const [searchParams, setSearchParams] = useState<PublicPropertySearchParams>(
-    INITIAL_SEARCH_PARAMS
+  const searchParams = useMemo(
+    () => ({
+      size: rowsPerPage,
+      sortField: urlSearchParams.get("sortField") || "id",
+      isAscending: urlSearchParams.get("isAscending") !== "false",
+      category: urlSearchParams.get("category") || undefined,
+      buildingType: urlSearchParams.get("buildingType") || undefined,
+      buildingName: urlSearchParams.get("buildingName") || undefined,
+      address: searchAddressQuery || undefined,
+      minPrice: urlSearchParams.get("minPrice")
+        ? parseInt(urlSearchParams.get("minPrice")!)
+        : FILTER_DEFAULTS_MIN,
+      maxPrice: urlSearchParams.get("maxPrice")
+        ? parseInt(urlSearchParams.get("maxPrice")!)
+        : MAX_PRICE_SLIDER_VALUE,
+      minDeposit: urlSearchParams.get("minDeposit")
+        ? parseInt(urlSearchParams.get("minDeposit")!)
+        : FILTER_DEFAULTS_MIN,
+      maxDeposit: urlSearchParams.get("maxDeposit")
+        ? parseInt(urlSearchParams.get("maxDeposit")!)
+        : MAX_PRICE_SLIDER_VALUE,
+      minMonthlyRent: urlSearchParams.get("minMonthlyRent")
+        ? parseInt(urlSearchParams.get("minMonthlyRent")!)
+        : FILTER_DEFAULTS_MIN,
+      maxMonthlyRent: urlSearchParams.get("maxMonthlyRent")
+        ? parseInt(urlSearchParams.get("maxMonthlyRent")!)
+        : MAX_MONTHLY_RENT_SLIDER_VALUE,
+      minNetArea: urlSearchParams.get("minNetArea")
+        ? parseInt(urlSearchParams.get("minNetArea")!)
+        : FILTER_DEFAULTS_MIN,
+      maxNetArea: urlSearchParams.get("maxNetArea")
+        ? parseInt(urlSearchParams.get("maxNetArea")!)
+        : FILTER_DEFAULTS.NET_AREA_MAX,
+      minTotalArea: urlSearchParams.get("minTotalArea")
+        ? parseInt(urlSearchParams.get("minTotalArea")!)
+        : FILTER_DEFAULTS_MIN,
+      maxTotalArea: urlSearchParams.get("maxTotalArea")
+        ? parseInt(urlSearchParams.get("maxTotalArea")!)
+        : FILTER_DEFAULTS.TOTAL_AREA_MAX,
+      regionCode: urlSearchParams.get("regionCode") || undefined,
+    }),
+    [rowsPerPage, urlSearchParams, searchAddressQuery]
   );
 
   const prevSearchParamsRef = useRef<PublicPropertySearchParams>(null);
 
+  const selectedSido = getParam("selectedSido") || "";
+  const selectedGu = getParam("selectedGu") || "";
+  const selectedDong = getParam("selectedDong") || "";
+
   const handleSidoChange = (event: SelectChangeEvent<string>) => {
     const value = event.target.value;
-    setSelectedSido(value);
-    setSelectedGu("");
-    setSelectedDong("");
+    setParams({
+      selectedSido: value || null,
+      selectedGu: null,
+      selectedDong: null,
+      regionCode: value ? value.slice(0, 2) : null,
+    });
   };
 
   const handleGuChange = (event: SelectChangeEvent<string>) => {
     const value = event.target.value;
-    setSelectedGu(value);
-    setSelectedDong("");
+    setParams({
+      selectedGu: value || null,
+      selectedDong: null,
+      regionCode: value
+        ? value.slice(0, 5)
+        : selectedSido
+        ? selectedSido.slice(0, 2)
+        : null,
+    });
   };
 
   const handleDongChange = (event: SelectChangeEvent<string>) => {
     const value = event.target.value;
-    setSelectedDong(value);
-
-    if (!value) {
-      setSearchParams((prev) => ({ ...prev, regionCode: undefined }));
-    }
+    setParams({
+      selectedDong: value || null,
+      regionCode: value
+        ? value.slice(0, 8)
+        : selectedGu
+        ? selectedGu.slice(0, 5)
+        : selectedSido
+        ? selectedSido.slice(0, 2)
+        : null,
+    });
   };
 
   const handleFilterApply = (
     newFilters: Partial<PublicPropertySearchParams>
   ) => {
     if (Object.keys(newFilters).length === 0) {
-      setSearchParams(INITIAL_SEARCH_PARAMS);
+      clearAllFilters();
     } else {
-      setSearchParams((prev) => ({
-        ...prev,
-        ...newFilters,
-        cursorId: null,
-      }));
+      const filterParams: Record<string, string | number | boolean | null> = {};
+
+      filterParams.minPrice = newFilters.minPrice || null;
+
+      filterParams.maxPrice =
+        newFilters.maxPrice && newFilters.maxPrice <= FILTER_DEFAULTS.PRICE_MAX
+          ? newFilters.maxPrice
+          : null;
+
+      filterParams.minDeposit = newFilters.minDeposit || null;
+
+      filterParams.maxDeposit =
+        newFilters.maxDeposit &&
+        newFilters.maxDeposit <= FILTER_DEFAULTS.DEPOSIT_MAX
+          ? newFilters.maxDeposit
+          : null;
+
+      filterParams.minMonthlyRent = newFilters.minMonthlyRent
+        ? newFilters.minMonthlyRent
+        : null;
+
+      filterParams.maxMonthlyRent =
+        newFilters.maxMonthlyRent &&
+        newFilters.maxMonthlyRent <= FILTER_DEFAULTS.MONTHLY_RENT_MAX
+          ? newFilters.maxMonthlyRent
+          : null;
+
+      filterParams.minNetArea = newFilters.minNetArea || null;
+
+      filterParams.maxNetArea =
+        newFilters.maxNetArea &&
+        newFilters.maxNetArea <= FILTER_DEFAULTS.NET_AREA_MAX
+          ? newFilters.maxNetArea
+          : null;
+
+      filterParams.minTotalArea = newFilters.minTotalArea || null;
+
+      filterParams.maxTotalArea =
+        newFilters.maxTotalArea &&
+        newFilters.maxTotalArea <= FILTER_DEFAULTS.TOTAL_AREA_MAX
+          ? newFilters.maxTotalArea
+          : null;
+
+      filterParams.category = newFilters.category || null;
+
+      filterParams.buildingType = newFilters.buildingType || null;
+
+      filterParams.buildingName = newFilters.buildingName || null;
+
+      filterParams.regionCode = newFilters.regionCode || null;
+
+      setParams(filterParams);
     }
+    setCursorId(null);
+    setShowFilterModal(false);
   };
 
   const handleSort = (field: string) => {
-    setSearchParams((prev) => {
-      const currentSortField = "sortField" in prev ? prev.sortField : null;
-      const currentIsAscending =
-        "isAscending" in prev ? prev.isAscending : null;
+    const currentSortField = getParam("sortField") || "id";
+    const currentIsAscending = getParam("isAscending") !== "false";
 
-      const newSortField = field;
-      let newIsAscending = true;
+    const newSortField = field;
+    let newIsAscending = true;
 
-      if (currentSortField === field && currentIsAscending !== null) {
-        newIsAscending = !currentIsAscending;
-      }
+    if (currentSortField === field) {
+      newIsAscending = !currentIsAscending;
+    }
 
-      return {
-        ...prev,
-        sortField: newSortField,
-        isAscending: newIsAscending,
-        cursorId: null,
-      };
+    setParams({
+      sortField: newSortField,
+      isAscending: newIsAscending,
     });
+    setCursorId(null);
   };
 
   const handleSortReset = () => {
-    setSearchParams((prev) => {
-      const { sortField, isAscending, ...rest } =
-        prev as PublicPropertySearchParams;
-      return {
-        ...rest,
-        sortField: "id",
-        isAscending: true,
-        cursorId: null,
-      };
+    setParams({
+      sortField: "id",
+      isAscending: true,
     });
+    setCursorId(null);
   };
 
   const handleAddressSearch = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -131,21 +220,8 @@ const PublicPropertyListPage = () => {
   };
 
   const handleAddressSearchSubmit = () => {
-    if (searchAddress.trim()) {
-      setSearchParams((prev) => ({
-        ...prev,
-        address: searchAddress.trim(),
-        cursorId: null,
-      }));
-    } else {
-      setSearchParams((prev) => {
-        const { address, ...rest } = prev;
-        return {
-          ...rest,
-          cursorId: null,
-        };
-      });
-    }
+    setSearchAddressQuery(searchAddress.trim());
+    setCursorId(null);
   };
 
   const handleMetricToggle = () => {
@@ -217,9 +293,40 @@ const PublicPropertyListPage = () => {
 
     if (hasSearchParamsChanged) {
       prevSearchParamsRef.current = searchParams;
-      fetchPropertyData(false);
+
+      const fetchData = async () => {
+        if (loading) return;
+
+        setLoading(true);
+        setPublicPropertyList([]);
+        setCursorId(null);
+
+        try {
+          const params = {
+            ...searchParams,
+            cursorId: null,
+          };
+
+          const response = await getPublicProperties(params);
+          const contentArray = Array.isArray(response.content)
+            ? response.content
+            : [];
+
+          setPublicPropertyList(contentArray);
+          setCursorId(response.nextCursorId);
+          setHasNext(response.hasNext);
+        } catch (error) {
+          setPublicPropertyList([]);
+          setHasNext(false);
+          console.error("Failed to fetch properties:", error);
+        } finally {
+          setLoading(false);
+        }
+      };
+
+      fetchData();
     }
-  }, [searchParams]);
+  }, [searchParams, loading]);
 
   return (
     <PublicPropertyListPageView

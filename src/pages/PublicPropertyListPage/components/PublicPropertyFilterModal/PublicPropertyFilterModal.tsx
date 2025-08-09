@@ -4,6 +4,12 @@ import { RegionState } from "@ts/region";
 import { fetchRegions } from "@apis/regionService";
 import { PublicPropertySearchParams } from "@ts/property";
 import PublicPropertyFilterModalView from "./PublicPropertyFilterModalView";
+import {
+  FILTER_DEFAULTS_MIN,
+  MAX_PRICE_SLIDER_VALUE,
+  MAX_MONTHLY_RENT_SLIDER_VALUE,
+  FILTER_DEFAULTS,
+} from "@utils/filterUtil";
 
 interface PublicPropertyFilterModalProps {
   open: boolean;
@@ -47,7 +53,10 @@ const PublicPropertyFilterModal = ({
 
   useEffect(() => {
     if (open) {
-      setLocalFilters(filters);
+      const convertedFilters = {
+        ...filters,
+      };
+      setLocalFilters(convertedFilters);
       handleOpen();
     }
   }, [open, filters]);
@@ -146,10 +155,35 @@ const PublicPropertyFilterModal = ({
     };
 
   const handleCategoryChange = (event: SelectChangeEvent<string>) => {
-    setLocalFilters((prev) => ({
-      ...prev,
-      category: event.target.value,
-    }));
+    const newCategory = event.target.value;
+
+    setLocalFilters((prev) => {
+      const updatedFilters = {
+        ...prev,
+        category: newCategory,
+      };
+
+      // 매물 유형이 바뀔 때 불필요한 가격 범위 초기화
+      if (newCategory === "SALE") {
+        // 매매일 때는 보증금, 월세 초기화
+        updatedFilters.minDeposit = undefined;
+        updatedFilters.maxDeposit = undefined;
+        updatedFilters.minMonthlyRent = undefined;
+        updatedFilters.maxMonthlyRent = undefined;
+      } else if (newCategory === "DEPOSIT") {
+        // 전세일 때는 매매가, 월세 초기화
+        updatedFilters.minPrice = undefined;
+        updatedFilters.maxPrice = undefined;
+        updatedFilters.minMonthlyRent = undefined;
+        updatedFilters.maxMonthlyRent = undefined;
+      } else if (newCategory === "MONTHLY") {
+        // 월세일 때는 매매가 초기화
+        updatedFilters.minPrice = undefined;
+        updatedFilters.maxPrice = undefined;
+      }
+
+      return updatedFilters;
+    });
   };
 
   const handleBuildingTypeChange = (event: SelectChangeEvent<string>) => {
@@ -168,31 +202,33 @@ const PublicPropertyFilterModal = ({
     }));
   };
 
-  const handleReset = () => {
-    setLocalFilters({
-      size: 20,
-      sortField: "id",
-      isAscending: true,
-      category: "",
+  const handleTemporaryClear = () => {
+    setLocalFilters((prev) => ({
+      ...prev,
       buildingType: "",
       buildingName: "",
-      minPrice: undefined,
-      maxPrice: undefined,
-      minDeposit: undefined,
-      maxDeposit: undefined,
-      minMonthlyRent: undefined,
-      maxMonthlyRent: undefined,
-      minNetArea: undefined,
-      maxNetArea: undefined,
-      minTotalArea: undefined,
-      maxTotalArea: undefined,
-    });
+      minPrice: FILTER_DEFAULTS_MIN,
+      maxPrice: MAX_PRICE_SLIDER_VALUE,
+      minDeposit: FILTER_DEFAULTS_MIN,
+      maxDeposit: MAX_PRICE_SLIDER_VALUE,
+      minMonthlyRent: FILTER_DEFAULTS_MIN,
+      maxMonthlyRent: MAX_MONTHLY_RENT_SLIDER_VALUE,
+      minNetArea: FILTER_DEFAULTS_MIN,
+      maxNetArea: FILTER_DEFAULTS.NET_AREA_MAX,
+      minTotalArea: FILTER_DEFAULTS_MIN,
+      maxTotalArea: FILTER_DEFAULTS.TOTAL_AREA_MAX,
+    }));
+
     setRegion((prev) => ({
       ...prev,
       selectedSido: null,
       selectedSigungu: null,
       selectedDong: null,
     }));
+  };
+
+  const handleReset = () => {
+    handleTemporaryClear();
     onApply({});
   };
 
@@ -206,11 +242,52 @@ const PublicPropertyFilterModal = ({
       regionCode = String(region.selectedSido).slice(0, 2);
     }
 
-    const updatedFilters = {
+    const cleanedFilters = {
       ...localFilters,
       regionCode,
+      minPrice:
+        localFilters.minPrice === FILTER_DEFAULTS_MIN
+          ? undefined
+          : localFilters.minPrice,
+      maxPrice:
+        localFilters.maxPrice === MAX_PRICE_SLIDER_VALUE
+          ? undefined
+          : localFilters.maxPrice,
+      minDeposit:
+        localFilters.minDeposit === FILTER_DEFAULTS_MIN
+          ? undefined
+          : localFilters.minDeposit,
+      maxDeposit:
+        localFilters.maxDeposit === MAX_PRICE_SLIDER_VALUE
+          ? undefined
+          : localFilters.maxDeposit,
+      minMonthlyRent:
+        localFilters.minMonthlyRent === FILTER_DEFAULTS_MIN
+          ? undefined
+          : localFilters.minMonthlyRent,
+      maxMonthlyRent:
+        localFilters.maxMonthlyRent === MAX_MONTHLY_RENT_SLIDER_VALUE
+          ? undefined
+          : localFilters.maxMonthlyRent,
+      minNetArea:
+        localFilters.minNetArea === FILTER_DEFAULTS_MIN
+          ? undefined
+          : localFilters.minNetArea,
+      maxNetArea:
+        localFilters.maxNetArea === FILTER_DEFAULTS.NET_AREA_MAX
+          ? undefined
+          : localFilters.maxNetArea,
+      minTotalArea:
+        localFilters.minTotalArea === FILTER_DEFAULTS_MIN
+          ? undefined
+          : localFilters.minTotalArea,
+      maxTotalArea:
+        localFilters.maxTotalArea === FILTER_DEFAULTS.TOTAL_AREA_MAX
+          ? undefined
+          : localFilters.maxTotalArea,
     };
-    onApply(updatedFilters);
+
+    onApply(cleanedFilters);
     onClose();
   };
 
@@ -228,6 +305,7 @@ const PublicPropertyFilterModal = ({
       onBuildingTypeChange={handleBuildingTypeChange}
       onBuildingNameChange={handleBuildingNameChange}
       onReset={handleReset}
+      onTemporaryClear={handleTemporaryClear}
       onApply={handleApply}
     />
   );

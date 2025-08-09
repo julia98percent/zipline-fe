@@ -1,5 +1,6 @@
 import { SelectChangeEvent } from "@mui/material";
 import Select, { MenuItem } from "@components/Select";
+import Button from "@components/Button";
 
 const BUILDING_TYPES = [
   "단독/다가구",
@@ -25,6 +26,12 @@ const BUILDING_TYPES = [
   "전원주택",
 ];
 
+const CATEGORY_OPTIONS = [
+  { value: "SALE", label: "매매" },
+  { value: "MONTHLY", label: "월세" },
+  { value: "DEPOSIT", label: "전세" },
+];
+
 interface PropertyTypeFilterSectionProps {
   category: string;
   buildingType: string;
@@ -39,23 +46,15 @@ export default function PropertyTypeFilterSection({
   onBuildingTypeChange,
 }: PropertyTypeFilterSectionProps) {
   return (
-    <div>
-      <h6 className="text-base font-medium mb-2">유형</h6>
-      <div className="flex gap-4 flex-col lg:flex-row max-w-fit">
-        <Select
-          value={category || ""}
-          onChange={onCategoryChange}
-          label="매물 유형"
-        >
-          <MenuItem value="SALE">매매</MenuItem>
-          <MenuItem value="MONTHLY">월세</MenuItem>
-          <MenuItem value="DEPOSIT">전세</MenuItem>
-        </Select>
-
+    <div className="flex flex-col gap-6">
+      <div>
+        <h6 className="font-semibold mb-2">건물 유형</h6>
         <Select
           value={buildingType || ""}
           onChange={onBuildingTypeChange}
           label="건물 유형"
+          fullWidth
+          size="medium"
         >
           {BUILDING_TYPES.map((type) => (
             <MenuItem key={type} value={type}>
@@ -63,6 +62,37 @@ export default function PropertyTypeFilterSection({
             </MenuItem>
           ))}
         </Select>
+      </div>
+
+      <div>
+        <h6 className="font-semibold mb-2">매물 유형</h6>
+        <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
+          <Button
+            variant={category === "" ? "contained" : "outlined"}
+            onClick={() =>
+              onCategoryChange({
+                target: { value: "" },
+              } as SelectChangeEvent<string>)
+            }
+            size="small"
+          >
+            전체
+          </Button>
+          {CATEGORY_OPTIONS.map((opt) => (
+            <Button
+              key={opt.value}
+              variant={category === opt.value ? "contained" : "outlined"}
+              onClick={() =>
+                onCategoryChange({
+                  target: { value: opt.value },
+                } as SelectChangeEvent<string>)
+              }
+              size="small"
+            >
+              {opt.label}
+            </Button>
+          ))}
+        </div>
       </div>
     </div>
   );

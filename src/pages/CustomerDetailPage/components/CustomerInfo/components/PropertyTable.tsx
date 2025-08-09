@@ -1,6 +1,6 @@
 import { Chip } from "@mui/material";
 import { useNavigate } from "react-router-dom";
-import { formatPriceWithKorean } from "@utils/numberUtil";
+import { formatKoreanPrice } from "@utils/numberUtil";
 import Table, { ColumnConfig } from "@components/Table";
 import { PropertyRowData } from "./CustomerInfoTabPanel";
 import { Property } from "@ts/property";
@@ -95,21 +95,21 @@ function PropertyTable({
       label: "매매가",
       width: "20%",
       render: (value: unknown) =>
-        value ? formatPriceWithKorean(value as number) : "-",
+        value ? formatKoreanPrice(value as number) : "-",
     },
     {
       key: "deposit",
       label: "보증금",
       width: "17%",
       render: (value: unknown) =>
-        value ? formatPriceWithKorean(value as number) : "-",
+        value ? formatKoreanPrice(value as number) : "-",
     },
     {
       key: "monthlyRent",
       label: "월세",
       width: "17%",
       render: (value: unknown) =>
-        value ? formatPriceWithKorean(value as number) : "-",
+        value ? formatKoreanPrice(value as number) : "-",
     },
     {
       key: "moveInDate",

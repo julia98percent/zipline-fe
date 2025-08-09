@@ -5,6 +5,7 @@ import {
   getPropertyTypeColors,
   getPropertyCategoryColors,
 } from "@constants/property";
+import { formatKoreanPrice } from "@utils/numberUtil";
 
 interface PropertyCardProps {
   property: Property;
@@ -25,20 +26,16 @@ const PropertyCard = ({ property, onRowClick }: PropertyCardProps) => {
     }
   };
 
-  const formatCurrency = (amount: number) => {
-    return new Intl.NumberFormat("ko-KR").format(amount) + "원";
-  };
-
   const getPriceText = (property: Property) => {
     if (property.type === "SALE") {
-      return property.price ? formatCurrency(property.price) : "-";
+      return property.price ? formatKoreanPrice(property.price) : "-";
     } else if (property.type === "DEPOSIT") {
-      return property.deposit ? formatCurrency(property.deposit) : "-";
+      return property.deposit ? formatKoreanPrice(property.deposit) : "-";
     } else {
-      const deposit = property.deposit ? formatCurrency(property.deposit) : "0";
+      const deposit = property.deposit ? formatKoreanPrice(property.deposit) : "0만원";
       const monthly = property.monthlyRent
-        ? formatCurrency(property.monthlyRent)
-        : "0";
+        ? formatKoreanPrice(property.monthlyRent)
+        : "0만원";
       return `${deposit}/${monthly}`;
     }
   };

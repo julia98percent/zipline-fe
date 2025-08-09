@@ -71,10 +71,6 @@ const CounselTable = ({
     },
   ];
 
-  const handleChangePage = (_: unknown, newPage: number) => {
-    onPageChange(_, newPage);
-  };
-
   return (
     <Box className="w-full">
       {/* Desktop view - 768px and above */}

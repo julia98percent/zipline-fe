@@ -53,14 +53,6 @@ const ContractDetailContent = ({
     return contractPartyInfo.map((item) => item.name).join(", ");
   };
 
-  const formatPrice = (
-    price: number | null | undefined,
-    suffix: string = "원"
-  ) => {
-    if (!price || price <= 0) return `- ${suffix}`;
-    return `${price.toLocaleString()}${suffix}`;
-  };
-
   return (
     <ContractDetailContentView
       contract={contract}
@@ -68,7 +60,6 @@ const ContractDetailContent = ({
       getStatusLabel={getStatusLabel}
       getStatusColor={getStatusColor}
       getCustomerNamesDisplay={getCustomerNamesDisplay}
-      formatPrice={formatPrice}
       onEditBasicInfo={onEditBasicInfo}
       onEditDocuments={onEditDocuments}
       onStatusChange={onStatusChange}

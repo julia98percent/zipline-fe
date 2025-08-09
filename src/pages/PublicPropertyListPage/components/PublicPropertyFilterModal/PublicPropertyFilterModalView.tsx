@@ -1,10 +1,8 @@
 import {
-  Box,
   Dialog,
   DialogActions,
   DialogContent,
   DialogTitle,
-  Divider,
   SelectChangeEvent,
 } from "@mui/material";
 import { RegionState } from "@ts/region";
@@ -30,7 +28,7 @@ interface PublicPropertyFilterModalViewProps {
   onCategoryChange: (event: SelectChangeEvent<string>) => void;
   onBuildingTypeChange: (event: SelectChangeEvent<string>) => void;
   onBuildingNameChange: (event: React.ChangeEvent<HTMLInputElement>) => void;
-  onReset: () => void;
+  onTemporaryClear: () => void;
   onApply: () => void;
 }
 
@@ -46,68 +44,68 @@ export default function PublicPropertyFilterModalView({
   onCategoryChange,
   onBuildingTypeChange,
   onBuildingNameChange,
-  onReset,
+  onTemporaryClear,
   onApply,
 }: PublicPropertyFilterModalViewProps) {
   return (
-    <Dialog open={open} onClose={onClose} maxWidth="md" fullWidth>
-      <DialogTitle className="text-xl font-bold text-primary">
-        상세 필터
+    <Dialog
+      open={open}
+      onClose={onClose}
+      maxWidth={false}
+      PaperProps={{
+        className: "w-200 h-175 max-h-[90vh] bg-white rounded-lg",
+      }}
+    >
+      <DialogTitle className="border-b text-primary font-bold border-gray-200">
+        공개 매물 필터
       </DialogTitle>
-      <DialogContent>
-        <Box className="flex flex-col gap-4 mt-4">
-          <div className="flex gap-8">
-            <div className="border-r border-gray-300 pr-8">
-              <RegionFilterSection
-                region={region}
-                onSidoChange={onSidoChange}
-                onGuChange={onGuChange}
-                onDongChange={onDongChange}
-              />
-            </div>
-            <PropertyTypeFilterSection
-              category={localFilters.category || ""}
-              buildingType={localFilters.buildingType || ""}
-              onCategoryChange={onCategoryChange}
-              onBuildingTypeChange={onBuildingTypeChange}
-            />
-          </div>
-          <TextField
-            value={localFilters.buildingName || ""}
-            onChange={onBuildingNameChange}
-            label="건물명"
-            fullWidth
+      <DialogContent className="flex flex-col gap-6 mx-4 p-8">
+        <TextField
+          value={localFilters.buildingName || ""}
+          onChange={onBuildingNameChange}
+          label="건물명"
+          fullWidth
+        />
+
+        <div className="flex flex-col gap-8">
+          <RegionFilterSection
+            region={region}
+            onSidoChange={onSidoChange}
+            onGuChange={onGuChange}
+            onDongChange={onDongChange}
           />
 
-          {/* Property Type and Building Info */}
-
-          <Divider className="my-6" />
-
-          {/* Price Ranges */}
-          <PriceRangeSection
+          <PropertyTypeFilterSection
             category={localFilters.category || ""}
-            minPrice={localFilters.minPrice}
-            maxPrice={localFilters.maxPrice}
-            minDeposit={localFilters.minDeposit}
-            maxDeposit={localFilters.maxDeposit}
-            minMonthlyRent={localFilters.minMonthlyRent}
-            maxMonthlyRent={localFilters.maxMonthlyRent}
-            onSliderChange={onSliderChange}
+            buildingType={localFilters.buildingType || ""}
+            onCategoryChange={onCategoryChange}
+            onBuildingTypeChange={onBuildingTypeChange}
           />
+        </div>
 
-          {/* Area Ranges */}
-          <AreaRangeSection
-            minNetArea={localFilters.minNetArea}
-            maxNetArea={localFilters.maxNetArea}
-            minTotalArea={localFilters.minTotalArea}
-            maxTotalArea={localFilters.maxTotalArea}
-            onSliderChange={onSliderChange}
-          />
-        </Box>
+        <PriceRangeSection
+          category={localFilters.category || ""}
+          minPrice={localFilters.minPrice}
+          maxPrice={localFilters.maxPrice}
+          minDeposit={localFilters.minDeposit}
+          maxDeposit={localFilters.maxDeposit}
+          minMonthlyRent={localFilters.minMonthlyRent}
+          maxMonthlyRent={localFilters.maxMonthlyRent}
+          onSliderChange={onSliderChange}
+        />
+
+        {/* Area Ranges */}
+        <AreaRangeSection
+          minNetArea={localFilters.minNetArea}
+          maxNetArea={localFilters.maxNetArea}
+          minTotalArea={localFilters.minTotalArea}
+          maxTotalArea={localFilters.maxTotalArea}
+          onSliderChange={onSliderChange}
+        />
       </DialogContent>
-      <DialogActions>
-        <Button variant="text" color="info" onClick={onReset}>
-          초기화
+      <DialogActions className="flex items-center justify-end p-6 border-t border-gray-200">
+        <Button variant="text" color="info" onClick={onTemporaryClear}>
+          입력 값 초기화
         </Button>
         <Button variant="outlined" onClick={onClose}>
           취소

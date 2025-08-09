@@ -39,7 +39,6 @@ interface AgentPropertyListPageViewProps {
   onGuChange: (event: SelectChangeEvent<number>) => void;
   onDongChange: (event: SelectChangeEvent<number>) => void;
   onCategoryChange: (event: SelectChangeEvent<unknown>) => void;
-  onTypeChange: (event: SelectChangeEvent<unknown>) => void;
   onFilterApply: (newFilters: Partial<AgentPropertySearchParams>) => void;
   onPageChange: (newPage: number) => void;
   onRowsPerPageChange: (newSize: number) => void;
@@ -68,7 +67,6 @@ const AgentPropertyListPageView = ({
   onGuChange,
   onDongChange,
   onCategoryChange,
-  onTypeChange,
   onFilterApply,
   onPageChange,
   onRowsPerPageChange,
@@ -261,7 +259,6 @@ const AgentPropertyListPageView = ({
           onSidoChange={onSidoChange}
           onGuChange={onGuChange}
           onDongChange={onDongChange}
-          onTypeChange={onTypeChange}
         />
       </div>
     </div>

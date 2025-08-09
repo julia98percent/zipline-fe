@@ -1,4 +1,13 @@
-import { Box, Slider, Typography } from "@mui/material";
+import { Slider } from "@mui/material";
+import Button from "@components/Button";
+import {
+  formatPrice,
+  getPriceValueLabelFormat,
+  MAX_PRICE_SLIDER_VALUE,
+  MAX_MONTHLY_RENT_SLIDER_VALUE,
+  FILTER_DEFAULTS_MIN,
+  FILTER_DEFAULTS,
+} from "@utils/filterUtil";
 
 interface PriceRangeSectionProps {
   category: string;
@@ -23,80 +32,120 @@ export default function PriceRangeSection({
   maxMonthlyRent,
   onSliderChange,
 }: PriceRangeSectionProps) {
-  const formatPrice = (value: number) => {
-    if (value >= 10000) {
-      return `${Math.floor(value / 10000)}억 ${
-        value % 10000 > 0 ? `${value % 10000}만` : ""
-      }`;
-    }
-    return `${value}만`;
-  };
-
-  if (!category) return null;
+  const priceValueLabelFormat = (value: number) =>
+    getPriceValueLabelFormat(value, FILTER_DEFAULTS.PRICE_MAX, "20억원~");
+  const monthlyRentValueLabelFormat = (value: number) =>
+    getPriceValueLabelFormat(
+      value,
+      FILTER_DEFAULTS.MONTHLY_RENT_MAX,
+      "500만원~"
+    );
 
   return (
-    <>
-      <Typography variant="subtitle1" gutterBottom className="mb-4">
-        가격 범위
-      </Typography>
+    <div>
+      <div className="flex justify-between items-center mb-2">
+        <h6 className="font-semibold">가격 범위</h6>
+        <Button
+          variant="text"
+          onClick={() => {
+            onSliderChange("Price")(null as any, [
+              FILTER_DEFAULTS_MIN,
+              FILTER_DEFAULTS.PRICE_MAX,
+            ]);
+            onSliderChange("Deposit")(null as any, [
+              FILTER_DEFAULTS_MIN,
+              FILTER_DEFAULTS.DEPOSIT_MAX,
+            ]);
+            onSliderChange("MonthlyRent")(null as any, [
+              FILTER_DEFAULTS_MIN,
+              FILTER_DEFAULTS.MONTHLY_RENT_MAX,
+            ]);
+          }}
+          className="p-0!"
+        >
+          초기화
+        </Button>
+      </div>
 
-      {/* Sale Price Range */}
-      <Box
-        className="mb-6"
-        sx={{
-          display: category === "SALE" ? "block" : "none",
-        }}
-      >
-        <Typography gutterBottom>매매가 (만원)</Typography>
-        <Slider
-          value={[minPrice || 0, maxPrice || 100000]}
-          onChange={onSliderChange("Price")}
-          min={1}
-          max={1000000000}
-          step={1000}
-          valueLabelDisplay="auto"
-          valueLabelFormat={formatPrice}
-        />
-      </Box>
+      <div className="mx-4">
+        {(category === "" || category === "SALE") && (
+          <>
+            <p className="text-sm mb-2 text-gray-600">
+              매매가: {formatPrice(minPrice || FILTER_DEFAULTS_MIN)} -{" "}
+              {(maxPrice || FILTER_DEFAULTS.PRICE_MAX) >
+              FILTER_DEFAULTS.PRICE_MAX
+                ? "20억원~"
+                : formatPrice(maxPrice || FILTER_DEFAULTS.PRICE_MAX)}
+            </p>
+            <Slider
+              value={[
+                minPrice || FILTER_DEFAULTS_MIN,
+                maxPrice || FILTER_DEFAULTS.PRICE_MAX,
+              ]}
+              onChange={onSliderChange("Price")}
+              valueLabelDisplay="auto"
+              min={FILTER_DEFAULTS_MIN}
+              max={MAX_PRICE_SLIDER_VALUE}
+              step={1000}
+              valueLabelFormat={priceValueLabelFormat}
+              className="mb-4"
+            />
+          </>
+        )}
 
-      {/* Deposit Range */}
-      <Box
-        className="mb-6"
-        sx={{
-          display:
-            category === "MONTHLY" || category === "DEPOSIT" ? "block" : "none",
-        }}
-      >
-        <Typography gutterBottom>보증금 (만원)</Typography>
-        <Slider
-          value={[minDeposit || 0, maxDeposit || 50000]}
-          onChange={onSliderChange("Deposit")}
-          min={1}
-          max={10000000}
-          step={10000000}
-          valueLabelDisplay="auto"
-          valueLabelFormat={formatPrice}
-        />
-      </Box>
+        {(category === "" ||
+          category === "DEPOSIT" ||
+          category === "MONTHLY") && (
+          <>
+            <p className="text-sm mb-2 text-gray-600">
+              보증금: {formatPrice(minDeposit || FILTER_DEFAULTS_MIN)} -{" "}
+              {(maxDeposit || FILTER_DEFAULTS.DEPOSIT_MAX) >
+              FILTER_DEFAULTS.DEPOSIT_MAX
+                ? "20억원~"
+                : formatPrice(maxDeposit || FILTER_DEFAULTS.DEPOSIT_MAX)}
+            </p>
+            <Slider
+              value={[
+                minDeposit || FILTER_DEFAULTS_MIN,
+                maxDeposit || FILTER_DEFAULTS.DEPOSIT_MAX,
+              ]}
+              onChange={onSliderChange("Deposit")}
+              valueLabelDisplay="auto"
+              step={1000}
+              min={0}
+              max={MAX_PRICE_SLIDER_VALUE}
+              valueLabelFormat={priceValueLabelFormat}
+              className="mb-4"
+            />
+          </>
+        )}
 
-      {/* Monthly Rent Range */}
-      <Box
-        className="mb-6"
-        sx={{
-          display: category === "MONTHLY" ? "block" : "none",
-        }}
-      >
-        <Typography gutterBottom>월세 (만원)</Typography>
-        <Slider
-          value={[minMonthlyRent || 0, maxMonthlyRent || 1000]}
-          onChange={onSliderChange("MonthlyRent")}
-          min={1}
-          max={10000000}
-          step={10000000}
-          valueLabelDisplay="auto"
-          valueLabelFormat={(value) => `${value}만`}
-        />
-      </Box>
-    </>
+        {/* 월세 - 전체 또는 월세일 때만 표시 */}
+        {(category === "" || category === "MONTHLY") && (
+          <>
+            <p className="text-sm mb-2 text-gray-600">
+              월세: {formatPrice(minMonthlyRent || FILTER_DEFAULTS_MIN)} -{" "}
+              {(maxMonthlyRent || FILTER_DEFAULTS.MONTHLY_RENT_MAX) >
+              FILTER_DEFAULTS.MONTHLY_RENT_MAX
+                ? "500만원~"
+                : formatPrice(
+                    maxMonthlyRent || FILTER_DEFAULTS.MONTHLY_RENT_MAX
+                  )}
+            </p>
+            <Slider
+              value={[
+                minMonthlyRent || FILTER_DEFAULTS_MIN,
+                maxMonthlyRent || FILTER_DEFAULTS.MONTHLY_RENT_MAX,
+              ]}
+              onChange={onSliderChange("MonthlyRent")}
+              valueLabelDisplay="auto"
+              min={0}
+              max={MAX_MONTHLY_RENT_SLIDER_VALUE}
+              valueLabelFormat={monthlyRentValueLabelFormat}
+            />
+          </>
+        )}
+      </div>
+    </div>
   );
 }

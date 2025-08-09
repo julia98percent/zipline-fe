@@ -31,12 +31,12 @@ export const useUrlFilters = () => {
     (key: string, value: string | number | boolean) => {
       setSearchParams((prev) => {
         const params = new URLSearchParams(prev);
-        if (!value || value === "" || value === 0) {
+        if (value === null || value === undefined || value === "") {
           params.delete(key);
         } else {
           params.set(key, value.toString());
         }
-        // 필터 변경 시 첫 페이지로 리셋
+
         params.delete("page");
         return params;
       });
@@ -50,7 +50,12 @@ export const useUrlFilters = () => {
         const params = new URLSearchParams(prev);
 
         Object.entries(updates).forEach(([key, value]) => {
-          if (!value || value === "" || value === 0) {
+          if (
+            value === null ||
+            value === undefined ||
+            value === "" ||
+            value === 0
+          ) {
             params.delete(key);
           } else {
             params.set(key, value.toString());

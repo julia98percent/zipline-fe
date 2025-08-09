@@ -130,8 +130,8 @@ export interface AgentPropertySearchParams {
   category?: PropertyCategoryType;
   minDeposit?: number;
   maxDeposit?: number;
-  minMonthlyRent?: number;
-  maxMonthlyRent?: number;
+  minRent?: number;
+  maxRent?: number;
   minPrice?: number;
   maxPrice?: number;
   minMoveInDate?: string;
@@ -396,16 +396,10 @@ export const searchAgentProperties = async (
       queryParams.append("minDeposit", searchParams.minDeposit.toString());
     if (searchParams.maxDeposit)
       queryParams.append("maxDeposit", searchParams.maxDeposit.toString());
-    if (searchParams.minMonthlyRent)
-      queryParams.append(
-        "minMonthlyRent",
-        searchParams.minMonthlyRent.toString()
-      );
-    if (searchParams.maxMonthlyRent)
-      queryParams.append(
-        "maxMonthlyRent",
-        searchParams.maxMonthlyRent.toString()
-      );
+    if (searchParams.minRent)
+      queryParams.append("minRent", searchParams.minRent.toString());
+    if (searchParams.maxRent)
+      queryParams.append("maxRent", searchParams.maxRent.toString());
     if (searchParams.minNetArea)
       queryParams.append("minNetArea", searchParams.minNetArea.toString());
     if (searchParams.maxNetArea)

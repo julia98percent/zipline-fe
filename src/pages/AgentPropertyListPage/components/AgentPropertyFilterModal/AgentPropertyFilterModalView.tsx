@@ -8,8 +8,16 @@ import {
   FormControlLabel,
   Radio,
 } from "@mui/material";
-
 import Button from "@components/Button";
+import {
+  FILTER_DEFAULTS_MIN,
+  FILTER_DEFAULTS,
+  getPriceValueLabelFormat,
+  formatPrice,
+  MAX_PRICE_SLIDER_VALUE,
+  MAX_MONTHLY_RENT_SLIDER_VALUE,
+} from "@utils/filterUtil";
+
 interface TypeOption {
   value: string;
   label: string;
@@ -21,28 +29,24 @@ interface AgentPropertyFilterModalViewProps {
   onApply: () => void;
   onReset: () => void;
 
-  // 상태 값들
   hasElevator: string;
   petsAllowed: string;
   netAreaRange: number[];
   totalAreaRange: number[];
   priceRange: number[];
   depositRange: number[];
+  rentRange: number[];
   selectedType: string;
   typeOptions: TypeOption[];
 
-  // 상태 변경 함수들
   setHasElevator: (value: string) => void;
   setPetsAllowed: (value: string) => void;
   setNetAreaRange: (value: number[]) => void;
   setTotalAreaRange: (value: number[]) => void;
   handlePriceRangeChange: (newValue: number | number[]) => void;
   handleDepositRangeChange: (newValue: number | number[]) => void;
+  handleRentRangeChange: (newValue: number | number[]) => void;
   onTypeChange: (value: string) => void;
-
-  // 유틸리티 함수들
-  formatPrice: (value: number, isMaxValue?: boolean) => string;
-  formatPriceForSlider: (value: number, max?: number) => string;
 }
 
 const AgentPropertyFilterModalView = ({
@@ -64,10 +68,20 @@ const AgentPropertyFilterModalView = ({
   setTotalAreaRange,
   handlePriceRangeChange,
   handleDepositRangeChange,
-  formatPrice,
-  formatPriceForSlider,
+
+  rentRange,
+  handleRentRangeChange,
   onTypeChange,
 }: AgentPropertyFilterModalViewProps) => {
+  const priceValueLabelFormat = (value: number) =>
+    getPriceValueLabelFormat(value, FILTER_DEFAULTS.PRICE_MAX, "20억원~");
+  const monthlyRentValueLabelFormat = (value: number) =>
+    getPriceValueLabelFormat(
+      value,
+      FILTER_DEFAULTS.MONTHLY_RENT_MAX,
+      "500만원~"
+    );
+
   return (
     <Dialog
       open={open}
@@ -81,15 +95,13 @@ const AgentPropertyFilterModalView = ({
         개인 매물 필터
       </DialogTitle>
 
-      <DialogContent className="flex flex-col gap-6 mx-4 p-7">
+      <DialogContent className="flex flex-col gap-6 mx-4 p-8">
         <div className="flex flex-col gap-2">
           <h6 className="font-semibold">판매 유형</h6>
-          <div className="flex gap-2">
+          <div className="grid grid-cols-4 gap-2 ">
             <Button
               variant={selectedType === "" ? "contained" : "outlined"}
               onClick={() => onTypeChange("")}
-              size="small"
-              className="flex-1"
             >
               전체
             </Button>
@@ -98,8 +110,6 @@ const AgentPropertyFilterModalView = ({
                 key={opt.value}
                 variant={selectedType === opt.value ? "contained" : "outlined"}
                 onClick={() => onTypeChange(opt.value)}
-                size="small"
-                className="flex-1"
               >
                 {opt.label}
               </Button>
@@ -138,44 +148,39 @@ const AgentPropertyFilterModalView = ({
               <>
                 <p className="text-sm mb-2 text-gray-600">
                   매매가: {formatPrice(priceRange[0])} -{" "}
-                  {formatPrice(
-                    priceRange[1],
-                    priceRange[1] === FILTER_DEFAULTS.PRICE_MAX
-                  )}
+                  {priceRange[1] > FILTER_DEFAULTS.PRICE_MAX
+                    ? "20억원~"
+                    : formatPrice(priceRange[1])}
                 </p>
                 <Slider
                   value={priceRange}
                   onChange={(_, newValue) => handlePriceRangeChange(newValue)}
                   valueLabelDisplay="auto"
                   min={FILTER_DEFAULTS_MIN}
-                  max={FILTER_DEFAULTS.PRICE_MAX}
-                  valueLabelFormat={(value) =>
-                    formatPriceForSlider(value, FILTER_DEFAULTS.PRICE_MAX)
-                  }
+                  max={MAX_PRICE_SLIDER_VALUE}
+                  valueLabelFormat={priceValueLabelFormat}
                   className="mb-4"
                 />
               </>
             )}
 
-            {/* 보증금 - 전체, 전세, 월세일 때 표시 */}
-            {(selectedType === "" || selectedType === "DEPOSIT" || selectedType === "MONTHLY") && (
+            {(selectedType === "" ||
+              selectedType === "DEPOSIT" ||
+              selectedType === "MONTHLY") && (
               <>
                 <p className="text-sm mb-2 text-gray-600">
                   보증금: {formatPrice(depositRange[0])} -{" "}
-                  {formatPrice(
-                    depositRange[1],
-                    depositRange[1] === FILTER_DEFAULTS.DEPOSIT_MAX
-                  )}
+                  {depositRange[1] > FILTER_DEFAULTS.DEPOSIT_MAX
+                    ? "20억원~"
+                    : formatPrice(depositRange[1])}
                 </p>
                 <Slider
                   value={depositRange}
                   onChange={(_, newValue) => handleDepositRangeChange(newValue)}
                   valueLabelDisplay="auto"
                   min={0}
-                  max={FILTER_DEFAULTS.DEPOSIT_MAX}
-                  valueLabelFormat={(value) =>
-                    formatPriceForSlider(value, FILTER_DEFAULTS.DEPOSIT_MAX)
-                  }
+                  max={MAX_PRICE_SLIDER_VALUE}
+                  valueLabelFormat={priceValueLabelFormat}
                   className="mb-4"
                 />
               </>
@@ -186,20 +191,17 @@ const AgentPropertyFilterModalView = ({
               <>
                 <p className="text-sm mb-2 text-gray-600">
                   월세: {formatPrice(rentRange[0])} -{" "}
-                  {formatPrice(
-                    rentRange[1],
-                    rentRange[1] === FILTER_DEFAULTS.MONTHLY_RENT_MAX
-                  )}
+                  {rentRange[1] > FILTER_DEFAULTS.MONTHLY_RENT_MAX
+                    ? "500만원~"
+                    : formatPrice(rentRange[1])}
                 </p>
                 <Slider
                   value={rentRange}
                   onChange={(_, newValue) => handleRentRangeChange(newValue)}
                   valueLabelDisplay="auto"
                   min={0}
-                  max={FILTER_DEFAULTS.MONTHLY_RENT_MAX}
-                  valueLabelFormat={(value) =>
-                    formatPriceForSlider(value, FILTER_DEFAULTS.MONTHLY_RENT_MAX)
-                  }
+                  max={MAX_MONTHLY_RENT_SLIDER_VALUE}
+                  valueLabelFormat={monthlyRentValueLabelFormat}
                 />
               </>
             )}
@@ -264,8 +266,14 @@ const AgentPropertyFilterModalView = ({
             <Button
               variant="text"
               onClick={() => {
-                setNetAreaRange([0, 200]);
-                setTotalAreaRange([0, 300]);
+                setNetAreaRange([
+                  FILTER_DEFAULTS_MIN,
+                  FILTER_DEFAULTS.NET_AREA_MAX,
+                ]);
+                setTotalAreaRange([
+                  FILTER_DEFAULTS_MIN,
+                  FILTER_DEFAULTS.TOTAL_AREA_MAX,
+                ]);
               }}
               className="p-0!"
             >
@@ -276,7 +284,7 @@ const AgentPropertyFilterModalView = ({
           <div className="mx-4">
             <p className="text-sm mb-2 text-gray-600">
               전용 면적: {netAreaRange[0]}m² -{" "}
-              {netAreaRange[1] === 200
+              {netAreaRange[1] === FILTER_DEFAULTS.NET_AREA_MAX
                 ? `${netAreaRange[1]}m²~`
                 : `${netAreaRange[1]}m²`}
             </p>
@@ -285,16 +293,18 @@ const AgentPropertyFilterModalView = ({
               onChange={(_, newValue) => setNetAreaRange(newValue as number[])}
               valueLabelDisplay="auto"
               min={0}
-              max={200}
+              max={FILTER_DEFAULTS.NET_AREA_MAX}
               step={5}
               valueLabelFormat={(value) =>
-                value === 200 ? `${value}m²~` : `${value}m²`
+                value === FILTER_DEFAULTS.NET_AREA_MAX
+                  ? `${value}m²~`
+                  : `${value}m²`
               }
             />
 
             <p className="text-sm mb-2 text-gray-600">
               공급 면적: {totalAreaRange[0]}m² -{" "}
-              {totalAreaRange[1] === 300
+              {totalAreaRange[1] === FILTER_DEFAULTS.TOTAL_AREA_MAX
                 ? `${totalAreaRange[1]}m²~`
                 : `${totalAreaRange[1]}m²`}
             </p>
@@ -305,20 +315,21 @@ const AgentPropertyFilterModalView = ({
               }
               valueLabelDisplay="auto"
               min={0}
-              max={300}
+              max={FILTER_DEFAULTS.TOTAL_AREA_MAX}
               step={5}
               valueLabelFormat={(value) =>
-                value === 300 ? `${value}m²~` : `${value}m²`
+                value === FILTER_DEFAULTS.TOTAL_AREA_MAX
+                  ? `${value}m²~`
+                  : `${value}m²`
               }
             />
           </div>
         </div>
-
       </DialogContent>
 
       <DialogActions className="flex flex-row-reverse items-center justify-between p-6 border-t border-gray-200">
         <div className="flex gap-2">
-          <Button onClick={onReset} variant="outlined" color="info">
+          <Button onClick={onReset} variant="text" color="info">
             입력 값 초기화
           </Button>
           <Button onClick={onClose} variant="outlined">

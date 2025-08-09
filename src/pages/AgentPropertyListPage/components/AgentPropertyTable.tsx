@@ -8,6 +8,7 @@ import {
   getPropertyTypeColors,
   getPropertyCategoryColors,
 } from "@constants/property";
+import { formatKoreanPrice } from "@utils/numberUtil";
 
 type PropertyRowData = RowData & Property;
 
@@ -44,19 +45,17 @@ const AgentPropertyTable = ({
     }
   };
 
-  const formatCurrency = (amount: number) => {
-    return new Intl.NumberFormat("ko-KR").format(amount) + "원";
-  };
-
   const getPriceText = (property: Property) => {
     if (property.type === "SALE") {
-      return property.price ? formatCurrency(property.price) : "-";
+      return property.price ? formatKoreanPrice(property.price) : "-";
     } else if (property.type === "DEPOSIT") {
-      return property.deposit ? formatCurrency(property.deposit) : "-";
+      return property.deposit ? formatKoreanPrice(property.deposit) : "-";
     } else {
-      const deposit = property.deposit ? formatCurrency(property.deposit) : "-";
+      const deposit = property.deposit
+        ? formatKoreanPrice(property.deposit)
+        : "-";
       const monthly = property.monthlyRent
-        ? formatCurrency(property.monthlyRent)
+        ? formatKoreanPrice(property.monthlyRent)
         : "-";
       return `${deposit}/${monthly}`;
     }

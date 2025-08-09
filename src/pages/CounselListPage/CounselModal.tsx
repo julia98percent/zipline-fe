@@ -43,7 +43,7 @@ function CounselModal({ open, onClose, onSuccess }: CounselModalProps) {
   const [selectedCustomer, setSelectedCustomer] = useState("");
   const [counselType, setCounselType] = useState("");
   const [dueDate, setDueDate] = useState<Dayjs | null>(null);
-  const [selectedProperty, setSelectedProperty] = useState<string | null>(null);
+  const [selectedProperty, setSelectedProperty] = useState<string>("");
   const [title, setTitle] = useState("");
   const [counselDateTime, setCounselDateTime] = useState<Dayjs | null>(
     dayjs().tz("Asia/Seoul")
@@ -91,7 +91,7 @@ function CounselModal({ open, onClose, onSuccess }: CounselModalProps) {
     setSelectedCustomer("");
     setCounselType("");
     setDueDate(null);
-    setSelectedProperty(null);
+    setSelectedProperty("");
     setTitle("");
     setCounselDateTime(dayjs().tz("Asia/Seoul"));
     setCounselContent("");

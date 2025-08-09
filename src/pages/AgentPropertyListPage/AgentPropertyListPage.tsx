@@ -78,6 +78,8 @@ function AgentPropertyListPage() {
       maxDeposit: getParam("maxDeposit")
         ? parseInt(getParam("maxDeposit"))
         : undefined,
+      minRent: getParam("minRent") ? parseInt(getParam("minRent")) : undefined,
+      maxRent: getParam("maxRent") ? parseInt(getParam("maxRent")) : undefined,
       minNetArea: getParam("minNetArea")
         ? parseInt(getParam("minNetArea"))
         : undefined,
@@ -236,37 +238,28 @@ function AgentPropertyListPage() {
     (newFilters: Partial<AgentPropertySearchParams>) => {
       const filterParams: Record<string, string | number | boolean | null> = {};
 
-      if (newFilters.minPrice !== undefined)
-        filterParams.minPrice = newFilters.minPrice || null;
-      if (newFilters.maxPrice !== undefined)
-        filterParams.maxPrice = newFilters.maxPrice || null;
-      if (newFilters.minDeposit !== undefined)
-        filterParams.minDeposit = newFilters.minDeposit || null;
-      if (newFilters.maxDeposit !== undefined)
-        filterParams.maxDeposit = newFilters.maxDeposit || null;
-      if (newFilters.minRent !== undefined)
-        filterParams.minRent = newFilters.minRent || null;
-      if (newFilters.maxRent !== undefined)
-        filterParams.maxRent = newFilters.maxRent || null;
+      filterParams.minPrice = newFilters.minPrice || null;
+      filterParams.maxPrice = newFilters.maxPrice || null;
+      filterParams.minDeposit = newFilters.minDeposit || null;
+      filterParams.maxDeposit = newFilters.maxDeposit || null;
+      filterParams.minRent = newFilters.minRent || null;
+      filterParams.maxRent = newFilters.maxRent || null;
 
-      if (newFilters.minNetArea !== undefined)
-        filterParams.minNetArea = newFilters.minNetArea || null;
-      if (newFilters.maxNetArea !== undefined)
-        filterParams.maxNetArea = newFilters.maxNetArea || null;
-      if (newFilters.minTotalArea !== undefined)
-        filterParams.minTotalArea = newFilters.minTotalArea || null;
-      if (newFilters.maxTotalArea !== undefined)
-        filterParams.maxTotalArea = newFilters.maxTotalArea || null;
+      filterParams.minNetArea = newFilters.minNetArea || null;
+      filterParams.maxNetArea = newFilters.maxNetArea || null;
+      filterParams.minTotalArea = newFilters.minTotalArea || null;
+      filterParams.maxTotalArea = newFilters.maxTotalArea || null;
 
-      if (newFilters.hasElevator !== undefined)
-        filterParams.hasElevator =
-          newFilters.hasElevator !== undefined ? newFilters.hasElevator : null;
-      if (newFilters.petsAllowed !== undefined)
-        filterParams.petsAllowed =
-          newFilters.petsAllowed !== undefined ? newFilters.petsAllowed : null;
+      filterParams.hasElevator =
+        typeof newFilters.hasElevator === "boolean"
+          ? newFilters.hasElevator
+          : null;
+      filterParams.petsAllowed =
+        typeof newFilters.petsAllowed === "boolean"
+          ? newFilters.petsAllowed
+          : null;
 
-      if (newFilters.type !== undefined)
-        filterParams.type = newFilters.type || null;
+      filterParams.type = newFilters.type || null;
 
       setParams(filterParams);
       setShowFilterModal(false);

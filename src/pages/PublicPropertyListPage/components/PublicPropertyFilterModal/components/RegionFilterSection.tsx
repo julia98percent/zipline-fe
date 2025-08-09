@@ -16,14 +16,15 @@ export default function RegionFilterSection({
   onDongChange,
 }: RegionFilterSectionProps) {
   return (
-    <div className="inline-block max-w-fit">
-      <h6 className="text-base font-medium mb-2">지역</h6>
-      <div className="flex gap-4 flex-col lg:flex-row max-w-fit">
+    <div>
+      <h6 className="font-semibold mb-2">지역</h6>
+      <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
         <RegionSelector
           value={region.selectedSido || ""}
           regions={region.sido}
           onChange={onSidoChange}
           label="시/도"
+          size="medium"
         />
 
         <RegionSelector
@@ -32,6 +33,7 @@ export default function RegionFilterSection({
           onChange={onGuChange}
           disabled={!region.selectedSido}
           label="구/군"
+          size="medium"
         />
 
         <RegionSelector
@@ -40,6 +42,7 @@ export default function RegionFilterSection({
           onChange={onDongChange}
           disabled={!region.selectedSigungu}
           label="동"
+          size="medium"
         />
       </div>
     </div>

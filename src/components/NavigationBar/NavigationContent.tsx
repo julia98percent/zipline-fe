@@ -157,9 +157,7 @@ const NavigationContent = ({ onItemClick }: NavigationContentProps) => {
         {MENU_INFO.map(({ name, key, to, submenu }) => {
           const hasSubmenu = Boolean(submenu);
           const isActive = hasSubmenu
-            ? submenu?.some((sub) => currentPath === sub.to) ||
-              (currentPath.startsWith(submenu![0].to) &&
-                !submenu?.some((sub) => currentPath === sub.to))
+            ? submenu?.some((sub) => currentPath.startsWith(sub.to))
             : currentPath.startsWith(to!);
 
           return (
@@ -208,24 +206,24 @@ const NavigationContent = ({ onItemClick }: NavigationContentProps) => {
                           onClick={onItemClick}
                           className="hover:bg-gray-50 justify-start px-4 py-1 mb-1 ml-8"
                           style={{
-                            borderLeft:
-                              currentPath === sub.to
-                                ? "4px solid #164F9E"
-                                : "none",
-                            backgroundColor:
-                              currentPath === sub.to
-                                ? "rgba(22, 79, 158, 0.04)"
-                                : "transparent",
+                            borderLeft: currentPath.startsWith(sub.to)
+                              ? "4px solid #164F9E"
+                              : "none",
+                            backgroundColor: currentPath.startsWith(sub.to)
+                              ? "rgba(22, 79, 158, 0.04)"
+                              : "transparent",
                           }}
                         >
                           <ListItemText
                             primary={sub.name}
                             className="text-sm"
                             style={{
-                              color:
-                                currentPath === sub.to ? "#164F9E" : "#222222",
-                              fontWeight:
-                                currentPath === sub.to ? "bold" : "normal",
+                              color: currentPath.startsWith(sub.to)
+                                ? "#164F9E"
+                                : "#222222",
+                              fontWeight: currentPath.startsWith(sub.to)
+                                ? "bold"
+                                : "normal",
                             }}
                           />
                         </ListItemButton>

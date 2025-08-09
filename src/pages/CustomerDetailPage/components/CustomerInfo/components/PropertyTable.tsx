@@ -65,7 +65,7 @@ function PropertyTable({
   const navigate = useNavigate();
 
   const handleRowClick = (rowData: PropertyRowData) => {
-    navigate(`/properties/${rowData.uid}`);
+    navigate(`/properties/agent/${rowData.uid}`);
   };
 
   const columns: ColumnConfig<PropertyRowData>[] = [

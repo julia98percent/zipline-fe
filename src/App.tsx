@@ -43,7 +43,7 @@ const App = () => {
 
         <Route path="properties/agent" element={<AgentPropertyListPage />} />
         <Route
-          path="/properties/:propertyUid"
+          path="/properties/agent/:propertyUid"
           element={<AgentPropertyDetailPage />}
         />
         <Route path="properties/public" element={<PublicPropertyListPage />} />

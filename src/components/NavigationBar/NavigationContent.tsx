@@ -63,7 +63,7 @@ const MENU_INFO: MenuItem[] = [
   },
 ];
 
-const getMenuIcon = (name: ParentMenuName, isActive: boolean) => {
+const getMenuIcon = (name: ParentMenuName, isActive = false) => {
   const iconColor = isActive ? "#164F9E" : "#222222";
 
   switch (name) {
@@ -109,7 +109,7 @@ const NavigationContent = ({ onItemClick }: NavigationContentProps) => {
       </Box>
       <List className="pt-1">
         <ListItem disablePadding>
-          <Link to="/" style={{ width: "100%", textDecoration: "none" }}>
+          <Link to="/" className="w-full no-underline">
             <ListItemButton
               onClick={onItemClick}
               className="hover:bg-gray-50 px-4 justify-start"
@@ -168,10 +168,7 @@ const NavigationContent = ({ onItemClick }: NavigationContentProps) => {
             >
               {hasSubmenu ? (
                 <Box className="w-full">
-                  <Link
-                    to={submenu![0].to}
-                    style={{ width: "100%", textDecoration: "none" }}
-                  >
+                  <Link to={submenu![0].to} className="w-full no-underline">
                     <ListItemButton
                       onClick={onItemClick}
                       className="hover:bg-gray-50"
@@ -200,7 +197,7 @@ const NavigationContent = ({ onItemClick }: NavigationContentProps) => {
                       <Link
                         to={sub.to}
                         key={`${sub.to}-submenu`}
-                        style={{ textDecoration: "none" }}
+                        className="no-underline"
                       >
                         <ListItemButton
                           onClick={onItemClick}
@@ -232,10 +229,7 @@ const NavigationContent = ({ onItemClick }: NavigationContentProps) => {
                   </List>
                 </Box>
               ) : (
-                <Link
-                  to={to!}
-                  style={{ width: "100%", textDecoration: "none" }}
-                >
+                <Link to={to!} className="no-underline w-full">
                   <ListItemButton
                     onClick={onItemClick}
                     className="hover:bg-gray-50"

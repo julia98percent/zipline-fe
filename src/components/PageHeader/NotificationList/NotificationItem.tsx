@@ -9,6 +9,7 @@ import type { Notification } from "@stores/useNotificationStore";
 import useNotificationStore from "@stores/useNotificationStore";
 import ClearIcon from "@mui/icons-material/Clear";
 import { IconButton } from "@mui/material";
+import { showToast } from "@components/Toast";
 
 interface NotificationItemProps {
   notification: Notification;
@@ -20,11 +21,18 @@ function NotificationItem({
   onPreCounselClick,
 }: NotificationItemProps) {
   const { updateNotification, deleteNotification } = useNotificationStore();
-  const handleClick = () => {
+  const handleClick = async () => {
     if (notification.category === "NEW_SURVEY") {
       onPreCounselClick(notification.url);
-      readNotification(notification.uid);
-      updateNotification(notification.uid, { read: true });
+      try {
+        await readNotification(notification.uid);
+        updateNotification(notification.uid, { read: true });
+      } catch {
+        showToast({
+          message: "알림을 읽음 처리하는 중 오류가 발생했습니다.",
+          type: "error",
+        });
+      }
     } else {
       console.log("Navigate to:", notification.url);
     }

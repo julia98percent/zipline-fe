@@ -35,7 +35,7 @@ const CATEGORY_OPTIONS = [
 interface PropertyTypeFilterSectionProps {
   category: string;
   buildingType: string;
-  onCategoryChange: (event: SelectChangeEvent<string>) => void;
+  onCategoryChange: React.MouseEventHandler<HTMLButtonElement>;
   onBuildingTypeChange: (event: SelectChangeEvent<string>) => void;
 }
 
@@ -69,12 +69,9 @@ export default function PropertyTypeFilterSection({
         <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
           <Button
             variant={category === "" ? "contained" : "outlined"}
-            onClick={() =>
-              onCategoryChange({
-                target: { value: "" },
-              } as SelectChangeEvent<string>)
-            }
+            onClick={onCategoryChange}
             size="small"
+            value=""
           >
             전체
           </Button>
@@ -82,12 +79,9 @@ export default function PropertyTypeFilterSection({
             <Button
               key={opt.value}
               variant={category === opt.value ? "contained" : "outlined"}
-              onClick={() =>
-                onCategoryChange({
-                  target: { value: opt.value },
-                } as SelectChangeEvent<string>)
-              }
+              onClick={onCategoryChange}
               size="small"
+              value={opt.value}
             >
               {opt.label}
             </Button>

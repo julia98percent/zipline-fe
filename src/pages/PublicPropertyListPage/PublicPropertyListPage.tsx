@@ -6,12 +6,7 @@ import { getPublicProperties } from "@apis/propertyService";
 import PublicPropertyListPageView from "./PublicPropertyListPageView";
 import { useUrlPagination } from "@hooks/useUrlPagination";
 import { useUrlFilters } from "@hooks/useUrlFilters";
-import {
-  FILTER_DEFAULTS_MIN,
-  FILTER_DEFAULTS,
-  MAX_PRICE_SLIDER_VALUE,
-  MAX_MONTHLY_RENT_SLIDER_VALUE,
-} from "@utils/filterUtil";
+import { FILTER_DEFAULTS } from "@utils/filterUtil";
 interface OutletContext {
   onMobileMenuToggle: () => void;
 }
@@ -50,34 +45,34 @@ const PublicPropertyListPage = () => {
       address: searchAddressQuery || undefined,
       minPrice: urlSearchParams.get("minPrice")
         ? parseInt(urlSearchParams.get("minPrice")!)
-        : FILTER_DEFAULTS_MIN,
+        : undefined,
       maxPrice: urlSearchParams.get("maxPrice")
         ? parseInt(urlSearchParams.get("maxPrice")!)
-        : MAX_PRICE_SLIDER_VALUE,
+        : undefined,
       minDeposit: urlSearchParams.get("minDeposit")
         ? parseInt(urlSearchParams.get("minDeposit")!)
-        : FILTER_DEFAULTS_MIN,
+        : undefined,
       maxDeposit: urlSearchParams.get("maxDeposit")
         ? parseInt(urlSearchParams.get("maxDeposit")!)
-        : MAX_PRICE_SLIDER_VALUE,
+        : undefined,
       minMonthlyRent: urlSearchParams.get("minMonthlyRent")
         ? parseInt(urlSearchParams.get("minMonthlyRent")!)
-        : FILTER_DEFAULTS_MIN,
+        : undefined,
       maxMonthlyRent: urlSearchParams.get("maxMonthlyRent")
         ? parseInt(urlSearchParams.get("maxMonthlyRent")!)
-        : MAX_MONTHLY_RENT_SLIDER_VALUE,
+        : undefined,
       minNetArea: urlSearchParams.get("minNetArea")
         ? parseInt(urlSearchParams.get("minNetArea")!)
-        : FILTER_DEFAULTS_MIN,
+        : undefined,
       maxNetArea: urlSearchParams.get("maxNetArea")
         ? parseInt(urlSearchParams.get("maxNetArea")!)
-        : FILTER_DEFAULTS.NET_AREA_MAX,
+        : undefined,
       minTotalArea: urlSearchParams.get("minTotalArea")
         ? parseInt(urlSearchParams.get("minTotalArea")!)
-        : FILTER_DEFAULTS_MIN,
+        : undefined,
       maxTotalArea: urlSearchParams.get("maxTotalArea")
         ? parseInt(urlSearchParams.get("maxTotalArea")!)
-        : FILTER_DEFAULTS.TOTAL_AREA_MAX,
+        : undefined,
       regionCode: urlSearchParams.get("regionCode") || undefined,
     }),
     [rowsPerPage, urlSearchParams, searchAddressQuery]
@@ -306,7 +301,7 @@ const PublicPropertyListPage = () => {
             ...searchParams,
             cursorId: null,
           };
-
+          console.log(params);
           const response = await getPublicProperties(params);
           const contentArray = Array.isArray(response.content)
             ? response.content

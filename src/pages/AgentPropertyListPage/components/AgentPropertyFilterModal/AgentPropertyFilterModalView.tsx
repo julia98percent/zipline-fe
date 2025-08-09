@@ -16,6 +16,7 @@ import {
   formatPrice,
   MAX_PRICE_SLIDER_VALUE,
   MAX_MONTHLY_RENT_SLIDER_VALUE,
+  AREA_STEP,
 } from "@utils/filterUtil";
 
 interface TypeOption {
@@ -292,9 +293,9 @@ const AgentPropertyFilterModalView = ({
               value={netAreaRange}
               onChange={(_, newValue) => setNetAreaRange(newValue as number[])}
               valueLabelDisplay="auto"
-              min={0}
+              min={FILTER_DEFAULTS_MIN}
               max={FILTER_DEFAULTS.NET_AREA_MAX}
-              step={5}
+              step={AREA_STEP}
               valueLabelFormat={(value) =>
                 value === FILTER_DEFAULTS.NET_AREA_MAX
                   ? `${value}m²~`
@@ -310,13 +311,11 @@ const AgentPropertyFilterModalView = ({
             </p>
             <Slider
               value={totalAreaRange}
-              onChange={(_, newValue) =>
-                setTotalAreaRange(newValue as number[])
-              }
+              onChange={(_, newValue) => setTotalAreaRange(newValue)}
               valueLabelDisplay="auto"
-              min={0}
+              min={FILTER_DEFAULTS_MIN}
               max={FILTER_DEFAULTS.TOTAL_AREA_MAX}
-              step={5}
+              step={AREA_STEP}
               valueLabelFormat={(value) =>
                 value === FILTER_DEFAULTS.TOTAL_AREA_MAX
                   ? `${value}m²~`

@@ -11,26 +11,22 @@ import {
 
 interface PriceRangeSectionProps {
   category: string;
-  minPrice?: number;
-  maxPrice?: number;
-  minDeposit?: number;
-  maxDeposit?: number;
-  minMonthlyRent?: number;
-  maxMonthlyRent?: number;
-  onSliderChange: (
-    field: string
-  ) => (_: Event, newValue: number | number[]) => void;
+  priceRange: number[];
+  depositRange: number[];
+  rentRange: number[];
+  handlePriceRangeChange: (newValue: number | number[]) => void;
+  handleDepositRangeChange: (newValue: number | number[]) => void;
+  handleRentRangeChange: (newValue: number | number[]) => void;
 }
 
 export default function PriceRangeSection({
   category,
-  minPrice,
-  maxPrice,
-  minDeposit,
-  maxDeposit,
-  minMonthlyRent,
-  maxMonthlyRent,
-  onSliderChange,
+  priceRange,
+  depositRange,
+  rentRange,
+  handlePriceRangeChange,
+  handleDepositRangeChange,
+  handleRentRangeChange,
 }: PriceRangeSectionProps) {
   const priceValueLabelFormat = (value: number) =>
     getPriceValueLabelFormat(value, FILTER_DEFAULTS.PRICE_MAX, "20억원~");
@@ -48,17 +44,17 @@ export default function PriceRangeSection({
         <Button
           variant="text"
           onClick={() => {
-            onSliderChange("Price")(null as any, [
+            handlePriceRangeChange([
               FILTER_DEFAULTS_MIN,
-              FILTER_DEFAULTS.PRICE_MAX,
+              MAX_PRICE_SLIDER_VALUE,
             ]);
-            onSliderChange("Deposit")(null as any, [
+            handleDepositRangeChange([
               FILTER_DEFAULTS_MIN,
-              FILTER_DEFAULTS.DEPOSIT_MAX,
+              MAX_PRICE_SLIDER_VALUE,
             ]);
-            onSliderChange("MonthlyRent")(null as any, [
+            handleRentRangeChange([
               FILTER_DEFAULTS_MIN,
-              FILTER_DEFAULTS.MONTHLY_RENT_MAX,
+              MAX_MONTHLY_RENT_SLIDER_VALUE,
             ]);
           }}
           className="p-0!"
@@ -71,18 +67,18 @@ export default function PriceRangeSection({
         {(category === "" || category === "SALE") && (
           <>
             <p className="text-sm mb-2 text-gray-600">
-              매매가: {formatPrice(minPrice || FILTER_DEFAULTS_MIN)} -{" "}
-              {(maxPrice || FILTER_DEFAULTS.PRICE_MAX) >
+              매매가: {formatPrice(priceRange[0] || FILTER_DEFAULTS_MIN)} -{" "}
+              {(priceRange[1] || FILTER_DEFAULTS.PRICE_MAX) >
               FILTER_DEFAULTS.PRICE_MAX
                 ? "20억원~"
-                : formatPrice(maxPrice || FILTER_DEFAULTS.PRICE_MAX)}
+                : formatPrice(priceRange[1] || FILTER_DEFAULTS.PRICE_MAX)}
             </p>
             <Slider
               value={[
-                minPrice || FILTER_DEFAULTS_MIN,
-                maxPrice || FILTER_DEFAULTS.PRICE_MAX,
+                priceRange[0] || FILTER_DEFAULTS_MIN,
+                priceRange[1] || FILTER_DEFAULTS.PRICE_MAX,
               ]}
-              onChange={onSliderChange("Price")}
+              onChange={(_, newValue) => handlePriceRangeChange(newValue)}
               valueLabelDisplay="auto"
               min={FILTER_DEFAULTS_MIN}
               max={MAX_PRICE_SLIDER_VALUE}
@@ -98,18 +94,18 @@ export default function PriceRangeSection({
           category === "MONTHLY") && (
           <>
             <p className="text-sm mb-2 text-gray-600">
-              보증금: {formatPrice(minDeposit || FILTER_DEFAULTS_MIN)} -{" "}
-              {(maxDeposit || FILTER_DEFAULTS.DEPOSIT_MAX) >
+              보증금: {formatPrice(depositRange[0] || FILTER_DEFAULTS_MIN)} -{" "}
+              {(depositRange[1] || FILTER_DEFAULTS.DEPOSIT_MAX) >
               FILTER_DEFAULTS.DEPOSIT_MAX
                 ? "20억원~"
-                : formatPrice(maxDeposit || FILTER_DEFAULTS.DEPOSIT_MAX)}
+                : formatPrice(depositRange[1] || FILTER_DEFAULTS.DEPOSIT_MAX)}
             </p>
             <Slider
               value={[
-                minDeposit || FILTER_DEFAULTS_MIN,
-                maxDeposit || FILTER_DEFAULTS.DEPOSIT_MAX,
+                depositRange[0] || FILTER_DEFAULTS_MIN,
+                depositRange[1] || FILTER_DEFAULTS.DEPOSIT_MAX,
               ]}
-              onChange={onSliderChange("Deposit")}
+              onChange={(_, newValue) => handleDepositRangeChange(newValue)}
               valueLabelDisplay="auto"
               step={1000}
               min={0}
@@ -124,20 +120,18 @@ export default function PriceRangeSection({
         {(category === "" || category === "MONTHLY") && (
           <>
             <p className="text-sm mb-2 text-gray-600">
-              월세: {formatPrice(minMonthlyRent || FILTER_DEFAULTS_MIN)} -{" "}
-              {(maxMonthlyRent || FILTER_DEFAULTS.MONTHLY_RENT_MAX) >
+              월세: {formatPrice(rentRange[0] || FILTER_DEFAULTS_MIN)} -{" "}
+              {(rentRange[1] || FILTER_DEFAULTS.MONTHLY_RENT_MAX) >
               FILTER_DEFAULTS.MONTHLY_RENT_MAX
                 ? "500만원~"
-                : formatPrice(
-                    maxMonthlyRent || FILTER_DEFAULTS.MONTHLY_RENT_MAX
-                  )}
+                : formatPrice(rentRange[1] || FILTER_DEFAULTS.MONTHLY_RENT_MAX)}
             </p>
             <Slider
               value={[
-                minMonthlyRent || FILTER_DEFAULTS_MIN,
-                maxMonthlyRent || FILTER_DEFAULTS.MONTHLY_RENT_MAX,
+                rentRange[0] || FILTER_DEFAULTS_MIN,
+                rentRange[1] || FILTER_DEFAULTS.MONTHLY_RENT_MAX,
               ]}
-              onChange={onSliderChange("MonthlyRent")}
+              onChange={(_, newValue) => handleRentRangeChange(newValue)}
               valueLabelDisplay="auto"
               min={0}
               max={MAX_MONTHLY_RENT_SLIDER_VALUE}

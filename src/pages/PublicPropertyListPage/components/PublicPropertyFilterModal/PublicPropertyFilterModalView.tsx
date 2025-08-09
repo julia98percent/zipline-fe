@@ -6,7 +6,6 @@ import {
   SelectChangeEvent,
 } from "@mui/material";
 import { RegionState } from "@ts/region";
-import { PublicPropertySearchParams } from "@ts/property";
 import RegionFilterSection from "./components/RegionFilterSection";
 import PropertyTypeFilterSection from "./components/PropertyTypeFilterSection";
 import PriceRangeSection from "./components/PriceRangeSection";
@@ -17,15 +16,24 @@ import TextField from "@components/TextField";
 interface PublicPropertyFilterModalViewProps {
   open: boolean;
   onClose: () => void;
-  localFilters: PublicPropertySearchParams;
+  netAreaRange: number[];
+  totalAreaRange: number[];
+  priceRange: number[];
+  depositRange: number[];
+  rentRange: number[];
+  selectedType: string;
+  buildingType: string;
+  buildingName: string;
   region: RegionState;
+  handlePriceRangeChange: (newValue: number | number[]) => void;
+  handleDepositRangeChange: (newValue: number | number[]) => void;
+  handleRentRangeChange: (newValue: number | number[]) => void;
+  handleNetAreaRangeChange: (newValue: number | number[]) => void;
+  handleTotalAreaRangeChange: (newValue: number | number[]) => void;
   onSidoChange: (event: SelectChangeEvent<number>) => void;
   onGuChange: (event: SelectChangeEvent<number>) => void;
   onDongChange: (event: SelectChangeEvent<number>) => void;
-  onSliderChange: (
-    field: string
-  ) => (_: Event, newValue: number | number[]) => void;
-  onCategoryChange: (event: SelectChangeEvent<string>) => void;
+  onCategoryChange: React.MouseEventHandler<HTMLButtonElement>;
   onBuildingTypeChange: (event: SelectChangeEvent<string>) => void;
   onBuildingNameChange: (event: React.ChangeEvent<HTMLInputElement>) => void;
   onTemporaryClear: () => void;
@@ -35,12 +43,23 @@ interface PublicPropertyFilterModalViewProps {
 export default function PublicPropertyFilterModalView({
   open,
   onClose,
-  localFilters,
   region,
+  netAreaRange,
+  totalAreaRange,
+  priceRange,
+  depositRange,
+  rentRange,
+  handlePriceRangeChange,
+  handleDepositRangeChange,
+  handleRentRangeChange,
+  handleNetAreaRangeChange,
+  handleTotalAreaRangeChange,
+  selectedType,
+  buildingType,
+  buildingName,
   onSidoChange,
   onGuChange,
   onDongChange,
-  onSliderChange,
   onCategoryChange,
   onBuildingTypeChange,
   onBuildingNameChange,
@@ -61,7 +80,7 @@ export default function PublicPropertyFilterModalView({
       </DialogTitle>
       <DialogContent className="flex flex-col gap-6 mx-4 p-8">
         <TextField
-          value={localFilters.buildingName || ""}
+          value={buildingName || ""}
           onChange={onBuildingNameChange}
           label="건물명"
           fullWidth
@@ -76,31 +95,28 @@ export default function PublicPropertyFilterModalView({
           />
 
           <PropertyTypeFilterSection
-            category={localFilters.category || ""}
-            buildingType={localFilters.buildingType || ""}
+            category={selectedType || ""}
+            buildingType={buildingType || ""}
             onCategoryChange={onCategoryChange}
             onBuildingTypeChange={onBuildingTypeChange}
           />
         </div>
 
         <PriceRangeSection
-          category={localFilters.category || ""}
-          minPrice={localFilters.minPrice}
-          maxPrice={localFilters.maxPrice}
-          minDeposit={localFilters.minDeposit}
-          maxDeposit={localFilters.maxDeposit}
-          minMonthlyRent={localFilters.minMonthlyRent}
-          maxMonthlyRent={localFilters.maxMonthlyRent}
-          onSliderChange={onSliderChange}
+          category={selectedType || ""}
+          priceRange={priceRange}
+          depositRange={depositRange}
+          rentRange={rentRange}
+          handlePriceRangeChange={handlePriceRangeChange}
+          handleDepositRangeChange={handleDepositRangeChange}
+          handleRentRangeChange={handleRentRangeChange}
         />
 
-        {/* Area Ranges */}
         <AreaRangeSection
-          minNetArea={localFilters.minNetArea}
-          maxNetArea={localFilters.maxNetArea}
-          minTotalArea={localFilters.minTotalArea}
-          maxTotalArea={localFilters.maxTotalArea}
-          onSliderChange={onSliderChange}
+          netAreaRange={netAreaRange}
+          totalAreaRange={totalAreaRange}
+          handleNetAreaRangeChange={handleNetAreaRangeChange}
+          handleTotalAreaRangeChange={handleTotalAreaRangeChange}
         />
       </DialogContent>
       <DialogActions className="flex items-center justify-end p-6 border-t border-gray-200">

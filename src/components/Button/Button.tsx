@@ -1,7 +1,7 @@
 import React from "react";
 import { Button as MuiButton } from "@mui/material";
 
-interface ButtonType {
+interface ButtonType<T = unknown> {
   className?: string;
   onClick?: React.MouseEventHandler<HTMLButtonElement>;
   disabled?: boolean;
@@ -26,6 +26,7 @@ interface ButtonType {
   download?: string;
   target?: string;
   rel?: string;
+  value?: T;
 }
 
 const Button = ({

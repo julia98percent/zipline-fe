@@ -6,40 +6,49 @@ import {
   FILTER_DEFAULTS_MIN,
 } from "@utils/filterUtil";
 interface AreaRangeSectionProps {
-  minNetArea: number;
-  maxNetArea: number;
-  minTotalArea: number;
-  maxTotalArea: number;
-  onSliderChange: (
-    field: string
-  ) => (_: Event, newValue: number | number[]) => void;
+  netAreaRange: number[];
+  totalAreaRange: number[];
+  handleNetAreaRangeChange: (newValue: number | number[]) => void;
+  handleTotalAreaRangeChange: (newValue: number | number[]) => void;
 }
 
 export default function AreaRangeSection({
-  minNetArea,
-  maxNetArea,
-  minTotalArea,
-  maxTotalArea,
-  onSliderChange,
+  netAreaRange,
+  totalAreaRange,
+  handleNetAreaRangeChange,
+  handleTotalAreaRangeChange,
 }: AreaRangeSectionProps) {
   return (
     <div>
       <div className="flex justify-between items-center mb-2">
         <h6 className="font-semibold">면적 범위</h6>
-        <Button variant="text" className="p-0!">
+        <Button
+          variant="text"
+          onClick={() => {
+            handleNetAreaRangeChange([
+              FILTER_DEFAULTS_MIN,
+              FILTER_DEFAULTS.NET_AREA_MAX,
+            ]);
+            handleTotalAreaRangeChange([
+              FILTER_DEFAULTS_MIN,
+              FILTER_DEFAULTS.TOTAL_AREA_MAX,
+            ]);
+          }}
+          className="p-0!"
+        >
           초기화
         </Button>
       </div>
       <div className="mx-4">
         <p className="text-sm mb-2 text-gray-600">
-          전용 면적: {minNetArea}m² -{" "}
-          {maxNetArea === FILTER_DEFAULTS.NET_AREA_MAX
-            ? `${maxNetArea}m²~`
-            : `${maxNetArea}m²`}
+          전용 면적: {netAreaRange[0]}m² -{" "}
+          {netAreaRange[1] === FILTER_DEFAULTS.NET_AREA_MAX
+            ? `${netAreaRange[1]}m²~`
+            : `${netAreaRange[1]}m²`}
         </p>
         <Slider
-          value={[minNetArea, maxNetArea]}
-          onChange={onSliderChange("NetArea")}
+          value={netAreaRange}
+          onChange={(_, newValue) => handleNetAreaRangeChange(newValue)}
           min={FILTER_DEFAULTS_MIN}
           max={FILTER_DEFAULTS.NET_AREA_MAX}
           step={AREA_STEP}
@@ -54,14 +63,14 @@ export default function AreaRangeSection({
 
       <div className="mx-4 mb-6">
         <p className="text-sm mb-2 text-gray-600">
-          공급 면적: {minTotalArea}m² -{" "}
-          {maxTotalArea === FILTER_DEFAULTS.TOTAL_AREA_MAX
-            ? `${maxTotalArea}m²~`
-            : `${maxTotalArea}m²`}
+          공급 면적: {totalAreaRange[0]}m² -{" "}
+          {totalAreaRange[1] === FILTER_DEFAULTS.TOTAL_AREA_MAX
+            ? `${totalAreaRange[1]}m²~`
+            : `${totalAreaRange[1]}m²`}
         </p>
         <Slider
-          value={[minTotalArea, maxTotalArea]}
-          onChange={onSliderChange("TotalArea")}
+          value={totalAreaRange}
+          onChange={(_, newValue) => handleTotalAreaRangeChange(newValue)}
           min={FILTER_DEFAULTS_MIN}
           max={FILTER_DEFAULTS.TOTAL_AREA_MAX}
           step={AREA_STEP}

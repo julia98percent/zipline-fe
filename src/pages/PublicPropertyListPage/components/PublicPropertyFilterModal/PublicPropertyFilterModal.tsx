@@ -9,6 +9,7 @@ import {
   MAX_PRICE_SLIDER_VALUE,
   MAX_MONTHLY_RENT_SLIDER_VALUE,
   FILTER_DEFAULTS,
+  PRICE_STEPS,
 } from "@utils/filterUtil";
 
 interface PublicPropertyFilterModalProps {
@@ -30,8 +31,47 @@ const PublicPropertyFilterModal = ({
   onApply,
   filters,
 }: PublicPropertyFilterModalProps) => {
-  const [localFilters, setLocalFilters] =
-    useState<PublicPropertySearchParams>(filters);
+  const [netAreaRange, setNetAreaRange] = useState<number[]>([
+    filters.minNetArea || FILTER_DEFAULTS_MIN,
+    filters.maxNetArea || FILTER_DEFAULTS.NET_AREA_MAX,
+  ]);
+
+  const [totalAreaRange, setTotalAreaRange] = useState<number[]>([
+    filters.minTotalArea || FILTER_DEFAULTS_MIN,
+    filters.maxTotalArea || FILTER_DEFAULTS.TOTAL_AREA_MAX,
+  ]);
+
+  const [priceRange, setPriceRange] = useState<number[]>([
+    filters.minPrice ? Math.round(filters.minPrice) : FILTER_DEFAULTS_MIN,
+    filters.maxPrice ? Math.round(filters.maxPrice) : MAX_PRICE_SLIDER_VALUE,
+  ]);
+
+  const [depositRange, setDepositRange] = useState<number[]>([
+    filters.minDeposit ? Math.round(filters.minDeposit) : FILTER_DEFAULTS_MIN,
+    filters.maxDeposit
+      ? Math.round(filters.maxDeposit)
+      : MAX_PRICE_SLIDER_VALUE,
+  ]);
+
+  const [rentRange, setRentRange] = useState<number[]>([
+    filters.minMonthlyRent
+      ? Math.round(filters.minMonthlyRent)
+      : FILTER_DEFAULTS_MIN,
+    filters.maxMonthlyRent
+      ? Math.round(filters.maxMonthlyRent)
+      : MAX_MONTHLY_RENT_SLIDER_VALUE,
+  ]);
+
+  const [selectedType, setSelectedType] = useState<string>(
+    filters.category || ""
+  );
+  const [buildingType, setBuildingType] = useState<string>(
+    filters.buildingType || ""
+  );
+  const [buildingName, setBuildingName] = useState<string>(
+    filters.buildingName || ""
+  );
+
   const [region, setRegion] = useState<RegionState>({
     sido: [],
     sigungu: [],
@@ -41,11 +81,82 @@ const PublicPropertyFilterModal = ({
     selectedDong: null,
   });
 
-  // Load initial region data when modal opens
+  const getPriceStep = ({
+    isMonthlyRent = false,
+    value,
+  }: {
+    isMonthlyRent?: boolean;
+    value: number;
+  }) => {
+    if (isMonthlyRent) {
+      if (value <= PRICE_STEPS.MONTHLY_RENT.LOW_THRESHOLD)
+        return PRICE_STEPS.MONTHLY_RENT.LOW_STEP;
+      return PRICE_STEPS.MONTHLY_RENT.HIGH_STEP;
+    }
+    if (value <= PRICE_STEPS.GENERAL.LEVEL1_THRESHOLD)
+      return PRICE_STEPS.GENERAL.LEVEL1_STEP;
+    if (value <= PRICE_STEPS.GENERAL.LEVEL2_THRESHOLD)
+      return PRICE_STEPS.GENERAL.LEVEL2_STEP;
+    if (value <= PRICE_STEPS.GENERAL.LEVEL3_THRESHOLD)
+      return PRICE_STEPS.GENERAL.LEVEL3_STEP;
+    return PRICE_STEPS.GENERAL.LEVEL4_STEP;
+  };
+
+  const handlePriceRangeChange = (newValue: number | number[]) => {
+    const range = Array.isArray(newValue) ? newValue : [newValue, newValue];
+    const [min, max] = range;
+    const minStep = getPriceStep({ value: min });
+    const maxStep = getPriceStep({ value: max });
+
+    const adjustedMin = Math.round(min / minStep) * minStep;
+    const adjustedMax = Math.round(max / maxStep) * maxStep;
+
+    setPriceRange([adjustedMin, adjustedMax]);
+  };
+
+  const handleDepositRangeChange = (newValue: number | number[]) => {
+    const range = Array.isArray(newValue) ? newValue : [newValue, newValue];
+    const [min, max] = range;
+    const minStep = getPriceStep({ value: min });
+    const maxStep = getPriceStep({ value: max });
+
+    const adjustedMin = Math.round(min / minStep) * minStep;
+    const adjustedMax = Math.round(max / maxStep) * maxStep;
+
+    setDepositRange([adjustedMin, adjustedMax]);
+  };
+
+  const handleRentRangeChange = (newValue: number | number[]) => {
+    const range = Array.isArray(newValue) ? newValue : [newValue, newValue];
+    const [min, max] = range;
+    const minStep = getPriceStep({ isMonthlyRent: true, value: min });
+    const maxStep = getPriceStep({ isMonthlyRent: true, value: max });
+
+    const adjustedMin = Math.round(min / minStep) * minStep;
+    const adjustedMax = Math.round(max / maxStep) * maxStep;
+
+    setRentRange([adjustedMin, adjustedMax]);
+  };
+
+  const handleNetAreaRangeChange = (newValue: number | number[]) => {
+    const range = Array.isArray(newValue) ? newValue : [newValue, newValue];
+    const [min, max] = range;
+
+    setNetAreaRange([min, max]);
+  };
+
+  const handleTotalAreaRangeChange = (newValue: number | number[]) => {
+    const range = Array.isArray(newValue) ? newValue : [newValue, newValue];
+    const [min, max] = range;
+
+    setTotalAreaRange([min, max]);
+  };
+
   const handleOpen = async () => {
     try {
       const sidoData = await fetchRegions(0);
       setRegion((prev) => ({ ...prev, sido: sidoData }));
+      console.log(sidoData);
     } catch (error) {
       console.error("Failed to fetch sido data:", error);
     }
@@ -53,10 +164,10 @@ const PublicPropertyFilterModal = ({
 
   useEffect(() => {
     if (open) {
-      const convertedFilters = {
-        ...filters,
-      };
-      setLocalFilters(convertedFilters);
+      // const convertedFilters = {
+      //   ...filters,
+      // };
+      // setLocalFilters(convertedFilters);
       handleOpen();
     }
   }, [open, filters]);
@@ -144,80 +255,41 @@ const PublicPropertyFilterModal = ({
     }
   };
 
-  const handleSliderChange =
-    (field: string) => (_: Event, newValue: number | number[]) => {
-      const [min, max] = newValue as number[];
-      setLocalFilters((prev) => ({
-        ...prev,
-        [`min${field}`]: min,
-        [`max${field}`]: max,
-      }));
-    };
-
   const handleCategoryChange = (event: SelectChangeEvent<string>) => {
-    const newCategory = event.target.value;
+    const newType = event.target.value;
 
-    setLocalFilters((prev) => {
-      const updatedFilters = {
-        ...prev,
-        category: newCategory,
-      };
+    setSelectedType(newType);
 
-      // 매물 유형이 바뀔 때 불필요한 가격 범위 초기화
-      if (newCategory === "SALE") {
-        // 매매일 때는 보증금, 월세 초기화
-        updatedFilters.minDeposit = undefined;
-        updatedFilters.maxDeposit = undefined;
-        updatedFilters.minMonthlyRent = undefined;
-        updatedFilters.maxMonthlyRent = undefined;
-      } else if (newCategory === "DEPOSIT") {
-        // 전세일 때는 매매가, 월세 초기화
-        updatedFilters.minPrice = undefined;
-        updatedFilters.maxPrice = undefined;
-        updatedFilters.minMonthlyRent = undefined;
-        updatedFilters.maxMonthlyRent = undefined;
-      } else if (newCategory === "MONTHLY") {
-        // 월세일 때는 매매가 초기화
-        updatedFilters.minPrice = undefined;
-        updatedFilters.maxPrice = undefined;
-      }
-
-      return updatedFilters;
-    });
+    if (newType === "SALE") {
+      setDepositRange([FILTER_DEFAULTS_MIN, FILTER_DEFAULTS.DEPOSIT_MAX]);
+      setRentRange([FILTER_DEFAULTS_MIN, MAX_MONTHLY_RENT_SLIDER_VALUE]);
+    } else if (newType === "DEPOSIT") {
+      setPriceRange([FILTER_DEFAULTS_MIN, MAX_PRICE_SLIDER_VALUE]);
+      setRentRange([FILTER_DEFAULTS_MIN, MAX_MONTHLY_RENT_SLIDER_VALUE]);
+    } else if (newType === "MONTHLY") {
+      setPriceRange([FILTER_DEFAULTS_MIN, MAX_PRICE_SLIDER_VALUE]);
+    }
   };
 
   const handleBuildingTypeChange = (event: SelectChangeEvent<string>) => {
-    setLocalFilters((prev) => ({
-      ...prev,
-      buildingType: event.target.value,
-    }));
+    setBuildingType(event.target.value);
   };
 
   const handleBuildingNameChange = (
     event: React.ChangeEvent<HTMLInputElement>
   ) => {
-    setLocalFilters((prev) => ({
-      ...prev,
-      buildingName: event.target.value,
-    }));
+    setBuildingName(event.target.value);
   };
 
   const handleTemporaryClear = () => {
-    setLocalFilters((prev) => ({
-      ...prev,
-      buildingType: "",
-      buildingName: "",
-      minPrice: FILTER_DEFAULTS_MIN,
-      maxPrice: MAX_PRICE_SLIDER_VALUE,
-      minDeposit: FILTER_DEFAULTS_MIN,
-      maxDeposit: MAX_PRICE_SLIDER_VALUE,
-      minMonthlyRent: FILTER_DEFAULTS_MIN,
-      maxMonthlyRent: MAX_MONTHLY_RENT_SLIDER_VALUE,
-      minNetArea: FILTER_DEFAULTS_MIN,
-      maxNetArea: FILTER_DEFAULTS.NET_AREA_MAX,
-      minTotalArea: FILTER_DEFAULTS_MIN,
-      maxTotalArea: FILTER_DEFAULTS.TOTAL_AREA_MAX,
-    }));
+    setBuildingName("");
+    setBuildingType("");
+    setSelectedType("");
+    setNetAreaRange([FILTER_DEFAULTS_MIN, FILTER_DEFAULTS.NET_AREA_MAX]);
+    setTotalAreaRange([FILTER_DEFAULTS_MIN, FILTER_DEFAULTS.TOTAL_AREA_MAX]);
+    setPriceRange([FILTER_DEFAULTS_MIN, MAX_PRICE_SLIDER_VALUE]);
+    setDepositRange([FILTER_DEFAULTS_MIN, MAX_PRICE_SLIDER_VALUE]);
+    setRentRange([FILTER_DEFAULTS_MIN, MAX_MONTHLY_RENT_SLIDER_VALUE]);
 
     setRegion((prev) => ({
       ...prev,
@@ -233,6 +305,8 @@ const PublicPropertyFilterModal = ({
   };
 
   const handleApply = () => {
+    const cleanedFilters: Partial<PublicPropertySearchParams> = {};
+
     let regionCode: string | undefined;
     if (region.selectedDong) {
       regionCode = String(region.selectedDong);
@@ -242,50 +316,57 @@ const PublicPropertyFilterModal = ({
       regionCode = String(region.selectedSido).slice(0, 2);
     }
 
-    const cleanedFilters = {
-      ...localFilters,
-      regionCode,
-      minPrice:
-        localFilters.minPrice === FILTER_DEFAULTS_MIN
-          ? undefined
-          : localFilters.minPrice,
-      maxPrice:
-        localFilters.maxPrice === MAX_PRICE_SLIDER_VALUE
-          ? undefined
-          : localFilters.maxPrice,
-      minDeposit:
-        localFilters.minDeposit === FILTER_DEFAULTS_MIN
-          ? undefined
-          : localFilters.minDeposit,
-      maxDeposit:
-        localFilters.maxDeposit === MAX_PRICE_SLIDER_VALUE
-          ? undefined
-          : localFilters.maxDeposit,
-      minMonthlyRent:
-        localFilters.minMonthlyRent === FILTER_DEFAULTS_MIN
-          ? undefined
-          : localFilters.minMonthlyRent,
-      maxMonthlyRent:
-        localFilters.maxMonthlyRent === MAX_MONTHLY_RENT_SLIDER_VALUE
-          ? undefined
-          : localFilters.maxMonthlyRent,
-      minNetArea:
-        localFilters.minNetArea === FILTER_DEFAULTS_MIN
-          ? undefined
-          : localFilters.minNetArea,
-      maxNetArea:
-        localFilters.maxNetArea === FILTER_DEFAULTS.NET_AREA_MAX
-          ? undefined
-          : localFilters.maxNetArea,
-      minTotalArea:
-        localFilters.minTotalArea === FILTER_DEFAULTS_MIN
-          ? undefined
-          : localFilters.minTotalArea,
-      maxTotalArea:
-        localFilters.maxTotalArea === FILTER_DEFAULTS.TOTAL_AREA_MAX
-          ? undefined
-          : localFilters.maxTotalArea,
-    };
+    if (regionCode) {
+      cleanedFilters.regionCode = regionCode;
+    }
+
+    if (buildingName) {
+      cleanedFilters.buildingName = buildingName;
+    }
+    if (buildingType) {
+      cleanedFilters.buildingType = buildingType;
+    }
+
+    if (
+      netAreaRange[0] > FILTER_DEFAULTS_MIN ||
+      netAreaRange[1] < FILTER_DEFAULTS.NET_AREA_MAX
+    ) {
+      cleanedFilters.minNetArea = netAreaRange[0];
+      cleanedFilters.maxNetArea = netAreaRange[1];
+    } else {
+      cleanedFilters.minNetArea = undefined;
+      cleanedFilters.maxNetArea = undefined;
+    }
+
+    if (
+      totalAreaRange[0] > FILTER_DEFAULTS_MIN ||
+      totalAreaRange[1] < FILTER_DEFAULTS.TOTAL_AREA_MAX
+    ) {
+      cleanedFilters.minTotalArea = totalAreaRange[0];
+      cleanedFilters.maxTotalArea = totalAreaRange[1];
+    } else {
+      cleanedFilters.minTotalArea = undefined;
+      cleanedFilters.maxTotalArea = undefined;
+    }
+
+    cleanedFilters.minPrice = priceRange[0] > 0 ? priceRange[0] : undefined;
+    cleanedFilters.maxPrice =
+      priceRange[1] > FILTER_DEFAULTS.PRICE_MAX ? undefined : priceRange[1];
+
+    cleanedFilters.minDeposit =
+      depositRange[0] > 0 ? depositRange[0] : undefined;
+    cleanedFilters.maxDeposit =
+      depositRange[1] > FILTER_DEFAULTS.DEPOSIT_MAX
+        ? undefined
+        : depositRange[1];
+
+    cleanedFilters.minMonthlyRent = rentRange[0] > 0 ? rentRange[0] : undefined;
+    cleanedFilters.maxMonthlyRent =
+      rentRange[1] > FILTER_DEFAULTS.MONTHLY_RENT_MAX
+        ? undefined
+        : rentRange[1];
+
+    cleanedFilters.category = selectedType || undefined;
 
     onApply(cleanedFilters);
     onClose();
@@ -295,12 +376,23 @@ const PublicPropertyFilterModal = ({
     <PublicPropertyFilterModalView
       open={open}
       onClose={onClose}
-      localFilters={localFilters}
+      netAreaRange={netAreaRange}
+      totalAreaRange={totalAreaRange}
+      priceRange={priceRange}
+      depositRange={depositRange}
+      rentRange={rentRange}
+      handlePriceRangeChange={handlePriceRangeChange}
+      handleDepositRangeChange={handleDepositRangeChange}
+      handleRentRangeChange={handleRentRangeChange}
+      handleNetAreaRangeChange={handleNetAreaRangeChange}
+      handleTotalAreaRangeChange={handleTotalAreaRangeChange}
+      selectedType={selectedType}
+      buildingType={buildingType}
+      buildingName={buildingName}
       region={region}
       onSidoChange={handleSidoChange}
       onGuChange={handleGuChange}
       onDongChange={handleDongChange}
-      onSliderChange={handleSliderChange}
       onCategoryChange={handleCategoryChange}
       onBuildingTypeChange={handleBuildingTypeChange}
       onBuildingNameChange={handleBuildingNameChange}

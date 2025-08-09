@@ -35,7 +35,7 @@ interface MenuItem {
 const MENU_INFO: MenuItem[] = [
   {
     name: "매물",
-    key: "agent-properties",
+    key: "properties",
     submenu: [
       { name: "개인 매물", to: "/properties/agent" },
       { name: "공개 매물", to: "/properties/public" },

@@ -1,24 +1,34 @@
-import { useState, useEffect, useMemo, useCallback } from "react";
+import { useState, useEffect, useMemo, useCallback, useRef } from "react";
 import { useOutletContext } from "react-router-dom";
 import RefreshIcon from "@mui/icons-material/Refresh";
 import PageHeader from "@components/PageHeader/PageHeader";
 import Button from "@components/Button";
-import { useUrlPagination } from "@hooks/useUrlPagination";
 import dayjs, { Dayjs } from "dayjs";
 import MessageDetailModal from "./MessageDetailModal";
-import MessageHistoryCard from "./MessageHistoryCard";
 import { MessageHistory } from "@ts/message";
 import { fetchMessages } from "@apis/messageService";
 import DatePicker from "@components/DatePicker";
 import { useUrlFilters } from "@hooks/useUrlFilters";
+import MessageHistoryList from "./MessageHistoryList";
 
 interface OutletContext {
   onMobileMenuToggle: () => void;
 }
 
+interface TableRowData {
+  id: string;
+  dateCreated: string;
+  status: string;
+  dateCompleted: string;
+}
+
+export type MessageHistoryData = Pick<
+  MessageHistory,
+  "dateCreated" | "status" | "dateCompleted"
+>;
+
 const MessageHistoryPage = () => {
   const { onMobileMenuToggle } = useOutletContext<OutletContext>();
-  const { rowsPerPage } = useUrlPagination();
   const { getParam, setParam, clearAllFilters, searchParams } = useUrlFilters();
 
   const startDate = useMemo(() => {
@@ -35,14 +45,13 @@ const MessageHistoryPage = () => {
     useState<MessageHistory | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [detailModalOpen, setDetailModalOpen] = useState(false);
+  const [hasMore, setHasMore] = useState(true);
+  const [cursorId, setCursorId] = useState<string | null>(null);
 
-  const handleCardClick = (groupId: string) => {
-    const originalMessage = messages.find((msg) => msg.groupId === groupId);
-    if (originalMessage) {
-      setSelectedMessageHistory(originalMessage);
-      setDetailModalOpen(true);
-    }
-  };
+  const prevSearchParamsRef = useRef<{
+    startDate?: string | null;
+    endDate?: string | null;
+  } | null>(null);
 
   const handleStartDateChange = useCallback(
     (newStartDate: Dayjs | null) => {
@@ -63,20 +72,118 @@ const MessageHistoryPage = () => {
 
   const handleModalClose = () => setDetailModalOpen(false);
 
-  const fetchData = async () => {
-    setIsLoading(true);
-    const messageArray = await fetchMessages();
-    setMessages(messageArray);
-    setIsLoading(false);
+  const handleRowClick = (rowData: TableRowData) => {
+    const originalMessage = messages.find((msg) => msg.groupId === rowData.id);
+    if (originalMessage) {
+      setSelectedMessageHistory(originalMessage);
+      setDetailModalOpen(true);
+    }
   };
+
+  const handleCardClick = (groupId: string) => {
+    const originalMessage = messages.find((msg) => msg.groupId === groupId);
+    if (originalMessage) {
+      setSelectedMessageHistory(originalMessage);
+      setDetailModalOpen(true);
+    }
+  };
+
+  const fetchData = useCallback(
+    async (isLoadMore = false) => {
+      if (isLoading && !isLoadMore) return;
+
+      setIsLoading(true);
+
+      if (!isLoadMore) {
+        setMessages([]);
+        setCursorId(null);
+      }
+
+      try {
+        const params = {
+          startDate: getParam("startDate"),
+          endDate: getParam("endDate"),
+          startKey: isLoadMore ? cursorId : null,
+        };
+        console.log(params);
+        const data = await fetchMessages(params);
+        const content = Object.values(data.groupList);
+        if (isLoadMore) {
+          setMessages((prev) => [...prev, ...content]);
+        } else {
+          setMessages(content);
+        }
+
+        setCursorId(data.nextKey);
+        setHasMore(data.nextKey !== null);
+      } catch (error) {
+        if (!isLoadMore) {
+          setMessages([]);
+          setHasMore(false);
+        }
+        console.error("Failed to fetch message history:", error);
+      } finally {
+        setIsLoading(false);
+      }
+    },
+    [searchParams, cursorId, isLoading, getParam]
+  );
+
+  const handleLoadMore = useCallback(() => {
+    if (hasMore && !isLoading) {
+      fetchData(true);
+    }
+  }, [hasMore, isLoading, fetchData]);
+
+  useEffect(() => {
+    const searchParamsObj = {
+      startDate: getParam("startDate"),
+      endDate: getParam("endDate"),
+    };
+
+    const hasSearchParamsChanged =
+      !prevSearchParamsRef.current ||
+      JSON.stringify(prevSearchParamsRef.current) !==
+        JSON.stringify(searchParamsObj);
+
+    if (hasSearchParamsChanged) {
+      prevSearchParamsRef.current = searchParamsObj;
+
+      const fetchData = async () => {
+        if (isLoading) return;
+
+        setIsLoading(true);
+        setMessages([]);
+        setCursorId(null);
+
+        try {
+          const params = {
+            startDate: getParam("startDate"),
+            endDate: getParam("endDate"),
+            startKey: null,
+          };
+
+          const data = await fetchMessages(params);
+
+          setMessages(Object.values(data.groupList));
+          setCursorId(data.nextKey);
+          setHasMore(data.nextKey !== null);
+        } catch (error) {
+          setMessages([]);
+          setHasMore(false);
+          console.error("Failed to fetch properties:", error);
+        } finally {
+          setIsLoading(false);
+        }
+      };
+
+      fetchData();
+    }
+  }, [searchParams, isLoading, getParam]);
 
   const handleRefresh = () => {
     fetchData();
   };
-
-  useEffect(() => {
-    fetchData();
-  }, []);
 
   return (
     <div className="grow bg-gray-100 min-h-screen">
@@ -127,56 +234,29 @@ const MessageHistoryPage = () => {
           </div>
         </div>
 
-        {/* Desktop view - 768px and above */}
-        <Box className="hidden lg:block">
-          <Paper className="w-full rounded-lg shadow-none">
-            <Table
-              isLoading={isLoading}
-              columns={columns}
-              bodyList={messages.map((message) => ({
-                id: message.groupId,
-                dateCreated: formatDate(message.dateCreated),
-                status: message.status,
-                dateCompleted: message.dateCompleted
-                  ? formatDate(message.dateCompleted)
-                  : "-",
-              }))}
-              handleRowClick={handleRowClick}
-              totalElements={totalElements}
-              page={page}
-              handleChangePage={handleChangePage}
-              rowsPerPage={rowsPerPage}
-              handleChangeRowsPerPage={handleChangeRowsPerPage}
-            />
-          </Paper>
-        </Box>
-
-        {/* Mobile view - below 768px */}
-        <div className="block lg:hidden">
+        <div>
           {messages.length === 0 ? (
             <div className="text-center py-8 text-gray-500">
               문자 발송 내역이 없습니다.
             </div>
           ) : (
-            <>
-              <div className="space-y-4">
-                {messages.map((message) => (
-                  <MessageHistoryCard
-                    key={message.groupId}
-                    message={message}
-                    onRowClick={handleCardClick}
-                  />
-                ))}
-              </div>
-            </>
+            <MessageHistoryList
+              messageList={messages}
+              hasMore={hasMore}
+              isLoading={isLoading}
+              loadMore={handleLoadMore}
+              handleRowClick={handleRowClick}
+              handleCardClick={handleCardClick}
+            />
           )}
         </div>
+
+        <MessageDetailModal
+          open={detailModalOpen}
+          onClose={handleModalClose}
+          messageHistory={selectedMessageHistory}
+        />
       </div>
-      <MessageDetailModal
-        open={detailModalOpen}
-        onClose={handleModalClose}
-        messageHistory={selectedMessageHistory}
-      />
     </div>
   );
 };

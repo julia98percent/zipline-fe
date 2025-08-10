@@ -281,9 +281,11 @@ const ScheduleDetailModalView = ({
               <Button onClick={onClose} color="info" variant="outlined">
                 닫기
               </Button>
-              <Button onClick={onEdit} color="primary" variant="outlined">
-                수정
-              </Button>
+              {onCancel && (
+                <Button onClick={onEdit} color="primary" variant="outlined">
+                  수정
+                </Button>
+              )}
             </>
           )}
         </div>

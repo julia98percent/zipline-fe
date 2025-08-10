@@ -30,7 +30,7 @@ const ContractBasicInfoEditModal = ({
   const [category, setCategory] = useState<ContractCategoryType | null>(null);
   const [status, setStatus] = useState<string>("");
   const [contractStartDate, setContractStartDate] = useState<string>("");
-  const [contractDate, setContractDate] = useState<string | null>(null);
+  const [contractDate, setContractDate] = useState<string>("");
   const [contractEndDate, setContractEndDate] = useState<string>("");
   const [expectedContractEndDate, setExpectedContractEndDate] =
     useState<string>("");

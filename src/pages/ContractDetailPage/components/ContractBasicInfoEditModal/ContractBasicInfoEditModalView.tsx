@@ -18,7 +18,7 @@ import {
 import { CONTRACT_STATUS_OPTION_LIST } from "@constants/contract";
 import { AgentPropertyResponse, CustomerResponse } from "@apis/contractService";
 import Button from "@components/Button";
-import dayjs, { Dayjs } from "dayjs";
+import dayjs from "dayjs";
 import DatePicker from "@components/DatePicker";
 import { NumericInputResponse } from "@hooks/useNumericInput";
 import { formatKoreanPrice } from "@utils/numberUtil";
@@ -29,10 +29,10 @@ interface ContractBasicInfoEditModalViewProps {
   isLoading: boolean;
   category: ContractCategoryType | null;
   status: string;
-  contractStartDate: Dayjs;
-  contractDate: Dayjs | null;
-  contractEndDate: Dayjs;
-  expectedContractEndDate: Dayjs | null;
+  contractStartDate: string;
+  contractDate: string | null;
+  contractEndDate: string;
+  expectedContractEndDate: string | null;
   priceInput: NumericInputResponse;
   monthlyRentInput: NumericInputResponse;
   depositInput: NumericInputResponse;
@@ -44,10 +44,10 @@ interface ContractBasicInfoEditModalViewProps {
   customerOptions: CustomerResponse[];
   onCategoryChange: (value: ContractCategoryType) => void;
   onStatusChange: (value: string) => void;
-  onContractStartDateChange: (value: Dayjs | null) => void;
-  onContractDateChange: (value: Dayjs | null) => void;
-  onContractEndDateChange: (value: Dayjs | null) => void;
-  onExpectedContractEndDateChange: (value: Dayjs | null) => void;
+  onContractStartDateChange: (value: string) => void;
+  onContractDateChange: (value: string) => void;
+  onContractEndDateChange: (value: string) => void;
+  onExpectedContractEndDateChange: (value: string) => void;
   onOtherChange: (value: string) => void;
   onSelectedLessorsChange: (value: CustomerResponse[]) => void;
   onSelectedLesseesChange: (value: CustomerResponse[]) => void;
@@ -163,19 +163,31 @@ const ContractBasicInfoEditModalView = ({
             <DatePicker
               label="계약 시작일"
               value={contractStartDate ? dayjs(contractStartDate) : null}
-              onChange={onContractStartDateChange}
+              onChange={(newValue) =>
+                onContractStartDateChange(
+                  newValue ? newValue.format("YYYY-MM-DD") : ""
+                )
+              }
             />
 
             <DatePicker
               label="계약 종료일"
               value={contractEndDate ? dayjs(contractEndDate) : null}
-              onChange={onContractEndDateChange}
+              onChange={(newValue) =>
+                onContractEndDateChange(
+                  newValue ? newValue.format("YYYY-MM-DD") : ""
+                )
+              }
             />
 
             <DatePicker
               label="계약일"
               value={contractDate ? dayjs(contractDate) : null}
-              onChange={onContractDateChange}
+              onChange={(newValue) =>
+                onContractDateChange(
+                  newValue ? newValue.format("YYYY-MM-DD") : ""
+                )
+              }
             />
           </div>
 
@@ -185,7 +197,11 @@ const ContractBasicInfoEditModalView = ({
               value={
                 expectedContractEndDate ? dayjs(expectedContractEndDate) : null
               }
-              onChange={onExpectedContractEndDateChange}
+              onChange={(newValue) =>
+                onExpectedContractEndDateChange(
+                  newValue ? newValue.format("YYYY-MM-DD") : ""
+                )
+              }
             />
           )}
 

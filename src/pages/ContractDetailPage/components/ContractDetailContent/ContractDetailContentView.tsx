@@ -130,6 +130,15 @@ const ContractDetailContentView = ({
     );
   };
 
+  const downloadFile = (fileUrl: string, fileName: string): void => {
+    const link = document.createElement("a");
+    link.href = fileUrl;
+    link.download = fileName;
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  };
+
   const renderStatusChip = () => {
     return (
       <Chip
@@ -251,12 +260,14 @@ const ContractDetailContentView = ({
                     </Typography>
                     <Button
                       download={doc.fileName}
-                      target="_blank"
                       rel="noopener"
                       variant="outlined"
                       size="small"
+                      onClick={() => {
+                        downloadFile(doc.fileUrl, doc.fileName);
+                      }}
                     >
-                      <a href={doc.fileUrl}>다운로드</a>
+                      다운로드
                     </Button>
                   </Box>
                 ))}

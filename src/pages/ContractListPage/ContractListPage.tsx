@@ -2,7 +2,6 @@ import { useEffect, useState, useCallback } from "react";
 import { useNavigate, useOutletContext } from "react-router-dom";
 import { searchContracts } from "@apis/contractService";
 import { Contract, ContractCategory } from "@ts/contract";
-import { CONTRACT_STATUS_OPTION_LIST } from "@constants/contract";
 import ContractListPageView from "./ContractListPageView";
 import { useUrlPagination } from "@hooks/useUrlPagination";
 import { useUrlFilters } from "@hooks/useUrlFilters";
@@ -166,7 +165,6 @@ function ContractListPage() {
       page={page}
       rowsPerPage={rowsPerPage}
       totalElements={totalElements}
-      CONTRACT_STATUS_OPTION_LIST={CONTRACT_STATUS_OPTION_LIST}
       periodMapping={periodMapping}
       sortOptions={sortOptions}
       onSortChange={handleSortChange}

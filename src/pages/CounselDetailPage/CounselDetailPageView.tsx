@@ -12,6 +12,7 @@ import {
   CounselActionButtons,
 } from "./components";
 import DeleteConfirmModal from "@components/DeleteConfirm/DeleteConfirmModal";
+import { Dayjs } from "dayjs";
 
 interface CounselDetailPageViewProps {
   counselData: Counsel | null;
@@ -24,7 +25,10 @@ interface CounselDetailPageViewProps {
   onEdit: () => void;
   onCancelEdit: () => void;
   onSave: () => void;
-  onInputChange: (field: keyof Counsel, value: string | boolean) => void;
+  onInputChange: (
+    field: keyof Counsel,
+    value: string | boolean | Dayjs | null
+  ) => void;
   onDetailChange: (value: string) => void;
   onDeleteClick: () => void;
   onDeleteCancel: () => void;

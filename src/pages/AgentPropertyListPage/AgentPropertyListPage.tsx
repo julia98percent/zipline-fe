@@ -165,7 +165,7 @@ function AgentPropertyListPage() {
   }, []);
 
   const handleSidoChange = useCallback(
-    async (e: SelectChangeEvent) => {
+    async (e: SelectChangeEvent<number>) => {
       const newSido = String(e.target.value);
       await loadSigunguOptions(newSido);
       setDongOptions([]);
@@ -181,7 +181,7 @@ function AgentPropertyListPage() {
   );
 
   const handleGuChange = useCallback(
-    async (e: SelectChangeEvent) => {
+    async (e: SelectChangeEvent<number>) => {
       const newGu = String(e.target.value);
       await loadDongOptions(newGu);
 
@@ -199,7 +199,7 @@ function AgentPropertyListPage() {
   );
 
   const handleDongChange = useCallback(
-    async (e: SelectChangeEvent) => {
+    async (e: SelectChangeEvent<number>) => {
       const newDong = String(e.target.value);
 
       setParams({
@@ -221,15 +221,6 @@ function AgentPropertyListPage() {
       const value =
         (e.target.value as string) === "" ? null : (e.target.value as string);
       setParam("category", value || "");
-    },
-    [setParam]
-  );
-
-  const handleTypeChange = useCallback(
-    (e: SelectChangeEvent<unknown>) => {
-      const value =
-        (e.target.value as string) === "" ? null : (e.target.value as string);
-      setParam("type", value || "");
     },
     [setParam]
   );
@@ -337,7 +328,6 @@ function AgentPropertyListPage() {
       onGuChange={handleGuChange}
       onDongChange={handleDongChange}
       onCategoryChange={handleCategoryChange}
-      onTypeChange={handleTypeChange}
       onFilterApply={handleFilterApply}
       onPageChange={handlePageChange}
       onRowsPerPageChange={handleRowsPerPageChange}

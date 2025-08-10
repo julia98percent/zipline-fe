@@ -18,6 +18,7 @@ import LabelFilters from "./LabelFilters";
 import Button from "@components/Button";
 import { useNumericInput } from "@hooks/useNumericInput";
 import { MAX_PROPERTY_PRICE } from "@constants/property";
+import { padRegionCode } from "@utils/regionUtil";
 
 interface CustomerFilterModalProps {
   open: boolean;
@@ -122,24 +123,13 @@ const CustomerFilterModal = ({
     }
   }, [open, fetchLabelsData, handleOpen, labels.length]);
 
-  const padRegionCode = (regionCode: string): string => {
-    if (regionCode.length === 2) {
-      return regionCode + "00000000"; // 시도: 12 -> 1200000000
-    } else if (regionCode.length === 5) {
-      return regionCode + "00000"; // 시군구: 12345 -> 1234500000
-    } else if (regionCode.length === 8) {
-      return regionCode + "00"; // 동: 12345678 -> 1234567800
-    }
-    return regionCode;
-  };
-
   useEffect(() => {
     if (open) {
       setFiltersTemp({ ...filters });
 
       if (filters.preferredRegion) {
         const paddedRegionCode = padRegionCode(filters.preferredRegion);
-        const parsedRegion = parseRegionCode(paddedRegionCode);
+        const parsedRegion = parseRegionCode(String(paddedRegionCode));
         setRegion((prev) => ({
           ...prev,
           selectedSido: parsedRegion.sidoCode || null,

@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { SelectChangeEvent } from "@mui/material";
-import { RegionState } from "@ts/region";
+import { Region, RegionState } from "@ts/region";
 import { fetchRegions } from "@apis/regionService";
 import { PublicPropertySearchParams } from "@ts/property";
 import PublicPropertyFilterModalView from "./PublicPropertyFilterModalView";
@@ -11,6 +11,7 @@ import {
   FILTER_DEFAULTS,
   PRICE_STEPS,
 } from "@utils/filterUtil";
+import { padRegionCode, parseRegionCode } from "@utils/regionUtil";
 
 interface PublicPropertyFilterModalProps {
   open: boolean;
@@ -71,14 +72,25 @@ const PublicPropertyFilterModal = ({
   const [buildingName, setBuildingName] = useState<string>(
     filters.buildingName || ""
   );
-
+  const regionCodeForSelect = filters.regionCode
+    ? padRegionCode(filters.regionCode)
+    : "";
   const [region, setRegion] = useState<RegionState>({
     sido: [],
     sigungu: [],
     dong: [],
-    selectedSido: null,
-    selectedSigungu: null,
-    selectedDong: null,
+    selectedSido:
+      (filters.regionCode &&
+        parseRegionCode(String(regionCodeForSelect)).sidoCode) ||
+      null,
+    selectedSigungu:
+      (filters.regionCode &&
+        parseRegionCode(String(regionCodeForSelect)).sigunguCode) ||
+      null,
+    selectedDong:
+      (filters.regionCode &&
+        parseRegionCode(String(regionCodeForSelect)).dongCode) ||
+      null,
   });
 
   const getPriceStep = ({
@@ -156,8 +168,32 @@ const PublicPropertyFilterModal = ({
     try {
       const sidoData = await fetchRegions(0);
       setRegion((prev) => ({ ...prev, sido: sidoData }));
+
+      if (filters.regionCode) {
+        const { sidoCode, sigunguCode, dongCode } = parseRegionCode(
+          filters.regionCode
+        );
+
+        if (sidoCode) {
+          const sigunguData = await fetchRegions(sidoCode);
+
+          let dongData: Region[] = [];
+          if (sigunguCode) {
+            dongData = await fetchRegions(sigunguCode);
+          }
+
+          setRegion((prev) => ({
+            ...prev,
+            selectedSido: sidoCode,
+            selectedSigungu: sigunguCode || null,
+            selectedDong: dongCode || null,
+            sigungu: sigunguData,
+            dong: dongData,
+          }));
+        }
+      }
     } catch (error) {
-      console.error("Failed to fetch sido data:", error);
+      console.error("Failed to fetch region data:", error);
     }
   };
 
@@ -165,7 +201,7 @@ const PublicPropertyFilterModal = ({
     if (open) {
       handleOpen();
     }
-  }, [open, filters]);
+  }, [open]);
 
   useEffect(() => {
     if (!region.selectedSido) return;
@@ -207,9 +243,9 @@ const PublicPropertyFilterModal = ({
     loadDong();
   }, [region.selectedSigungu]);
 
-  const handleSidoChange = (event: SelectChangeEvent<string>) => {
+  const handleSidoChange = (event: SelectChangeEvent<number>) => {
     const selectedRegion = region.sido.find(
-      (item) => String(item.cortarNo) === event.target.value
+      (item) => item.cortarNo === event.target.value
     );
     if (selectedRegion) {
       setRegion((prev) => ({
@@ -223,9 +259,9 @@ const PublicPropertyFilterModal = ({
     }
   };
 
-  const handleGuChange = (event: SelectChangeEvent<string>) => {
+  const handleGuChange = (event: SelectChangeEvent<number>) => {
     const selectedRegion = region.sigungu.find(
-      (item) => String(item.cortarNo) === event.target.value
+      (item) => item.cortarNo === event.target.value
     );
     if (selectedRegion) {
       setRegion((prev) => ({
@@ -237,9 +273,9 @@ const PublicPropertyFilterModal = ({
     }
   };
 
-  const handleDongChange = (event: SelectChangeEvent<string>) => {
+  const handleDongChange = (event: SelectChangeEvent<number>) => {
     const selectedRegion = region.dong.find(
-      (item) => String(item.cortarNo) == event.target.value
+      (item) => item.cortarNo == event.target.value
     );
     if (selectedRegion) {
       setRegion((prev) => ({
@@ -249,8 +285,10 @@ const PublicPropertyFilterModal = ({
     }
   };
 
-  const handleCategoryChange = (event: SelectChangeEvent<string>) => {
-    const newType = event.target.value;
+  const handleCategoryChange: React.MouseEventHandler<HTMLButtonElement> = (
+    event
+  ) => {
+    const newType = event.currentTarget.value;
 
     setSelectedType(newType);
 
@@ -291,11 +329,6 @@ const PublicPropertyFilterModal = ({
       selectedSigungu: null,
       selectedDong: null,
     }));
-  };
-
-  const handleReset = () => {
-    handleTemporaryClear();
-    onApply({});
   };
 
   const handleApply = () => {
@@ -390,7 +423,6 @@ const PublicPropertyFilterModal = ({
       onCategoryChange={handleCategoryChange}
       onBuildingTypeChange={handleBuildingTypeChange}
       onBuildingNameChange={handleBuildingNameChange}
-      onReset={handleReset}
       onTemporaryClear={handleTemporaryClear}
       onApply={handleApply}
     />

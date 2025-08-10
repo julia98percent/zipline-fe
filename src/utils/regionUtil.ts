@@ -51,3 +51,14 @@ export const getParentRegionCode = (regionCode: string): string | null => {
 
   return null;
 };
+
+export const padRegionCode = (regionCode: string): number => {
+  if (regionCode.length === 2) {
+    return parseInt(regionCode + "00000000", 10); // 시도: 12 -> 1200000000
+  } else if (regionCode.length === 5) {
+    return parseInt(regionCode + "00000", 10); // 시군구: 12345 -> 1234500000
+  } else if (regionCode.length === 8) {
+    return parseInt(regionCode + "00", 10); // 동: 12345678 -> 1234567800
+  }
+  return parseInt(regionCode, 10);
+};

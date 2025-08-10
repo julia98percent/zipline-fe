@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { useNavigate, useParams, useOutletContext } from "react-router-dom";
-import dayjs from "dayjs";
+import dayjs, { Dayjs } from "dayjs";
 import { showToast } from "@components/Toast";
 import CounselDetailPageView from "./CounselDetailPageView";
 import { Counsel, CounselCategory } from "@ts/counsel";
@@ -88,7 +88,10 @@ function CounselDetailPage() {
     }
   };
 
-  const handleInputChange = (field: keyof Counsel, value: string | boolean) => {
+  const handleInputChange = (
+    field: keyof Counsel,
+    value: string | Dayjs | boolean | null
+  ) => {
     if (!editedData) return;
     setEditedData({ ...editedData, [field]: value });
   };

@@ -1,7 +1,7 @@
 import React from "react";
 import { Button as MuiButton } from "@mui/material";
 
-interface ButtonType<T = unknown> {
+interface ButtonType<T = string> {
   className?: string;
   onClick?: React.MouseEventHandler<HTMLButtonElement>;
   disabled?: boolean;
@@ -42,9 +42,8 @@ const Button = ({
   startIcon,
   endIcon,
   fullWidth,
-  download,
-  target,
   rel,
+  value,
   ...props
 }: ButtonType) => {
   const classNameWithVariant =
@@ -54,6 +53,7 @@ const Button = ({
   return (
     <MuiButton
       id={id}
+      value={value}
       disabled={disabled}
       className={`${classNameWithVariant} shadow-none hover:shadow-none h-[40px] px-4 py-2 rounded whitespace-nowrap ${className}`}
       onClick={onClick}
@@ -64,9 +64,7 @@ const Button = ({
       startIcon={startIcon}
       endIcon={endIcon}
       fullWidth={fullWidth}
-      target={target}
       rel={rel}
-      download={download}
       {...props}
     >
       {children}

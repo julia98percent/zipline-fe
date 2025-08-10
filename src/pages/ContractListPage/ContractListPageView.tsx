@@ -1,7 +1,7 @@
 import ContractTable from "./ContractTable";
 import ContractFilterModal from "./ContractFilterModal";
 import PageHeader from "@components/PageHeader/PageHeader";
-import Select from "@components/Select";
+import Select, { StringSelect } from "@components/Select";
 import ContractAddModal from "./ContractAddModal";
 import Button from "@components/Button";
 import AddIcon from "@mui/icons-material/Add";
@@ -12,6 +12,7 @@ import {
   IconButton,
 } from "@mui/material";
 import { Contract } from "@ts/contract";
+import { CONTRACT_STATUS_OPTION_LIST } from "@constants/contract";
 
 interface ContractListPageViewProps {
   contractList: Contract[];
@@ -24,7 +25,6 @@ interface ContractListPageViewProps {
   page: number;
   rowsPerPage: number;
   totalElements: number;
-  CONTRACT_STATUS_OPTION_LIST: Array<{ value: string; label: string }>;
   periodMapping: Record<string, string>;
   sortOptions: Array<{ value: string; label: string }>;
   onSortChange: (value: string) => void;
@@ -55,7 +55,6 @@ const ContractListPageView = ({
   page,
   rowsPerPage,
   totalElements,
-  CONTRACT_STATUS_OPTION_LIST,
   periodMapping,
   sortOptions,
   onSortChange,
@@ -116,7 +115,7 @@ const ContractListPageView = ({
 
           <div className="flex justify-between items-start flex-wrap gap-3">
             <div className="flex items-center gap-3">
-              <Select
+              <StringSelect
                 label="상태 선택"
                 value={selectedStatus}
                 onChange={(e) => onStatusChange(e.target.value)}

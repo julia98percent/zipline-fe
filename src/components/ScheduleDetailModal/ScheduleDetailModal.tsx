@@ -1,13 +1,13 @@
-import { Schedule, ScheduleRequest } from "@ts/schedule";
+import { Schedule } from "@ts/schedule";
 import { useScheduleDetailModal } from "./useScheduleDetailModal";
 import ScheduleDetailModalView from "./ScheduleDetailModalView";
 
 interface ScheduleDetailModalProps {
   open: boolean;
   onClose: () => void;
-  onCancel: () => void;
+  onCancel?: () => void;
   schedule: Schedule | null;
-  onSave: (schedule: ScheduleRequest) => void;
+  onSave: (schedule: Schedule) => void;
   onEdit?: () => void;
   isUpdating?: boolean;
   isEditMode?: boolean;

@@ -24,7 +24,7 @@ export const CONTRACT_STATUS_OPTION_LIST = [
   { value: ContractStatusEnum.MOVED_IN, label: "입주 완료" },
   { value: ContractStatusEnum.TERMINATED, label: "계약 해지" },
   { value: ContractStatusEnum.CLOSED, label: "계약 종료" },
-] as const;
+];
 
 const CONTRACT_STATUS_COLOR_MAP: Record<string, string> = {
   LISTED: "default",

@@ -55,9 +55,7 @@ const PreCounselTable = ({
             ...counsel,
             id: counsel.surveyResponseUid + counsel.name,
           }))}
-          handleRowClick={(rowData) =>
-            onRowClick(rowData.surveyResponseUid as number)
-          }
+          handleRowClick={(rowData) => onRowClick(rowData.surveyResponseUid)}
           totalElements={totalElements}
           page={page}
           handleChangePage={onPageChange}

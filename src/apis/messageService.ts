@@ -1,7 +1,6 @@
 import apiClient from "@apis/apiClient";
 import {
   MessageDetail,
-  MessageHistory,
   MessageHistoryResponse,
   MessageDetailListResponse,
 } from "@ts/message";
@@ -14,18 +13,20 @@ import {
 } from "@ts/message";
 import { handleApiResponse, handleApiError } from "@utils/apiUtil";
 
-export const fetchMessages = async (): Promise<MessageHistory[]> => {
+export const fetchMessages = async (params: {
+  criteria?: string;
+  cond?: string;
+  value?: string;
+}) => {
   try {
     const { data: response } = await apiClient.get<MessageHistoryResponse>(
-      "/messages"
+      "/messages",
+      {
+        params,
+      }
     );
 
-    const data = handleApiResponse(
-      response,
-      MESSAGE_ERROR_MESSAGES.FETCH_FAILED
-    );
-
-    return Object.values(data?.groupList || {});
+    return handleApiResponse(response, MESSAGE_ERROR_MESSAGES.FETCH_FAILED);
   } catch (error) {
     return handleApiError(error, "fetching messages");
   }

@@ -82,7 +82,7 @@ const CounselTable = ({
             ...counsel,
             id: counsel.counselUid,
           }))}
-          handleRowClick={(rowData) => onRowClick(rowData.counselUid as number)}
+          handleRowClick={(rowData) => onRowClick(rowData.counselUid)}
           totalElements={totalElements}
           page={page}
           handleChangePage={onPageChange}

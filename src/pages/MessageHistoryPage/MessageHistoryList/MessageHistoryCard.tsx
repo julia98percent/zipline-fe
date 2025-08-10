@@ -5,23 +5,27 @@ import { translateMessageStatusToKorean } from "@utils/messageUtil";
 
 interface MessageHistoryCardProps {
   message: MessageHistory;
-  onRowClick: (groupId: string) => void;
+  onCardClick: (groupId: string) => void;
 }
 
-const MessageHistoryCard = ({ message, onRowClick }: MessageHistoryCardProps) => {
+const MessageHistoryCard = ({
+  message,
+  onCardClick,
+}: MessageHistoryCardProps) => {
   const formatDate = (dateString: string) => {
     return dayjs(dateString).format("YYYY-MM-DD HH:mm:ss");
   };
 
   const getStatusText = (status: string) => {
     const translated = translateMessageStatusToKorean(status);
-    const emoji = status === "COMPLETE" ? "✅" : status === "FAILED" ? "❌" : "⏳";
+    const emoji =
+      status === "COMPLETE" ? "✅" : status === "FAILED" ? "❌" : "⏳";
     return `${emoji} ${translated}`;
   };
 
   return (
     <Box
-      onClick={() => onRowClick(message.groupId)}
+      onClick={() => onCardClick(message.groupId)}
       className="bg-white p-4 rounded-lg shadow-sm border border-gray-200 cursor-pointer hover:shadow-md transition-shadow"
     >
       <Box className="space-y-3 text-sm">

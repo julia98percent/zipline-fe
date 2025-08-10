@@ -9,10 +9,10 @@ interface Props {
   onRowClick: (rowData: MessageHistory) => void;
 }
 
+type MessageHistoryTable = MessageHistory & RowData;
+
 const MessageHistoryListView = ({ messageList, onRowClick }: Props) => {
-  const columns: ColumnConfig<
-    Pick<MessageHistory, "dateCreated" | "status" | "dateCompleted">
-  >[] = [
+  const columns: ColumnConfig<MessageHistoryTable>[] = [
     {
       key: "dateCreated",
       label: "발송 요청일",
@@ -44,16 +44,19 @@ const MessageHistoryListView = ({ messageList, onRowClick }: Props) => {
     },
   ];
 
-  const tableData = messageList.map((message) => message);
+  const tableData: MessageHistoryTable[] = messageList.map((message) => ({
+    ...message,
+    id: message.groupId,
+  }));
 
   return (
     <div className="w-full mt-0">
-      <Table
-        columns={columns as ColumnConfig[]}
-        bodyList={tableData as unknown as RowData[]}
+      <Table<MessageHistoryTable>
+        columns={columns}
+        bodyList={tableData}
         pagination={false}
-        handleRowClick={onRowClick as any}
-        noDataMessage="매물 데이터가 없습니다"
+        handleRowClick={(message) => onRowClick(message)}
+        noDataMessage="문자 발송 내역이 없습니다."
         className="min-w-[650px]  rounded-lg shadow-sm"
         sx={{
           "& .MuiTableCell-root": {

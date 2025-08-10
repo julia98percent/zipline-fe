@@ -16,13 +16,6 @@ interface OutletContext {
   onMobileMenuToggle: () => void;
 }
 
-interface TableRowData {
-  id: string;
-  dateCreated: string;
-  status: string;
-  dateCompleted: string;
-}
-
 export type MessageHistoryData = Pick<
   MessageHistory,
   "dateCreated" | "status" | "dateCompleted"
@@ -73,8 +66,10 @@ const MessageHistoryPage = () => {
 
   const handleModalClose = () => setDetailModalOpen(false);
 
-  const handleRowClick = (rowData: TableRowData) => {
-    const originalMessage = messages.find((msg) => msg.groupId === rowData.id);
+  const handleRowClick = (rowData: MessageHistory) => {
+    const originalMessage = messages.find(
+      (msg) => msg.groupId === rowData.groupId
+    );
     if (originalMessage) {
       setSelectedMessageHistory(originalMessage);
       setDetailModalOpen(true);

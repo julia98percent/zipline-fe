@@ -10,6 +10,7 @@ import { fetchMessages } from "@apis/messageService";
 import DatePicker from "@components/DatePicker";
 import { useUrlFilters } from "@hooks/useUrlFilters";
 import MessageHistoryList from "./MessageHistoryList";
+import { buildDateFilterParams } from "@utils/dateFilter";
 
 interface OutletContext {
   onMobileMenuToggle: () => void;
@@ -100,9 +101,10 @@ const MessageHistoryPage = () => {
       }
 
       try {
+        const dateFilter = buildDateFilterParams(startDate, endDate);
+        
         const params = {
-          startDate: getParam("startDate"),
-          endDate: getParam("endDate"),
+          ...dateFilter,
           startKey: isLoadMore ? cursorId : null,
         };
 
@@ -157,9 +159,10 @@ const MessageHistoryPage = () => {
         setCursorId(null);
 
         try {
+          const dateFilter = buildDateFilterParams(startDate, endDate);
+          
           const params = {
-            startDate: getParam("startDate"),
-            endDate: getParam("endDate"),
+            ...dateFilter,
             startKey: null,
           };
 

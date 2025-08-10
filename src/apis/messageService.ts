@@ -14,9 +14,9 @@ import {
 import { handleApiResponse, handleApiError } from "@utils/apiUtil";
 
 export const fetchMessages = async (params: {
-  startKey?: string | null;
-  startDate?: string | null;
-  endDate?: string | null;
+  criteria?: string;
+  cond?: string;
+  value?: string;
 }) => {
   try {
     const { data: response } = await apiClient.get<MessageHistoryResponse>(

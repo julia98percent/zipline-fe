@@ -1,7 +1,7 @@
 import { useEffect, useRef, useCallback } from "react";
 import MessageHistoryListView from "./MessageHistoryListView";
 import { CircularProgress, Typography } from "@mui/material";
-import MessageHistoryCard from "../MessageHistoryCard";
+import MessageHistoryCard from "./MessageHistoryCard";
 import { MessageHistory } from "@ts/message";
 
 interface Props {

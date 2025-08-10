@@ -30,7 +30,6 @@ export interface RowData {
 interface Props<T extends RowData> {
   isLoading?: boolean;
   columns?: ColumnConfig<T>[];
-  headerList?: string[]; // 레거시 지원을 위해 유지
   bodyList: T[];
   handleRowClick?: (rowData: T, index: number, event: React.MouseEvent) => void;
   totalElements?: number;
@@ -55,7 +54,6 @@ export const DEFAULT_ROWS_PER_PAGE = 25;
 function Table<T extends RowData>({
   isLoading = false,
   columns,
-  headerList, // 레거시 지원
   bodyList,
   handleRowClick,
   totalElements = bodyList?.length || 0,
@@ -71,13 +69,8 @@ function Table<T extends RowData>({
   maxHeight,
   hidePaginationControls = false,
 }: Props<T>) {
-  // columns가 제공되면 우선 사용, 없으면 headerList 사용 (레거시 지원)
-  const allColumns: ColumnConfig<T>[] =
-    columns ||
-    headerList?.map((header) => ({ key: header, label: header })) ||
-    [];
+  const allColumns: ColumnConfig<T>[] = columns || [];
 
-  // visible 속성이 false인 컬럼은 제외
   const finalColumns: ColumnConfig<T>[] = allColumns.filter(
     (column) => column.visible !== false
   );

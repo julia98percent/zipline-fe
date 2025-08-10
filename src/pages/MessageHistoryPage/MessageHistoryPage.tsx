@@ -102,7 +102,7 @@ const MessageHistoryPage = () => {
 
       try {
         const dateFilter = buildDateFilterParams(startDate, endDate);
-        
+
         const params = {
           ...dateFilter,
           startKey: isLoadMore ? cursorId : null,
@@ -160,7 +160,7 @@ const MessageHistoryPage = () => {
 
         try {
           const dateFilter = buildDateFilterParams(startDate, endDate);
-          
+
           const params = {
             ...dateFilter,
             startKey: null,

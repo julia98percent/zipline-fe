@@ -21,7 +21,6 @@ const MessageHistoryList = ({
   handleRowClick,
   handleCardClick,
 }: Props) => {
-  console.log(messageList);
   const scrollRef = useRef<HTMLDivElement>(null);
   const sentinelRef = useRef<HTMLDivElement>(null);
 

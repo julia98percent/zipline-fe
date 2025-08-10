@@ -301,7 +301,7 @@ const PublicPropertyListPage = () => {
             ...searchParams,
             cursorId: null,
           };
-          console.log(params);
+
           const response = await getPublicProperties(params);
           const contentArray = Array.isArray(response.content)
             ? response.content

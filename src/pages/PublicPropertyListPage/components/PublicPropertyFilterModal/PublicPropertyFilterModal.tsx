@@ -156,7 +156,6 @@ const PublicPropertyFilterModal = ({
     try {
       const sidoData = await fetchRegions(0);
       setRegion((prev) => ({ ...prev, sido: sidoData }));
-      console.log(sidoData);
     } catch (error) {
       console.error("Failed to fetch sido data:", error);
     }
@@ -164,15 +163,10 @@ const PublicPropertyFilterModal = ({
 
   useEffect(() => {
     if (open) {
-      // const convertedFilters = {
-      //   ...filters,
-      // };
-      // setLocalFilters(convertedFilters);
       handleOpen();
     }
   }, [open, filters]);
 
-  // Load sigungu when sido is selected
   useEffect(() => {
     if (!region.selectedSido) return;
 

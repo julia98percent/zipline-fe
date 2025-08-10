@@ -105,7 +105,7 @@ const MessageHistoryPage = () => {
           endDate: getParam("endDate"),
           startKey: isLoadMore ? cursorId : null,
         };
-        console.log(params);
+
         const data = await fetchMessages(params);
         const content = Object.values(data.groupList);
         if (isLoadMore) {

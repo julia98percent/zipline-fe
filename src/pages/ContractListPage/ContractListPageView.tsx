@@ -2,7 +2,7 @@ import ContractTable from "./ContractTable";
 import ContractFilterModal from "./ContractFilterModal";
 import PageHeader from "@components/PageHeader/PageHeader";
 import Select from "@components/Select";
-import ContractAddModal from "./ContractAddButtonList/ContractAddModal";
+import ContractAddModal from "./ContractAddModal";
 import Button from "@components/Button";
 import AddIcon from "@mui/icons-material/Add";
 import SearchIcon from "@mui/icons-material/Search";

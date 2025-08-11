@@ -4,6 +4,7 @@
 @tailwind utilities;
 
 body {
+  min-width: 450px;
 }
 
 @theme {

@@ -93,6 +93,8 @@ const PublicPropertyFilterModal = ({
       null,
   });
 
+  const [isInitializing, setIsInitializing] = useState(false);
+
   const getPriceStep = ({
     isMonthlyRent = false,
     value,
@@ -165,9 +167,9 @@ const PublicPropertyFilterModal = ({
   };
 
   const handleOpen = async () => {
+    setIsInitializing(true);
     try {
       const sidoData = await fetchRegions(0);
-      setRegion((prev) => ({ ...prev, sido: sidoData }));
 
       if (filters.regionCode) {
         const { sidoCode, sigunguCode, dongCode } = parseRegionCode(
@@ -182,18 +184,40 @@ const PublicPropertyFilterModal = ({
             dongData = await fetchRegions(sigunguCode);
           }
 
-          setRegion((prev) => ({
-            ...prev,
+          setRegion({
+            sido: sidoData,
+            sigungu: sigunguData,
+            dong: dongData,
             selectedSido: sidoCode,
             selectedSigungu: sigunguCode || null,
             selectedDong: dongCode || null,
-            sigungu: sigunguData,
-            dong: dongData,
+          });
+        } else {
+          setRegion((prev) => ({ 
+            ...prev, 
+            sido: sidoData,
+            sigungu: [],
+            dong: [],
+            selectedSido: null,
+            selectedSigungu: null,
+            selectedDong: null,
           }));
         }
+      } else {
+        setRegion((prev) => ({ 
+          ...prev, 
+          sido: sidoData,
+          sigungu: [],
+          dong: [],
+          selectedSido: null,
+          selectedSigungu: null,
+          selectedDong: null,
+        }));
       }
     } catch (error) {
       console.error("Failed to fetch region data:", error);
+    } finally {
+      setIsInitializing(false);
     }
   };
 
@@ -204,7 +228,7 @@ const PublicPropertyFilterModal = ({
   }, [open]);
 
   useEffect(() => {
-    if (!region.selectedSido) return;
+    if (!region.selectedSido || isInitializing) return;
 
     const loadSigungu = async () => {
       try {
@@ -212,9 +236,9 @@ const PublicPropertyFilterModal = ({
         setRegion((prev) => ({
           ...prev,
           sigungu: sigunguData,
-          selectedSigungu: null,
-          selectedDong: null,
-          dong: [],
+          selectedSigungu: prev.selectedSigungu,
+          selectedDong: prev.selectedDong,
+          dong: prev.dong,
         }));
       } catch (error) {
         console.error("Failed to fetch sigungu data:", error);
@@ -222,10 +246,10 @@ const PublicPropertyFilterModal = ({
     };
 
     loadSigungu();
-  }, [region.selectedSido]);
+  }, [region.selectedSido, isInitializing]);
 
   useEffect(() => {
-    if (!region.selectedSigungu) return;
+    if (!region.selectedSigungu || isInitializing) return;
 
     const loadDong = async () => {
       try {
@@ -233,7 +257,7 @@ const PublicPropertyFilterModal = ({
         setRegion((prev) => ({
           ...prev,
           dong: dongData,
-          selectedDong: null,
+          selectedDong: prev.selectedDong,
         }));
       } catch (error) {
         console.error("Failed to fetch dong data:", error);
@@ -241,12 +265,13 @@ const PublicPropertyFilterModal = ({
     };
 
     loadDong();
-  }, [region.selectedSigungu]);
+  }, [region.selectedSigungu, isInitializing]);
 
   const handleSidoChange = (event: SelectChangeEvent<number>) => {
     const selectedRegion = region.sido.find(
-      (item) => item.cortarNo === event.target.value
+      (item) => item.cortarNo == event.target.value
     );
+
     if (selectedRegion) {
       setRegion((prev) => ({
         ...prev,
@@ -261,7 +286,7 @@ const PublicPropertyFilterModal = ({
 
   const handleGuChange = (event: SelectChangeEvent<number>) => {
     const selectedRegion = region.sigungu.find(
-      (item) => item.cortarNo === event.target.value
+      (item) => item.cortarNo == event.target.value
     );
     if (selectedRegion) {
       setRegion((prev) => ({

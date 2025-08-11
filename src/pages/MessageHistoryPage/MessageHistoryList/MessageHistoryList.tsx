@@ -1,6 +1,5 @@
 import { useEffect, useRef, useCallback } from "react";
 import MessageHistoryListView from "./MessageHistoryListView";
-import { CircularProgress, Typography } from "@mui/material";
 import MessageHistoryCard from "./MessageHistoryCard";
 import { MessageHistory } from "@ts/message";
 
@@ -71,15 +70,6 @@ const MessageHistoryList = ({
         ))}
       </div>
 
-      {isLoading && (
-        <div className="flex items-center justify-center p-[20px]">
-          <CircularProgress size={24} />
-          <Typography variant="body2" className="ml-4">
-            문자 발송 내역을 불러오는 중...
-          </Typography>
-        </div>
-      )}
-
       {hasMore && !isLoading && (
         <div
           ref={sentinelRef}
@@ -92,11 +82,9 @@ const MessageHistoryList = ({
       )}
 
       {!hasMore && messageList.length > 0 && (
-        <div className="flex justify-center p-4 text-primary">
-          <Typography variant="body2">
-            모든 문자 발송 내역을 불러왔습니다.
-          </Typography>
-        </div>
+        <p className="flex justify-center p-4 text-gray-500">
+          모든 문자 발송 내역을 불러왔습니다.
+        </p>
       )}
     </div>
   );

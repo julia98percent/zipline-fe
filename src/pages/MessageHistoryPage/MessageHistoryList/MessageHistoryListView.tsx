@@ -56,7 +56,6 @@ const MessageHistoryListView = ({ messageList, onRowClick }: Props) => {
         bodyList={tableData}
         pagination={false}
         handleRowClick={(message) => onRowClick(message)}
-        noDataMessage="문자 발송 내역이 없습니다."
         className="min-w-[650px]  rounded-lg shadow-sm"
         sx={{
           "& .MuiTableCell-root": {

@@ -11,6 +11,7 @@ import DatePicker from "@components/DatePicker";
 import { useUrlFilters } from "@hooks/useUrlFilters";
 import MessageHistoryList from "./MessageHistoryList";
 import { buildDateFilterParams } from "@utils/dateFilter";
+import { CircularProgress } from "@mui/material";
 
 interface OutletContext {
   onMobileMenuToggle: () => void;
@@ -233,7 +234,11 @@ const MessageHistoryPage = () => {
         </div>
 
         <div>
-          {messages.length === 0 ? (
+          {isLoading ? (
+            <div className="flex items-center justify-center mt-16">
+              <CircularProgress />
+            </div>
+          ) : messages.length === 0 ? (
             <div className="text-center py-8 text-gray-500">
               문자 발송 내역이 없습니다.
             </div>

@@ -1,4 +1,4 @@
-import { Routes, Route, Navigate } from "react-router-dom";
+import { Routes, Route, Navigate, useLocation } from "react-router-dom";
 import "react-toastify/dist/ReactToastify.css";
 import SessionExpiredModal from "@components/SessionExpiredModal";
 import useSessionStore from "@stores/useSessionStore";
@@ -32,10 +32,14 @@ import PreCounselListPage from "@pages/PreCounselListPage";
 const App = () => {
   const { showSessionExpiredModal, closeSessionExpiredModal } =
     useSessionStore();
+  const location = useLocation();
 
   const handleLoginRedirect = () => {
     closeSessionExpiredModal();
-    window.location.href = "/sign-in";
+
+    if (location.pathname !== "/sign-in") {
+      window.location.href = "/sign-in";
+    }
   };
 
   return (

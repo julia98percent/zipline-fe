@@ -1,5 +1,7 @@
 import axios, { AxiosInstance } from "axios";
 import { showToast } from "@components/Toast";
+import { saveCurrentLocation } from "@utils/sessionUtil";
+import useSessionStore from "@stores/useSessionStore";
 
 const apiClient: AxiosInstance = axios.create({
   baseURL: import.meta.env.VITE_SERVER_URL,
@@ -31,26 +33,18 @@ export const getCsrfToken = async (): Promise<string | null> => {
   return csrfToken;
 };
 
-const handleSessionExpired = (
-  message: string = "세션이 만료되었습니다. 다시 로그인해주세요."
-) => {
+const handleSessionExpired = () => {
   clearCsrfToken();
   sessionStorage.clear();
+  saveCurrentLocation();
 
   showToast({
-    message,
+    message: "세션이 만료되었습니다. 다시 로그인해주세요.",
     type: "warning",
     duration: 4000,
   });
 
-  setTimeout(() => {
-    const currentPath = window.location.pathname + window.location.search;
-    if (currentPath !== "/sign-in" && currentPath !== "/") {
-      localStorage.setItem("redirectAfterLogin", currentPath);
-    }
-
-    window.location.href = "/sign-in";
-  }, 1500);
+  useSessionStore.getState().openSessionExpiredModal();
 };
 
 apiClient.interceptors.request.use(
@@ -100,12 +94,7 @@ apiClient.interceptors.response.use(
       !isSignupRequest &&
       !isPublicRequest
     ) {
-      const message =
-        error.response.status === 403
-          ? "접근 권한이 없습니다. 다시 로그인해주세요."
-          : "세션이 만료되었습니다. 다시 로그인해주세요.";
-
-      handleSessionExpired(message);
+      handleSessionExpired();
       return Promise.reject(error);
     }
 

@@ -1,5 +1,7 @@
 import { Routes, Route, Navigate } from "react-router-dom";
 import "react-toastify/dist/ReactToastify.css";
+import SessionExpiredModal from "@components/SessionExpiredModal";
+import useSessionStore from "@stores/useSessionStore";
 import PrivateRoute from "./components/layout/PrivateRoute";
 import GuestRoute from "./components/layout/GuestRoute";
 import SignUpPage from "@pages/SignUpPage";
@@ -28,60 +30,81 @@ import CounselDetailPage from "@pages/CounselDetailPage";
 import PreCounselListPage from "@pages/PreCounselListPage";
 
 const App = () => {
+  const { showSessionExpiredModal, closeSessionExpiredModal } =
+    useSessionStore();
+
+  const handleLoginRedirect = () => {
+    closeSessionExpiredModal();
+    window.location.href = "/sign-in";
+  };
+
   return (
-    <Routes>
-      <Route path="form" element={<Navigate to="/error" replace />} />
-      <Route path=":surveyId" element={<NewbieSurveyRoute />}>
-        <Route index element={<SubmitSurveyPage />} />
-        <Route path="thank-you" element={<SubmitSurveySuccessPage />} />
-      </Route>
-
-      <Route element={<PrivateRoute />}>
-        <Route index element={<DashboardPage />} />
-        <Route path="customers" element={<CustomerListPage />} />
-        <Route path="customers/:customerId" element={<CustomerDetailPage />} />
-
-        <Route path="properties/agent" element={<AgentPropertyListPage />} />
-        <Route
-          path="/properties/agent/:propertyUid"
-          element={<AgentPropertyDetailPage />}
-        />
-        <Route path="properties/public" element={<PublicPropertyListPage />} />
-
-        <Route path="messages/templates" element={<MessageTemplatePage />} />
-        <Route path="messages/bulk" element={<BulkMessagePage />} />
-        <Route path="messages/history" element={<MessageHistoryPage />} />
-
-        <Route path="counsels/general" element={<CounselListPage />} />
-        <Route
-          path="/counsels/general/:counselUid"
-          element={<CounselDetailPage />}
-        />
-        <Route path="counsels/pre" element={<PreCounselListPage />} />
-
-        <Route path="/contracts" element={<ContractListPage />} />
-        <Route
-          path="/contracts/:contractUid"
-          element={<ContractDetailPage />}
-        />
-
-        <Route path="my">
-          <Route index element={<MyPage />} />
-          <Route path="edit-survey" element={<EditSurveyPage />} />
+    <>
+      <Routes>
+        <Route path="form" element={<Navigate to="/error" replace />} />
+        <Route path=":surveyId" element={<NewbieSurveyRoute />}>
+          <Route index element={<SubmitSurveyPage />} />
+          <Route path="thank-you" element={<SubmitSurveySuccessPage />} />
         </Route>
 
-        <Route path="schedules" element={<SchedulePage />} />
-        <Route path="templates" element={<MessageTemplatePage />} />
-      </Route>
+        <Route element={<PrivateRoute />}>
+          <Route index element={<DashboardPage />} />
+          <Route path="customers" element={<CustomerListPage />} />
+          <Route
+            path="customers/:customerId"
+            element={<CustomerDetailPage />}
+          />
 
-      <Route element={<GuestRoute />}>
-        <Route path="sign-up" element={<SignUpPage />} />
-        <Route path="sign-in" element={<SignInPage />} />
-        <Route path="find-account" element={<FindAccountPage />} />
-      </Route>
+          <Route path="properties/agent" element={<AgentPropertyListPage />} />
+          <Route
+            path="/properties/agent/:propertyUid"
+            element={<AgentPropertyDetailPage />}
+          />
+          <Route
+            path="properties/public"
+            element={<PublicPropertyListPage />}
+          />
 
-      <Route path="error" element={<ErrorPage />} />
-    </Routes>
+          <Route path="messages/templates" element={<MessageTemplatePage />} />
+          <Route path="messages/bulk" element={<BulkMessagePage />} />
+          <Route path="messages/history" element={<MessageHistoryPage />} />
+
+          <Route path="counsels/general" element={<CounselListPage />} />
+          <Route
+            path="/counsels/general/:counselUid"
+            element={<CounselDetailPage />}
+          />
+          <Route path="counsels/pre" element={<PreCounselListPage />} />
+
+          <Route path="/contracts" element={<ContractListPage />} />
+          <Route
+            path="/contracts/:contractUid"
+            element={<ContractDetailPage />}
+          />
+
+          <Route path="my">
+            <Route index element={<MyPage />} />
+            <Route path="edit-survey" element={<EditSurveyPage />} />
+          </Route>
+
+          <Route path="schedules" element={<SchedulePage />} />
+          <Route path="templates" element={<MessageTemplatePage />} />
+        </Route>
+
+        <Route element={<GuestRoute />}>
+          <Route path="sign-up" element={<SignUpPage />} />
+          <Route path="sign-in" element={<SignInPage />} />
+          <Route path="find-account" element={<FindAccountPage />} />
+        </Route>
+
+        <Route path="error" element={<ErrorPage />} />
+      </Routes>
+
+      <SessionExpiredModal
+        open={showSessionExpiredModal}
+        onLoginRedirect={handleLoginRedirect}
+      />
+    </>
   );
 };
 

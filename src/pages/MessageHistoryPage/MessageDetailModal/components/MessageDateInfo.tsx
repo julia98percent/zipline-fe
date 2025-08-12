@@ -10,11 +10,15 @@ function MessageDateInfo({
   const dateInfo = [
     {
       label: "발송 요청",
-      value: formatDate(messageHistory.dateSent),
+      value: messageHistory.dateSent
+        ? formatDate(messageHistory.dateSent)
+        : "-",
     },
     {
       label: "처리 완료",
-      value: formatDate(messageHistory.dateCompleted),
+      value: messageHistory.dateCompleted
+        ? formatDate(messageHistory.dateCompleted)
+        : "-",
     },
   ];
 

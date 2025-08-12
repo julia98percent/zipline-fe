@@ -17,7 +17,8 @@ const MessageHistoryListView = ({ messageList, onRowClick }: Props) => {
       key: "dateCreated",
       label: "발송 요청일",
       align: "left",
-      render: (value) => dayjs(value as string).format("YYYY-MM-DD HH:mm:ss"),
+      render: (value) =>
+        value ? dayjs(value as string).format("YYYY-MM-DD HH:mm:ss") : "-",
     },
     {
       key: "status",
@@ -40,7 +41,8 @@ const MessageHistoryListView = ({ messageList, onRowClick }: Props) => {
       key: "dateCompleted",
       label: "발송 완료일",
       align: "left",
-      render: (value) => dayjs(value as string).format("YYYY-MM-DD HH:mm:ss"),
+      render: (value) =>
+        value ? dayjs(value as string).format("YYYY-MM-DD HH:mm:ss") : "-",
     },
   ];
 

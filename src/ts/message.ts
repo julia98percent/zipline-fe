@@ -25,7 +25,7 @@ export interface MessageHistory {
     sentSuccess: number;
     sentFailed: number;
   };
-  dateSent: string;
+  dateSent: string | null;
   dateCompleted: string;
   dateCreated: string;
   log: Array<{

@@ -9,14 +9,16 @@ interface ToastProps {
 
 const showToast = ({ message, type, duration = 2000 }: ToastProps) => {
   toast[type](message, {
+    position: "top-right",
     autoClose: duration,
     hideProgressBar: false,
     closeOnClick: true,
     pauseOnHover: true,
     draggable: true,
     style: {
-      marginTop: "6px",
-      top: "40px",
+      marginTop: "70px",
+      marginRight: "20px",
+      zIndex: 9999,
     },
   });
 };

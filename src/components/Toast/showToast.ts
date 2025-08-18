@@ -16,7 +16,7 @@ const showToast = ({ message, type, duration = 2000 }: ToastProps) => {
     pauseOnHover: true,
     draggable: true,
     style: {
-      marginTop: "70px",
+      marginTop: "10px",
       marginRight: "20px",
       zIndex: 9999,
     },

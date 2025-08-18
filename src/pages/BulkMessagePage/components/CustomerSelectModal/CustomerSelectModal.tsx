@@ -183,6 +183,17 @@ const CustomerSelectModal = ({
   };
 
   useEffect(() => {
+    setPage(0);
+  }, [
+    search,
+    region.selectedSido,
+    region.selectedSigungu,
+    region.selectedDong,
+    roleFilters,
+    labelUids,
+  ]);
+
+  useEffect(() => {
     if (!open) return;
 
     const loadCustomers = async () => {
@@ -190,7 +201,7 @@ const CustomerSelectModal = ({
       try {
         // 검색 파라미터 빌드
         const params = new URLSearchParams();
-        params.append("page", (page + 1).toString());
+        params.append("page", page.toString());
         params.append("size", rowsPerPage.toString());
 
         if (search) {

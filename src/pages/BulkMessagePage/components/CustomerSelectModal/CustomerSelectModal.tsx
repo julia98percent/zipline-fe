@@ -143,8 +143,28 @@ const CustomerSelectModal = ({
   const handleRegionChange =
     (type: "sido" | "sigungu" | "dong") =>
     (event: SelectChangeEvent<number>) => {
+      const value = event.target.value;
+
+      if (!value || value === 0) {
+        setRegion((prev) => ({
+          ...prev,
+          [`selected${type.charAt(0).toUpperCase() + type.slice(1)}`]: null,
+          ...(type === "sido"
+            ? {
+                selectedSigungu: null,
+                selectedDong: null,
+                sigungu: [],
+                dong: [],
+              }
+            : type === "sigungu"
+            ? { selectedDong: null, dong: [] }
+            : {}),
+        }));
+        return;
+      }
+
       const selectedRegion = region[type].find(
-        (item: Region) => item.cortarNo == event.target.value
+        (item: Region) => item.cortarNo == value
       );
 
       if (selectedRegion) {

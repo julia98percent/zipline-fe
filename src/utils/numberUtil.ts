@@ -50,7 +50,8 @@ export function formatPhoneNumber(input: string): string {
 export const formatKoreanPrice = (
   value: number | string | null | undefined
 ) => {
-  const numValue = typeof value === "string" ? parseInt(value, 10) : value;
+  const numValue =
+    typeof value === "string" ? parseInt(value.replace(/,/g, ""), 10) : value;
 
   if (!numValue || numValue === 0 || isNaN(numValue)) return "";
 

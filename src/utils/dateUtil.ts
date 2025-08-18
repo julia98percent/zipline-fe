@@ -15,7 +15,7 @@ export function formatDate(dateString: string) {
 }
 
 export function formatDateTimeToKorean(dateString: string): string {
-  const date = dayjs(dateString).tz("Asia/Seoul").subtract(9, "hour");
+  const date = dayjs(dateString).tz("Asia/Seoul");
   const now = dayjs().tz("Asia/Seoul");
 
   const diffInSeconds = now.diff(date, "second");

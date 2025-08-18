@@ -80,7 +80,8 @@ apiClient.interceptors.response.use(
       originalRequest?.url?.includes("/users/find-id") ||
       originalRequest?.url?.includes("/users/send-code") ||
       originalRequest?.url?.includes("/users/verify-code") ||
-      originalRequest?.url?.includes("/users/reset-password");
+      originalRequest?.url?.includes("/users/reset-password") ||
+      originalRequest?.url?.includes("csrf");
 
     if (
       (error.response.status === 401 || error.response.status === 403) &&

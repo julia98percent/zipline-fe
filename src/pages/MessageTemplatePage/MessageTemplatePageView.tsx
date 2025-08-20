@@ -1,5 +1,5 @@
 import { Box } from "@mui/material";
-import DeleteConfirmModal from "@components/DeleteConfirm/DeleteConfirmModal";
+import DeleteConfirmModal from "@components/DeleteConfirmModal";
 import PageHeader from "@components/PageHeader/PageHeader";
 import {
   MessageTemplate,

@@ -8,7 +8,7 @@ import {
   InfoCard,
   PageContainer,
 } from "./styles/AgentPropertyDetailPage.styles";
-import DeleteConfirmModal from "@components/DeleteConfirm/DeleteConfirmModal";
+import DeleteConfirmModal from "@components/DeleteConfirmModal";
 import PageHeader from "@components/PageHeader/PageHeader";
 import PropertyEditModal from "@components/PropertyEditModal";
 import EditIcon from "@mui/icons-material/Edit";
@@ -20,7 +20,6 @@ import {
   ContractInfo,
   CounselHistory,
 } from "@apis/propertyService";
-
 import {
   PropertyInfoSection,
   PropertyDetailSection,
@@ -30,8 +29,10 @@ import {
   PropertyDetailsSection,
 } from "./components";
 import Button from "@components/Button";
+import CircularProgress from "@components/CircularProgress";
 
 interface AgentPropertyDetailPageViewProps {
+  loading: boolean;
   property: AgentPropertyDetail;
   contractInfo: ContractInfo | null;
   contractHistories: ContractHistoryItem[];
@@ -51,6 +52,7 @@ interface AgentPropertyDetailPageViewProps {
 }
 
 function AgentPropertyDetailPageView({
+  loading,
   property,
   contractInfo,
   contractHistories,
@@ -68,8 +70,19 @@ function AgentPropertyDetailPageView({
   onPropertyDataRefresh,
   onMobileMenuToggle,
 }: AgentPropertyDetailPageViewProps) {
-  if (!property) return null;
-
+  if (loading) {
+    return (
+      <div className="flex-grow bg-gray-100 min-h-screen">
+        <PageHeader
+          title="매물 상세 조회"
+          onMobileMenuToggle={onMobileMenuToggle}
+        />
+        <div className="flex items-center justify-center h-[calc(100vh-72px)]">
+          <CircularProgress />
+        </div>
+      </div>
+    );
+  }
   return (
     <PageContainer>
       <PageHeader

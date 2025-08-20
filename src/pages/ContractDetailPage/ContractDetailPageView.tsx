@@ -5,8 +5,7 @@ import {
   ContractDocumentsEditModal,
   ContractBasicInfoEditModal,
 } from "./components";
-// import styles from "@pages/ContractListPage/styles/ContractListPage.module.css";
-import DeleteConfirmModal from "@components/DeleteConfirm";
+import DeleteConfirmModal from "@components/DeleteConfirmModal";
 import DeleteIcon from "@mui/icons-material/Delete";
 import { ContractDetail, ContractHistory } from "@ts/contract";
 import Button from "@components/Button";

@@ -1,7 +1,7 @@
 import { Box } from "@mui/material";
 import { useNavigate } from "react-router-dom";
 import { useState, useEffect } from "react";
-import DeleteConfirmModal from "@components/DeleteConfirm/DeleteConfirmModal";
+import DeleteConfirmModal from "@components/DeleteConfirmModal";
 import Table, { ColumnConfig } from "@components/Table/Table";
 import MobilePagination from "@components/MobilePagination";
 import { showToast } from "@components/Toast";
@@ -282,7 +282,6 @@ const CustomerTable = ({
       handleRowClick(customer);
     }
   };
-
 
   return (
     <Box className="w-full mt-[28px]">

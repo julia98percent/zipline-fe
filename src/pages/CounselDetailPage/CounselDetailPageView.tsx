@@ -11,7 +11,7 @@ import {
   CounselDetailsContent,
   CounselActionButtons,
 } from "./components";
-import DeleteConfirmModal from "@components/DeleteConfirm/DeleteConfirmModal";
+import DeleteConfirmModal from "@components/DeleteConfirmModal";
 import { Dayjs } from "dayjs";
 
 interface CounselDetailPageViewProps {

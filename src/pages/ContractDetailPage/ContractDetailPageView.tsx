@@ -1,4 +1,4 @@
-import { CircularProgress, Box, LinearProgress } from "@mui/material";
+import { Box, LinearProgress } from "@mui/material";
 import PageHeader from "@components/PageHeader";
 import {
   ContractDetailContent,
@@ -9,6 +9,7 @@ import DeleteConfirmModal from "@components/DeleteConfirmModal";
 import DeleteIcon from "@mui/icons-material/Delete";
 import { ContractDetail, ContractHistory } from "@ts/contract";
 import Button from "@components/Button";
+import CircularProgress from "@components/CircularProgress";
 
 interface ContractDetailPageViewProps {
   contract: ContractDetail | null;
@@ -61,21 +62,18 @@ const ContractDetailPageView = ({
   onQuickStatusChange,
   onMobileMenuToggle,
 }: ContractDetailPageViewProps) => {
-  if (loading) {
+  if (loading || !contract) {
     return (
-      <Box
-        display="flex"
-        justifyContent="center"
-        alignItems="center"
-        height="100vh"
-      >
-        <CircularProgress />
-      </Box>
+      <div className="flex-grow bg-gray-100 min-h-screen">
+        <PageHeader
+          title="계약 상세 조회"
+          onMobileMenuToggle={onMobileMenuToggle}
+        />
+        <div className="flex items-center justify-center h-screen">
+          <CircularProgress />
+        </div>
+      </div>
     );
-  }
-
-  if (!contract) {
-    return <div>계약 정보를 불러올 수 없습니다.</div>;
   }
 
   return (

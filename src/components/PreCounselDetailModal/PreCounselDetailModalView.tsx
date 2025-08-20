@@ -5,7 +5,6 @@ import {
   DialogActions,
   Typography,
   Box,
-  CircularProgress,
   Paper,
   Divider,
   Link,
@@ -13,6 +12,7 @@ import {
 import { formatDate } from "@utils/dateUtil";
 import { PreCounselDetail } from "@ts/counsel";
 import Button from "@components/Button";
+import CircularProgress from "@components/CircularProgress";
 
 interface PreCounselDetailModalProps {
   open: boolean;

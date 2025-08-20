@@ -5,12 +5,12 @@ import {
   ListItemText,
   ListItemSecondaryAction,
   IconButton,
-  CircularProgress,
 } from "@mui/material";
 import CloseIcon from "@mui/icons-material/Close";
 import AddIcon from "@mui/icons-material/Add";
 import { Customer } from "@ts/customer";
 import CustomerRoleChips from "./CustomerRoleChips";
+import CircularProgress from "@components/CircularProgress";
 
 interface CustomerListProps {
   customers: Customer[];
@@ -28,8 +28,8 @@ const CustomerList = ({
   return (
     <List className="h-[320px] overflow-y-auto border border-[#eee] rounded-lg bg-white mb-4">
       {loading ? (
-        <Box className="flex justify-center p-4">
-          <CircularProgress size={24} />
+        <Box className="h-full flex items-center justify-center">
+          <CircularProgress size={36} />
         </Box>
       ) : (
         customers.map((customer) => (

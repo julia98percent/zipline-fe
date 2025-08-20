@@ -36,7 +36,7 @@ function ContractListPage() {
   // State
   const [contractList, setContractList] = useState<Contract[]>([]);
   const [filterModalOpen, setFilterModalOpen] = useState(false);
-  const [, setLoading] = useState<boolean>(true);
+  const [loading, setLoading] = useState<boolean>(true);
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
   const [totalElements, setTotalElements] = useState(0);
 
@@ -155,6 +155,7 @@ function ContractListPage() {
 
   return (
     <ContractListPageView
+      loading={loading}
       contractList={contractList}
       selectedPeriod={selectedPeriod}
       selectedStatus={selectedStatus}

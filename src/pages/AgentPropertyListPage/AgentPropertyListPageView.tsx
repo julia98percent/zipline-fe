@@ -1,4 +1,4 @@
-import { CircularProgress, SelectChangeEvent } from "@mui/material";
+import { SelectChangeEvent } from "@mui/material";
 import FilterListIcon from "@mui/icons-material/FilterList";
 import { useNavigate } from "react-router-dom";
 import PageHeader from "@components/PageHeader/PageHeader";
@@ -10,6 +10,7 @@ import { Property } from "@ts/property";
 import { Region } from "@ts/region";
 import { AgentPropertySearchParams } from "@apis/propertyService";
 import Button from "@components/Button";
+import CircularProgress from "@components/CircularProgress";
 
 interface CategoryOption {
   value: string;
@@ -89,8 +90,8 @@ const AgentPropertyListPageView = ({
           title="개인 매물 목록"
           onMobileMenuToggle={onMobileMenuToggle}
         />
-        <div className="flex justify-center p-6">
-          <CircularProgress color="primary" />
+        <div className="flex items-center justify-center h-[calc(100vh-72px)]">
+          <CircularProgress />
         </div>
       </div>
     );

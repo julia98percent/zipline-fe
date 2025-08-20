@@ -1,18 +1,10 @@
 import React from "react";
-import {
-  Box,
-  Card,
-  Typography,
-  Tabs,
-  Tab,
-  Chip,
-  CircularProgress,
-  Tooltip,
-} from "@mui/material";
+import { Box, Card, Typography, Tabs, Tab, Chip, Tooltip } from "@mui/material";
 import { formatDate } from "@utils/dateUtil";
 import { Counsel } from "@ts/counsel";
 import Table, { ColumnConfig } from "@components/Table";
 import HelpOutlineIcon from "@mui/icons-material/HelpOutline";
+import CircularProgress from "@components/CircularProgress";
 
 interface CounselListProps {
   counselTab: "request" | "latest";
@@ -124,11 +116,11 @@ const CounselList: React.FC<CounselListProps> = ({
           />
         </Tabs>
       </Box>
-      <Box className="flex-1 overflow-auto">
+      <Box className="flex flex-1 overflow-auto">
         {counselLoading ? (
-          <Box className="flex justify-center items-center h-48">
-            <CircularProgress />
-          </Box>
+          <div className="flex flex-1 justify-center items-center">
+            <CircularProgress size={36} />
+          </div>
         ) : (
           <Table
             columns={columns}
@@ -136,7 +128,7 @@ const CounselList: React.FC<CounselListProps> = ({
             handleRowClick={(counsel) => handleCounselClick(counsel.counselUid)}
             pagination={false}
             noDataMessage="마감 예정인 상담이 없습니다."
-            className="shadow-none!"
+            className="shadow-none! w-full"
             sx={{
               "& .MuiTableCell-head": {
                 fontSize: "13px",

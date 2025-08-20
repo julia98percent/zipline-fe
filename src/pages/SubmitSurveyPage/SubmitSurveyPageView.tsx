@@ -4,7 +4,6 @@ import {
   TextField,
   FormControlLabel,
   Checkbox,
-  CircularProgress,
   Typography,
   Paper,
   Radio,
@@ -12,6 +11,7 @@ import {
 import { formatPhoneNumber } from "@utils/numberUtil";
 import { AnswerType, ValidationErrors } from "@apis/preCounselService";
 import { PreCounselQuestion } from "@ts/counsel";
+import CircularProgress from "@components/CircularProgress";
 
 interface SubmitSurveyPageViewProps {
   loading: boolean;
@@ -43,7 +43,7 @@ const SubmitSurveyPageView = ({
   if (loading) {
     return (
       <Box className="flex justify-center items-center h-screen">
-        <CircularProgress color="primary" />
+        <CircularProgress />
       </Box>
     );
   }

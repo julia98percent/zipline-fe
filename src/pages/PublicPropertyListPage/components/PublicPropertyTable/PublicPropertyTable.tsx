@@ -2,7 +2,8 @@ import { useEffect, useRef, useCallback } from "react";
 import { PublicPropertyItem } from "@ts/property";
 import PublicPropertyTableView from "./PublicPropertyTableView";
 import PublicPropertyCard from "../PublicPropertyCard";
-import { Box, CircularProgress, Typography } from "@mui/material";
+import { Box, Typography } from "@mui/material";
+import CircularProgress from "@components/CircularProgress";
 
 interface Props {
   propertyList: PublicPropertyItem[];
@@ -81,14 +82,13 @@ const PublicPropertyTable = ({
         ))}
       </div>
 
-      {/* 로딩 인디케이터 */}
       {isLoading && (
-        <Box className="flex items-center justify-center p-[20px]">
+        <div className="flex items-center justify-center p-[20px]">
           <CircularProgress size={24} />
           <Typography variant="body2" className="ml-4">
             매물을 불러오는 중...
           </Typography>
-        </Box>
+        </div>
       )}
 
       {/* 감지용 요소 (Sentinel) */}

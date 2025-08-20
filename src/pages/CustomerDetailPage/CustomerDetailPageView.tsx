@@ -1,4 +1,4 @@
-import { Box, CircularProgress, Paper } from "@mui/material";
+import { Paper } from "@mui/material";
 import PageHeader from "@components/PageHeader/PageHeader";
 import DeleteConfirmModal from "@components/DeleteConfirmModal";
 import { Customer, Label } from "@ts/customer";
@@ -10,6 +10,7 @@ import {
   CustomerPriceInfo,
 } from "./components";
 import { RegionHierarchy } from "@utils/regionUtil";
+import CircularProgress from "@components/CircularProgress";
 
 interface CustomerDetailPageViewProps {
   loading: boolean;
@@ -59,17 +60,21 @@ const CustomerDetailPageView = ({
 }: CustomerDetailPageViewProps) => {
   if (loading || !customer || !customerId) {
     return (
-      <Box className="flex-grow h-[calc(100vh-64px)] overflow-auto w-[calc(100%-240px)] ml-60 flex justify-center items-center">
-        <CircularProgress color="primary" />
-      </Box>
+      <div className="flex-grow h-screen overflow-auto bg-gray-100 p-0 max-w-screen box-border">
+        <PageHeader title="고객 상세" onMobileMenuToggle={onMobileMenuToggle} />
+
+        <div className="flex justify-center items-center h-[calc(100vh-72px)]">
+          <CircularProgress />
+        </div>
+      </div>
     );
   }
 
   return (
-    <Box className="flex-grow h-screen overflow-auto bg-gray-100 p-0 max-w-screen box-border">
+    <div className="flex-grow h-screen overflow-auto bg-gray-100 p-0 max-w-screen box-border">
       <PageHeader title="고객 상세" onMobileMenuToggle={onMobileMenuToggle} />
 
-      <Box className="p-6 pt-0">
+      <div className="p-6 pt-0">
         <CustomerActionButtons
           isEditing={isEditing}
           onEditClick={onEditClick}
@@ -78,7 +83,7 @@ const CustomerDetailPageView = ({
           onDeleteClick={onDeleteClick}
         />
 
-        <Box className="grid grid-cols-1 sm:grid-cols-[2fr_1fr] gap-6 mb-6">
+        <div className="grid grid-cols-1 sm:grid-cols-[2fr_1fr] gap-6 mb-6">
           <CustomerBasicInfo
             customer={customer}
             isEditing={isEditing}
@@ -96,7 +101,7 @@ const CustomerDetailPageView = ({
             labelInputValue={labelInputValue}
             onLabelInputChange={onLabelInputChange}
           />
-        </Box>
+        </div>
 
         <CustomerPriceInfo
           customer={customer}
@@ -110,7 +115,7 @@ const CustomerDetailPageView = ({
             <CustomerInfo customerId={customerId} />
           </Paper>
         )}
-      </Box>
+      </div>
 
       <DeleteConfirmModal
         open={isDeleteModalOpen}
@@ -118,7 +123,7 @@ const CustomerDetailPageView = ({
         onCancel={onDeleteCancel}
         category="고객"
       />
-    </Box>
+    </div>
   );
 };
 

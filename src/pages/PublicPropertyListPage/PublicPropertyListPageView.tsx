@@ -1,7 +1,6 @@
 import FilterListIcon from "@mui/icons-material/FilterList";
 import {
   Box,
-  CircularProgress,
   SelectChangeEvent,
   FormControlLabel,
   TextField,
@@ -15,6 +14,7 @@ import SearchIcon from "@mui/icons-material/Search";
 import IOSSwitch from "@components/Switch";
 import { PublicPropertyItem, PublicPropertySearchParams } from "@ts/property";
 import Button from "@components/Button";
+import CircularProgress from "@components/CircularProgress";
 
 interface PublicPropertyListPageViewProps {
   loading: boolean;
@@ -74,8 +74,8 @@ const PublicPropertyListPageView = ({
           title="공개 매물 목록"
           onMobileMenuToggle={onMobileMenuToggle}
         />
-        <Box className="flex justify-center items-center h-screen pt-20">
-          <CircularProgress color="primary" />
+        <Box className="flex justify-center items-center h-[calc(100vh-72px)]">
+          <CircularProgress />
         </Box>
       </>
     );

@@ -9,6 +9,7 @@ import Button from "@components/Button";
 import AddIcon from "@mui/icons-material/Add";
 import { Counsel } from "@ts/counsel";
 import { Dayjs } from "dayjs";
+import CircularProgress from "@components/CircularProgress";
 
 interface CounselListPageViewProps {
   counsels: Counsel[];
@@ -65,6 +66,17 @@ function CounselListPageView({
   onModalSuccess,
   onMobileMenuToggle,
 }: CounselListPageViewProps) {
+  if (isLoading) {
+    return (
+      <>
+        <PageHeader title="상담 내역" onMobileMenuToggle={onMobileMenuToggle} />
+        <div className="flex items-center justify-center h-[calc(100vh-72px)]">
+          <CircularProgress />
+        </div>
+      </>
+    );
+  }
+
   return (
     <>
       <PageHeader title="상담 내역" onMobileMenuToggle={onMobileMenuToggle} />

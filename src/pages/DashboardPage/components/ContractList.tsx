@@ -1,19 +1,12 @@
 import React, { useMemo } from "react";
-import {
-  Box,
-  Card,
-  Typography,
-  Tabs,
-  Tab,
-  CircularProgress,
-  Tooltip,
-} from "@mui/material";
+import { Box, Card, Typography, Tabs, Tab, Tooltip } from "@mui/material";
 import { useNavigate } from "react-router-dom";
 import { formatDate } from "@utils/dateUtil";
 import { Contract } from "@ts/contract";
 import Table, { ColumnConfig, RowData } from "@components/Table";
 import HelpOutlineIcon from "@mui/icons-material/HelpOutline";
 import dayjs from "dayjs";
+import CircularProgress from "@components/CircularProgress";
 
 interface ContractListProps {
   contractTab: "expiring" | "recent";
@@ -167,11 +160,11 @@ const ContractList = ({
           />
         </Tabs>
       </Box>
-      <Box className="flex-1 overflow-auto">
+      <Box className="flex flex-1 overflow-auto">
         {contractLoading ? (
-          <Box className="flex justify-center items-center h-[200px]">
-            <CircularProgress />
-          </Box>
+          <div className="flex flex-1 justify-center items-center">
+            <CircularProgress size={36} />
+          </div>
         ) : (
           <Table
             columns={columns}
@@ -179,7 +172,7 @@ const ContractList = ({
             handleRowClick={handleRowClick}
             pagination={false}
             noDataMessage={getNoDataMessage()}
-            className="shadow-none!"
+            className="shadow-none! w-full"
             sx={{
               "& .MuiTableCell-head": {
                 fontSize: "13px",

@@ -11,7 +11,7 @@ import DatePicker from "@components/DatePicker";
 import { useUrlFilters } from "@hooks/useUrlFilters";
 import MessageHistoryList from "./MessageHistoryList";
 import { buildDateFilterParams } from "@utils/dateFilter";
-import { CircularProgress } from "@mui/material";
+import CircularProgress from "@components/CircularProgress";
 
 interface OutletContext {
   onMobileMenuToggle: () => void;
@@ -235,7 +235,7 @@ const MessageHistoryPage = () => {
 
         <div>
           {isLoading ? (
-            <div className="flex items-center justify-center mt-16">
+            <div className="flex items-center justify-center h-[50vh]">
               <CircularProgress />
             </div>
           ) : messages.length === 0 ? (

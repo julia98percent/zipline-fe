@@ -33,10 +33,12 @@ function AgentPropertyDetailPage() {
   const [tab, setTab] = useState(0);
   const [editModalOpen, setEditModalOpen] = useState(false);
   const [deleteModalOpen, setDeleteModalOpen] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
 
   const fetchPropertyData = useCallback(async () => {
     if (!propertyUid) return;
 
+    setIsLoading(true);
     try {
       const propertyData = await fetchPropertyDetail(Number(propertyUid));
       setProperty(propertyData);
@@ -46,24 +48,30 @@ function AgentPropertyDetailPage() {
         message: "매물 정보를 불러오는 데 실패했습니다.",
         type: "error",
       });
+    } finally {
+      setIsLoading(false);
     }
   }, [propertyUid]);
 
   const fetchContractData = useCallback(async () => {
     if (!propertyUid) return;
 
+    setIsLoading(true);
     try {
       const contractData = await fetchPropertyContract(Number(propertyUid));
       setContractInfo(contractData);
     } catch (error) {
       console.error(error);
       setContractInfo(null);
+    } finally {
+      setIsLoading(false);
     }
   }, [propertyUid]);
 
   const fetchContractHistoryData = useCallback(async () => {
     if (!propertyUid) return;
 
+    setIsLoading(true);
     try {
       const historyData = await fetchPropertyContractHistory(
         Number(propertyUid)
@@ -75,12 +83,15 @@ function AgentPropertyDetailPage() {
         message: "계약 히스토리를 불러오는 데 실패했습니다.",
         type: "error",
       });
+    } finally {
+      setIsLoading(false);
     }
   }, [propertyUid]);
 
   const fetchCounselHistoryData = useCallback(async () => {
     if (!propertyUid) return;
 
+    setIsLoading(true);
     try {
       const counselData = await fetchPropertyCounselHistory(
         Number(propertyUid)
@@ -89,6 +100,8 @@ function AgentPropertyDetailPage() {
     } catch (error) {
       console.error("상담 히스토리 불러오기 실패", error);
       setCounselHistories([]);
+    } finally {
+      setIsLoading(false);
     }
   }, [propertyUid]);
 
@@ -116,6 +129,7 @@ function AgentPropertyDetailPage() {
   const confirmDelete = async () => {
     if (!propertyUid) return;
 
+    setIsLoading(true);
     try {
       await deleteProperty(Number(propertyUid));
       showToast({
@@ -130,6 +144,7 @@ function AgentPropertyDetailPage() {
         type: "error",
       });
     } finally {
+      setIsLoading(false);
       setDeleteModalOpen(false);
     }
   };
@@ -140,6 +155,7 @@ function AgentPropertyDetailPage() {
 
   return (
     <AgentPropertyDetailPageView
+      loading={isLoading}
       property={property}
       contractInfo={contractInfo}
       contractHistories={contractHistories}

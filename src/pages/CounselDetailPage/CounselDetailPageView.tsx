@@ -1,4 +1,4 @@
-import { Box, Typography, CircularProgress } from "@mui/material";
+import { Box, Typography } from "@mui/material";
 import PageHeader from "@components/PageHeader/PageHeader";
 import styles from "./styles/CounselDetailPage.module.css";
 import { CounselCategoryType } from "@ts/counsel";
@@ -13,6 +13,7 @@ import {
 } from "./components";
 import DeleteConfirmModal from "@components/DeleteConfirmModal";
 import { Dayjs } from "dayjs";
+import CircularProgress from "@components/CircularProgress";
 
 interface CounselDetailPageViewProps {
   counselData: Counsel | null;
@@ -56,9 +57,12 @@ const CounselDetailPageView = ({
 }: CounselDetailPageViewProps) => {
   if (isLoading) {
     return (
-      <Box className={styles.container}>
-        <CircularProgress />
-      </Box>
+      <div>
+        <PageHeader title="상담 상세" onMobileMenuToggle={onMobileMenuToggle} />
+        <div className="flex items-center justify-center h-[calc(100vh-72px)]">
+          <CircularProgress />
+        </div>
+      </div>
     );
   }
 

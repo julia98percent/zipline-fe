@@ -7,6 +7,7 @@ import CustomerTable from "./CustomerTable/CustomerTable";
 import CustomerAddButtonList from "./CustomerAddButtonList";
 import CustomerFilterModal from "./CustomerFilterModal/CustomerFilterModal";
 import { Customer } from "@ts/customer";
+import CircularProgress from "@components/CircularProgress";
 
 interface Filters {
   tenant: boolean;
@@ -75,8 +76,11 @@ const CustomerListPageView = ({
 }: CustomerListPageViewProps) => {
   if (loading) {
     return (
-      <div className="flex-grow h-[calc(100vh-64px)] overflow-auto ml-60 flex justify-center items-center">
-        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
+      <div className="flex-grow h-screen overflow-auto bg-gray-100 max-w-full box-border">
+        <PageHeader title="고객 목록" onMobileMenuToggle={onMobileMenuToggle} />
+        <div className="h-[calc(100vh-72px)] flex justify-center items-center">
+          <CircularProgress />
+        </div>
       </div>
     );
   }

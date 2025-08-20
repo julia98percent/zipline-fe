@@ -5,7 +5,6 @@ import {
   TextField,
   FormControlLabel,
   Checkbox,
-  CircularProgress,
   Typography,
   Divider,
   Paper,
@@ -16,6 +15,7 @@ import PageHeader from "@components/PageHeader";
 import SingleChoiceAdd from "./SingleChoiceAdd";
 import MultipleChoiceAdd from "./MultipleChoiceAdd";
 import { SurveyType, QuestionType } from "@apis/preCounselService";
+import CircularProgress from "@components/CircularProgress";
 
 const QUESTION_TYPE = [
   { value: "SUBJECTIVE", label: "주관식" },
@@ -69,8 +69,11 @@ const EditSurveyPageView = ({
 
   if (loading) {
     return (
-      <Box className="h-screen flex items-center justify-center">
-        <CircularProgress color="primary" />
+      <Box>
+        <PageHeader title="설문 수정" />
+        <div className="flex items-center justify-center h-[calc(100vh-72px)]">
+          <CircularProgress />
+        </div>
       </Box>
     );
   }

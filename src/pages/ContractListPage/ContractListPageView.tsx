@@ -13,8 +13,10 @@ import {
 } from "@mui/material";
 import { Contract } from "@ts/contract";
 import { CONTRACT_STATUS_OPTION_LIST } from "@constants/contract";
+import CircularProgress from "@components/CircularProgress";
 
 interface ContractListPageViewProps {
+  loading: boolean;
   contractList: Contract[];
   selectedPeriod: string | null;
   selectedStatus: string;
@@ -45,6 +47,7 @@ interface ContractListPageViewProps {
 }
 
 const ContractListPageView = ({
+  loading,
   contractList,
   selectedPeriod,
   selectedStatus,
@@ -73,6 +76,17 @@ const ContractListPageView = ({
   onMobileMenuToggle,
   handleClearFilters,
 }: ContractListPageViewProps) => {
+  if (loading) {
+    return (
+      <div className="flex-grow h-screen overflow-auto bg-gray-100 p-0 max-w-screen box-border">
+        <PageHeader title="계약 목록" onMobileMenuToggle={onMobileMenuToggle} />
+        <div className="flex justify-center items-center h-[calc(100vh-72px)]">
+          <CircularProgress />
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="bg-gray-100 min-h-screen">
       <PageHeader title="계약 목록" onMobileMenuToggle={onMobileMenuToggle} />

@@ -5,7 +5,6 @@ import {
   TableCell,
   TableRow,
   TableBody,
-  CircularProgress,
   Table as MuiTable,
   SxProps,
   TableCellProps,
@@ -52,7 +51,6 @@ export const ROWS_PER_PAGE_OPTIONS = [10, 25, 50];
 export const DEFAULT_ROWS_PER_PAGE = 25;
 
 function Table<T extends RowData>({
-  isLoading = false,
   columns,
   bodyList,
   handleRowClick,
@@ -107,17 +105,7 @@ function Table<T extends RowData>({
             </TableRow>
           </TableHead>
           <TableBody>
-            {isLoading ? (
-              <TableRow>
-                <TableCell
-                  colSpan={finalColumns.length}
-                  align="center"
-                  className="py-6"
-                >
-                  <CircularProgress size={24} />
-                </TableCell>
-              </TableRow>
-            ) : bodyList.length === 0 ? (
+            {bodyList.length === 0 ? (
               <TableRow>
                 <TableCell colSpan={finalColumns.length} align="center">
                   {noDataMessage}

@@ -5,7 +5,6 @@ import { showToast } from "@components/Toast";
 import CounselDetailPageView from "./CounselDetailPageView";
 import { Counsel, CounselCategory } from "@ts/counsel";
 import { PropertyCategory } from "@ts/property";
-
 import {
   fetchCounsel,
   updateCounsel,

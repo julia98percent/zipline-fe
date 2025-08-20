@@ -7,7 +7,6 @@ import {
   Typography,
   Divider,
   IconButton,
-  CircularProgress,
 } from "@mui/material";
 import { Clear } from "@mui/icons-material";
 import { translateMessageStatusToKorean } from "@utils/messageUtil";
@@ -23,6 +22,7 @@ import {
   MessageHistory,
   MessageDetail as MessageDetailType,
 } from "@ts/message";
+import CircularProgress from "@components/CircularProgress";
 
 interface Props {
   open: boolean;

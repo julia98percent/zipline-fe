@@ -1,9 +1,10 @@
-import { Box, Tabs, Tab, CircularProgress } from "@mui/material";
+import { Box, Tabs, Tab } from "@mui/material";
 import CustomerInfoTabPanel from "./components/CustomerInfoTabPanel";
 import { TabType, TabState } from "./CustomerInfo";
 import { Counsel } from "@ts/counsel";
 import { Contract } from "@ts/contract";
 import { Property } from "@ts/property";
+import CircularProgress from "@components/CircularProgress";
 
 interface CustomerInfoViewProps {
   currentTab: TabType;
@@ -58,9 +59,9 @@ const CustomerInfoView = ({
       </Tabs>
 
       {loading ? (
-        <Box className="flex items-center justify-center h-[200px]">
-          <CircularProgress color="primary" />
-        </Box>
+        <div className="flex items-center justify-center h-[200px]">
+          <CircularProgress size={36} />
+        </div>
       ) : (
         <CustomerInfoTabPanel
           tabType={currentTab}

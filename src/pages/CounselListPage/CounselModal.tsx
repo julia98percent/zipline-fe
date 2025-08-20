@@ -6,7 +6,6 @@ import {
   DialogActions,
   TextField,
   Tooltip,
-  CircularProgress,
 } from "@mui/material";
 import DatePicker from "@components/DatePicker";
 import { MenuItem, StringSelect } from "@components/Select";
@@ -166,17 +165,11 @@ function CounselModal({ open, onClose, onSuccess }: CounselModalProps) {
               required
               size="medium"
             >
-              {isCustomersLoading ? (
-                <MenuItem value="">
-                  <CircularProgress size={20} />
+              {customers.map((customer) => (
+                <MenuItem key={customer.uid} value={customer.uid}>
+                  {customer.name}
                 </MenuItem>
-              ) : (
-                customers.map((customer) => (
-                  <MenuItem key={customer.uid} value={customer.uid}>
-                    {customer.name}
-                  </MenuItem>
-                ))
-              )}
+              ))}
             </StringSelect>
 
             <StringSelect
@@ -216,17 +209,11 @@ function CounselModal({ open, onClose, onSuccess }: CounselModalProps) {
             disabled={isPropertiesLoading}
             size="medium"
           >
-            {isPropertiesLoading ? (
-              <MenuItem value="">
-                <CircularProgress size={20} />
+            {properties.map((property) => (
+              <MenuItem key={property.uid} value={property.uid}>
+                {property.address}
               </MenuItem>
-            ) : (
-              properties.map((property) => (
-                <MenuItem key={property.uid} value={property.uid}>
-                  {property.address}
-                </MenuItem>
-              ))
-            )}
+            ))}
           </StringSelect>
 
           <TextField

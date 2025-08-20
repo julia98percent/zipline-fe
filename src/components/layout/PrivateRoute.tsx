@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { Outlet, Navigate } from "react-router-dom";
 import NavigationBar from "@components/NavigationBar";
-import { CircularProgress } from "@mui/material";
+import CircularProgress from "@components/CircularProgress";
 import { clearAllAuthState } from "@utils/authUtil";
 import useAuthStore from "@stores/useAuthStore";
 import { SSEProvider } from "@context/SSEContext";
@@ -37,7 +37,7 @@ const PrivateRoute = () => {
   if (isSignedIn === null || (isSignedIn && !user)) {
     return (
       <div className="flex justify-center items-center h-screen">
-        <CircularProgress color="primary" />
+        <CircularProgress />
       </div>
     );
   }

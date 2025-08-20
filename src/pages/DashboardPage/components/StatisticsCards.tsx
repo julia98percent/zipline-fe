@@ -1,11 +1,6 @@
 import React from "react";
-import {
-  Box,
-  Card,
-  CardContent,
-  Typography,
-  CircularProgress,
-} from "@mui/material";
+import { Box, Card, CardContent, Typography } from "@mui/material";
+import CircularProgress from "@components/CircularProgress";
 import AssignmentIcon from "@mui/icons-material/Assignment";
 import DonutLargeIcon from "@mui/icons-material/DonutLarge";
 import CheckCircleIcon from "@mui/icons-material/CheckCircle";

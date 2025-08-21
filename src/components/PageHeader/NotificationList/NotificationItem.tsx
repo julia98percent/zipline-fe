@@ -50,27 +50,29 @@ function NotificationItem({
 
   return (
     <div
-      className={`text-base text-left border-gray-200 px-3 py-4 border-b-1 hover:bg-blue-50 cursor-pointer transition-colors duration-200 ${
-        !notification.read ? "bg-gray-100" : ""
+      className={`text-base text-left px-3 py-4 border-b border-gray-200 hover:bg-blue-50 cursor-pointer transition-colors duration-200 ${
+        notification.read ? "opacity-75" : ""
       }`}
       onClick={handleClick}
     >
       <div className="flex justify-between items-start flex-col gap-2">
         <div className="flex items-start gap-2">
-          <p className="inline text-neutral-700 leading-relaxed">
-            <span className="text-base font-medium">{`[${translateNotificationCategory(
-              notification.category
-            )}] `}</span>
+          <div className="inline text-neutral-700 leading-relaxed">
+            <div className="flex items-center gap-2">
+              <span className="text-base font-semibold">{`[${translateNotificationCategory(
+                notification.category
+              )}] `}</span>
+              <span className="text-xs text-gray-500">
+                {formatDateTimeToKorean(notification.createdAt)}
+              </span>
+            </div>
             {notification.content}
-          </p>
-          <IconButton onClick={handleDelete}>
+          </div>
+          <IconButton onClick={handleDelete} className="p-0">
             <ClearIcon className="block fill-neutral-600!" />
           </IconButton>
         </div>
       </div>
-      <span className="text-xs text-blue-500">
-        {formatDateTimeToKorean(notification.createdAt)}
-      </span>
     </div>
   );
 }

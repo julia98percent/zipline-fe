@@ -69,7 +69,7 @@ export const InfoItem = styled(Box)(({ theme }) => ({
 export const InfoLabel = styled(Typography)(({ theme }) => ({
   color: theme.palette.text.secondary,
   fontSize: "0.875rem",
-  fontWeight: 600,
+  fontWeight: 500,
   fontFamily: "Pretendard, sans-serif",
 }));
 

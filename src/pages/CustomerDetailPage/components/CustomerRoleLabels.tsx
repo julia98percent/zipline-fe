@@ -39,7 +39,7 @@ const CustomerRoleLabels = ({
     <Paper elevation={0} className="flex-1 p-6 rounded-lg shadow-sm mt-2">
       {/* 역할 정보 영역 */}
       <Box className="mb-8">
-        <Typography variant="h6" className="mb-4 font-bold text-primary">
+        <Typography variant="h6" className="mb-4 font-semibold text-primary">
           역할
         </Typography>
         <Box className="flex gap-2 flex-wrap">
@@ -129,7 +129,7 @@ const CustomerRoleLabels = ({
 
       {/* 라벨 영역 */}
       <Box>
-        <Typography variant="h6" className="mb-4 font-bold text-primary">
+        <Typography variant="h6" className="mb-4 font-semibold text-primary">
           라벨
         </Typography>
         <Box className="flex flex-wrap gap-2">

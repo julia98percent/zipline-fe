@@ -1,4 +1,4 @@
-import { Typography, Box } from "@mui/material";
+import { Chip } from "@mui/material";
 import Table, { ColumnConfig } from "@components/Table/Table";
 import MobilePagination from "@components/MobilePagination";
 import dayjs from "dayjs";
@@ -56,25 +56,22 @@ const CounselTable = ({
         const counsel = row as Counsel;
         const isCompleted = !counsel.dueDate || counsel.completed;
         return (
-          <Typography
-            variant="body2"
-            className="py-2 px-2 rounded-sm inline-block"
+          <Chip
+            label={isCompleted ? "의뢰 마감" : "의뢰 진행 중"}
             sx={{
               color: isCompleted ? "#219653" : "#F2994A",
               backgroundColor: isCompleted ? "#E9F7EF" : "#FEF5EB",
             }}
-          >
-            {isCompleted ? "의뢰 마감" : "의뢰 진행 중"}
-          </Typography>
+          />
         );
       },
     },
   ];
 
   return (
-    <Box className="w-full">
+    <div className="w-full">
       {/* Desktop view - 768px and above */}
-      <Box className="hidden lg:block">
+      <div className="hidden lg:block">
         <Table
           isLoading={isLoading}
           columns={columns}
@@ -92,17 +89,17 @@ const CounselTable = ({
           pagination={true}
           className="rounded-sm shadow-md"
         />
-      </Box>
+      </div>
 
       {/* Mobile view - below 768px */}
-      <Box className="block lg:hidden">
+      <div className="block lg:hidden">
         {counsels.length === 0 ? (
-          <Box className="text-center py-8 text-gray-500">
+          <div className="text-center py-8 text-gray-500">
             상담 내역이 없습니다.
-          </Box>
+          </div>
         ) : (
           <>
-            <Box className="space-y-4">
+            <div className="space-y-4">
               {counsels.map((counsel) => (
                 <CounselCard
                   key={counsel.counselUid}
@@ -110,7 +107,7 @@ const CounselTable = ({
                   onRowClick={onRowClick}
                 />
               ))}
-            </Box>
+            </div>
             <MobilePagination
               page={page}
               totalElements={totalElements}
@@ -119,8 +116,8 @@ const CounselTable = ({
             />
           </>
         )}
-      </Box>
-    </Box>
+      </div>
+    </div>
   );
 };
 

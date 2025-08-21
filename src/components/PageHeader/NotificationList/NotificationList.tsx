@@ -61,18 +61,19 @@ function NotificationList({
 
   return (
     <>
-      <Box className="absolute top-15 -right-12 bg-white shadow-lg rounded-lg p-4 z-50 w-2/5 min-w-75 max-w-96 max-h-[50vh] overflow-hidden flex flex-col">
-        <div className="flex items-center justify-between text-gray-900 font-semibold pb-2 border-b border-gray-200">
-          <Typography variant="h6">알림</Typography>
+      <Box className="absolute top-15 -right-12 bg-white shadow-lg rounded-lg p-4 z-50 w-[40vw] min-w-[300px] max-w-96 max-h-[50vh] overflow-hidden flex flex-col">
+        <div className="flex items-center justify-between text-gray-900 font-semibold px-2 pb-2 border-b border-gray-200">
+          <h5 className="text-md">알림</h5>
           <Button
             variant="text"
             color="primary"
             onClick={handleReadAllNotifications}
+            className="p-0"
           >
             모두 읽음 표시
           </Button>
         </div>
-        <List className="p-0 flex-1 overflow-y-auto min-h-0 divide-y divide-gray-200">
+        <List className="flex flex-col flex-1 overflow-y-auto min-h-0 divide-y divide-gray-200 gap-2">
           {notifications.length === 0 ? (
             <Box className="p-6 text-center">
               <Typography className="text-neutral-500 text-sm">

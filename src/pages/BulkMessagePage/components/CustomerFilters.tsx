@@ -57,7 +57,7 @@ const CustomerFilters = ({
 
       {/* 지역 선택 */}
       <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-10">
-        <h6 className="whitespace-nowrap font-semibold">지역</h6>
+        <h6 className="whitespace-nowrap font-medium text-gray-800">지역</h6>
         <div className="flex gap-2">
           <RegionSelector
             value={region.selectedSido || ""}
@@ -85,7 +85,7 @@ const CustomerFilters = ({
       <div className="flex flex-col gap-4">
         {/* 역할 필터 */}
         <div className="flex flex-col sm:flex-row sm:items-center gap-2">
-          <h6 className="font-semibold">고객 역할</h6>
+          <h6 className="font-medium text-gray-800">고객 역할</h6>
           <div className="flex gap-2">
             {(Object.keys(roleFilters) as (keyof typeof roleFilters)[]).map(
               (role) => (
@@ -101,7 +101,7 @@ const CustomerFilters = ({
         </div>
 
         <div className="flex flex-col sm:flex-row sm:items-center gap-2">
-          <h6 className="font-semibold">고객 라벨</h6>
+          <h6 className="font-medium text-gray-800">고객 라벨</h6>
           <div>
             {labels.map((label) => (
               <Chip

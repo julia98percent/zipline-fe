@@ -39,22 +39,12 @@ const WeeklyScheduleCalendar: React.FC<WeeklyScheduleCalendarProps> = ({
       {/* Header */}
       <div className="p-4 border-b border-gray-200 flex items-center justify-between">
         <div className="flex items-center gap-2 h-full">
-          <h2 className="text-xl font-semibold text-primary">주간 일정</h2>
-          {/* 데스크톱: 텍스트 버튼 */}
-          <Button
-            variant="outlined"
-            size="small"
-            onClick={onViewAllSchedules}
-            className="hidden lg:inline-flex hover:cursor-pointer"
-          >
-            전체 일정 보기
-          </Button>
-          {/* 모바일/태블릿: 아이콘 버튼 */}
+          <h6 className="text-lg font-semibold text-primary">주간 일정</h6>
           <IconButton
             edge="end"
             size="small"
             onClick={onViewAllSchedules}
-            className="lg:hidden p-2 min-w-0 bg-gray-100 hover:bg-gray-300"
+            className="p-1 min-w-0 hover:bg-gray-100"
             aria-label="전체 일정 보기"
           >
             <OpenInFull fontSize="small" />

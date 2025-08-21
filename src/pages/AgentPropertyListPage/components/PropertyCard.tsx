@@ -32,16 +32,14 @@ const PropertyCard = ({ property, onRowClick }: PropertyCardProps) => {
     } else if (property.type === "DEPOSIT") {
       return property.deposit ? formatKoreanPrice(property.deposit) : "-";
     } else {
-      const deposit = property.deposit ? formatKoreanPrice(property.deposit) : "0만원";
+      const deposit = property.deposit
+        ? formatKoreanPrice(property.deposit)
+        : "0만원";
       const monthly = property.monthlyRent
         ? formatKoreanPrice(property.monthlyRent)
         : "0만원";
       return `${deposit}/${monthly}`;
     }
-  };
-
-  const getTypeChipColor = (type: string) => {
-    return getPropertyTypeColors(type).text;
   };
 
   const getCategoryChipColor = (category: string) => {
@@ -80,18 +78,12 @@ const PropertyCard = ({ property, onRowClick }: PropertyCardProps) => {
           />
           <Chip
             label={getPropertyTypeText(property.type)}
-            size="small"
-            variant="outlined"
-            className="text-xs h-6"
-            style={{
-              borderColor: getTypeChipColor(property.type),
-              color: getTypeChipColor(property.type),
-            }}
             sx={{
-              "& .MuiChip-label": {
-                padding: "0 8px",
-              },
+              backgroundColor: getPropertyTypeColors(property.type).background,
+              color: getPropertyTypeColors(property.type).text,
             }}
+            size="small"
+            className="text-xs"
           />
         </Box>
 

@@ -58,7 +58,7 @@ const CustomerPriceInfo = ({
 
   return (
     <Paper elevation={0} className="p-6 rounded-lg mb-6 shadow-none bg-white">
-      <Typography variant="h6" className="mb-4 text-primary font-bold">
+      <Typography variant="h6" className="mb-4 text-primary font-semibold">
         희망 거래 가격
       </Typography>
       <div className="flex flex-wrap gap-4">

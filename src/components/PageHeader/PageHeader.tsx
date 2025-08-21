@@ -110,7 +110,7 @@ const PageHeader = ({ title, onMobileMenuToggle }: PageHeaderProps) => {
   }, [notificationList, setNotificationList]);
 
   return (
-    <Box className="bg-white border-b border-gray-300 flex items-center justify-between h-18 px-4 sticky top-0 z-50 shadow-sm">
+    <Box className="bg-white border-b border-gray-300 flex items-center justify-between h-18 px-4 sticky top-0 z-50">
       <Box className="flex items-center gap-4">
         {isMobile && (
           <IconButton
@@ -123,7 +123,7 @@ const PageHeader = ({ title, onMobileMenuToggle }: PageHeaderProps) => {
         <Typography
           variant="h5"
           component="h1"
-          className={`font-bold text-gray-800 ${
+          className={`font-semibold text-gray-800 ${
             isMobile ? "absolute left-1/2 transform -translate-x-1/2" : ""
           }`}
         >

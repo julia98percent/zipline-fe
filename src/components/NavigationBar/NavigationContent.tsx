@@ -1,6 +1,5 @@
 import {
   Box,
-  Typography,
   List,
   ListItem,
   ListItemButton,
@@ -98,12 +97,9 @@ const NavigationContent = ({ onItemClick }: NavigationContentProps) => {
         <Link to={"/"} style={{ textDecoration: "none" }}>
           <Box className="flex items-center">
             <img src={Logo} alt="ZIPLINE Logo" className="w-6 h-6 mr-2" />
-            <Typography
-              variant="h6"
-              className="font-bold text-blue-800 text-primary"
-            >
+            <h3 className="text-lg font-bold text-blue-800 text-primary">
               ZIPLINE
-            </Typography>
+            </h3>
           </Box>
         </Link>
       </Box>

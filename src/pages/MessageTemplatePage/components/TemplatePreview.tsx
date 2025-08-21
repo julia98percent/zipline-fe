@@ -1,5 +1,5 @@
 import React from "react";
-import { Box, Typography } from "@mui/material";
+import { Typography } from "@mui/material";
 import { AllowedVariable } from "@ts/message";
 
 interface TemplatePreviewProps {
@@ -24,8 +24,16 @@ const TemplatePreview: React.FC<TemplatePreviewProps> = ({
 
     while ((match = regex.exec(content)) !== null) {
       if (match.index > lastIndex) {
+        const text = content.slice(lastIndex, match.index);
         result.push(
-          <span key={lastIndex}>{content.slice(lastIndex, match.index)}</span>
+          <span key={lastIndex}>
+            {text.split("\n").map((line, index, array) => (
+              <React.Fragment key={index}>
+                {line}
+                {index < array.length - 1 && <br />}
+              </React.Fragment>
+            ))}
+          </span>
         );
       }
 
@@ -73,32 +81,49 @@ const TemplatePreview: React.FC<TemplatePreviewProps> = ({
       }
 
       // 나머지는 일반 텍스트
-      result.push(<span key={match.index}>{part}</span>);
+      result.push(
+        <span key={match.index}>
+          {part.split("\n").map((line, index, array) => (
+            <React.Fragment key={index}>
+              {line}
+              {index < array.length - 1 && <br />}
+            </React.Fragment>
+          ))}
+        </span>
+      );
       lastIndex = regex.lastIndex;
     }
 
     if (lastIndex < content.length) {
-      result.push(<span key={lastIndex}>{content.slice(lastIndex)}</span>);
+      const text = content.slice(lastIndex);
+      result.push(
+        <span key={lastIndex}>
+          {text.split("\n").map((line, index, array) => (
+            <React.Fragment key={index}>
+              {line}
+              {index < array.length - 1 && <br />}
+            </React.Fragment>
+          ))}
+        </span>
+      );
     }
 
     return result;
   };
 
   return (
-    <Box className="mt-4">
-      <Typography variant="subtitle2" className="text-[#666] mb-1">
-        미리보기
-      </Typography>
-      <Box className="p-7 bg-[#F8F9FA] rounded-lg min-h-[48px] text-base">
+    <div className="mt-4">
+      <span className="text-sm font-normal text-[#666] mb-1">미리보기</span>
+      <div className="p-7 bg-[#F8F9FA] rounded-lg min-h-[48px] max-h-[200px] text-base overflow-y-scroll">
         {getHighlightedPreview(templateContent, allowedVariables)}
-      </Box>
+      </div>
       {hasBrokenVariable && (
         <Typography color="error" className="mt-2">
           변수 표기(&#123;&#123;...&#125;&#125;)가 올바르지 않습니다. 쌍이
           맞는지 확인해 주세요.
         </Typography>
       )}
-    </Box>
+    </div>
   );
 };
 

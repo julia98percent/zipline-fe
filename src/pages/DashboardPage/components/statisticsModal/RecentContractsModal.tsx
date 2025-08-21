@@ -1,10 +1,12 @@
-import { Modal, Box, Typography, Chip } from "@mui/material";
+import { Modal, Box, Typography, Chip, useMediaQuery } from "@mui/material";
 import { useState, useEffect, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
 import { CONTRACT_STATUS_TYPES } from "@constants/contract";
 import { fetchRecentContractsForDashboard } from "@apis/contractService";
 import { Contract } from "@ts/contract";
 import Table, { ColumnConfig } from "@components/Table";
+import ContractCard from "@pages/ContractListPage/ContractCard/ContractCard";
+import MobilePagination from "@components/MobilePagination";
 import { getPropertyTypeColors } from "@constants/property";
 
 interface RecentContractsModalProps {
@@ -14,6 +16,7 @@ interface RecentContractsModalProps {
 
 const RecentContractsModal = ({ open, onClose }: RecentContractsModalProps) => {
   const navigate = useNavigate();
+  const isSmallModal = useMediaQuery("(max-width: 1200px)");
 
   const [contracts, setContracts] = useState<Contract[]>([]);
   const [loading, setLoading] = useState(false);
@@ -55,6 +58,11 @@ const RecentContractsModal = ({ open, onClose }: RecentContractsModalProps) => {
   const handleRowsPerPageChange = (newRowsPerPage: number) => {
     setRowsPerPage(newRowsPerPage);
     setPage(0);
+  };
+
+  const handleContractClick = (contract: Contract) => {
+    navigate(`/contracts/${contract.uid}`);
+    onClose();
   };
 
   const getColor = (color: string) => {
@@ -203,24 +211,56 @@ const RecentContractsModal = ({ open, onClose }: RecentContractsModalProps) => {
         <Typography className="font-bold text-primary text-xl mb-4">
           최근 계약 목록
         </Typography>
-        <Table
-          columns={columns}
-          bodyList={tableData}
-          handleRowClick={(contract) => {
-            navigate(`/contracts/${contract.uid}`);
-            onClose();
-          }}
-          pagination={true}
-          totalElements={totalCount}
-          page={page}
-          handleChangePage={(_, newPage) => handlePageChange(newPage)}
-          rowsPerPage={rowsPerPage}
-          handleChangeRowsPerPage={(e) =>
-            handleRowsPerPageChange(parseInt(e.target.value, 10))
-          }
-          isLoading={loading}
-          noDataMessage="계약 데이터가 없습니다"
-        />
+
+        {isSmallModal ? (
+          <Box>
+            {loading ? (
+              <Box className="text-center py-8">로딩 중...</Box>
+            ) : contracts.length === 0 ? (
+              <Box className="text-center py-8 text-gray-500">
+                계약 데이터가 없습니다
+              </Box>
+            ) : (
+              <>
+                <Box className="space-y-4 max-h-96 overflow-y-auto">
+                  {contracts.map((contract) => (
+                    <ContractCard
+                      key={contract.uid}
+                      contract={contract}
+                      onRowClick={handleContractClick}
+                    />
+                  ))}
+                </Box>
+                <MobilePagination
+                  page={page}
+                  totalElements={totalCount}
+                  rowsPerPage={rowsPerPage}
+                  onPageChange={(_, newPage) => handlePageChange(newPage)}
+                />
+              </>
+            )}
+          </Box>
+        ) : (
+          /* 큰 모달에서는 테이블 사용 */
+          <Table
+            columns={columns}
+            bodyList={tableData}
+            handleRowClick={(contract) => {
+              navigate(`/contracts/${contract.uid}`);
+              onClose();
+            }}
+            pagination={true}
+            totalElements={totalCount}
+            page={page}
+            handleChangePage={(_, newPage) => handlePageChange(newPage)}
+            rowsPerPage={rowsPerPage}
+            handleChangeRowsPerPage={(e) =>
+              handleRowsPerPageChange(parseInt(e.target.value, 10))
+            }
+            isLoading={loading}
+            noDataMessage="계약 데이터가 없습니다"
+          />
+        )}
       </Box>
     </Modal>
   );

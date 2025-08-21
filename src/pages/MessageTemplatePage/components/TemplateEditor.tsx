@@ -45,7 +45,7 @@ const TemplateEditor: React.FC<TemplateEditorProps> = ({
   onOpenDeleteDialog,
 }) => {
   return (
-    <Paper className="flex-1 p-5 rounded-lg shadow-sm">
+    <Paper className="flex-1 p-5 rounded-lg shadow-sm h-[500px] min-h-max">
       <div className="flex gap-7 mb-4">
         <TextField
           fullWidth

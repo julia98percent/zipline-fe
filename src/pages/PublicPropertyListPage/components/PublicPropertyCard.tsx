@@ -74,7 +74,7 @@ const PublicPropertyCard = ({
             color="success"
             variant="outlined"
             size="small"
-            className="font-medium"
+            className="text-xs"
           />
           <Chip
             label={getCategoryText(property.category)}

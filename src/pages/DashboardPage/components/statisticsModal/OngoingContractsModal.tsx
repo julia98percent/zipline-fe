@@ -1,10 +1,12 @@
-import { Modal, Box, Typography, Chip } from "@mui/material";
+import { Modal, Box, Typography, Chip, useMediaQuery } from "@mui/material";
 import { useState, useEffect, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
 import { Contract } from "@ts/contract";
 import { CONTRACT_STATUS_TYPES } from "@constants/contract";
 import { fetchOngoingContractsForDashboard } from "@apis/contractService";
 import Table, { ColumnConfig } from "@components/Table";
+import ContractCard from "@pages/ContractListPage/ContractCard/ContractCard";
+import MobilePagination from "@components/MobilePagination";
 import { getPropertyTypeColors } from "@constants/property";
 
 interface OngoingContractsModalProps {
@@ -17,6 +19,7 @@ const OngoingContractsModal = ({
   onClose,
 }: OngoingContractsModalProps) => {
   const navigate = useNavigate();
+  const isSmallModal = useMediaQuery("(max-width: 1200px)");
 
   const [contracts, setContracts] = useState<Contract[]>([]);
   const [loading, setLoading] = useState(false);
@@ -128,6 +131,11 @@ const OngoingContractsModal = ({
     navigate(`/contracts/${contractUid}`);
   };
 
+  const handleContractClick = (contract: Contract) => {
+    navigate(`/contracts/${contract.uid}`);
+    onClose();
+  };
+
   // 컬럼 설정
   const columns: ColumnConfig<Contract>[] = [
     {
@@ -196,21 +204,54 @@ const OngoingContractsModal = ({
         <Typography className="font-bold text-primary text-xl mb-4">
           진행 중인 계약 목록
         </Typography>
-        <Table
-          columns={columns}
-          bodyList={tableData}
-          handleRowClick={(contract) => handleRowClick(contract.uid)}
-          pagination={true}
-          totalElements={totalCount}
-          page={page}
-          handleChangePage={(_, newPage) => handlePageChange(newPage)}
-          rowsPerPage={rowsPerPage}
-          handleChangeRowsPerPage={(e) =>
-            handleRowsPerPageChange(parseInt(e.target.value, 10))
-          }
-          isLoading={loading}
-          noDataMessage="진행 중인 계약이 없습니다"
-        />
+        
+        {isSmallModal ? (
+          /* 작은 모달에서는 카드 컴포넌트 사용 */
+          <Box>
+            {loading ? (
+              <Box className="text-center py-8">로딩 중...</Box>
+            ) : contracts.length === 0 ? (
+              <Box className="text-center py-8 text-gray-500">
+                진행 중인 계약이 없습니다
+              </Box>
+            ) : (
+              <>
+                <Box className="space-y-4 max-h-96 overflow-y-auto">
+                  {contracts.map((contract) => (
+                    <ContractCard
+                      key={contract.uid}
+                      contract={contract}
+                      onRowClick={handleContractClick}
+                    />
+                  ))}
+                </Box>
+                <MobilePagination
+                  page={page}
+                  totalElements={totalCount}
+                  rowsPerPage={rowsPerPage}
+                  onPageChange={(_, newPage) => handlePageChange(newPage)}
+                />
+              </>
+            )}
+          </Box>
+        ) : (
+          /* 큰 모달에서는 테이블 사용 */
+          <Table
+            columns={columns}
+            bodyList={tableData}
+            handleRowClick={(contract) => handleRowClick(contract.uid)}
+            pagination={true}
+            totalElements={totalCount}
+            page={page}
+            handleChangePage={(_, newPage) => handlePageChange(newPage)}
+            rowsPerPage={rowsPerPage}
+            handleChangeRowsPerPage={(e) =>
+              handleRowsPerPageChange(parseInt(e.target.value, 10))
+            }
+            isLoading={loading}
+            noDataMessage="진행 중인 계약이 없습니다"
+          />
+        )}
       </Box>
     </Modal>
   );

@@ -15,7 +15,7 @@ body {
 
 @layer components {
   .fc-toolbar-title {
-    @apply text-lg font-semibold text-gray-800;
+    @apply text-lg text-gray-800;
   }
   .fc-toolbar-chunk .fc-button {
     @apply bg-transparent! border-none! text-gray-700!

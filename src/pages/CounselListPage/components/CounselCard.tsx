@@ -1,4 +1,4 @@
-import { Typography } from "@mui/material";
+import { Chip } from "@mui/material";
 import dayjs from "dayjs";
 import { Counsel } from "@ts/counsel";
 
@@ -59,16 +59,13 @@ const CounselCard = ({ counsel, onRowClick }: CounselCardProps) => {
 
       {/* 의뢰 상태 */}
       <div className="mt-2 flex justify-end">
-        <Typography
-          variant="body2"
-          className="py-1 px-3 rounded-full text-xs font-medium"
+        <Chip
+          label={isCompleted ? "의뢰 마감" : "의뢰 진행 중"}
           sx={{
             color: isCompleted ? "#219653" : "#F2994A",
             backgroundColor: isCompleted ? "#E9F7EF" : "#FEF5EB",
           }}
-        >
-          {isCompleted ? "의뢰 마감" : "의뢰 진행 중"}
-        </Typography>
+        ></Chip>
       </div>
     </div>
   );

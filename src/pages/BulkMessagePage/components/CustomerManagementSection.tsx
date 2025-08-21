@@ -22,7 +22,7 @@ const CustomerManagementSection = ({
     <Box className="w-full">
       <Paper className="p-6 mb-4 rounded-lg shadow-sm">
         <Box className="flex justify-between items-center">
-          <Typography className="text-xl font-semibold">
+          <Typography className="text-xl font-medium">
             문자 발송 대상 고객
           </Typography>
           <Button variant="contained" color="primary" onClick={onAddCustomer}>

@@ -70,11 +70,10 @@ const ContractCard = ({ contract, onRowClick }: ContractCardProps) => {
       <Chip
         label={statusType.label}
         size="small"
+        className="text-xs"
         sx={{
           backgroundColor: colors.backgroundColor,
           color: colors.color,
-          fontSize: "0.7rem",
-          height: "20px",
         }}
       />
     );
@@ -102,11 +101,10 @@ const ContractCard = ({ contract, onRowClick }: ContractCardProps) => {
       <Chip
         label={getCategoryLabel(category)}
         size="small"
+        className="text-xs"
         sx={{
           backgroundColor: colors.background,
           color: colors.text,
-          fontSize: "0.7rem",
-          height: "20px",
         }}
       />
     );

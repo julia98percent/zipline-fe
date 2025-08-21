@@ -156,7 +156,7 @@ const CustomerBasicInfo = ({
 
   return (
     <div className="flex-grow p-6 rounded-lg bg-white shadow-sm mt-2">
-      <h6 className="mb-4 font-bold text-xl text-primary">기본 정보</h6>
+      <h6 className="mb-4 font-semibold text-xl text-primary">기본 정보</h6>
       <div className="flex flex-wrap gap-4">
         <div className="flex-[0_0_calc(50%-8px)]">
           <div className="text-sm text-gray-600 mb-1">이름</div>

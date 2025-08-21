@@ -1,5 +1,5 @@
 import React from "react";
-import { Box, Card, Typography } from "@mui/material";
+import { Box, Card } from "@mui/material";
 import { formatDate } from "@utils/dateUtil";
 import { PreCounsel } from "@ts/counsel";
 import Table, { ColumnConfig } from "@components/Table";
@@ -46,9 +46,9 @@ const SurveyList: React.FC<SurveyListProps> = ({
   return (
     <Card className="flex-1 flex flex-col rounded-md bg-white shadow-sm p-4">
       <Box className="flex items-center justify-between border-b border-[#e0e0e0]">
-        <Typography variant="h6" className="font-semibold pb-2 text-primary">
+        <h6 className="text-lg font-semibold pb-2 text-primary">
           신규 사전 상담
-        </Typography>
+        </h6>
       </Box>
       <Box className="flex-1 overflow-auto">
         <Table

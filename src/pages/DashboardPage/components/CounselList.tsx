@@ -1,5 +1,5 @@
 import React from "react";
-import { Box, Card, Typography, Tabs, Tab, Chip, Tooltip } from "@mui/material";
+import { Box, Card, Tabs, Tab, Chip, Tooltip } from "@mui/material";
 import { formatDate } from "@utils/dateUtil";
 import { Counsel } from "@ts/counsel";
 import Table, { ColumnConfig } from "@components/Table";
@@ -64,12 +64,10 @@ const CounselList: React.FC<CounselListProps> = ({
   }));
 
   return (
-    <Card className="flex flex-col shadow-sm rounded-md bg-white min-h-96 h-fit">
-      <Box className="p-4 border-b border-gray-300">
+    <Card className="p-4 flex flex-col shadow-sm rounded-md bg-white min-h-96 h-fit">
+      <Box className="border-b border-gray-300">
         <Box className="flex items-center justify-between mb-2">
-          <Typography variant="h6" className="font-semibold text-primary">
-            상담 목록
-          </Typography>
+          <h6 className="text-lg font-semibold text-primary">상담 목록</h6>
         </Box>
         <Tabs
           value={counselTab}

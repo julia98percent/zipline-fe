@@ -1,5 +1,5 @@
 import React, { useMemo } from "react";
-import { Box, Card, Typography, Tabs, Tab, Tooltip } from "@mui/material";
+import { Box, Card, Tabs, Tab, Tooltip } from "@mui/material";
 import { useNavigate } from "react-router-dom";
 import { formatDate } from "@utils/dateUtil";
 import { Contract } from "@ts/contract";
@@ -112,12 +112,10 @@ const ContractList = ({
   };
 
   return (
-    <Card className="flex flex-col rounded-md bg-white min-h-96 h-fit shadow-sm">
-      <Box className="p-4 border-b border-gray-300">
+    <Card className="p-4 flex flex-col rounded-md bg-white min-h-96 h-fit shadow-sm">
+      <Box className="border-b border-gray-300">
         <Box className="flex items-center justify-between mb-2 ">
-          <Typography variant="h6" className="font-semibold text-primary">
-            계약 목록
-          </Typography>
+          <h6 className="text-lg font-semibold text-primary">계약 목록</h6>
         </Box>
         <Tabs
           value={contractTab}

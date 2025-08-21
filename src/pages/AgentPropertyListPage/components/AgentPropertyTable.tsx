@@ -61,10 +61,6 @@ const AgentPropertyTable = ({
     }
   };
 
-  const getTypeChipColor = (type: string) => {
-    return getPropertyTypeColors(type).text;
-  };
-
   const getCategoryChipColor = (category: string) => {
     return getPropertyCategoryColors(category).text;
   };
@@ -97,23 +93,20 @@ const AgentPropertyTable = ({
       key: "type",
       label: "거래 유형",
       width: "120px",
-      render: (_, row) => (
-        <Chip
-          label={getPropertyTypeText(row.type)}
-          size="small"
-          variant="outlined"
-          className="text-xs h-6"
-          style={{
-            borderColor: getTypeChipColor(row.type),
-            color: getTypeChipColor(row.type),
-          }}
-          sx={{
-            "& .MuiChip-label": {
-              padding: "0 8px",
-            },
-          }}
-        />
-      ),
+      render: (_, row) => {
+        const colors = getPropertyTypeColors(row.type);
+        return (
+          <Chip
+            label={getPropertyTypeText(row.type)}
+            sx={{
+              backgroundColor: colors.background,
+              color: colors.text,
+            }}
+            size="small"
+            className="text-sm"
+          />
+        );
+      },
     },
     {
       key: "address",

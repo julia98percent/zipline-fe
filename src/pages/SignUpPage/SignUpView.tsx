@@ -7,8 +7,7 @@ import {
   PhoneNumberInput,
   UserIdInput,
 } from "./components";
-import { Box, Typography } from "@mui/material";
-import signUpImage from "@assets/sign-up.png";
+import { Typography } from "@mui/material";
 
 interface SignUpViewProps {
   formData: {

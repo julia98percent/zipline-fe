@@ -32,26 +32,24 @@ const NameInput = ({
       : "");
 
   return (
-    <div style={{ position: "relative" }}>
-      <TextField
-        fullWidth
-        required
-        label="이름"
-        value={name}
-        onChange={handleChangeName}
-        onBlur={onBlur}
-        onKeyDown={onKeyDown}
-        error={isError}
-        placeholder="2자 이상 20자 이하로 입력해주세요"
-        InputProps={{
-          endAdornment: isError && (
-            <Tooltip title={errorMessage} arrow placement="right">
-              <ErrorOutlineIcon color="error" className="cursor-help" />
-            </Tooltip>
-          ),
-        }}
-      />
-    </div>
+    <TextField
+      fullWidth
+      required
+      label="이름"
+      value={name}
+      onChange={handleChangeName}
+      onBlur={onBlur}
+      onKeyDown={onKeyDown}
+      error={isError}
+      placeholder="2자 이상 20자 이하로 입력해주세요"
+      InputProps={{
+        endAdornment: isError && (
+          <Tooltip title={errorMessage} arrow placement="right">
+            <ErrorOutlineIcon color="error" className="cursor-help" />
+          </Tooltip>
+        ),
+      }}
+    />
   );
 };
 

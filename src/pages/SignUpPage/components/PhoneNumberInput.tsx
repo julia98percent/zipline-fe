@@ -49,41 +49,39 @@ const PhoneNumberInput = ({
   );
 
   return (
-    <div style={{ position: "relative" }}>
-      <TextField
-        label="전화번호"
-        value={phoneNumber}
-        onChange={handleChange}
-        onBlur={onBlur}
-        onKeyDown={onKeyDown}
-        placeholder="010-1234-5678"
-        type="tel"
-        fullWidth
-        required
-        variant="outlined"
-        error={isError}
-        InputProps={{
-          endAdornment: isError && (
-            <Tooltip title={errorMessage} arrow placement="right">
-              <ErrorOutlineIcon color="error" className="cursor-help" />
-            </Tooltip>
-          ),
-        }}
-        sx={{
-          "& .MuiOutlinedInput-root": {
-            "&:hover fieldset": {
-              borderColor: "#164F9E",
-            },
-            "&.Mui-focused fieldset": {
-              borderColor: "#164F9E",
-            },
+    <TextField
+      label="전화번호"
+      value={phoneNumber}
+      onChange={handleChange}
+      onBlur={onBlur}
+      onKeyDown={onKeyDown}
+      placeholder="010-1234-5678"
+      type="tel"
+      fullWidth
+      required
+      variant="outlined"
+      error={isError}
+      InputProps={{
+        endAdornment: isError && (
+          <Tooltip title={errorMessage} arrow placement="right">
+            <ErrorOutlineIcon color="error" className="cursor-help" />
+          </Tooltip>
+        ),
+      }}
+      sx={{
+        "& .MuiOutlinedInput-root": {
+          "&:hover fieldset": {
+            borderColor: "#164F9E",
           },
-          "& .MuiInputLabel-root.Mui-focused": {
-            color: "#164F9E",
+          "&.Mui-focused fieldset": {
+            borderColor: "#164F9E",
           },
-        }}
-      />
-    </div>
+        },
+        "& .MuiInputLabel-root.Mui-focused": {
+          color: "#164F9E",
+        },
+      }}
+    />
   );
 };
 

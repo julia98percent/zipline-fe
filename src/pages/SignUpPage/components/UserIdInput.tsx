@@ -30,26 +30,24 @@ const UserIdInput = ({
       : "");
 
   return (
-    <div style={{ position: "relative" }}>
-      <TextField
-        required
-        label="아이디"
-        value={userId}
-        onChange={handleChangeUserId}
-        onKeyDown={onKeyDown}
-        fullWidth
-        onBlur={onBlur}
-        error={isError}
-        placeholder="영문과 숫자를 포함해 4~12자로 입력해주세요"
-        InputProps={{
-          endAdornment: isError && (
-            <Tooltip title={errorMessage} arrow placement="right">
-              <ErrorOutlineIcon color="error" className="cursor-help" />
-            </Tooltip>
-          ),
-        }}
-      />
-    </div>
+    <TextField
+      required
+      label="아이디"
+      value={userId}
+      onChange={handleChangeUserId}
+      onKeyDown={onKeyDown}
+      fullWidth
+      onBlur={onBlur}
+      error={isError}
+      placeholder="영문과 숫자를 포함해 4~12자로 입력해주세요"
+      InputProps={{
+        endAdornment: isError && (
+          <Tooltip title={errorMessage} arrow placement="right">
+            <ErrorOutlineIcon color="error" className="cursor-help" />
+          </Tooltip>
+        ),
+      }}
+    />
   );
 };
 

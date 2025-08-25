@@ -66,7 +66,7 @@ const SignUpView = ({
               className="w-96 mx-auto mb-8"
             />
             <Typography variant="h4" component="h1" className="font-bold mb-2">
-              Zip-line
+              ZIPLINE
             </Typography>
             <Typography variant="h6" className="opacity-90">
               흩어진 중개 업무, 여기서 전부 관리해요!

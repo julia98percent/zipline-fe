@@ -10,6 +10,8 @@ const AuthLink = ({ to, children }: AuthLinkProps) => (
   <Link
     to={to}
     className="text-sm text-gray-600 hover:text-primary transition-colors duration-200"
+    target="_blank"
+    rel="noopener noreferrer"
   >
     {children}
   </Link>

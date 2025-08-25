@@ -1,5 +1,4 @@
 import {
-  Box,
   List,
   ListItem,
   ListItemButton,
@@ -7,7 +6,7 @@ import {
   Divider,
   ListItemIcon,
 } from "@mui/material";
-import { Link, useLocation } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import DashboardIcon from "@mui/icons-material/Dashboard";
 import Logo from "@assets/logo.png";
 import BusinessIcon from "@mui/icons-material/Business";
@@ -16,6 +15,10 @@ import SettingsIcon from "@mui/icons-material/Settings";
 import CalendarMonthIcon from "@mui/icons-material/CalendarMonth";
 import ForumIcon from "@mui/icons-material/Forum";
 import EmailIcon from "@mui/icons-material/Email";
+import LogoutIcon from "@mui/icons-material/Logout";
+import useAuthStore from "@stores/useAuthStore";
+import { logoutUser } from "@apis/userService";
+import { clearAllAuthState } from "@utils/authUtil";
 
 type ParentMenuName = "매물" | "고객" | "계약" | "일정" | "상담" | "문자";
 
@@ -56,7 +59,7 @@ const MENU_INFO: MenuItem[] = [
     key: "messages",
     submenu: [
       { name: "단체 문자 발송", to: "/messages/bulk" },
-      { name: "문자 템플릿", to: "/messages/templates" },
+      // { name: "문자 템플릿", to: "/messages/templates" },
       { name: "문자 발송 내역", to: "/messages/history" },
     ],
   },
@@ -90,22 +93,34 @@ interface NavigationContentProps {
 const NavigationContent = ({ onItemClick }: NavigationContentProps) => {
   const location = useLocation();
   const currentPath = location.pathname;
+  const { user } = useAuthStore();
+  const navigate = useNavigate();
+
+  const handleLogout = async (e: React.MouseEvent) => {
+    e.preventDefault();
+    try {
+      await logoutUser();
+    } finally {
+      clearAllAuthState();
+      navigate("/sign-in");
+    }
+  };
 
   return (
-    <>
-      <Box className="p-4">
-        <Link to={"/"} style={{ textDecoration: "none" }}>
-          <Box className="flex items-center">
+    <div className="bg-gray-50">
+      <div className="p-4">
+        <Link to={"/"}>
+          <div className="flex items-center">
             <img src={Logo} alt="ZIPLINE Logo" className="w-6 h-6 mr-2" />
             <h3 className="text-lg font-bold text-blue-800 text-primary">
               ZIPLINE
             </h3>
-          </Box>
+          </div>
         </Link>
-      </Box>
-      <List className="pt-1">
+      </div>
+      <List className="p-0">
         <ListItem disablePadding>
-          <Link to="/" className="w-full no-underline">
+          <Link to="/" className="w-full">
             <ListItemButton
               onClick={onItemClick}
               className="hover:bg-gray-50 px-4 justify-start"
@@ -163,18 +178,11 @@ const NavigationContent = ({ onItemClick }: NavigationContentProps) => {
               className="border-b border-gray-200 last:border-b-0"
             >
               {hasSubmenu ? (
-                <Box className="w-full">
-                  <Link to={submenu![0].to} className="w-full no-underline">
+                <div className="w-full">
+                  <Link to={submenu![0].to}>
                     <ListItemButton
                       onClick={onItemClick}
                       className="hover:bg-gray-50"
-                      style={{
-                        borderBottom: "none",
-                        borderLeft: isActive ? "4px solid #164F9E" : "none",
-                        backgroundColor: isActive
-                          ? "rgba(22, 79, 158, 0.04)"
-                          : "transparent",
-                      }}
                     >
                       <ListItemIcon className="min-w-10">
                         {getMenuIcon(name, isActive)}
@@ -188,13 +196,9 @@ const NavigationContent = ({ onItemClick }: NavigationContentProps) => {
                       />
                     </ListItemButton>
                   </Link>
-                  <List className="mt-0 mb-0">
+                  <List className="py-0">
                     {submenu?.map((sub) => (
-                      <Link
-                        to={sub.to}
-                        key={`${sub.to}-submenu`}
-                        className="no-underline"
-                      >
+                      <Link to={sub.to} key={`${sub.to}-submenu`}>
                         <ListItemButton
                           onClick={onItemClick}
                           className="hover:bg-gray-50 justify-start px-4 py-1 mb-1 ml-8"
@@ -223,9 +227,9 @@ const NavigationContent = ({ onItemClick }: NavigationContentProps) => {
                       </Link>
                     ))}
                   </List>
-                </Box>
+                </div>
               ) : (
-                <Link to={to!} className="no-underline w-full">
+                <Link to={to!} className="w-full">
                   <ListItemButton
                     onClick={onItemClick}
                     className="hover:bg-gray-50"
@@ -252,8 +256,24 @@ const NavigationContent = ({ onItemClick }: NavigationContentProps) => {
             </ListItem>
           );
         })}
+        <Link to="/my">
+          <div className="m-3 px-2 py-2 rounded bg-white border border-gray-200">
+            <span className="font-semibold">{user?.name || "사용자"} 님</span>
+            <span className="text-sm text-gray-600">
+              {user?.email || "이메일"}
+            </span>
+            <Divider className="my-1" />
+            <div
+              className="flex text-sm text-gray-600 items-center p-1 gap-1"
+              onClick={handleLogout}
+            >
+              <LogoutIcon className="w-5" />
+              <span>로그아웃</span>
+            </div>
+          </div>
+        </Link>
       </List>
-    </>
+    </div>
   );
 };
 

@@ -8,6 +8,8 @@ import {
   UserIdInput,
 } from "./components";
 import { Typography } from "@mui/material";
+import Logo from "@assets/logo.png";
+import EntryImage from "@components/EntryImage";
 
 interface SignUpViewProps {
   formData: {
@@ -56,34 +58,21 @@ const SignUpView = ({
   return (
     <div className="h-screen bg-gray-50">
       <div className="h-full flex">
-        {/* Left Panel - Only visible on wider screens */}
-        <div className="hidden lg:flex lg:w-1/2 bg-gradient-to-br from-[#164F9E] to-[#0D3B7D] items-center justify-center">
-          <div className="text-white text-center p-6">
-            <img
-              src={signUpImage}
-              alt="공인중개사 CRM 서비스"
-              className="w-96 mx-auto mb-8"
-            />
-            <Typography variant="h4" component="h1" className="font-bold mb-2">
-              ZIPLINE
-            </Typography>
-            <Typography variant="h6" className="opacity-90">
-              흩어진 중개 업무, 여기서 전부 관리해요!
-            </Typography>
-          </div>
-        </div>
+        <EntryImage />
 
-        {/* Right Panel - Sign Up Form */}
-        <div className="w-full lg:w-1/2 flex items-center justify-center bg-white">
-          <div className="w-full max-w-md p-3">
-            <Typography
-              variant="h5"
-              component="h2"
-              className="font-bold mb-4 text-center text-primary"
-            >
-              회원가입
-            </Typography>
-            <div className="flex flex-col gap-4">
+        <div className="flex flex-col w-full md:w-1/2 flex items-center justify-center">
+          <h1 className="hidden md:block font-bold text-primary text-2xl">
+            회원가입
+          </h1>
+          <div className="w-full flex-col flex items-center justify-center">
+            <div className="flex items-center md:hidden text-center">
+              <img src={Logo} alt="ZIPLINE Logo" className="w-12 h-12 mr-2" />
+              <h3 className="text-2xl font-bold text-blue-800 text-primary">
+                ZIPLINE
+              </h3>
+            </div>
+
+            <div className="w-full max-w-4/5 p-4 mt-6 flex flex-col gap-6">
               <NameInput
                 name={name}
                 handleChangeName={handleChangeName}
@@ -110,19 +99,19 @@ const SignUpView = ({
                 handleChangePhoneNumber={handleChangePhoneNumber}
                 onBlur={() => handleBlur("phoneNumber", phoneNumber)}
               />
+
+              <Button
+                onClick={handleSubmit}
+                disabled={!isFormValid}
+                color="primary"
+                fullWidth
+                className="h-[46px]"
+              >
+                회원가입
+              </Button>
             </div>
 
-            <Button
-              onClick={handleSubmit}
-              disabled={!isFormValid}
-              color="primary"
-              fullWidth
-              className="mt-5 h-[46px]"
-            >
-              가입하기
-            </Button>
-
-            <Box className="flex justify-center items-center mt-4 gap-2">
+            <div className="flex justify-center items-center mt-4 gap-2">
               <Typography variant="body2" color="text.secondary">
                 이미 회원이신가요?
               </Typography>
@@ -131,7 +120,7 @@ const SignUpView = ({
                   로그인
                 </Button>
               </Link>
-            </Box>
+            </div>
           </div>
         </div>
       </div>

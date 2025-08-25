@@ -32,7 +32,10 @@ const FindAccountPage = () => {
 
   const handleTabChange = (_event: React.SyntheticEvent, newValue: number) => {
     setActiveTab(newValue);
-    setSearchParams({ tab: newValue === 1 ? "password" : "id" });
+    setSearchParams(
+      { tab: newValue === 1 ? "password" : "id" },
+      { replace: true }
+    );
   };
 
   const handleSwitchToPasswordTab = () => {

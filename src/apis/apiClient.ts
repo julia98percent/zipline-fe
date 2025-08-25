@@ -36,9 +36,14 @@ export const getCsrfToken = async (): Promise<string | null> => {
 const handleSessionExpired = () => {
   clearCsrfToken();
   sessionStorage.clear();
-  saveCurrentLocation();
-
-  useSessionStore.getState().openSessionExpiredModal();
+  
+  const authPages = ["/sign-in", "/sign-up", "/find-account"];
+  const isAuthPage = authPages.some(page => window.location.pathname.includes(page));
+  
+  if (!isAuthPage) {
+    saveCurrentLocation();
+    useSessionStore.getState().openSessionExpiredModal();
+  }
 };
 
 apiClient.interceptors.request.use(

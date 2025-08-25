@@ -6,7 +6,7 @@ const GuestRoute = () => {
   if (isSignedIn === true) return <Navigate to="/" replace />;
 
   return (
-    <div>
+    <div className="overflow-y-scroll h-full">
       <Outlet />
     </div>
   );

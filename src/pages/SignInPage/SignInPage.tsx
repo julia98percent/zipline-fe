@@ -4,7 +4,7 @@ import { loginUser } from "@apis/userService";
 import useInput from "@hooks/useInput";
 import { UserIdInput, PasswordInput, AuthLinks } from "./components";
 import Button from "@components/Button";
-import { Box, Typography } from "@mui/material";
+import { Typography } from "@mui/material";
 import { showToast } from "@components/Toast";
 import useAuthStore from "@stores/useAuthStore";
 import { USER_ERROR_MESSAGES } from "@constants/clientErrorMessage";
@@ -54,64 +54,62 @@ const SignInPage = () => {
   };
 
   return (
-    <div className="h-screen bg-gray-50">
-      <div className="h-full flex">
-        <EntryImage />
-        <div className="flex flex-col w-full md:w-1/2 flex items-center justify-center">
-          <h1 className="hidden md:block font-bold text-primary text-2xl">
-            로그인
-          </h1>
-          <div className="w-full flex-col flex items-center justify-center">
-            {/* Mobile Header - Mobile Only */}
-            <div className="flex items-center md:hidden text-center">
-              <img src={Logo} alt="ZIPLINE Logo" className="w-12 h-12 mr-2" />
-              <h3 className="text-2xl font-bold text-blue-800 text-primary">
-                ZIPLINE
-              </h3>
+    <div className="h-full flex">
+      <EntryImage />
+      <div className="flex flex-col w-full md:w-1/2 flex items-center justify-center">
+        <h1 className="hidden md:block font-bold text-primary text-2xl">
+          로그인
+        </h1>
+        <div className="w-full flex-col flex items-center justify-center">
+          {/* Mobile Header - Mobile Only */}
+          <div className="flex items-center md:hidden text-center">
+            <img src={Logo} alt="ZIPLINE Logo" className="w-12 h-12 mr-2" />
+            <h3 className="text-2xl font-bold text-blue-800 text-primary">
+              ZIPLINE
+            </h3>
+          </div>
+
+          <div className="w-full max-w-4/5 sm:max-w-2/3 md:max-w-[400px] p-4">
+            <div className="mt-6 flex flex-col gap-6">
+              <UserIdInput
+                userId={userId}
+                handleChangeUserId={handleChangeUserId}
+                onKeyDown={handleKeyDown}
+              />
+              <PasswordInput
+                password={password}
+                handleChangePassword={handleChangePassword}
+                onKeyDown={handleKeyDown}
+              />
+              <Button
+                color="primary"
+                fullWidth
+                onClick={handleClickSignInButton}
+                disabled={isSignInButtonDisabled}
+                className="h-[46px]"
+              >
+                로그인
+              </Button>
             </div>
 
-            <div className="w-full max-w-4/5 p-4">
-              <div className="mt-6 flex flex-col gap-6">
-                <UserIdInput
-                  userId={userId}
-                  handleChangeUserId={handleChangeUserId}
-                  onKeyDown={handleKeyDown}
-                />
-                <PasswordInput
-                  password={password}
-                  handleChangePassword={handleChangePassword}
-                  onKeyDown={handleKeyDown}
-                />
-                <Button
-                  color="primary"
-                  fullWidth
-                  onClick={handleClickSignInButton}
-                  disabled={isSignInButtonDisabled}
-                  className="h-[46px]"
-                >
-                  로그인
-                </Button>
-              </div>
+            <div className="flex flex-col items-center mt-6 p-4 rounded-lg border border-neutral-300">
+              <Typography
+                variant="subtitle2"
+                color="text.secondary"
+                className="mb-2"
+              >
+                테스트 계정
+              </Typography>
+              <Typography variant="body2" color="text.secondary">
+                ID: test01
+              </Typography>
+              <Typography variant="body2" color="text.secondary">
+                Password: test1234!
+              </Typography>
+            </div>
 
-              <Box className="flex flex-col items-center mt-6 p-4 bg-gray-50 rounded-lg border border-gray-200">
-                <Typography
-                  variant="subtitle2"
-                  color="text.secondary"
-                  className="mb-2"
-                >
-                  테스트 계정
-                </Typography>
-                <Typography variant="body2" color="text.secondary">
-                  ID: test01
-                </Typography>
-                <Typography variant="body2" color="text.secondary">
-                  Password: test1234!
-                </Typography>
-              </Box>
-
-              <Box className="flex justify-center items-center mt-4 gap-2">
-                <AuthLinks />
-              </Box>
+            <div className="flex justify-center items-center mt-4 gap-2">
+              <AuthLinks />
             </div>
           </div>
         </div>

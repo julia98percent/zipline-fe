@@ -3,14 +3,14 @@
 @tailwind components;
 @tailwind utilities;
 
-body {
-  min-width: 450px;
-}
-
 @theme {
   --color-primary: #164f9e;
   --color-primary-dark: #0d3b7a;
   --color-primary-light: #2a6fdb;
+}
+
+#root {
+  @apply h-screen bg-gray-50;
 }
 
 @layer components {

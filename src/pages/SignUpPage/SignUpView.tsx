@@ -56,8 +56,8 @@ const SignUpView = ({
   const { handleBlur, handleSubmit } = eventHandlers;
 
   return (
-    <div className="h-screen bg-gray-50">
-      <div className="h-full flex">
+    <div className="my-10 md:my-0 h-full">
+      <div className="flex">
         <EntryImage />
 
         <div className="flex flex-col w-full md:w-1/2 flex items-center justify-center">
@@ -72,7 +72,7 @@ const SignUpView = ({
               </h3>
             </div>
 
-            <div className="w-full max-w-4/5 p-4 mt-6 flex flex-col gap-6">
+            <div className="w-full max-w-4/5 md:max-w-3/5 mt-6 flex flex-col gap-6">
               <NameInput
                 name={name}
                 handleChangeName={handleChangeName}

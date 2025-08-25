@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Link, useSearchParams } from "react-router-dom";
-import { Typography, Tabs, Tab, Box } from "@mui/material";
+import { Tabs, Tab } from "@mui/material";
 import { FindIdTab, FindPasswordTab } from "./components";
 
 interface TabPanelProps {
@@ -20,7 +20,7 @@ function TabPanel(props: TabPanelProps) {
       aria-labelledby={`account-tab-${index}`}
       {...other}
     >
-      {value === index && <Box className="pt-6">{children}</Box>}
+      {value === index && <div className="pt-6">{children}</div>}
     </div>
   );
 }
@@ -41,21 +41,16 @@ const FindAccountPage = () => {
   };
 
   return (
-    <div className="min-h-screen bg-white flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
-      <div className="max-w-md w-full space-y-8">
-        <div className="text-center">
-          <Typography
-            variant="h5"
-            component="h2"
-            className="font-bold text-primary mb-4 text-center"
-          >
-            계정 정보 찾기
-          </Typography>
-        </div>
+    <div className="flex items-center justify-center py-10 px-8 h-full">
+      <div className="max-w-[400px] w-full space-y-8">
+        <h2 className="text-2xl font-bold text-primary mb-4 text-center">
+          계정 정보 찾기
+        </h2>
 
         <div>
-          <Box className="border-b border-gray-800 mb-4">
+          <div className="border-b border-neutral-300 mb-4">
             <Tabs
+              centered
               value={activeTab}
               onChange={handleTabChange}
               aria-label="계정 정보 찾기 탭"
@@ -78,7 +73,7 @@ const FindAccountPage = () => {
               <Tab label="아이디 찾기" />
               <Tab label="비밀번호 찾기" />
             </Tabs>
-          </Box>
+          </div>
 
           <TabPanel value={activeTab} index={0}>
             <FindIdTab
@@ -95,7 +90,7 @@ const FindAccountPage = () => {
             <Link to="/sign-in" className="text-gray-600 hover:text-primary">
               로그인
             </Link>
-            <div className="w-px h-4 bg-gray-300"></div>
+            <div className="w-px h-4 bg-gray-300" />
             <Link to="/sign-up" className="text-gray-600 hover:text-primary">
               회원가입
             </Link>

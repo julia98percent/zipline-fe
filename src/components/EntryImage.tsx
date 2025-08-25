@@ -4,7 +4,7 @@ import counselImage from "@assets/counsel.png";
 
 const EntryImage = () => {
   return (
-    <div className="hidden md:flex md:w-1/2 bg-[#0d3b7a] flex-col items-center justify-center p-10">
+    <div className="hidden md:flex md:w-1/2 bg-[#0d3b7a] flex-col items-center justify-center p-10 h-screen">
       <div className="text-white m-[10vh_auto_0_2vw]">
         <p className="font-medium text-2xl tracking-tighter">
           흩어진 중개 업무,{" "}
@@ -14,7 +14,7 @@ const EntryImage = () => {
         </p>
         <h2 className="mt-[10px] font-bold text-5xl tracking-wide">ZIPLINE</h2>
       </div>
-      <div className="relative w-full h-[80vh]">
+      <div className="relative w-full h-full">
         <img
           src={contractImage}
           className="absolute w-[17vw] min-w-[180px] top-[48%] left-[22%] transform -translate-x-1/2 -translate-y-1/2 -rotate-6 floating z-10"

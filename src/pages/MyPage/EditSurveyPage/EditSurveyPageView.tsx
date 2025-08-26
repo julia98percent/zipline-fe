@@ -70,7 +70,7 @@ const EditSurveyPageView = ({
   if (loading) {
     return (
       <Box>
-        <PageHeader title="설문 수정" />
+        <PageHeader />
         <div className="flex items-center justify-center h-[calc(100vh-72px)]">
           <CircularProgress />
         </div>
@@ -80,7 +80,7 @@ const EditSurveyPageView = ({
 
   return (
     <Box>
-      <PageHeader title="설문 수정" />
+      <PageHeader />
 
       <Box
         className="flex justify-end sticky top-[64px] z-[999] bg-white gap-2

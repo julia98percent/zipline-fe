@@ -29,7 +29,6 @@ interface MessageTemplatePageViewProps {
   onOpenDeleteDialog: () => void;
   onDeleteTemplate: () => void;
   onCloseDeleteDialog: () => void;
-  onMobileMenuToggle?: () => void;
 }
 
 function MessageTemplatePageView({
@@ -52,11 +51,10 @@ function MessageTemplatePageView({
   onOpenDeleteDialog,
   onDeleteTemplate,
   onCloseDeleteDialog,
-  onMobileMenuToggle,
 }: MessageTemplatePageViewProps) {
   return (
     <Box className="p-0 pb-6 min-h-screen bg-gray-100">
-      <PageHeader title="문자 템플릿" onMobileMenuToggle={onMobileMenuToggle} />
+      <PageHeader />
 
       <Box className="p-6">
         <div className="flex flex-col lg:flex-row gap-7">

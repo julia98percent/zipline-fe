@@ -47,7 +47,6 @@ interface AgentPropertyListPageViewProps {
   onFilterModalClose: () => void;
   onReset: () => void;
   onSaveProperty: () => void;
-  onMobileMenuToggle?: () => void;
 }
 
 const AgentPropertyListPageView = ({
@@ -75,7 +74,6 @@ const AgentPropertyListPageView = ({
   onFilterModalClose,
   onReset,
   onSaveProperty,
-  onMobileMenuToggle,
 }: AgentPropertyListPageViewProps) => {
   const navigate = useNavigate();
 
@@ -85,11 +83,8 @@ const AgentPropertyListPageView = ({
 
   if (loading) {
     return (
-      <div className="flex-grow bg-gray-100 min-h-screen">
-        <PageHeader
-          title="개인 매물 목록"
-          onMobileMenuToggle={onMobileMenuToggle}
-        />
+      <div className="flex-grow bg-neutral-50 min-h-screen">
+        <PageHeader />
         <div className="flex items-center justify-center h-[calc(100vh-72px)]">
           <CircularProgress />
         </div>
@@ -98,11 +93,8 @@ const AgentPropertyListPageView = ({
   }
 
   return (
-    <div className="flex-grow bg-gray-100 min-h-screen">
-      <PageHeader
-        title="개인 매물 목록"
-        onMobileMenuToggle={onMobileMenuToggle}
-      />
+    <div className="flex-grow bg-neutral-50 min-h-screen">
+      <PageHeader />
 
       <div className="p-5">
         {/* 상단 필터 바 */}

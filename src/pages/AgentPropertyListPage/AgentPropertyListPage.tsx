@@ -1,6 +1,6 @@
 import { useEffect, useState, useCallback, useMemo } from "react";
 import { SelectChangeEvent } from "@mui/material";
-import { useOutletContext } from "react-router-dom";
+
 import { useUrlPagination } from "@hooks/useUrlPagination";
 import { useUrlFilters } from "@hooks/useUrlFilters";
 import AgentPropertyListPageView from "./AgentPropertyListPageView";
@@ -12,10 +12,6 @@ import { fetchSido, fetchSigungu, fetchDong } from "@apis/regionService";
 import { Property, PropertyType, PropertyCategoryType } from "@ts/property";
 import { Region } from "@ts/region";
 import { showToast } from "@components/Toast";
-
-interface OutletContext {
-  onMobileMenuToggle: () => void;
-}
 
 const CATEGORY_OPTIONS = [
   { value: "ONE_ROOM", label: "원룸" },
@@ -34,7 +30,6 @@ const TYPE_OPTIONS = [
 ];
 
 function AgentPropertyListPage() {
-  const { onMobileMenuToggle } = useOutletContext<OutletContext>();
   const { page, rowsPerPage, setPage, setRowsPerPage } = useUrlPagination();
   const {
     getParam,
@@ -335,7 +330,6 @@ function AgentPropertyListPage() {
       onFilterModalClose={handleFilterModalClose}
       onReset={handleReset}
       onSaveProperty={handleSaveProperty}
-      onMobileMenuToggle={onMobileMenuToggle}
     />
   );
 }

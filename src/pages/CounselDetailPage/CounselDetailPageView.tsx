@@ -53,12 +53,11 @@ const CounselDetailPageView = ({
   onDeleteClick,
   onDeleteCancel,
   onDeleteConfirm,
-  onMobileMenuToggle,
 }: CounselDetailPageViewProps) => {
   if (isLoading) {
     return (
       <div>
-        <PageHeader title="상담 상세" onMobileMenuToggle={onMobileMenuToggle} />
+        <PageHeader />
         <div className="flex items-center justify-center h-[calc(100vh-72px)]">
           <CircularProgress />
         </div>
@@ -78,7 +77,7 @@ const CounselDetailPageView = ({
 
   return (
     <Box className={styles.container}>
-      <PageHeader title="상담 상세" onMobileMenuToggle={onMobileMenuToggle} />
+      <PageHeader />
 
       <Box className={styles.contentContainer}>
         <CounselActionButtons

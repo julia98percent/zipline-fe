@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback, useMemo } from "react";
-import { useOutletContext } from "react-router-dom";
+
 import { useUrlPagination } from "@hooks/useUrlPagination";
 import { useUrlFilters } from "@hooks/useUrlFilters";
 import { Customer, CustomerFilter } from "@ts/customer";
@@ -7,12 +7,7 @@ import { searchCustomers, updateCustomer } from "@apis/customerService";
 import { showToast } from "@components/Toast";
 import CustomerListPageView from "./CustomerListPageView";
 
-interface OutletContext {
-  onMobileMenuToggle: () => void;
-}
-
 const CustomerListPage = () => {
-  const { onMobileMenuToggle } = useOutletContext<OutletContext>();
   const { page, rowsPerPage, setPage, setRowsPerPage, resetToFirstPage } =
     useUrlPagination();
   const {
@@ -252,7 +247,6 @@ const CustomerListPage = () => {
       onCustomerCreate={handleCustomerCreate}
       onSearchSubmit={handleSearchSubmit}
       onFilterReset={handleFilterReset}
-      onMobileMenuToggle={onMobileMenuToggle}
     />
   );
 };

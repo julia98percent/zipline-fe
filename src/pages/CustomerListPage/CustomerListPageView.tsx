@@ -48,7 +48,6 @@ interface CustomerListPageViewProps {
   onCustomerCreate: () => void;
   onSearchSubmit: () => void;
   onFilterReset: () => void;
-  onMobileMenuToggle?: () => void;
 }
 
 const CustomerListPageView = ({
@@ -72,12 +71,11 @@ const CustomerListPageView = ({
   onCustomerCreate,
   onSearchSubmit,
   onFilterReset,
-  onMobileMenuToggle,
 }: CustomerListPageViewProps) => {
   if (loading) {
     return (
       <div className="flex-grow h-screen overflow-auto bg-gray-100 max-w-full box-border">
-        <PageHeader title="고객 목록" onMobileMenuToggle={onMobileMenuToggle} />
+        <PageHeader />
         <div className="h-[calc(100vh-72px)] flex justify-center items-center">
           <CircularProgress />
         </div>
@@ -87,7 +85,7 @@ const CustomerListPageView = ({
 
   return (
     <div className="flex-grow h-screen overflow-auto bg-gray-100 max-w-full box-border">
-      <PageHeader title="고객 목록" onMobileMenuToggle={onMobileMenuToggle} />
+      <PageHeader />
 
       <div className="p-5 max-w-full mx-auto">
         <div className="bg-white rounded-lg shadow-sm p-3">

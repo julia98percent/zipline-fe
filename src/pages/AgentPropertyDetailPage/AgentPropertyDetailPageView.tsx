@@ -48,7 +48,6 @@ interface AgentPropertyDetailPageViewProps {
   onEditModalClose: () => void;
   onDeleteModalClose: () => void;
   onPropertyDataRefresh: () => void;
-  onMobileMenuToggle: () => void;
 }
 
 function AgentPropertyDetailPageView({
@@ -68,15 +67,11 @@ function AgentPropertyDetailPageView({
   onEditModalClose,
   onDeleteModalClose,
   onPropertyDataRefresh,
-  onMobileMenuToggle,
 }: AgentPropertyDetailPageViewProps) {
   if (loading) {
     return (
-      <div className="flex-grow bg-gray-100 min-h-screen">
-        <PageHeader
-          title="매물 상세 조회"
-          onMobileMenuToggle={onMobileMenuToggle}
-        />
+      <div className="flex-grow min-h-screen">
+        <PageHeader />
         <div className="flex items-center justify-center h-[calc(100vh-72px)]">
           <CircularProgress />
         </div>
@@ -85,10 +80,7 @@ function AgentPropertyDetailPageView({
   }
   return (
     <PageContainer>
-      <PageHeader
-        title="매물 상세 조회"
-        onMobileMenuToggle={onMobileMenuToggle}
-      />
+      <PageHeader />
       <DetailPageContainer>
         {editModalOpen && property && (
           <PropertyEditModal

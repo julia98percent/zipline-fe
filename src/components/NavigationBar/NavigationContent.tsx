@@ -19,51 +19,7 @@ import LogoutIcon from "@mui/icons-material/Logout";
 import useAuthStore from "@stores/useAuthStore";
 import { logoutUser } from "@apis/userService";
 import { clearAllAuthState } from "@utils/authUtil";
-
-type ParentMenuName = "매물" | "고객" | "계약" | "일정" | "상담" | "문자";
-
-interface SubmenuItem {
-  name: string;
-  to: string;
-}
-
-interface MenuItem {
-  name: ParentMenuName;
-  key: string;
-  to?: string;
-  submenu?: SubmenuItem[];
-}
-
-const MENU_INFO: MenuItem[] = [
-  {
-    name: "매물",
-    key: "properties",
-    submenu: [
-      { name: "개인 매물", to: "/properties/agent" },
-      { name: "공개 매물", to: "/properties/public" },
-    ],
-  },
-  { name: "고객", key: "customers", to: "/customers" },
-  { name: "계약", key: "contracts", to: "/contracts" },
-  { name: "일정", key: "schedules", to: "/schedules" },
-  {
-    name: "상담",
-    key: "counsels",
-    submenu: [
-      { name: "일반 상담", to: "/counsels/general" },
-      { name: "사전 상담", to: "/counsels/pre" },
-    ],
-  },
-  {
-    name: "문자",
-    key: "messages",
-    submenu: [
-      { name: "단체 문자 발송", to: "/messages/bulk" },
-      // { name: "문자 템플릿", to: "/messages/templates" },
-      { name: "문자 발송 내역", to: "/messages/history" },
-    ],
-  },
-];
+import { MENU_INFO, ParentMenuName } from "@utils/pageUtils";
 
 const getMenuIcon = (name: ParentMenuName, isActive = false) => {
   const iconColor = isActive ? "#164F9E" : "#222222";

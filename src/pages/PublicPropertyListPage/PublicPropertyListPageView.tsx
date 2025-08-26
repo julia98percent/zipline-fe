@@ -39,7 +39,6 @@ interface PublicPropertyListPageViewProps {
   onMetricToggle: () => void;
   onFilterModalToggle: () => void;
   onFilterModalClose: () => void;
-  onMobileMenuToggle?: () => void;
 }
 
 const PublicPropertyListPageView = ({
@@ -65,15 +64,11 @@ const PublicPropertyListPageView = ({
   onMetricToggle,
   onFilterModalToggle,
   onFilterModalClose,
-  onMobileMenuToggle,
 }: PublicPropertyListPageViewProps) => {
   if (loading && publicPropertyList.length === 0) {
     return (
       <>
-        <PageHeader
-          title="공개 매물 목록"
-          onMobileMenuToggle={onMobileMenuToggle}
-        />
+        <PageHeader />
         <Box className="flex justify-center items-center h-[calc(100vh-72px)]">
           <CircularProgress />
         </Box>
@@ -83,10 +78,7 @@ const PublicPropertyListPageView = ({
 
   return (
     <div className="flex-grow bg-gray-100 min-h-screen">
-      <PageHeader
-        title="공개 매물 목록"
-        onMobileMenuToggle={onMobileMenuToggle}
-      />
+      <PageHeader />
 
       <div className="p-5">
         {/* 상단 필터 바 */}

@@ -42,7 +42,7 @@ interface ContractListPageViewProps {
   onFilterApply: (filter: { period: string; status: string }) => void;
   onAddModalClose: () => void;
   onRefreshData: () => void;
-  onMobileMenuToggle?: () => void;
+
   handleClearFilters: () => void;
 }
 
@@ -73,13 +73,13 @@ const ContractListPageView = ({
   onFilterApply,
   onAddModalClose,
   onRefreshData,
-  onMobileMenuToggle,
+
   handleClearFilters,
 }: ContractListPageViewProps) => {
   if (loading) {
     return (
       <div className="flex-grow h-screen overflow-auto bg-gray-100 p-0 max-w-screen box-border">
-        <PageHeader title="계약 목록" onMobileMenuToggle={onMobileMenuToggle} />
+        <PageHeader />
         <div className="flex justify-center items-center h-[calc(100vh-72px)]">
           <CircularProgress />
         </div>
@@ -89,7 +89,7 @@ const ContractListPageView = ({
 
   return (
     <div className="bg-gray-100 min-h-screen">
-      <PageHeader title="계약 목록" onMobileMenuToggle={onMobileMenuToggle} />
+      <PageHeader />
 
       <div className="p-5">
         <div className="bg-white p-4 rounded-lg shadow-sm mb-5">

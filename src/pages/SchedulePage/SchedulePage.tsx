@@ -1,5 +1,4 @@
 import { useState } from "react";
-import { useOutletContext } from "react-router-dom";
 import dayjs, { Dayjs } from "dayjs";
 import { EventClickArg, DatesSetArg } from "@fullcalendar/core";
 import { Schedule } from "@ts/schedule";
@@ -12,10 +11,6 @@ import {
 import ScheduleView from "./ScheduleView";
 import { SCHEDULE_ERROR_MESSAGES } from "@constants/clientErrorMessage";
 import { DAY_MAX_EVENTS } from "@constants/schedule";
-
-interface OutletContext {
-  onMobileMenuToggle: () => void;
-}
 
 interface CalendarEvent {
   id: string;
@@ -42,7 +37,6 @@ interface ScheduleFormData {
 }
 
 const SchedulePage = () => {
-  const { onMobileMenuToggle } = useOutletContext<OutletContext>();
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
   const [isDetailModalOpen, setIsDetailModalOpen] = useState(false);
   const [isEditMode, setIsEditMode] = useState(false);
@@ -237,7 +231,6 @@ const SchedulePage = () => {
       handleSubmitSchedule,
       handleUpdateSchedule,
     },
-    onMobileMenuToggle,
   };
 
   return <ScheduleView {...viewProps} />;

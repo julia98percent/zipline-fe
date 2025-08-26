@@ -1,22 +1,27 @@
 import { IconButton, Badge } from "@mui/material";
 import { useState, useRef, useEffect, useCallback } from "react";
-
+import { useLocation, useNavigate } from "react-router-dom";
 import MenuIcon from "@mui/icons-material/Menu";
+import HomeIcon from "@mui/icons-material/Home";
+import ChevronRightIcon from "@mui/icons-material/ChevronRight";
 import { useSSE } from "@context/SSEContext";
-import { Notifications } from "@mui/icons-material";
+import NotificationsNoneIcon from "@mui/icons-material/NotificationsNone";
 import NotificationList from "./NotificationList";
 import useNotificationStore from "@stores/useNotificationStore";
+import useMobileMenuStore from "@stores/useMobileMenuStore";
 import { fetchNotifications } from "@apis/notificationService";
+import { getPageBreadcrumb } from "@utils/pageUtils";
 
-interface PageHeaderProps {
-  title: string;
-  onMobileMenuToggle?: () => void;
-}
-
-const PageHeader = ({ title, onMobileMenuToggle }: PageHeaderProps) => {
+const PageHeader = () => {
   useSSE();
+  const location = useLocation();
+  const navigate = useNavigate();
   const { notificationList, setNotificationList } = useNotificationStore();
+  const { toggle: toggleMobileMenu } = useMobileMenuStore();
 
+  const breadcrumbs = getPageBreadcrumb(location.pathname);
+  const isDashboard =
+    location.pathname === "/" || location.pathname.startsWith("/dashboard");
   const [isNotificationOpen, setIsNotificationOpen] = useState(false);
   const [isChildModalOpen, setIsChildModalOpen] = useState(false);
   const notificationRef = useRef<HTMLDivElement>(null);
@@ -69,17 +74,65 @@ const PageHeader = ({ title, onMobileMenuToggle }: PageHeaderProps) => {
   }, [notificationList, setNotificationList]);
 
   return (
-    <div className="bg-white border-b border-gray-300 flex items-center justify-between h-18 px-4 sticky top-0 z-50">
+    <div className="flex bg-neutral-50 items-center justify-between p-4 sticky top-0 z-50">
       <div className="flex items-center gap-4">
         <div className="block md:hidden">
           <IconButton
-            onClick={onMobileMenuToggle}
+            onClick={toggleMobileMenu}
             className="text-gray-800 hover:bg-gray-50"
           >
             <MenuIcon />
           </IconButton>
         </div>
-        <h1 className="text-2xl font-semibold text-gray-800">{title}</h1>
+        {!isDashboard && (
+          <>
+            {/* 데스크톱: 전체 breadcrumb */}
+            <nav className="hidden sm:flex items-center gap-2">
+              {breadcrumbs.map((breadcrumb, index) => (
+                <div key={breadcrumb.path} className="flex items-center gap-2">
+                  {index > 0 && (
+                    <ChevronRightIcon className="text-gray-400 text-sm" />
+                  )}
+
+                  {index === 0 ? (
+                    <button
+                      onClick={() => navigate(breadcrumb.path)}
+                      className="flex items-center hover:bg-gray-100 p-1 rounded transition-colors"
+                    >
+                      <HomeIcon
+                        className={`text-lg ${
+                          breadcrumb.isActive
+                            ? "text-blue-600"
+                            : "text-gray-600 hover:text-blue-600"
+                        }`}
+                      />
+                    </button>
+                  ) : (
+                    <button
+                      onClick={() => navigate(breadcrumb.path)}
+                      className={`px-2 py-1 rounded transition-colors ${
+                        breadcrumb.isActive
+                          ? "text-gray-900 font-semibold text-lg"
+                          : "text-gray-500 hover:text-gray-700 hover:bg-gray-100"
+                      }`}
+                      disabled={
+                        breadcrumb.isActive && index === breadcrumbs.length - 1
+                      }
+                    >
+                      {breadcrumb.name}
+                    </button>
+                  )}
+                </div>
+              ))}
+            </nav>
+
+            {/* 모바일: 현재 페이지명만 */}
+            <h1 className="sm:hidden text-xl font-semibold text-gray-900">
+              {breadcrumbs.find((b) => b.isActive)?.name ||
+                breadcrumbs[breadcrumbs.length - 1]?.name}
+            </h1>
+          </>
+        )}
       </div>
 
       <div className="flex items-center gap-2">
@@ -89,7 +142,7 @@ const PageHeader = ({ title, onMobileMenuToggle }: PageHeaderProps) => {
             className="text-black hover:bg-gray-50"
           >
             <Badge badgeContent={unreadCount} color="error">
-              <Notifications />
+              <NotificationsNoneIcon />
             </Badge>
           </IconButton>
 

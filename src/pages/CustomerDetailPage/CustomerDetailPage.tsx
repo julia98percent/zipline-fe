@@ -14,12 +14,7 @@ import { Customer, CustomerUpdateData, Label } from "@ts/customer";
 import { API_ERROR_MESSAGES } from "@ts/apiResponse";
 import { parseRegionCode, RegionHierarchy } from "@utils/regionUtil";
 
-interface OutletContext {
-  onMobileMenuToggle: () => void;
-}
-
 const CustomerDetailPage = () => {
-  const { onMobileMenuToggle } = useOutletContext<OutletContext>();
   const { customerId } = useParams();
   const navigate = useNavigate();
   const [loading, setLoading] = useState(true);
@@ -243,7 +238,6 @@ const CustomerDetailPage = () => {
       onCreateLabel={handleCreateLabel}
       labelInputValue={labelInputValue}
       onLabelInputChange={setLabelInputValue}
-      onMobileMenuToggle={onMobileMenuToggle}
       initialRegionValueList={regionValueList}
     />
   );

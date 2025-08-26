@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { useOutletContext } from "react-router-dom";
+
 import { SelectChangeEvent } from "@mui/material";
 import BulkMessagePage from "./BulkMessagePageView";
 import { showToast } from "@components/Toast";
@@ -7,12 +7,7 @@ import { fetchMessageTemplates, sendBulkMessages } from "@apis/messageService";
 import { Customer } from "@ts/customer";
 import { MessageTemplate, BulkMessagePayload } from "@ts/message";
 
-interface OutletContext {
-  onMobileMenuToggle: () => void;
-}
-
 const BulkMessagePageContainer = () => {
-  const { onMobileMenuToggle } = useOutletContext<OutletContext>();
   const [templates, setTemplates] = useState<MessageTemplate[]>([]);
   const [selectedTemplate, setSelectedTemplate] = useState<number | "">("");
   const [messageContent, setMessageContent] = useState<string>("");
@@ -151,7 +146,6 @@ const BulkMessagePageContainer = () => {
       onRemoveCustomer={handleRemoveCustomer}
       onSendMessage={handleSendMessage}
       onCloseCustomerModal={handleCloseCustomerModal}
-      onMobileMenuToggle={onMobileMenuToggle}
     />
   );
 };

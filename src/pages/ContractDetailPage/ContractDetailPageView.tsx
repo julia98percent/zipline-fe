@@ -60,15 +60,11 @@ const ContractDetailPageView = ({
   onRefreshData,
   onStatusChange,
   onQuickStatusChange,
-  onMobileMenuToggle,
 }: ContractDetailPageViewProps) => {
   if (loading || !contract) {
     return (
       <div className="flex-grow bg-gray-100 min-h-screen">
-        <PageHeader
-          title="계약 상세 조회"
-          onMobileMenuToggle={onMobileMenuToggle}
-        />
+        <PageHeader />
         <div className="flex items-center justify-center h-screen">
           <CircularProgress />
         </div>
@@ -78,10 +74,7 @@ const ContractDetailPageView = ({
 
   return (
     <div className="flex-grow bg-gray-100 min-h-screen">
-      <PageHeader
-        title="계약 상세 조회"
-        onMobileMenuToggle={onMobileMenuToggle}
-      />
+      <PageHeader />
 
       {isUpdating && (
         <Box className="w-full fixed top-0 left-0 z-50">

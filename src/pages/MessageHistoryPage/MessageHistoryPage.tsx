@@ -1,5 +1,5 @@
 import { useState, useEffect, useMemo, useCallback, useRef } from "react";
-import { useOutletContext } from "react-router-dom";
+
 import RefreshIcon from "@mui/icons-material/Refresh";
 import PageHeader from "@components/PageHeader/PageHeader";
 import Button from "@components/Button";
@@ -13,17 +13,12 @@ import MessageHistoryList from "./MessageHistoryList";
 import { buildDateFilterParams } from "@utils/dateFilter";
 import CircularProgress from "@components/CircularProgress";
 
-interface OutletContext {
-  onMobileMenuToggle: () => void;
-}
-
 export type MessageHistoryData = Pick<
   MessageHistory,
   "dateCreated" | "status" | "dateCompleted"
 >;
 
 const MessageHistoryPage = () => {
-  const { onMobileMenuToggle } = useOutletContext<OutletContext>();
   const { getParam, setParam, clearAllFilters, searchParams } = useUrlFilters();
 
   const startDate = useMemo(() => {
@@ -186,10 +181,7 @@ const MessageHistoryPage = () => {
 
   return (
     <div className="grow bg-gray-100 min-h-screen">
-      <PageHeader
-        title="문자 발송 내역"
-        onMobileMenuToggle={onMobileMenuToggle}
-      />
+      <PageHeader />
 
       <div className="p-[20px]">
         <div className="grid grid-cols-1 lg:grid-cols-[2fr_1fr] bg-white p-3 mb-7 rounded-lg shadow-sm gap-2">

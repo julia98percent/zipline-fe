@@ -1,5 +1,4 @@
 import PageHeader from "@components/PageHeader/PageHeader";
-import { useOutletContext } from "react-router-dom";
 import { useDashboard } from "./useDashboard";
 import StatisticsCards from "./components/StatisticsCards";
 import WeeklyScheduleCalendar from "./components/WeeklyScheduleCalendar";
@@ -10,17 +9,12 @@ import {
   DashboardModals,
 } from "./components";
 
-interface OutletContext {
-  onMobileMenuToggle: () => void;
-}
-
 const DashboardPage = () => {
-  const { onMobileMenuToggle } = useOutletContext<OutletContext>();
   const dashboardData = useDashboard();
 
   return (
-    <div className="flex-1 h-screen overflow-auto bg-gray-100 p-0">
-      <PageHeader title="대시보드" onMobileMenuToggle={onMobileMenuToggle} />
+    <div className="h-screen overflow-auto p-0">
+      <PageHeader />
 
       <div className="p-6 pt-0">
         {/* 통계 카드 영역 */}

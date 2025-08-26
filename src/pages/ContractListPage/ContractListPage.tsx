@@ -6,12 +6,7 @@ import ContractListPageView from "./ContractListPageView";
 import { useUrlPagination } from "@hooks/useUrlPagination";
 import { useUrlFilters } from "@hooks/useUrlFilters";
 
-interface OutletContext {
-  onMobileMenuToggle: () => void;
-}
-
 function ContractListPage() {
-  const { onMobileMenuToggle } = useOutletContext<OutletContext>();
   const { page, rowsPerPage, setPage, setRowsPerPage } = useUrlPagination();
   const { getParam, setParam, setParams, clearAllFilters } = useUrlFilters();
 
@@ -181,7 +176,6 @@ function ContractListPage() {
       onFilterApply={handleFilterApply}
       onAddModalClose={handleAddModalClose}
       onRefreshData={fetchContractData}
-      onMobileMenuToggle={onMobileMenuToggle}
       handleClearFilters={clearAllFilters}
     />
   );

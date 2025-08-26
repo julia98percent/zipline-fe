@@ -1,21 +1,16 @@
 import { SelectChangeEvent } from "@mui/material";
 import { useCallback, useEffect, useState, useRef, useMemo } from "react";
-import { useOutletContext } from "react-router-dom";
 import { PublicPropertyItem, PublicPropertySearchParams } from "@ts/property";
 import { getPublicProperties } from "@apis/propertyService";
 import PublicPropertyListPageView from "./PublicPropertyListPageView";
 import { useUrlPagination } from "@hooks/useUrlPagination";
 import { useUrlFilters } from "@hooks/useUrlFilters";
 import { FILTER_DEFAULTS } from "@utils/filterUtil";
-interface OutletContext {
-  onMobileMenuToggle: () => void;
-}
 
 const PublicPropertyListPage = () => {
   const [hasNext, setHasNext] = useState<boolean>(true);
   const [cursorId, setCursorId] = useState<string | null>(null);
 
-  const { onMobileMenuToggle } = useOutletContext<OutletContext>();
   const { rowsPerPage } = useUrlPagination();
   const {
     getParam,
@@ -347,7 +342,6 @@ const PublicPropertyListPage = () => {
       onMetricToggle={handleMetricToggle}
       onFilterModalToggle={handleFilterModalToggle}
       onFilterModalClose={handleFilterModalClose}
-      onMobileMenuToggle={onMobileMenuToggle}
     />
   );
 };

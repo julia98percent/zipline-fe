@@ -55,13 +55,13 @@ const CustomerDetailPageView = ({
   onCreateLabel,
   labelInputValue,
   onLabelInputChange,
-  onMobileMenuToggle,
+
   initialRegionValueList,
 }: CustomerDetailPageViewProps) => {
   if (loading || !customer || !customerId) {
     return (
       <div className="flex-grow h-screen overflow-auto bg-gray-100 p-0 max-w-screen box-border">
-        <PageHeader title="고객 상세" onMobileMenuToggle={onMobileMenuToggle} />
+        <PageHeader />
 
         <div className="flex justify-center items-center h-[calc(100vh-72px)]">
           <CircularProgress />
@@ -72,7 +72,7 @@ const CustomerDetailPageView = ({
 
   return (
     <div className="flex-grow h-screen overflow-auto bg-gray-100 p-0 max-w-screen box-border">
-      <PageHeader title="고객 상세" onMobileMenuToggle={onMobileMenuToggle} />
+      <PageHeader />
 
       <div className="p-6 pt-0">
         <CustomerActionButtons

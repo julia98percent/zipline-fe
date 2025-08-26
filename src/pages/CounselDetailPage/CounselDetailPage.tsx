@@ -12,12 +12,7 @@ import {
 } from "@apis/counselService";
 import { COUNSEL_ERROR_MESSAGES } from "@constants/clientErrorMessage";
 
-interface OutletContext {
-  onMobileMenuToggle: () => void;
-}
-
 function CounselDetailPage() {
-  const { onMobileMenuToggle } = useOutletContext<OutletContext>();
   const { counselUid } = useParams();
   const navigate = useNavigate();
 
@@ -160,7 +155,6 @@ function CounselDetailPage() {
       onDeleteClick={handleDeleteClick}
       onDeleteCancel={handleDeleteCancel}
       onDeleteConfirm={handleDeleteConfirm}
-      onMobileMenuToggle={onMobileMenuToggle}
     />
   );
 }

@@ -1,22 +1,15 @@
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import { Outlet, Navigate } from "react-router-dom";
 import NavigationBar from "@components/NavigationBar";
 import CircularProgress from "@components/CircularProgress";
 import { clearAllAuthState } from "@utils/authUtil";
 import useAuthStore from "@stores/useAuthStore";
+import useMobileMenuStore from "@stores/useMobileMenuStore";
 import { SSEProvider } from "@context/SSEContext";
 
 const PrivateRoute = () => {
   const { user, isSignedIn, checkAuth } = useAuthStore();
-  const [mobileOpen, setMobileOpen] = useState(false);
-
-  const handleMobileMenuToggle = () => {
-    setMobileOpen(!mobileOpen);
-  };
-
-  const handleMobileClose = () => {
-    setMobileOpen(false);
-  };
+  const { isOpen: mobileOpen, close: handleMobileClose } = useMobileMenuStore();
 
   useEffect(() => {
     if (isSignedIn === null) {
@@ -44,13 +37,13 @@ const PrivateRoute = () => {
 
   return (
     <SSEProvider>
-      <div className="flex flex-row w-full h-screen">
+      <div className="relative flex flex-row w-full h-screen">
         <NavigationBar
           mobileOpen={mobileOpen}
           onMobileClose={handleMobileClose}
         />
-        <div className="flex-1 bg-gray-100 min-w-0 overflow-x-hidden">
-          <Outlet context={{ onMobileMenuToggle: handleMobileMenuToggle }} />
+        <div className="flex-1 bg-neutral-50 min-w-0 overflow-x-hidden">
+          <Outlet />
         </div>
       </div>
     </SSEProvider>

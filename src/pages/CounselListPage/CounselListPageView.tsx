@@ -36,7 +36,6 @@ interface CounselListPageViewProps {
   onModalOpen: () => void;
   onModalClose: () => void;
   onModalSuccess: () => void;
-  onMobileMenuToggle?: () => void;
 }
 
 function CounselListPageView({
@@ -64,12 +63,11 @@ function CounselListPageView({
   onModalOpen,
   onModalClose,
   onModalSuccess,
-  onMobileMenuToggle,
 }: CounselListPageViewProps) {
   if (isLoading) {
     return (
       <>
-        <PageHeader title="상담 내역" onMobileMenuToggle={onMobileMenuToggle} />
+        <PageHeader />
         <div className="flex items-center justify-center h-[calc(100vh-72px)]">
           <CircularProgress />
         </div>
@@ -79,7 +77,7 @@ function CounselListPageView({
 
   return (
     <>
-      <PageHeader title="상담 내역" onMobileMenuToggle={onMobileMenuToggle} />
+      <PageHeader />
 
       <div className="p-5 pt-5 bg-gray-100 min-h-screen">
         {/* 상단 검색/필터 영역 */}

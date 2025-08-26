@@ -58,14 +58,9 @@ interface ScheduleViewProps {
     handleSubmitSchedule: (formData: ScheduleFormData) => Promise<void>;
     handleUpdateSchedule: (updatedSchedule: Schedule) => Promise<void>;
   };
-  onMobileMenuToggle?: () => void;
 }
 
-const ScheduleView: React.FC<ScheduleViewProps> = ({
-  state,
-  handlers,
-  onMobileMenuToggle,
-}) => {
+const ScheduleView: React.FC<ScheduleViewProps> = ({ state, handlers }) => {
   const { calendarConfig, calendarRef } = useResponsiveCalendar();
 
   const {
@@ -91,7 +86,7 @@ const ScheduleView: React.FC<ScheduleViewProps> = ({
 
   return (
     <div className="flex-grow bg-gray-100 min-h-screen">
-      <PageHeader title="일정" onMobileMenuToggle={onMobileMenuToggle} />
+      <PageHeader />
 
       <div className="p-5">
         {/* Add Schedule Button */}

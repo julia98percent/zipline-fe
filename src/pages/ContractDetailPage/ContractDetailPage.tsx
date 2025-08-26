@@ -11,12 +11,7 @@ import { showToast } from "@components/Toast";
 import { ContractDetail, ContractHistory } from "@ts/contract";
 import ContractDetailPageView from "./ContractDetailPageView";
 
-interface OutletContext {
-  onMobileMenuToggle: () => void;
-}
-
 const ContractDetailPage = () => {
-  const { onMobileMenuToggle } = useOutletContext<OutletContext>();
   const { contractUid } = useParams<{ contractUid: string }>();
   const navigate = useNavigate();
   const [contract, setContract] = useState<ContractDetail | null>(null);
@@ -215,7 +210,6 @@ const ContractDetailPage = () => {
       onRefreshData={handleRefreshData}
       onStatusChange={handleStatusChange}
       onQuickStatusChange={handleQuickStatusChange}
-      onMobileMenuToggle={onMobileMenuToggle}
     />
   );
 };

@@ -79,7 +79,7 @@ const MyPageView = ({
 
   return (
     <Box className="flex-grow bg-gray-100 min-h-screen">
-      <PageHeader title="마이페이지" />
+      <PageHeader />
 
       <Box className="p-6">
         {/* 회원 정보 수정 */}

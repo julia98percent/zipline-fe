@@ -23,7 +23,6 @@ interface BulkMessagePageProps {
   onRemoveCustomer: (index: number) => void;
   onSendMessage: () => void;
   onCloseCustomerModal: () => void;
-  onMobileMenuToggle?: () => void;
 }
 
 const BulkMessagePage = ({
@@ -39,7 +38,6 @@ const BulkMessagePage = ({
   onRemoveCustomer,
   onSendMessage,
   onCloseCustomerModal,
-  onMobileMenuToggle,
 }: BulkMessagePageProps) => {
   const [toast, setToast] = useState<{
     open: boolean;
@@ -49,10 +47,7 @@ const BulkMessagePage = ({
 
   return (
     <Box className="p-0 pb-6 min-h-screen bg-gray-100">
-      <PageHeader
-        title="단체 문자 발송"
-        onMobileMenuToggle={onMobileMenuToggle}
-      />
+      <PageHeader />
 
       <Box className="p-6">
         <div className="flex flex-col lg:flex-row gap-7">

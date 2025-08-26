@@ -8,12 +8,7 @@ import { useUrlPagination } from "@hooks/useUrlPagination";
 import { useUrlFilters } from "@hooks/useUrlFilters";
 import dayjs, { Dayjs } from "dayjs";
 
-interface OutletContext {
-  onMobileMenuToggle: () => void;
-}
-
 function CounselListPage() {
-  const { onMobileMenuToggle } = useOutletContext<OutletContext>();
   const navigate = useNavigate();
   const { page, rowsPerPage, setPage, setRowsPerPage } = useUrlPagination();
   const {
@@ -190,7 +185,6 @@ function CounselListPage() {
       onModalOpen={() => setIsModalOpen(true)}
       onModalClose={() => setIsModalOpen(false)}
       onModalSuccess={handleModalSuccess}
-      onMobileMenuToggle={onMobileMenuToggle}
     />
   );
 }

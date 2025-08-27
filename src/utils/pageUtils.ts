@@ -48,6 +48,16 @@ export const MENU_INFO: MenuItem[] = [
   },
 ];
 
+const getDetailName = (pathname: string, menuName: ParentMenuName): string => {
+  if (pathname.includes("/add") || pathname.includes("/create")) {
+    return `${menuName} 등록`;
+  }
+  if (pathname.includes("/edit")) {
+    return `${menuName} 수정`;
+  }
+  return `${menuName} 상세`;
+};
+
 export interface BreadcrumbItem {
   name: string;
   path: string;
@@ -95,7 +105,8 @@ export const getPageBreadcrumb = (pathname: string): BreadcrumbItem[] => {
           });
 
           if (pathname !== submenu.to && pathname.includes("/")) {
-            breadcrumbs.push({ name: "상세", path: pathname, isActive: true });
+            const detailName = getDetailName(pathname, menu.name);
+            breadcrumbs.push({ name: detailName, path: pathname, isActive: true });
           }
           return breadcrumbs;
         }
@@ -108,7 +119,8 @@ export const getPageBreadcrumb = (pathname: string): BreadcrumbItem[] => {
       });
 
       if (pathname !== menu.to && pathname.includes("/")) {
-        breadcrumbs.push({ name: "상세", path: pathname, isActive: true });
+        const detailName = getDetailName(pathname, menu.name);
+        breadcrumbs.push({ name: detailName, path: pathname, isActive: true });
       }
       return breadcrumbs;
     }

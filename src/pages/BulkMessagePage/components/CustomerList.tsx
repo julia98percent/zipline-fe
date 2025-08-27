@@ -26,7 +26,7 @@ const CustomerList = ({
   onCustomerSelect,
 }: CustomerListProps) => {
   return (
-    <List className="h-[320px] overflow-y-auto border border-[#eee] rounded-lg bg-white mb-4">
+    <List className="h-[320px] overflow-y-auto">
       {loading ? (
         <Box className="h-full flex items-center justify-center">
           <CircularProgress size={36} />

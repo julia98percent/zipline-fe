@@ -1,5 +1,4 @@
 import { useState, useEffect, useMemo, useCallback, useRef } from "react";
-
 import RefreshIcon from "@mui/icons-material/Refresh";
 import PageHeader from "@components/PageHeader/PageHeader";
 import Button from "@components/Button";
@@ -180,12 +179,12 @@ const MessageHistoryPage = () => {
   };
 
   return (
-    <div className="grow bg-gray-100 min-h-screen">
+    <div>
       <PageHeader />
 
-      <div className="p-[20px]">
+      <div className="p-5 pt-0">
         <div className="grid grid-cols-1 lg:grid-cols-[2fr_1fr] bg-white p-3 mb-7 rounded-lg shadow-sm gap-2">
-          <div className="flex gap-2 items-center">
+          <div className="flex flex-col xs:flex-row gap-2 xs:items-center">
             <h6 className="text-sm text-gray-700 font-medium whitespace-nowrap">
               문자 발송일
             </h6>
@@ -212,7 +211,7 @@ const MessageHistoryPage = () => {
             </div>
           </div>
           <div className="flex ml-auto gap-2">
-            <Button variant="text" onClick={clearAllFilters}>
+            <Button variant="text" color="info" onClick={clearAllFilters}>
               필터 초기화
             </Button>
             <Button

@@ -1,9 +1,10 @@
 import { useState } from "react";
-import { Box, Typography, Stack, IconButton } from "@mui/material";
+import { Typography, Stack, IconButton } from "@mui/material";
 import { MessageDetail as MessageDetailType } from "@ts/message";
 import { getStatusMessage, getErrorMessage } from "@utils/messageUtil";
 import { formatDate } from "@utils/dateUtil";
 import { NavigateBefore, NavigateNext } from "@mui/icons-material";
+import InfoField from "@components/InfoField";
 
 function MessageDetail({ messageList }: { messageList: MessageDetailType[] }) {
   const [currentIndex, setCurrentIndex] = useState<number>(0);
@@ -18,52 +19,41 @@ function MessageDetail({ messageList }: { messageList: MessageDetailType[] }) {
 
   return (
     <>
-      <Box className="p-4 bg-white rounded-lg shadow-md">
+      <div className="p-4">
         <Stack spacing={1}>
           {messageList.length > 0 && (
             <>
-              <Box>
-                <Typography variant="caption" color="text.secondary">
-                  발신번호
-                </Typography>
-                <Typography variant="body2">
-                  {messageList[currentIndex].from}
-                </Typography>
-              </Box>
-              <Box>
-                <Typography variant="caption" color="text.secondary">
-                  수신번호
-                </Typography>
-                <Typography variant="body2">
-                  {messageList[currentIndex].to}
-                </Typography>
-              </Box>
-              <Box>
-                <Typography variant="caption" color="text.secondary">
-                  메시지 내용
-                </Typography>
-                <Typography variant="body2">
-                  {messageList[currentIndex].text}
-                </Typography>
-              </Box>
-              <Box>
-                <Typography variant="caption" color="text.secondary">
-                  상태
-                </Typography>
-                <Typography variant="body2">
-                  {getStatusMessage(messageList[currentIndex].statusCode)}
-                  {" - "}
-                  {getErrorMessage(messageList[currentIndex].statusCode)}
-                </Typography>
-              </Box>
-              <Typography variant="caption" color="text.secondary">
+              <InfoField
+                label="발신번호"
+                value={messageList[currentIndex].from}
+              />
+
+              <InfoField
+                label="수신번호"
+                value={messageList[currentIndex].to}
+              />
+
+              <InfoField
+                label="메시지 내용"
+                value={messageList[currentIndex].text}
+              />
+
+              <InfoField
+                label="상태"
+                value={` ${getStatusMessage(
+                  messageList[currentIndex].statusCode
+                )} - ${getErrorMessage(messageList[currentIndex].statusCode)}`}
+              />
+
+              <p className="text-sm text-neutral-500">
                 발송일시: {formatDate(messageList[currentIndex].dateCreated)}
-              </Typography>
+              </p>
             </>
           )}
         </Stack>
-      </Box>
-      <Box className="flex justify-between items-center">
+      </div>
+
+      <div className="flex justify-between items-center">
         <IconButton onClick={handlePrevious} disabled={currentIndex === 0}>
           <NavigateBefore />
         </IconButton>
@@ -77,7 +67,7 @@ function MessageDetail({ messageList }: { messageList: MessageDetailType[] }) {
         >
           <NavigateNext />
         </IconButton>
-      </Box>
+      </div>
     </>
   );
 }

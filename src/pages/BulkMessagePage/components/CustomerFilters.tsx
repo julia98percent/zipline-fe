@@ -45,7 +45,7 @@ const CustomerFilters = ({
   onLabelFilterChange,
 }: CustomerFiltersProps) => {
   return (
-    <div className="flex flex-col gap-4 border-b border-gray-200 pb-4">
+    <div className="flex flex-col gap-4 p-3 card mt-4">
       <TextField
         size="small"
         placeholder="이름, 전화번호 검색"
@@ -58,7 +58,7 @@ const CustomerFilters = ({
       {/* 지역 선택 */}
       <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-10">
         <h6 className="whitespace-nowrap font-medium text-gray-800">지역</h6>
-        <div className="flex gap-2">
+        <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
           <RegionSelector
             value={region.selectedSido || ""}
             regions={region.sido}
@@ -86,7 +86,7 @@ const CustomerFilters = ({
         {/* 역할 필터 */}
         <div className="flex flex-col sm:flex-row sm:items-center gap-2">
           <h6 className="font-medium text-gray-800">고객 역할</h6>
-          <div className="flex gap-2">
+          <div className="grid grid-cols-2 xs:grid-cols-3 sm:grid-cols-5 gap-2">
             {(Object.keys(roleFilters) as (keyof typeof roleFilters)[]).map(
               (role) => (
                 <Chip

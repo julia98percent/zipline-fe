@@ -1,4 +1,4 @@
-import { Box, Typography, Paper, IconButton } from "@mui/material";
+import { IconButton } from "@mui/material";
 import CloseIcon from "@mui/icons-material/Close";
 import { Customer } from "@ts/customer";
 import Button from "@components/Button";
@@ -19,35 +19,39 @@ const CustomerManagementSection = ({
   onSendMessage,
 }: CustomerManagementSectionProps) => {
   return (
-    <Box className="w-full">
-      <Paper className="p-6 mb-4 rounded-lg shadow-sm">
-        <Box className="flex justify-between items-center">
-          <Typography className="text-xl font-medium">
+    <div className="w-full">
+      <div className="p-3 mb-4 card">
+        <div
+          className={`flex justify-between items-center ${
+            customers.length && "mb-2"
+          }`}
+        >
+          <h6 className="text-xl font-semibold text-primary">
             문자 발송 대상 고객
-          </Typography>
+          </h6>
           <Button variant="contained" color="primary" onClick={onAddCustomer}>
             고객 선택하기
           </Button>
-        </Box>
-        <Box className="max-h-[300px] overflow-y-auto">
+        </div>
+        <div className="max-h-[300px] overflow-y-auto">
           {customers.map((customer, index) => (
-            <Box
+            <div
               key={index}
               className="flex items-center justify-between p-2 mt-2 bg-gray-50 rounded"
             >
-              <Box>
-                <Typography variant="body1">{customer.name}</Typography>
-                <Typography variant="body2" color="textSecondary">
+              <div className="flex flex-col">
+                <span className="font-medium">{customer.name}</span>
+                <span className="text-sm text-gray-500">
                   {customer.phoneNo}
-                </Typography>
-              </Box>
+                </span>
+              </div>
               <IconButton size="small" onClick={() => onRemoveCustomer(index)}>
                 <CloseIcon />
               </IconButton>
-            </Box>
+            </div>
           ))}
-        </Box>
-      </Paper>
+        </div>
+      </div>
 
       <Button
         fullWidth
@@ -62,7 +66,7 @@ const CustomerManagementSection = ({
           ? "템플릿을 선택해주세요"
           : `${customers.length}명에게 발송하기`}
       </Button>
-    </Box>
+    </div>
   );
 };
 

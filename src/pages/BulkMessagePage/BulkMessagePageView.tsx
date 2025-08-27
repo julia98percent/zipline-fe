@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Box, Snackbar, Alert } from "@mui/material";
+import { Snackbar, Alert } from "@mui/material";
 import PageHeader from "@components/PageHeader/PageHeader";
 import { SelectChangeEvent } from "@mui/material";
 import { MessageTemplate } from "@ts/message";
@@ -46,12 +46,10 @@ const BulkMessagePage = ({
   }>({ open: false, message: "", severity: "success" });
 
   return (
-    <Box className="p-0 pb-6 min-h-screen bg-gray-100">
+    <>
       <PageHeader />
-
-      <Box className="p-6">
+      <div className="p-5 pt-0">
         <div className="flex flex-col lg:flex-row gap-7">
-          {/* 왼쪽 영역: 문자 템플릿 선택 및 내용 */}
           <div className="flex-1">
             <MessageTemplateSection
               selectedTemplate={selectedTemplate}
@@ -62,7 +60,6 @@ const BulkMessagePage = ({
             />
           </div>
 
-          {/* 오른쪽 영역: 고객 추가 */}
           <div className="flex-1 lg:max-w-md">
             <CustomerManagementSection
               customers={customers}
@@ -73,7 +70,7 @@ const BulkMessagePage = ({
             />
           </div>
         </div>
-      </Box>
+      </div>
 
       <CustomerSelectModal
         open={isCustomerModalOpen}
@@ -105,7 +102,7 @@ const BulkMessagePage = ({
           {toast.message}
         </Alert>
       </Snackbar>
-    </Box>
+    </>
   );
 };
 

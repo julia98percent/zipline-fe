@@ -1,22 +1,23 @@
-import { Box, Typography, Stack } from "@mui/material";
+import { Stack } from "@mui/material";
 import { MessageHistory } from "@ts/message";
 import { formatDate } from "@utils/dateUtil";
 
 function MessageLog({ messageHistory }: { messageHistory: MessageHistory }) {
   return (
-    <Box className="bg-neutral-100 p-2">
-      <Typography className="font-medium">문자 발송 로그</Typography>
+    <div className="p-2">
+      <h6 className="text-center font-medium">문자 발송 로그</h6>
       <Stack spacing={1}>
         {messageHistory.log.map((log, index) => (
-          <Box key={index} className="p-2 border-b border-neutral-300">
-            <Typography variant="body2">{log.message}</Typography>
-            <Typography variant="caption" color="text.secondary">
-              {formatDate(log.createAt)}
-            </Typography>
-          </Box>
+          <div
+            key={index}
+            className="text-sm font-normal p-2 border-b border-neutral-300"
+          >
+            <p>{log.message}</p>
+            <span className="text-neutral-500">{formatDate(log.createAt)}</span>
+          </div>
         ))}
       </Stack>
-    </Box>
+    </div>
   );
 }
 

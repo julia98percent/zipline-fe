@@ -71,17 +71,14 @@ export default function CustomerSelectModalView({
       maxWidth="md"
       fullWidth
       PaperProps={{
-        sx: {
-          borderRadius: "8px",
-          maxHeight: "90vh",
-        },
+        className: "w-[90vw] rounded-lg max-h-[90vh]",
       }}
     >
       <DialogTitle className="border-b text-primary font-bold border-gray-200">
         문자 발송 대상 고객 선택
       </DialogTitle>
 
-      <DialogContent className="mt-4 p-7 pt-0">
+      <DialogContent className="flex flex-col gap-4 p-3 pt-0 bg-neutral-100">
         <CustomerFilters
           search={search}
           region={region}
@@ -93,28 +90,29 @@ export default function CustomerSelectModalView({
           onRoleFilterChange={onRoleFilterChange}
           onLabelFilterChange={onLabelFilterChange}
         />
+        <div className="card">
+          <CustomerTabsSection
+            selectedTab={selectedTab}
+            totalCount={totalCount}
+            selectedCustomersCount={selectedCustomers.length}
+            onTabChange={onTabChange}
+          />
 
-        <CustomerTabsSection
-          selectedTab={selectedTab}
-          totalCount={totalCount}
-          selectedCustomersCount={selectedCustomers.length}
-          onTabChange={onTabChange}
-        />
+          <CustomerList
+            customers={currentPageCustomers}
+            selectedCustomers={selectedCustomers}
+            loading={loading}
+            onCustomerSelect={onCustomerSelect}
+          />
 
-        <CustomerList
-          customers={currentPageCustomers}
-          selectedCustomers={selectedCustomers}
-          loading={loading}
-          onCustomerSelect={onCustomerSelect}
-        />
-
-        <CustomerPaginationSection
-          count={selectedTab === 0 ? totalCount : selectedCustomers.length}
-          page={page}
-          rowsPerPage={rowsPerPage}
-          onPageChange={onChangePage}
-          onRowsPerPageChange={onChangeRowsPerPage}
-        />
+          <CustomerPaginationSection
+            count={selectedTab === 0 ? totalCount : selectedCustomers.length}
+            page={page}
+            rowsPerPage={rowsPerPage}
+            onPageChange={onChangePage}
+            onRowsPerPageChange={onChangeRowsPerPage}
+          />
+        </div>
       </DialogContent>
 
       <DialogActions className="flex items-center justify-end p-6 border-t border-gray-200">

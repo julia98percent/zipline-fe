@@ -1,4 +1,4 @@
-import { Box, Tab, Tabs } from "@mui/material";
+import { Tab, Tabs } from "@mui/material";
 
 interface CustomerTabsSectionProps {
   selectedTab: number;
@@ -14,7 +14,7 @@ export default function CustomerTabsSection({
   onTabChange,
 }: CustomerTabsSectionProps) {
   return (
-    <Box className="border-b border-gray-200 mb-4">
+    <div className="border-b border-gray-200 mb-4">
       <Tabs
         value={selectedTab}
         onChange={(_, newValue) => onTabChange(newValue)}
@@ -35,6 +35,6 @@ export default function CustomerTabsSection({
         <Tab label={`선택 가능한 고객 (${totalCount}명)`} />
         <Tab label={`선택된 고객 (${selectedCustomersCount}명)`} />
       </Tabs>
-    </Box>
+    </div>
   );
 }

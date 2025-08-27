@@ -1,20 +1,16 @@
 import { useEffect, useState, useCallback } from "react";
-import { useNavigate, useOutletContext } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { searchContracts } from "@apis/contractService";
 import { Contract, ContractCategory } from "@ts/contract";
 import ContractListPageView from "./ContractListPageView";
 import { useUrlPagination } from "@hooks/useUrlPagination";
 import { useUrlFilters } from "@hooks/useUrlFilters";
 
+export const EXPIRED_PERIOD = ["6개월 이내", "3개월 이내", "1개월 이내"];
+
 function ContractListPage() {
   const { page, rowsPerPage, setPage, setRowsPerPage } = useUrlPagination();
   const { getParam, setParam, setParams, clearAllFilters } = useUrlFilters();
-
-  const periodMapping: Record<string, string> = {
-    "6개월 이내 만료 예정": "6개월 이내",
-    "3개월 이내 만료 예정": "3개월 이내",
-    "1개월 이내 만료 예정": "1개월 이내",
-  };
 
   const categoryKeywordMap: Record<string, string> = {
     매매: ContractCategory.SALE,
@@ -81,8 +77,7 @@ function ContractListPage() {
 
   // Event Handlers
   const handlePeriodClick = (label: string) => {
-    const backendValue = periodMapping[label];
-    const newValue = selectedPeriod === backendValue ? null : backendValue;
+    const newValue = selectedPeriod === label ? null : label;
     setParam("period", newValue || "");
   };
 
@@ -161,7 +156,7 @@ function ContractListPage() {
       page={page}
       rowsPerPage={rowsPerPage}
       totalElements={totalElements}
-      periodMapping={periodMapping}
+      EXPIRED_PERIOD={EXPIRED_PERIOD}
       sortOptions={sortOptions}
       onSortChange={handleSortChange}
       onSearchKeywordChange={handleSearchKeywordChange}

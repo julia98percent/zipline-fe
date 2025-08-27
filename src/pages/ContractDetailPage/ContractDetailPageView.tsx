@@ -1,4 +1,4 @@
-import { Box, LinearProgress } from "@mui/material";
+import { Divider, LinearProgress } from "@mui/material";
 import PageHeader from "@components/PageHeader";
 import {
   ContractDetailContent,
@@ -6,7 +6,6 @@ import {
   ContractBasicInfoEditModal,
 } from "./components";
 import DeleteConfirmModal from "@components/DeleteConfirmModal";
-import DeleteIcon from "@mui/icons-material/Delete";
 import { ContractDetail, ContractHistory } from "@ts/contract";
 import Button from "@components/Button";
 import CircularProgress from "@components/CircularProgress";
@@ -63,7 +62,7 @@ const ContractDetailPageView = ({
 }: ContractDetailPageViewProps) => {
   if (loading || !contract) {
     return (
-      <div className="flex-grow bg-gray-100 min-h-screen">
+      <div>
         <PageHeader />
         <div className="flex items-center justify-center h-screen">
           <CircularProgress />
@@ -73,16 +72,16 @@ const ContractDetailPageView = ({
   }
 
   return (
-    <div className="flex-grow bg-gray-100 min-h-screen">
+    <div>
       <PageHeader />
 
       {isUpdating && (
-        <Box className="w-full fixed top-0 left-0 z-50">
+        <div className="w-full fixed top-0 left-0 z-50">
           <LinearProgress />
-        </Box>
+        </div>
       )}
 
-      <div className="p-5 max-w-full mx-auto">
+      <div className="p-5 pt-0">
         {infoModalOpen && contract && (
           <ContractBasicInfoEditModal
             open={infoModalOpen}
@@ -124,22 +123,22 @@ const ContractDetailPageView = ({
         />
 
         <div className="space-y-6">
-          <div className="flex justify-between items-center">
+          <div className="flex items-center justify-end gap-2">
             <Button
-              variant="outlined"
-              color="primary"
+              variant="text"
+              color="info"
               onClick={onNavigateToList}
               disabled={isUpdating}
             >
               목록으로
             </Button>
-
+            <Divider orientation="vertical" className="h-4 bg-neutral-300" />
             <Button
-              variant="outlined"
+              variant="text"
               color="error"
-              startIcon={<DeleteIcon />}
               onClick={onDelete}
               disabled={isUpdating}
+              className="min-w-min"
             >
               삭제
             </Button>

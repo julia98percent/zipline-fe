@@ -43,6 +43,7 @@ interface Props {
   propertyOptions: AgentPropertyResponse[];
   files: File[];
   handleFileChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
+  handleFileRemove: (index: number) => void;
   handleSubmit: () => void;
   validationErrors: string[];
   isSubmitButtonDisabled: boolean;
@@ -80,6 +81,7 @@ const ContractAddModalView = ({
   propertyOptions,
   files,
   handleFileChange,
+  handleFileRemove,
   handleSubmit,
   validationErrors,
   isSubmitButtonDisabled,
@@ -89,15 +91,16 @@ const ContractAddModalView = ({
     <Dialog
       open={open}
       onClose={handleModalClose}
+      maxWidth={false}
       PaperProps={{
-        className: "w-200 h-175 max-h-[90vh] bg-white rounded-lg",
+        className: "w-[90vw] md:w-[80vw] max-h-[90vh] rounded-lg",
       }}
     >
       <DialogTitle className="border-b text-primary font-bold border-gray-200">
         계약 등록
       </DialogTitle>
 
-      <DialogContent className="flex flex-col gap-4 p-7">
+      <DialogContent className="bg-neutral-100 flex flex-col gap-3 p-3">
         <ContractBasicInfoSection
           category={category}
           handleCategoryChange={handleCategoryChange}
@@ -137,18 +140,14 @@ const ContractAddModalView = ({
         <ContractFileUploadSection
           files={files}
           handleFileChange={handleFileChange}
+          onFileRemove={handleFileRemove}
         />
       </DialogContent>
 
-      <DialogActions className="flex flex-row-reverse items-center justify-between p-6 border-t border-gray-200">
+      <DialogActions className="flex flex-col xs:flex-row items-start xs:items-center justify-between p-6 border-t border-gray-200">
         {errorMessage && (
           <p className="absolute left-6 text-red-600 text-sm">{errorMessage}</p>
         )}
-        <ContractActionButtons
-          handleSubmit={handleSubmit}
-          isSubmitButtonDisabled={isSubmitButtonDisabled}
-          handleModalClose={handleModalClose}
-        />
         {isSubmitButtonDisabled && validationErrors.length > 0 && (
           <Tooltip
             title={
@@ -173,6 +172,11 @@ const ContractAddModalView = ({
             </div>
           </Tooltip>
         )}
+        <ContractActionButtons
+          handleSubmit={handleSubmit}
+          isSubmitButtonDisabled={isSubmitButtonDisabled}
+          handleModalClose={handleModalClose}
+        />
       </DialogActions>
     </Dialog>
   );

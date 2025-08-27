@@ -4,16 +4,12 @@ import {
   DialogTitle,
   DialogContent,
   DialogActions,
-  Box,
-  Typography,
   List,
   ListItem,
   ListItemText,
-  ListItemSecondaryAction,
   IconButton,
-  Divider,
 } from "@mui/material";
-import DeleteIcon from "@mui/icons-material/Delete";
+import DeleteOutlineIcon from "@mui/icons-material/DeleteOutline";
 import UploadFileIcon from "@mui/icons-material/UploadFile";
 import { ContractDetail } from "@ts/contract";
 import { updateContract, ContractRequest } from "@apis/contractService";
@@ -223,74 +219,20 @@ const ContractDocumentsEditModal = ({
   };
 
   return (
-    <Dialog open={open} onClose={handleClose} maxWidth="sm" fullWidth>
-      <DialogTitle>
-        <Typography className="text-lg font-bold">첨부 문서 수정</Typography>
+    <Dialog
+      open={open}
+      onClose={handleClose}
+      maxWidth={false}
+      PaperProps={{
+        className: "w-[90vw] sm:w-[50vw] h-175 max-h-[90vh] rounded-lg",
+      }}
+    >
+      <DialogTitle className="border-b text-primary font-bold border-gray-200">
+        첨부 문서 수정
       </DialogTitle>
-      <DialogContent>
-        <Box className="mt-4">
-          {/* 기존 문서 목록 */}
-          {documents.length > 0 && (
-            <>
-              <Typography variant="subtitle1" fontWeight="bold" gutterBottom>
-                기존 문서
-              </Typography>
-              <List>
-                {documents.map((doc, index) => (
-                  <ListItem key={index} divider>
-                    <ListItemText
-                      primary={doc.fileName || `문서 ${index + 1}`}
-                      secondary="기존 문서"
-                    />
-                    <ListItemSecondaryAction>
-                      <IconButton
-                        edge="end"
-                        color="error"
-                        onClick={() => handleRemoveExistingDocument(index)}
-                      >
-                        <DeleteIcon />
-                      </IconButton>
-                    </ListItemSecondaryAction>
-                  </ListItem>
-                ))}
-              </List>
-              <Divider className="my-4" />
-            </>
-          )}
-
-          {/* 새로 추가된 파일 목록 */}
-          {newFiles.length > 0 && (
-            <>
-              <Typography variant="subtitle1" fontWeight="bold" gutterBottom>
-                새로 추가된 파일
-              </Typography>
-              <List>
-                {newFiles.map((file, index) => (
-                  <ListItem key={index} divider>
-                    <ListItemText
-                      primary={file.name}
-                      secondary={`크기: ${(file.size / 1024 / 1024).toFixed(
-                        2
-                      )} MB`}
-                    />
-                    <ListItemSecondaryAction>
-                      <IconButton
-                        edge="end"
-                        color="error"
-                        onClick={() => handleRemoveNewFile(index)}
-                      >
-                        <DeleteIcon />
-                      </IconButton>
-                    </ListItemSecondaryAction>
-                  </ListItem>
-                ))}
-              </List>
-              <Divider className="my-4" />
-            </>
-          )}
-
-          {/* 파일 업로드 버튼 */}
-          <Box className="text-center mt-4">
+      <DialogContent className="bg-neutral-100 flex flex-col gap-3 p-3">
+        <div className="flex flex-col gap-4 mt-4">
+          <div className="w-full p-5 card">
             <input
               ref={fileInputRef}
               accept="*/*"
@@ -302,30 +244,74 @@ const ContractDocumentsEditModal = ({
             <Button
               variant="outlined"
               startIcon={<UploadFileIcon />}
-              className="min-w-[200px]"
+              className="w-full"
               disabled={isLoading}
               onClick={handleFileInputClick}
             >
               파일 추가
             </Button>
-            <Typography
-              variant="caption"
-              display="block"
-              className="mt-2 text-primary"
-            >
+            <p className="text-sm text-neutral-500 mt-1 px-1">
               파일당 최대 10MB까지 업로드 가능합니다.
-            </Typography>
-          </Box>
-
-          {documents.length === 0 && newFiles.length === 0 && (
-            <Box className="text-center py-8 text-gray-500">
-              <Typography>첨부된 문서가 없습니다.</Typography>
-            </Box>
+            </p>
+          </div>
+          {documents.length > 0 && (
+            <div className="flex flex-col p-5 card">
+              <h6 className="font-semibold">기존 문서</h6>
+              <List className="p-0">
+                {documents.map((doc, index) => (
+                  <ListItem key={index} divider>
+                    <span>{doc.fileName || `문서 ${index + 1}`}</span>
+                    <IconButton
+                      edge="end"
+                      color="error"
+                      onClick={() => handleRemoveExistingDocument(index)}
+                    >
+                      <DeleteOutlineIcon />
+                    </IconButton>
+                  </ListItem>
+                ))}
+              </List>
+            </div>
           )}
-        </Box>
+          {newFiles.length > 0 && (
+            <div className="p-5 card">
+              <h6 className="font-semibold">새로 추가된 문서</h6>
+              <List className="p-0">
+                {newFiles.map((file, index) => (
+                  <ListItem key={index} divider>
+                    <ListItemText
+                      primary={file.name}
+                      secondary={`크기: ${(file.size / 1024 / 1024).toFixed(
+                        2
+                      )} MB`}
+                    />
+
+                    <IconButton
+                      edge="end"
+                      color="error"
+                      onClick={() => handleRemoveNewFile(index)}
+                    >
+                      <DeleteOutlineIcon />
+                    </IconButton>
+                  </ListItem>
+                ))}
+              </List>
+            </div>
+          )}
+          {documents.length === 0 && newFiles.length === 0 && (
+            <div className="text-center py-8 text-gray-500">
+              <p>첨부된 문서가 없습니다.</p>
+            </div>
+          )}
+        </div>
       </DialogContent>
       <DialogActions>
-        <Button onClick={handleClose} color="inherit" disabled={isLoading}>
+        <Button
+          variant="outlined"
+          color="info"
+          onClick={handleClose}
+          disabled={isLoading}
+        >
           취소
         </Button>
         <Button

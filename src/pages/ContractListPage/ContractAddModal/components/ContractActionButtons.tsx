@@ -12,8 +12,8 @@ const ContractActionButtons = ({
   handleModalClose,
 }: Props) => {
   return (
-    <div className="flex gap-2">
-      <Button variant="outlined" onClick={handleModalClose}>
+    <div className="flex gap-2 ml-auto">
+      <Button variant="outlined" color="info" onClick={handleModalClose}>
         취소
       </Button>
       <Button

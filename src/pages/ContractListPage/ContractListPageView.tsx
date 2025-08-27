@@ -6,14 +6,11 @@ import ContractAddModal from "./ContractAddModal";
 import Button from "@components/Button";
 import AddIcon from "@mui/icons-material/Add";
 import SearchIcon from "@mui/icons-material/Search";
-import {
-  TextField as MuiTextField,
-  InputAdornment,
-  IconButton,
-} from "@mui/material";
+import { InputAdornment, IconButton } from "@mui/material";
 import { Contract } from "@ts/contract";
 import { CONTRACT_STATUS_OPTION_LIST } from "@constants/contract";
 import CircularProgress from "@components/CircularProgress";
+import TextField from "@components/TextField";
 
 interface ContractListPageViewProps {
   loading: boolean;
@@ -27,7 +24,7 @@ interface ContractListPageViewProps {
   page: number;
   rowsPerPage: number;
   totalElements: number;
-  periodMapping: Record<string, string>;
+  EXPIRED_PERIOD: string[];
   sortOptions: Array<{ value: string; label: string }>;
   onSortChange: (value: string) => void;
   onSearchKeywordChange: (keyword: string) => void;
@@ -42,7 +39,6 @@ interface ContractListPageViewProps {
   onFilterApply: (filter: { period: string; status: string }) => void;
   onAddModalClose: () => void;
   onRefreshData: () => void;
-
   handleClearFilters: () => void;
 }
 
@@ -58,7 +54,7 @@ const ContractListPageView = ({
   page,
   rowsPerPage,
   totalElements,
-  periodMapping,
+  EXPIRED_PERIOD,
   sortOptions,
   onSortChange,
   onSearchKeywordChange,
@@ -78,78 +74,75 @@ const ContractListPageView = ({
 }: ContractListPageViewProps) => {
   if (loading) {
     return (
-      <div className="flex-grow h-screen overflow-auto bg-gray-100 p-0 max-w-screen box-border">
+      <>
         <PageHeader />
         <div className="flex justify-center items-center h-[calc(100vh-72px)]">
           <CircularProgress />
         </div>
-      </div>
+      </>
     );
   }
 
   return (
-    <div className="bg-gray-100 min-h-screen">
+    <div>
       <PageHeader />
 
-      <div className="p-5">
-        <div className="bg-white p-4 rounded-lg shadow-sm mb-5">
-          <div className="flex gap-3 items-center mb-5">
+      <div className="p-5 pt-0">
+        <div className="flex flex-col card p-3 gap-1 xs:gap-4">
+          <div className="grid grid-cols-[1fr_3fr] gap-3">
             <Select
+              fullWidth
               label="정렬 기준"
               value={selectedSort}
               onChange={(e) => onSortChange(e.target.value)}
               options={sortOptions}
             />
 
-            <div className="flex flex-1 relative">
-              <MuiTextField
-                fullWidth
-                size="small"
-                placeholder="고객 이름 또는 매물 주소를 입력해주세요"
-                value={searchKeyword}
-                onChange={(e) => onSearchKeywordChange(e.target.value)}
-                onKeyDown={(e: React.KeyboardEvent) => {
-                  if (e.key === "Enter") {
-                    e.preventDefault();
-                    onSearchSubmit();
-                  }
-                }}
-                InputProps={{
-                  endAdornment: (
-                    <InputAdornment position="end">
-                      <IconButton size="small" onClick={onSearchSubmit}>
-                        <SearchIcon fontSize="small" />
-                      </IconButton>
-                    </InputAdornment>
-                  ),
-                }}
-              />
-            </div>
+            <TextField
+              fullWidth
+              size="small"
+              placeholder="고객 이름 또는 매물 주소를 입력해주세요"
+              value={searchKeyword}
+              onChange={(e) => onSearchKeywordChange(e.target.value)}
+              onKeyDown={(e: React.KeyboardEvent) => {
+                if (e.key === "Enter") {
+                  e.preventDefault();
+                  onSearchSubmit();
+                }
+              }}
+              InputProps={{
+                endAdornment: (
+                  <InputAdornment position="end">
+                    <IconButton size="small" onClick={onSearchSubmit}>
+                      <SearchIcon fontSize="small" />
+                    </IconButton>
+                  </InputAdornment>
+                ),
+              }}
+            />
           </div>
 
-          <div className="flex justify-between items-start flex-wrap gap-3">
-            <div className="flex items-center gap-3">
-              <StringSelect
-                label="상태 선택"
-                value={selectedStatus}
-                onChange={(e) => onStatusChange(e.target.value)}
-                options={CONTRACT_STATUS_OPTION_LIST}
-              />
+          <div className="grid grid-cols-1 sm:grid-cols-[1fr_3fr] gap-3">
+            <StringSelect
+              label="상태 선택"
+              value={selectedStatus}
+              onChange={(e) => onStatusChange(e.target.value)}
+              options={CONTRACT_STATUS_OPTION_LIST}
+              className="mt-auto"
+            />
 
-              <div className="flex flex-wrap gap-2">
-                {Object.keys(periodMapping).map((label) => (
+            <div className="flex flex-col lg:flex-row lg:items-center lg:gap-3">
+              <span className="text-sm font-medium text-neutral-600">
+                만료 예정일
+              </span>
+              <div className="flex gap-1">
+                {EXPIRED_PERIOD.map((label: string) => (
                   <Button
                     key={label}
                     variant={
-                      periodMapping[label] === selectedPeriod
-                        ? "contained"
-                        : "outlined"
+                      label === selectedPeriod ? "contained" : "outlined"
                     }
-                    color={
-                      periodMapping[label] === selectedPeriod
-                        ? "secondary"
-                        : "primary"
-                    }
+                    color={label === selectedPeriod ? "secondary" : "primary"}
                     onClick={() => onPeriodClick(label)}
                   >
                     {label}
@@ -157,18 +150,18 @@ const ContractListPageView = ({
                 ))}
               </div>
             </div>
-            <div className="flex justify-between w-full">
-              <Button variant="text" onClick={handleClearFilters}>
-                필터 초기화
-              </Button>
-              <Button
-                variant="contained"
-                onClick={onAddModalOpen}
-                startIcon={<AddIcon />}
-              >
-                계약 등록
-              </Button>
-            </div>
+          </div>
+          <div className="flex justify-between w-full">
+            <Button variant="text" onClick={handleClearFilters}>
+              필터 초기화
+            </Button>
+            <Button
+              variant="contained"
+              onClick={onAddModalOpen}
+              startIcon={<AddIcon />}
+            >
+              계약 등록
+            </Button>
           </div>
         </div>
 

@@ -122,14 +122,21 @@ const ContractBasicInfoEditModalView = ({
   const isSubmitButtonDisabled = validationErrors.length > 0;
 
   return (
-    <Dialog open={open} onClose={onClose} maxWidth="md" fullWidth>
+    <Dialog
+      open={open}
+      onClose={onClose}
+      maxWidth={false}
+      PaperProps={{
+        className: "w-[90vw] md:w-[80vw] max-h-[90vh] rounded-lg",
+      }}
+    >
       <DialogTitle className="border-b text-primary font-bold border-gray-200">
         계약 정보 수정
       </DialogTitle>
 
-      <DialogContent className="p-7">
+      <DialogContent className="bg-neutral-100 flex flex-col gap-3 p-3">
         <div className="grid grid-cols-1 gap-4">
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 card p-5">
             <StringSelect
               value={category || ""}
               onChange={(e) =>
@@ -159,7 +166,7 @@ const ContractBasicInfoEditModalView = ({
             </StringSelect>
           </div>
 
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 card p-5">
             <DatePicker
               label="계약 시작일"
               value={contractStartDate ? dayjs(contractStartDate) : null}
@@ -204,61 +211,42 @@ const ContractBasicInfoEditModalView = ({
               }
             />
           )}
+          <div className="flex flex-col card p-5 gap-4">
+            <StringSelect
+              value={selectedPropertyUid}
+              onChange={(e) => onSelectedPropertyUidChange(e.target.value)}
+              label="매물 선택"
+              size="medium"
+              fullWidth
+            >
+              {propertyOptions.map((property) => (
+                <MenuItem key={property.uid} value={property.uid.toString()}>
+                  {property.address}
+                </MenuItem>
+              ))}
+            </StringSelect>
 
-          <StringSelect
-            value={selectedPropertyUid}
-            onChange={(e) => onSelectedPropertyUidChange(e.target.value)}
-            label="매물 선택"
-            size="medium"
-            fullWidth
-          >
-            {propertyOptions.map((property) => (
-              <MenuItem key={property.uid} value={property.uid.toString()}>
-                {property.address}
-              </MenuItem>
-            ))}
-          </StringSelect>
+            {category && (
+              <div className="grid grid-cols-[repeat(auto-fill)] gap-4">
+                {category == ContractCategoryKeys.SALE && (
+                  <TextField
+                    label="매매가"
+                    value={price}
+                    onChange={handlePriceChange}
+                    onBlur={handlePriceBlur}
+                    error={!!priceError}
+                    helperText={priceError || formatKoreanPrice(price)}
+                    fullWidth
+                    placeholder="0"
+                    InputProps={{
+                      endAdornment: (
+                        <InputAdornment position="end">만원</InputAdornment>
+                      ),
+                    }}
+                  />
+                )}
 
-          {category && (
-            <div className="grid grid-cols-[repeat(auto-fill)] gap-4">
-              {category == ContractCategoryKeys.SALE && (
-                <TextField
-                  label="매매가"
-                  value={price}
-                  onChange={handlePriceChange}
-                  onBlur={handlePriceBlur}
-                  error={!!priceError}
-                  helperText={priceError || formatKoreanPrice(price)}
-                  fullWidth
-                  placeholder="0"
-                  InputProps={{
-                    endAdornment: (
-                      <InputAdornment position="end">만원</InputAdornment>
-                    ),
-                  }}
-                />
-              )}
-
-              {category == ContractCategoryKeys.DEPOSIT && (
-                <TextField
-                  label="보증금"
-                  value={deposit}
-                  onChange={handleDepositChange}
-                  onBlur={handleDepositBlur}
-                  error={!!depositError}
-                  helperText={depositError || formatKoreanPrice(deposit)}
-                  fullWidth
-                  placeholder="0"
-                  InputProps={{
-                    endAdornment: (
-                      <InputAdornment position="end">만원</InputAdornment>
-                    ),
-                  }}
-                />
-              )}
-
-              {category == ContractCategoryKeys.MONTHLY && (
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                {category == ContractCategoryKeys.DEPOSIT && (
                   <TextField
                     label="보증금"
                     value={deposit}
@@ -274,26 +262,48 @@ const ContractBasicInfoEditModalView = ({
                       ),
                     }}
                   />
-                  <TextField
-                    label="월세"
-                    value={monthlyRent}
-                    onChange={handleMonthlyRentChange}
-                    onBlur={handleMonthlyRentBlur}
-                    error={!!monthlyError}
-                    helperText={monthlyError || formatKoreanPrice(monthlyRent)}
-                    fullWidth
-                    placeholder="0"
-                    InputProps={{
-                      endAdornment: (
-                        <InputAdornment position="end">만원</InputAdornment>
-                      ),
-                    }}
-                  />
-                </div>
-              )}
-            </div>
-          )}
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                )}
+
+                {category == ContractCategoryKeys.MONTHLY && (
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <TextField
+                      label="보증금"
+                      value={deposit}
+                      onChange={handleDepositChange}
+                      onBlur={handleDepositBlur}
+                      error={!!depositError}
+                      helperText={depositError || formatKoreanPrice(deposit)}
+                      fullWidth
+                      placeholder="0"
+                      InputProps={{
+                        endAdornment: (
+                          <InputAdornment position="end">만원</InputAdornment>
+                        ),
+                      }}
+                    />
+                    <TextField
+                      label="월세"
+                      value={monthlyRent}
+                      onChange={handleMonthlyRentChange}
+                      onBlur={handleMonthlyRentBlur}
+                      error={!!monthlyError}
+                      helperText={
+                        monthlyError || formatKoreanPrice(monthlyRent)
+                      }
+                      fullWidth
+                      placeholder="0"
+                      InputProps={{
+                        endAdornment: (
+                          <InputAdornment position="end">만원</InputAdornment>
+                        ),
+                      }}
+                    />
+                  </div>
+                )}
+              </div>
+            )}
+          </div>
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 card p-5">
             <Autocomplete
               multiple
               options={customerOptions}
@@ -336,17 +346,18 @@ const ContractBasicInfoEditModalView = ({
               )}
             />
           </div>
-
-          <TextField
-            label="기타"
-            value={other}
-            onChange={(e) => onOtherChange(e.target.value)}
-            fullWidth
-            placeholder="추가 정보를 입력하세요"
-            minRows={5}
-            multiline
-            inputProps={{ maxLength: 255 }}
-          />
+          <div className="card p-5">
+            <TextField
+              label="기타"
+              value={other}
+              onChange={(e) => onOtherChange(e.target.value)}
+              fullWidth
+              placeholder="추가 정보를 입력하세요"
+              minRows={5}
+              multiline
+              inputProps={{ maxLength: 255 }}
+            />
+          </div>
         </div>
       </DialogContent>
 

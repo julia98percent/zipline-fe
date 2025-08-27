@@ -39,7 +39,7 @@ const ContractPriceSection = ({
   } = priceInput;
 
   return (
-    <div className="flex flex-col gap-4">
+    <div className="flex flex-col gap-4 p-5 card">
       {category === "SALE" && (
         <TextField
           label="매매가"

@@ -75,9 +75,14 @@ const ContractAddModal = ({ open, handleClose, fetchContractData }: Props) => {
   }, []);
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    if (e.target.files) {
-      setFiles(Array.from(e.target.files));
+    const files = e.target.files;
+    if (files) {
+      setFiles((prev) => [...prev, ...Array.from(e.target.files!)]);
     }
+  };
+
+  const handleFileRemove = (index: number) => {
+    setFiles((prev) => prev.filter((_, i) => i !== index));
   };
 
   const getValidationErrors = () => {
@@ -252,6 +257,7 @@ const ContractAddModal = ({ open, handleClose, fetchContractData }: Props) => {
       propertyOptions={propertyOptions}
       files={files}
       handleFileChange={handleFileChange}
+      handleFileRemove={handleFileRemove}
       handleSubmit={handleSubmit}
       isSubmitButtonDisabled={isSubmitButtonDisabled}
       errorMessage={errorMessage}

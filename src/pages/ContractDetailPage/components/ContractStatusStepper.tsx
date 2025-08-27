@@ -1,11 +1,6 @@
 import { useState } from "react";
 import {
-  Stepper,
-  Step,
-  StepLabel,
-  Box,
   Typography,
-  Paper,
   IconButton,
   Menu,
   MenuItem,
@@ -13,13 +8,14 @@ import {
   ListItemText,
 } from "@mui/material";
 import {
-  CheckCircle,
   Cancel,
   MoreVert,
   CancelOutlined,
   RemoveCircleOutline,
 } from "@mui/icons-material";
 import { CONTRACT_STATUS_OPTION_LIST } from "@constants/contract";
+import ContractStatusStepperDesktop from "./ContractStatusStepperDesktop";
+import ContractStatusStepperMobile from "./ContractStatusStepperMobile";
 
 interface ContractStatusStepperProps {
   currentStatus: string;
@@ -113,11 +109,11 @@ const ContractStatusStepper = ({
     currentStatus === "CANCELLED" || currentStatus === "TERMINATED";
 
   return (
-    <Paper elevation={1} className="p-6 rounded-lg bg-white shadow-sm">
-      <Box className="flex justify-between items-center mb-4">
-        <Typography variant="h6" className="font-bold text-primary">
+    <div className="p-5 card">
+      <div className="flex justify-between items-center mb-4">
+        <h6 className="text-xl font-semibold text-primary mb-2">
           계약 진행 상태
-        </Typography>
+        </h6>
         {!isTerminated && onStatusChange && (
           <>
             <IconButton
@@ -156,10 +152,10 @@ const ContractStatusStepper = ({
             </Menu>
           </>
         )}
-      </Box>
+      </div>
 
       {isTerminated ? (
-        <Box className="flex items-center justify-center py-4">
+        <div className="flex items-center justify-center py-4">
           <Cancel className="text-red-700 mr-2 text-3xl" />
           <Typography variant="h6" className="text-red-700 font-bold">
             계약 {currentStatus === "CANCELLED" ? "취소됨" : "해지됨"}
@@ -173,112 +169,31 @@ const ContractStatusStepper = ({
               )
             </Typography>
           )}
-        </Box>
+        </div>
       ) : (
-        <Stepper
-          activeStep={activeStep}
-          orientation="horizontal"
-          sx={{
-            "& .MuiStepConnector-root": {
-              top: 20,
-              left: "calc(-50% + 16px)",
-              right: "calc(50% + 16px)",
-            },
-            "& .MuiStepConnector-line": {
-              borderColor: "#e0e0e0",
-              borderTopWidth: 2,
-            },
-            "& .MuiStep-root": {
-              px: 0.5,
-            },
-          }}
-        >
-          {normalFlow.map((step, index) => {
-            const stepDate = getStatusDate(step);
-            const isCompleted = index < activeStep;
-            const isActive = index === activeStep;
-            const isClickable = isClickableStep(step) && !isTerminated;
+        <>
+          <ContractStatusStepperDesktop
+            normalFlow={normalFlow}
+            activeStep={activeStep}
+            getStatusLabel={getStatusLabel}
+            getStatusDate={getStatusDate}
+            isClickableStep={isClickableStep}
+            handleStepClick={handleStepClick}
+            isTerminated={isTerminated}
+          />
 
-            return (
-              <Step key={step} completed={isCompleted}>
-                <StepLabel
-                  StepIconComponent={() => (
-                    <Box
-                      className="w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold transition-all duration-300"
-                      sx={{
-                        backgroundColor: isCompleted
-                          ? "#4caf50"
-                          : isActive
-                          ? "#2196f3"
-                          : isClickable
-                          ? "#e3f2fd"
-                          : "#e0e0e0",
-                        color:
-                          isCompleted || isActive
-                            ? "#fff"
-                            : isClickable
-                            ? "#1976d2"
-                            : "#666",
-                        cursor: isClickable ? "pointer" : "default",
-                        border: isClickable ? "2px solid #1976d2" : "none",
-                        "&:hover": isClickable
-                          ? {
-                              backgroundColor: "#bbdefb",
-                              transform: "scale(1.05)",
-                            }
-                          : {},
-                      }}
-                      onClick={() => isClickable && handleStepClick(step)}
-                      title={
-                        isClickable
-                          ? `클릭하여 '${getStatusLabel(step)}'로 진행`
-                          : undefined
-                      }
-                    >
-                      {isCompleted ? (
-                        <CheckCircle className="text-xl" />
-                      ) : (
-                        index + 1
-                      )}
-                    </Box>
-                  )}
-                >
-                  <Box className="text-center mt-2">
-                    <Typography
-                      variant="caption"
-                      className="block text-xs leading-tight"
-                      sx={{
-                        fontWeight: isCompleted || isActive ? "bold" : "normal",
-                        color: isCompleted
-                          ? "#4caf50"
-                          : isActive
-                          ? "#2196f3"
-                          : isClickable
-                          ? "#1976d2"
-                          : "#666",
-                      }}
-                    >
-                      {getStatusLabel(step)}
-                    </Typography>
-                    {(isCompleted || isActive) && stepDate && (
-                      <Typography
-                        variant="caption"
-                        className="block text-gray-500 text-xs mt-1"
-                      >
-                        {new Date(stepDate).toLocaleDateString("ko-KR", {
-                          month: "short",
-                          day: "numeric",
-                        })}
-                      </Typography>
-                    )}
-                  </Box>
-                </StepLabel>
-              </Step>
-            );
-          })}
-        </Stepper>
+          <ContractStatusStepperMobile
+            normalFlow={normalFlow}
+            activeStep={activeStep}
+            getStatusLabel={getStatusLabel}
+            getStatusDate={getStatusDate}
+            canAdvanceToStep={canAdvanceToStep}
+            handleQuickStatusChange={handleQuickStatusChange}
+            handleStepClick={handleStepClick}
+          />
+        </>
       )}
-    </Paper>
+    </div>
   );
 };
 

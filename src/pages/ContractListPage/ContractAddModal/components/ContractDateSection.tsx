@@ -23,7 +23,7 @@ const ContractDateSection = ({
   setExpectedContractEndDate,
 }: Props) => {
   return (
-    <div className="flex flex-col gap-4">
+    <div className="flex flex-col gap-4 p-5 card">
       <DatePicker
         label="계약일"
         value={contractDate}
@@ -34,7 +34,7 @@ const ContractDateSection = ({
           },
         }}
       />
-      <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
         <DatePicker
           label="계약 시작일"
           value={contractStartDate}

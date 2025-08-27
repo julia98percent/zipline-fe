@@ -24,7 +24,7 @@ const ContractBasicInfoSection = ({
   propertyOptions,
 }: Props) => {
   return (
-    <div className="flex flex-col gap-4">
+    <div className="flex flex-col gap-4 p-5 card">
       <StringSelect
         label="계약 카테고리"
         value={category ?? ""}

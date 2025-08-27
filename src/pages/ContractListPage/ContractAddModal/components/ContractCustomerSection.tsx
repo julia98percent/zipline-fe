@@ -17,7 +17,7 @@ const ContractCustomerSection = ({
   customerOptions,
 }: Props) => {
   return (
-    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 p-5 card">
       <Autocomplete
         multiple
         options={customerOptions}

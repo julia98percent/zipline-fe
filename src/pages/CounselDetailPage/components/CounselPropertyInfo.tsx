@@ -1,5 +1,4 @@
-import { Typography } from "@mui/material";
-import styles from "../styles/CounselDetailPage.module.css";
+import InfoField from "@components/InfoField";
 import { Property, PropertyCategoryType } from "@ts/property";
 
 interface CounselPropertyInfoProps {
@@ -12,88 +11,64 @@ const CounselPropertyInfo = ({
   PROPERTY_CATEGORIES,
 }: CounselPropertyInfoProps) => {
   return (
-    <div className={styles.card}>
-      <Typography className={styles.cardTitle}>부동산 정보</Typography>
-      <div className={styles.infoGrid}>
-        <div className={styles.infoItem}>
-          <span className={styles.infoLabel}>주소</span>
-          <span className={styles.infoValue}>{property.address}</span>
-        </div>
-        <div className={styles.infoItem}>
-          <span className={styles.infoLabel}>부동산 유형</span>
-          <span className={styles.infoValue}>
-            {PROPERTY_CATEGORIES[property.type as PropertyCategoryType] ||
-              property.type}
-          </span>
-        </div>
-        {property.price !== null && (
-          <div className={styles.infoItem}>
-            <span className={styles.infoLabel}>매매가</span>
-            <span className={styles.infoValue}>
-              {property.price ? `${property.price.toLocaleString()}원` : "-"}
-            </span>
-          </div>
+    <div className="flex flex-col gap-2 p-5 card">
+      <h6 className="text-xl font-semibold text-primary mb-2">부동산 정보</h6>
+      <InfoField label="주소" value={property.address} />
+      <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-2">
+        <InfoField
+          label="부동산 유형"
+          value={
+            PROPERTY_CATEGORIES[property.type as PropertyCategoryType] ||
+            property.type
+          }
+        />
+
+        {property.price !== null && property.price > 0 && (
+          <InfoField
+            label="매매가"
+            value={
+              property.price ? `${property.price.toLocaleString()}원` : "-"
+            }
+          />
         )}
-        {property.deposit !== null && (
-          <div className={styles.infoItem}>
-            <span className={styles.infoLabel}>보증금</span>
-            <span className={styles.infoValue}>
-              {property.deposit
-                ? `${property.deposit.toLocaleString()}원`
-                : "-"}
-            </span>
-          </div>
+        {property.deposit !== null && property.deposit > 0 && (
+          <InfoField
+            label="보증금"
+            value={
+              property.deposit ? `${property.deposit.toLocaleString()}원` : "-"
+            }
+          />
         )}
-        {property.monthlyRent !== null && (
-          <div className={styles.infoItem}>
-            <span className={styles.infoLabel}>월세</span>
-            <span className={styles.infoValue}>
-              {property.monthlyRent
+
+        {property.monthlyRent !== null && property.monthlyRent > 0 && (
+          <InfoField
+            label="월세"
+            value={
+              property.monthlyRent
                 ? `${property.monthlyRent.toLocaleString()}원`
-                : "-"}
-            </span>
-          </div>
+                : "-"
+            }
+          />
         )}
-        <div className={styles.infoItem}>
-          <span className={styles.infoLabel}>전용면적</span>
-          <span className={styles.infoValue}>{property.netArea}㎡</span>
-        </div>
-        <div className={styles.infoItem}>
-          <span className={styles.infoLabel}>공급면적</span>
-          <span className={styles.infoValue}>{property.totalArea}㎡</span>
-        </div>
-        <div className={styles.infoItem}>
-          <span className={styles.infoLabel}>층수</span>
-          <span className={styles.infoValue}>{property.floor}층</span>
-        </div>
-        <div className={styles.infoItem}>
-          <span className={styles.infoLabel}>건축년도</span>
-          <span className={styles.infoValue}>
-            {property.constructionYear ? `${property.constructionYear}년` : "-"}
-          </span>
-        </div>
-        <div className={styles.infoItem}>
-          <span className={styles.infoLabel}>엘리베이터</span>
-          <span className={styles.infoValue}>
-            {property.hasElevator ? "있음" : "없음"}
-          </span>
-        </div>
-        <div className={styles.infoItem}>
-          <span className={styles.infoLabel}>주차 대수</span>
-          <span className={styles.infoValue}>{property.parkingCapacity}대</span>
-        </div>
-        <div className={styles.infoItem}>
-          <span className={styles.infoLabel}>반려동물</span>
-          <span className={styles.infoValue}>
-            {property.petsAllowed ? "가능" : "불가능"}
-          </span>
-        </div>
-        {property.details && (
-          <div className={styles.infoItem}>
-            <span className={styles.infoLabel}>설명</span>
-            <span className={styles.infoValue}>{property.details}</span>
-          </div>
-        )}
+        <InfoField label="전용면적" value={`${property.netArea}㎡`} />
+        <InfoField label="공급면적" value={`${property.totalArea}㎡`} />
+        <InfoField label="층수" value={`${property.floor}층`} />
+        <InfoField
+          label="건축년도"
+          value={`${
+            property.constructionYear ? property.constructionYear + "년" : "-"
+          }`}
+        />
+        <InfoField
+          label="엘리베이터"
+          value={property.hasElevator ? "있음" : "없음"}
+        />
+        <InfoField label="주차 대수" value={`${property.parkingCapacity}대`} />
+        <InfoField
+          label="반려동물"
+          value={property.petsAllowed ? "가능" : "불가능"}
+        />
+        <InfoField label="설명" value={property.details || "-"} />
       </div>
     </div>
   );

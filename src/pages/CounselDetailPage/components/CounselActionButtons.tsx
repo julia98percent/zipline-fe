@@ -1,8 +1,5 @@
 import Button from "@components/Button";
-import EditIcon from "@mui/icons-material/Edit";
-import DeleteOutlineIcon from "@mui/icons-material/DeleteOutline";
-import SaveIcon from "@mui/icons-material/Save";
-import CloseIcon from "@mui/icons-material/Close";
+import Divider from "@mui/material/Divider";
 
 interface CounselActionButtonsProps {
   isEditing: boolean;
@@ -29,43 +26,27 @@ const CounselActionButtons = ({
       }}
     >
       {!isEditing ? (
-        <>
-          <Button
-            variant="outlined"
-            color="primary"
-            startIcon={<EditIcon />}
-            onClick={onEdit}
-          >
+        <div className="flex items-center">
+          <Button variant="text" color="info" onClick={onEdit}>
             수정
           </Button>
-          <Button
-            variant="outlined"
-            color="error"
-            startIcon={<DeleteOutlineIcon />}
-            onClick={onDeleteClick}
-          >
+          <Divider orientation="vertical" className="h-4 bg-neutral-300" />
+
+          <Button variant="text" color="error" onClick={onDeleteClick}>
             삭제
           </Button>
-        </>
+        </div>
       ) : (
-        <>
-          <Button
-            variant="outlined"
-            color="info"
-            startIcon={<CloseIcon />}
-            onClick={onCancelEdit}
-          >
+        <div className="flex items-center">
+          <Button variant="text" color="info" onClick={onCancelEdit}>
             취소
           </Button>
-          <Button
-            variant="contained"
-            color="primary"
-            startIcon={<SaveIcon />}
-            onClick={onSave}
-          >
+          <Divider orientation="vertical" className="h-4 bg-neutral-300" />
+
+          <Button variant="text" color="primary" onClick={onSave}>
             저장
           </Button>
-        </>
+        </div>
       )}
     </div>
   );

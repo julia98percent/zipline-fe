@@ -20,6 +20,7 @@ const PageHeader = () => {
   const { toggle: toggleMobileMenu } = useMobileMenuStore();
 
   const breadcrumbs = getPageBreadcrumb(location.pathname);
+
   const isDashboard =
     location.pathname === "/" || location.pathname.startsWith("/dashboard");
   const [isNotificationOpen, setIsNotificationOpen] = useState(false);
@@ -86,10 +87,12 @@ const PageHeader = () => {
         </div>
         {!isDashboard && (
           <>
-            {/* 데스크톱: 전체 breadcrumb */}
             <nav className="hidden sm:flex items-center gap-2">
               {breadcrumbs.map((breadcrumb, index) => (
-                <div key={breadcrumb.path} className="flex items-center gap-2">
+                <div
+                  key={breadcrumb.path + index}
+                  className="flex items-center gap-2"
+                >
                   {index > 0 && (
                     <ChevronRightIcon className="text-gray-400 text-sm" />
                   )}
@@ -126,7 +129,6 @@ const PageHeader = () => {
               ))}
             </nav>
 
-            {/* 모바일: 현재 페이지명만 */}
             <h1 className="sm:hidden text-xl font-semibold text-gray-900">
               {breadcrumbs.find((b) => b.isActive)?.name ||
                 breadcrumbs[breadcrumbs.length - 1]?.name}

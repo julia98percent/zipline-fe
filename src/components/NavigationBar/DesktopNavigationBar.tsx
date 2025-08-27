@@ -7,8 +7,7 @@ const DesktopNavigationBar = () => {
       variant="permanent"
       className="w-60 shrink-0 h-screen overflow-auto hidden md:block"
       classes={{
-        paper:
-          "w-60 box-border bg-white text-gray-800 border-r border-gray-200",
+        paper: "w-60 box-border text-gray-800 border-r border-gray-200",
       }}
     >
       <NavigationContent />

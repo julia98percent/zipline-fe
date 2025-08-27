@@ -1,5 +1,5 @@
 import { useEffect, useState, useCallback, useMemo } from "react";
-import { useNavigate, useOutletContext } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { fetchCounselList } from "@apis/counselService";
 import { showToast } from "@components/Toast";
 import CounselListPageView from "./CounselListPageView";

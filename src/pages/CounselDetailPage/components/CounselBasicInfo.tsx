@@ -1,16 +1,9 @@
-import {
-  TextField,
-  Checkbox,
-  FormControlLabel,
-  Chip,
-  Box,
-  Typography,
-} from "@mui/material";
+import { TextField, Checkbox, FormControlLabel, Chip } from "@mui/material";
 import Select, { MenuItem } from "@components/Select";
 import dayjs, { Dayjs } from "dayjs";
-import styles from "../styles/CounselDetailPage.module.css";
 import { CounselCategoryType, Counsel } from "@ts/counsel";
 import DatePicker from "@components/DatePicker";
+import InfoField from "@components/InfoField";
 
 interface CounselBasicInfoProps {
   data: Counsel;
@@ -31,96 +24,112 @@ const CounselBasicInfo = ({
   onInputChange,
 }: CounselBasicInfoProps) => {
   return (
-    <div className={styles.card}>
-      <Typography className={styles.cardTitle}>기본 정보</Typography>
-      <div className={styles.infoGrid}>
-        <div className={styles.infoItem}>
-          <span className={styles.infoLabel}>상담 제목</span>
-          {isEditing ? (
-            <TextField
-              value={data.title}
-              onChange={(e) => onInputChange("title", e.target.value)}
-              fullWidth
-            />
-          ) : (
-            <span className={styles.infoValue}>{data.title}</span>
-          )}
+    <div className="card p-5">
+      <h6 className="text-xl font-semibold text-primary mb-2">기본 정보</h6>
+
+      {isEditing ? (
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-2">
+          <InfoField
+            label="상담 제목"
+            value={
+              <TextField
+                value={data.title}
+                onChange={(e) => onInputChange("title", e.target.value)}
+                fullWidth
+              />
+            }
+          />
+          <InfoField
+            label="상담 유형"
+            value={
+              <StringBooleanSelect
+                value={data.type}
+                onChange={(e) => onInputChange("type", e.target.value)}
+                size="medium"
+                fullWidth
+              >
+                {Object.entries(COUNSEL_TYPES).map(([key, value]) => (
+                  <MenuItem key={key} value={key}>
+                    {value}
+                  </MenuItem>
+                ))}
+              </StringBooleanSelect>
+            }
+          />
+          <InfoField
+            label="상담 일시"
+            value={
+              <DatePicker
+                value={dayjs(data.counselDate)}
+                onChange={(date) => onInputChange("counselDate", date)}
+                className="w-full"
+              />
+            }
+          />
+          <InfoField
+            label="의뢰 마감일"
+            value={
+              <DatePicker
+                value={dayjs(data.dueDate)}
+                onChange={(date) => onInputChange("dueDate", date)}
+                className="w-full"
+              />
+            }
+          />
+          <InfoField
+            label="의뢰 완료 여부"
+            value={
+              <FormControlLabel
+                control={
+                  <Checkbox
+                    checked={data.completed}
+                    onChange={(e) =>
+                      onInputChange("completed", e.target.checked)
+                    }
+                  />
+                }
+                label="완료"
+              />
+            }
+          />
         </div>
-        <div className={styles.infoItem}>
-          <span className={styles.infoLabel}>상담 유형</span>
-          {isEditing ? (
-            <StringBooleanSelect
-              value={data.type}
-              onChange={(e) => onInputChange("type", e.target.value)}
-              size="medium"
-            >
-              {Object.entries(COUNSEL_TYPES).map(([key, value]) => (
-                <MenuItem key={key} value={key}>
-                  {value}
-                </MenuItem>
-              ))}
-            </StringBooleanSelect>
-          ) : (
-            <Box className="inline-block">
+      ) : (
+        <div className="grid grid-cols-2 lg:grid-cols-5 gap-2">
+          <InfoField label="상담 제목" value={data.title} />
+          <InfoField
+            label="상담 유형"
+            value={
               <Chip
                 label={COUNSEL_TYPES[data.type]}
                 size="small"
                 variant="outlined"
                 color="primary"
               />
-            </Box>
-          )}
-        </div>
-        <div className={styles.infoItem}>
-          <span className={styles.infoLabel}>상담 일시</span>
-          {isEditing ? (
-            <DatePicker
-              value={dayjs(data.counselDate)}
-              onChange={(date) => onInputChange("counselDate", date)}
-            />
-          ) : (
-            <span className={styles.infoValue}>
-              {dayjs(data.counselDate).format("YYYY-MM-DD")}
-            </span>
-          )}
-        </div>
-        <div className={styles.infoItem}>
-          <span className={styles.infoLabel}>의뢰 마감일</span>
-          {isEditing ? (
-            <DatePicker
-              value={dayjs(data.dueDate)}
-              onChange={(date) => onInputChange("dueDate", date)}
-            />
-          ) : (
-            <span className={styles.infoValue}>
-              {data.dueDate ? dayjs(data.dueDate).format("YYYY-MM-DD") : "-"}
-            </span>
-          )}
-        </div>
-        <div className={styles.infoItem}>
-          <span className={styles.infoLabel}>의뢰 완료 여부</span>
-          {isEditing ? (
-            <FormControlLabel
-              control={
-                <Checkbox
-                  checked={data.completed}
-                  onChange={(e) => onInputChange("completed", e.target.checked)}
-                />
-              }
-              label="완료"
-            />
-          ) : (
-            <Box className="inline-block">
+            }
+          />
+          <InfoField
+            label="상담 일시"
+            value={dayjs(data.counselDate).format("YYYY-MM-DD")}
+          />
+          <InfoField
+            label="의뢰 마감일"
+            value={
+              data.dueDate ? dayjs(data.dueDate).format("YYYY-MM-DD") : "-"
+            }
+          />
+          <InfoField
+            label="의뢰 완료 여부"
+            value={
               <Chip
                 label={data.completed ? "완료" : "진행 중"}
                 size="small"
                 variant="outlined"
                 color={data.completed ? "success" : "default"}
               />
-            </Box>
-          )}
+            }
+          />
         </div>
-      </div>
+      )}
     </div>
   );
 };

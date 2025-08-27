@@ -63,7 +63,7 @@ const NavigationContent = ({ onItemClick }: NavigationContentProps) => {
   };
 
   return (
-    <div className="bg-gray-50">
+    <div className="bg-neutral-100 h-full">
       <div className="p-4">
         <Link to={"/"}>
           <div className="flex items-center">

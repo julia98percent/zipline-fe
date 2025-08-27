@@ -1,6 +1,4 @@
-import { Box, Typography } from "@mui/material";
 import PageHeader from "@components/PageHeader/PageHeader";
-import styles from "./styles/CounselDetailPage.module.css";
 import { CounselCategoryType } from "@ts/counsel";
 import { PropertyCategoryType } from "@ts/property";
 import { Counsel } from "@ts/counsel";
@@ -67,19 +65,22 @@ const CounselDetailPageView = ({
 
   if (!counselData || !editedData) {
     return (
-      <Box className={styles.container}>
-        <Typography>상담 정보를 찾을 수 없습니다.</Typography>
-      </Box>
+      <>
+        <PageHeader />
+        <div className="flex justify-center items-center h-[calc(100vh-72px)]">
+          <h6>상담 정보를 찾을 수 없습니다.</h6>
+        </div>
+      </>
     );
   }
 
   const data = isEditing ? editedData : counselData;
 
   return (
-    <Box className={styles.container}>
+    <>
       <PageHeader />
 
-      <Box className={styles.contentContainer}>
+      <div className="flex flex-col gap-4 p-5 pt-0">
         <CounselActionButtons
           isEditing={isEditing}
           onEdit={onEdit}
@@ -115,8 +116,8 @@ const CounselDetailPageView = ({
           onConfirm={onDeleteConfirm}
           category="상담"
         />
-      </Box>
-    </Box>
+      </div>
+    </>
   );
 };
 

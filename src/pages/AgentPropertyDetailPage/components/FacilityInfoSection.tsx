@@ -1,12 +1,8 @@
-import { Box, Chip, Typography } from "@mui/material";
-import {
-  InfoCard,
-  InfoItem,
-  InfoLabel,
-  InfoValue,
-} from "../styles/AgentPropertyDetailPage.styles";
+import { Chip } from "@mui/material";
+
 import { AgentPropertyDetail } from "@apis/propertyService";
 import dayjs from "dayjs";
+import InfoField from "@components/InfoField";
 
 interface FacilityInfoSectionProps {
   property: AgentPropertyDetail;
@@ -14,16 +10,13 @@ interface FacilityInfoSectionProps {
 
 const FacilityInfoSection = ({ property }: FacilityInfoSectionProps) => {
   return (
-    <InfoCard className="rounded-lg bg-white shadow-sm">
-      <Typography className="text-xl font-semibold text-primary" gutterBottom>
-        시설 정보
-      </Typography>
+    <div className="card p-5">
+      <h6 className="text-xl font-semibold text-primary mb-2">시설 정보</h6>
 
-      <Box display="flex" flexWrap="wrap" columnGap={2} rowGap={1}>
-        <Box width="calc(50% - 8px)">
-          <InfoItem>
-            <InfoLabel>엘리베이터</InfoLabel>
-
+      <div className="grid grid-cols-2 xs:grid-cols-1 sm:grid-cols-2">
+        <InfoField
+          label="엘리베이터"
+          value={
             <Chip
               label={property.hasElevator ? "O" : "X"}
               color={property.hasElevator ? "success" : "error"}
@@ -31,24 +24,19 @@ const FacilityInfoSection = ({ property }: FacilityInfoSectionProps) => {
               size="small"
               className="flex w-min font-semibold text-sm"
             />
-          </InfoItem>
-        </Box>
-
-        <Box width="calc(50% - 8px)">
-          <InfoItem>
-            <InfoLabel>주차</InfoLabel>
-            <InfoValue>
-              {property.parkingCapacity
-                ? `세대당 ${property.parkingCapacity}대`
-                : "-"}
-            </InfoValue>
-          </InfoItem>
-        </Box>
-
-        <Box width="calc(50% - 8px)">
-          <InfoItem>
-            <InfoLabel>반려동물</InfoLabel>
-
+          }
+        />
+        <InfoField
+          label="주차"
+          value={
+            property.parkingCapacity
+              ? `세대당 ${property.parkingCapacity}대`
+              : "-"
+          }
+        />
+        <InfoField
+          label="반려동물"
+          value={
             <Chip
               label={property.petsAllowed ? "O" : "X"}
               color={property.petsAllowed ? "success" : "error"}
@@ -56,21 +44,18 @@ const FacilityInfoSection = ({ property }: FacilityInfoSectionProps) => {
               size="small"
               className="flex w-min font-semibold text-sm"
             />
-          </InfoItem>
-        </Box>
-
-        <Box width="calc(50% - 8px)">
-          <InfoItem>
-            <InfoLabel>입주가능일</InfoLabel>
-            <InfoValue>
-              {property.moveInDate
-                ? dayjs(property.moveInDate).format("YYYY.MM.DD")
-                : "-"}
-            </InfoValue>
-          </InfoItem>
-        </Box>
-      </Box>
-    </InfoCard>
+          }
+        />
+        <InfoField
+          label="입주가능일"
+          value={
+            property.moveInDate
+              ? dayjs(property.moveInDate).format("YYYY.MM.DD")
+              : "-"
+          }
+        />
+      </div>
+    </div>
   );
 };
 

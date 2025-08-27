@@ -50,10 +50,10 @@ const PropertyDetailsSection = ({
   } = detailInputs.parkingCapacity;
 
   return (
-    <div>
+    <div className="card p-5">
       <h5 className="text-lg font-bold mb-4">매물 정보</h5>
       <div className="flex flex-col gap-4">
-        <div className="grid grid-cols-2 gap-4">
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           {/* 면적 정보 */}
           <TextField
             label="공급 면적(m²)"
@@ -78,7 +78,7 @@ const PropertyDetailsSection = ({
             onBlur={onNetAreaBlur}
           />
         </div>
-        <div className="grid grid-cols-3 gap-4">
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
           {/* 층수 */}
           <TextField
             label="층수"

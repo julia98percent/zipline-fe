@@ -89,17 +89,17 @@ const AgentPropertyFilterModalView = ({
       onClose={onClose}
       maxWidth={false}
       PaperProps={{
-        className: "w-200 h-175 max-h-[90vh] bg-white rounded-lg",
+        className: "w-[90vw] rounded-lg max-h-[90vh]",
       }}
     >
       <DialogTitle className="border-b text-primary font-bold border-gray-200">
         개인 매물 필터
       </DialogTitle>
 
-      <DialogContent className="flex flex-col gap-6 mx-4 p-8">
-        <div className="flex flex-col gap-2">
+      <DialogContent className="flex flex-col gap-4 p-3 bg-neutral-100 overflow-x-hidden">
+        <div className="flex flex-col gap-2 p-5 card">
           <h6 className="font-semibold">판매 유형</h6>
-          <div className="grid grid-cols-4 gap-2 ">
+          <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
             <Button
               variant={selectedType === "" ? "contained" : "outlined"}
               onClick={() => onTypeChange("")}
@@ -118,7 +118,7 @@ const AgentPropertyFilterModalView = ({
           </div>
         </div>
 
-        <div>
+        <div className="p-5 card">
           <div className="flex justify-between items-center mb-4">
             <h6 className="font-semibold">가격 범위</h6>
             <Button
@@ -147,7 +147,7 @@ const AgentPropertyFilterModalView = ({
             {/* 매매가 - 전체 또는 매매일 때만 표시 */}
             {(selectedType === "" || selectedType === "SALE") && (
               <>
-                <p className="text-sm mb-2 text-gray-600">
+                <p className="text-sm mb-2 text-gray-600 whitespace-pre">
                   매매가: {formatPrice(priceRange[0])} -{" "}
                   {priceRange[1] > FILTER_DEFAULTS.PRICE_MAX
                     ? "20억원~"
@@ -160,7 +160,7 @@ const AgentPropertyFilterModalView = ({
                   min={FILTER_DEFAULTS_MIN}
                   max={MAX_PRICE_SLIDER_VALUE}
                   valueLabelFormat={priceValueLabelFormat}
-                  className="mb-4"
+                  className="mb-8 xs:mb-4"
                 />
               </>
             )}
@@ -169,7 +169,7 @@ const AgentPropertyFilterModalView = ({
               selectedType === "DEPOSIT" ||
               selectedType === "MONTHLY") && (
               <>
-                <p className="text-sm mb-2 text-gray-600">
+                <p className="text-sm mb-2 text-gray-600 whitespace-pre">
                   보증금: {formatPrice(depositRange[0])} -{" "}
                   {depositRange[1] > FILTER_DEFAULTS.DEPOSIT_MAX
                     ? "20억원~"
@@ -182,7 +182,7 @@ const AgentPropertyFilterModalView = ({
                   min={0}
                   max={MAX_PRICE_SLIDER_VALUE}
                   valueLabelFormat={priceValueLabelFormat}
-                  className="mb-4"
+                  className="mb-8 xs:mb-4"
                 />
               </>
             )}
@@ -190,7 +190,7 @@ const AgentPropertyFilterModalView = ({
             {/* 월세 - 전체 또는 월세일 때만 표시 */}
             {(selectedType === "" || selectedType === "MONTHLY") && (
               <>
-                <p className="text-sm mb-2 text-gray-600">
+                <p className="text-sm mb-2 text-gray-600 whitespace-pre">
                   월세: {formatPrice(rentRange[0])} -{" "}
                   {rentRange[1] > FILTER_DEFAULTS.MONTHLY_RENT_MAX
                     ? "500만원~"
@@ -209,8 +209,8 @@ const AgentPropertyFilterModalView = ({
           </div>
         </div>
 
-        <div className="grid grid-cols-2 gap-4">
-          <div className="flex flex-col gap-2">
+        <div className="grid grid-cols-1 xs:grid-cols-2 gap-4">
+          <div className="flex flex-col gap-2 p-5 card">
             <h6 className="font-semibold">엘리베이터 여부</h6>
             <RadioGroup
               value={hasElevator}
@@ -235,7 +235,7 @@ const AgentPropertyFilterModalView = ({
             </RadioGroup>
           </div>
 
-          <div className="flex flex-col gap-2">
+          <div className="flex flex-col gap-2 p-5 card">
             <h6 className="font-semibold">반려동물 가능 여부</h6>
             <RadioGroup
               value={petsAllowed}
@@ -261,7 +261,7 @@ const AgentPropertyFilterModalView = ({
           </div>
         </div>
 
-        <div className="grid grid-cols-1 gap-2">
+        <div className="grid grid-cols-1 gap-2 p-5 card">
           <div className="flex justify-between items-center">
             <h6 className="font-semibold">면적 범위</h6>
             <Button
@@ -283,7 +283,7 @@ const AgentPropertyFilterModalView = ({
           </div>
 
           <div className="mx-4">
-            <p className="text-sm mb-2 text-gray-600">
+            <p className="text-sm mb-2 text-gray-600  whitespace-pre">
               전용 면적: {netAreaRange[0]}m² -{" "}
               {netAreaRange[1] === FILTER_DEFAULTS.NET_AREA_MAX
                 ? `${netAreaRange[1]}m²~`
@@ -303,7 +303,7 @@ const AgentPropertyFilterModalView = ({
               }
             />
 
-            <p className="text-sm mb-2 text-gray-600">
+            <p className="text-sm mb-2 text-gray-600 whitespace-pre">
               공급 면적: {totalAreaRange[0]}m² -{" "}
               {totalAreaRange[1] === FILTER_DEFAULTS.TOTAL_AREA_MAX
                 ? `${totalAreaRange[1]}m²~`

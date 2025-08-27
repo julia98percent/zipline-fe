@@ -1,5 +1,4 @@
 import { Tabs, Tab, Chip } from "@mui/material";
-import { InfoCard } from "../styles/AgentPropertyDetailPage.styles";
 import {
   ContractHistoryItem,
   CounselHistory,
@@ -91,8 +90,13 @@ const PropertyHistorySection = ({
   };
 
   return (
-    <InfoCard className="flex-[6] flex flex-col h-full min-h-58 rounded-lg shadow-sm">
-      <Tabs value={tab} onChange={(_, v) => onTabChange(v)} className="mb-4 ">
+    <div className="flex-[6] flex flex-col h-full min-h-58 card p-5 pt-2">
+      <Tabs
+        value={tab}
+        onChange={(_, v) => onTabChange(v)}
+        className="mb-4"
+        centered
+      >
         <Tab label="계약 히스토리" />
         <Tab label="상담 히스토리" />
       </Tabs>
@@ -166,7 +170,7 @@ const PropertyHistorySection = ({
           )}
         </>
       )}
-    </InfoCard>
+    </div>
   );
 };
 

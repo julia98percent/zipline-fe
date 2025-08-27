@@ -1,13 +1,7 @@
-import { Box, Typography } from "@mui/material";
-import {
-  InfoCard,
-  InfoItem,
-  InfoLabel,
-  InfoValue,
-} from "../styles/AgentPropertyDetailPage.styles";
 import { ContractInfo } from "@apis/propertyService";
 import { ContractCustomer } from "@apis/propertyService";
 import dayjs from "dayjs";
+import InfoField from "@components/InfoField";
 
 interface ContractInfoSectionProps {
   contractInfo: ContractInfo | null;
@@ -26,75 +20,50 @@ const ContractInfoSection = ({ contractInfo }: ContractInfoSectionProps) => {
   };
 
   return (
-    <InfoCard className="rounded-lg bg-white shadow-sm">
-      <Typography className="text-xl font-semibold text-primary" gutterBottom>
-        계약 정보
-      </Typography>
+    <div className="card p-5">
+      <h6 className="text-xl font-semibold text-primary mb-2">계약 정보</h6>
 
       {!contractInfo || contractInfo?.contractUid === null ? (
-        <Box className="flex justify-center items-center min-h-[200px]">
-          <Typography color="text.secondary">첨부 문서 없음</Typography>
-        </Box>
+        <div className="flex justify-center items-center min-h-[200px]">
+          <span className="text-neutral-500">첨부 문서 없음</span>
+        </div>
       ) : (
-        <Box display="flex" flexWrap="wrap" columnGap={2} rowGap={1}>
-          {/* 계약 시작일 */}
-          <Box width="calc(50% - 8px)">
-            <InfoItem>
-              <InfoLabel>계약 시작일</InfoLabel>
-              <InfoValue>
-                {contractInfo.contractStartDate
-                  ? dayjs(contractInfo.contractStartDate).format("YYYY.MM.DD")
-                  : "-"}
-              </InfoValue>
-            </InfoItem>
-          </Box>
-
-          {/* 계약 종료일 */}
-          <Box width="calc(50% - 8px)">
-            <InfoItem>
-              <InfoLabel>계약 종료일</InfoLabel>
-              <InfoValue>
-                {contractInfo.contractEndDate
-                  ? dayjs(contractInfo.contractEndDate).format("YYYY.MM.DD")
-                  : "-"}
-              </InfoValue>
-            </InfoItem>
-          </Box>
-
-          {/* 계약일 */}
-          <Box width="calc(50% - 8px)">
-            <InfoItem>
-              <InfoLabel>계약일</InfoLabel>
-              <InfoValue>
-                {contractInfo.contractDate
-                  ? dayjs(contractInfo.contractDate).format("YYYY.MM.DD")
-                  : "-"}
-              </InfoValue>
-            </InfoItem>
-          </Box>
-
-          {/* 임대인/매도인 */}
-          <Box width="calc(50% - 8px)">
-            <InfoItem>
-              <InfoLabel>임대인/매도인</InfoLabel>
-              <InfoValue>
-                {getCustomerNames(contractInfo.customers, "LESSOR_OR_SELLER")}
-              </InfoValue>
-            </InfoItem>
-          </Box>
-
-          {/* 임차인/매수인 */}
-          <Box width="calc(50% - 8px)">
-            <InfoItem>
-              <InfoLabel>임차인/매수인</InfoLabel>
-              <InfoValue>
-                {getCustomerNames(contractInfo.customers, "LESSEE_OR_BUYER")}
-              </InfoValue>
-            </InfoItem>
-          </Box>
-        </Box>
+        <div className="grid grid-cols-2 xs:grid-cols-1 sm:grid-cols-2">
+          <InfoField
+            label="계약 시작일"
+            value={
+              contractInfo.contractStartDate
+                ? dayjs(contractInfo.contractStartDate).format("YYYY.MM.DD")
+                : "-"
+            }
+          />
+          <InfoField
+            label="계약 종료일"
+            value={
+              contractInfo.contractEndDate
+                ? dayjs(contractInfo.contractEndDate).format("YYYY.MM.DD")
+                : "-"
+            }
+          />
+          <InfoField
+            label="계약일"
+            value={
+              contractInfo.contractDate
+                ? dayjs(contractInfo.contractDate).format("YYYY.MM.DD")
+                : "-"
+            }
+          />
+          <InfoField
+            label="임대인/매도인"
+            value={getCustomerNames(contractInfo.customers, "LESSOR_OR_SELLER")}
+          />
+          <InfoField
+            label="임차인/매수인"
+            value={getCustomerNames(contractInfo.customers, "LESSEE_OR_BUYER")}
+          />
+        </div>
       )}
-    </InfoCard>
+    </div>
   );
 };
 

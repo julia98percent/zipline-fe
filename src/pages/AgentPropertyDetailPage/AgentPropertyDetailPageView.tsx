@@ -1,18 +1,7 @@
-import { Box } from "@mui/material";
-import {
-  DetailPageContainer,
-  DetailHeader,
-  HeaderTitle,
-  MapContainer,
-  InfoGrid,
-  InfoCard,
-  PageContainer,
-} from "./styles/AgentPropertyDetailPage.styles";
+import { Divider } from "@mui/material";
 import DeleteConfirmModal from "@components/DeleteConfirmModal";
 import PageHeader from "@components/PageHeader/PageHeader";
 import PropertyEditModal from "@components/PropertyEditModal";
-import EditIcon from "@mui/icons-material/Edit";
-import DeleteIcon from "@mui/icons-material/Delete";
 import KakaoMap from "@components/KakaoMap";
 import {
   AgentPropertyDetail,
@@ -70,7 +59,7 @@ function AgentPropertyDetailPageView({
 }: AgentPropertyDetailPageViewProps) {
   if (loading) {
     return (
-      <div className="flex-grow min-h-screen">
+      <div>
         <PageHeader />
         <div className="flex items-center justify-center h-[calc(100vh-72px)]">
           <CircularProgress />
@@ -79,9 +68,9 @@ function AgentPropertyDetailPageView({
     );
   }
   return (
-    <PageContainer>
+    <div>
       <PageHeader />
-      <DetailPageContainer>
+      <div className="pt-0 p-6">
         {editModalOpen && property && (
           <PropertyEditModal
             open={editModalOpen}
@@ -97,48 +86,37 @@ function AgentPropertyDetailPageView({
           onCancel={onDeleteModalClose}
           category="매물"
         />
-        <DetailHeader>
-          <HeaderTitle>
+        <div className="w-full flex flex-col sm:flex-row-reverse justify-between gap-1 sm:items-center mb-4">
+          <div className="flex items-center justify-end gap-1">
+            <Button variant="text" color="info" onClick={onEdit}>
+              수정
+            </Button>
+            <Divider orientation="vertical" className="h-4 bg-neutral-300" />
+            <Button variant="text" color="error" onClick={onDelete}>
+              삭제
+            </Button>
+          </div>
+          <h3 className="text-2xl font-semibold">
             {`${property.address ?? ""} ${
               property.detailAddress ?? ""
             }`.trim() || "-"}
-          </HeaderTitle>
-          <Box display="flex" justifyContent="flex-end" gap={1}>
-            <Button
-              variant="outlined"
-              onClick={onEdit}
-              startIcon={<EditIcon />}
-            >
-              수정
-            </Button>
-            <Button
-              variant="outlined"
-              color="error"
-              onClick={onDelete}
-              startIcon={<DeleteIcon />}
-            >
-              삭제
-            </Button>
-          </Box>
-        </DetailHeader>
+          </h3>
+        </div>
 
-        {/* 지도 */}
-        <InfoCard className="rounded-lg shadow-sm mb-6">
-          <MapContainer>
+        <div className="card w-full h-full mb-6">
+          <div className="w-full h-[400px] p-3">
             <KakaoMap lat={property.latitude} lng={property.longitude} />
-          </MapContainer>
-        </InfoCard>
+          </div>
+        </div>
 
-        {/* 매물 정보 섹션들 */}
-        <InfoGrid>
+        <div className="grid grid-cols-1 xs:grid-cols-2 gap-3 mb-3">
           <PropertyInfoSection property={property} />
           <PropertyDetailSection property={property} />
           <FacilityInfoSection property={property} />
           <ContractInfoSection contractInfo={contractInfo} />
-        </InfoGrid>
+        </div>
 
-        {/* 하단 섹션 */}
-        <Box display="flex" gap={3} mt={3} className="h-fit">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-3 h-fit">
           <PropertyDetailsSection details={property.details} />
           <PropertyHistorySection
             contractHistories={contractHistories}
@@ -146,9 +124,9 @@ function AgentPropertyDetailPageView({
             tab={tab}
             onTabChange={onTabChange}
           />
-        </Box>
-      </DetailPageContainer>
-    </PageContainer>
+        </div>
+      </div>
+    </div>
   );
 }
 

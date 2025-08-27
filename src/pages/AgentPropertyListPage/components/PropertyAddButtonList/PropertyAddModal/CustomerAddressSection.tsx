@@ -27,7 +27,7 @@ const CustomerAddressSection = ({
   addressData,
 }: CustomerAddressSectionProps) => {
   return (
-    <div>
+    <div className="card p-5">
       <h5 className="text-lg font-bold mb-4">기본 정보</h5>
       <div className="flex flex-col gap-5 mb-5">
         <TextField

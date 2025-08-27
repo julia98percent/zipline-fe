@@ -65,7 +65,7 @@ const PublicPropertyCard = ({
   const categoryColors = getCategoryColor(property.category);
 
   return (
-    <Card className="mb-4 rounded-lg shadow-sm border border-gray-200">
+    <Card className="mb-4 card">
       <CardContent className="p-4">
         {/* 상단: 플랫폼과 거래 유형 */}
         <Box className="flex gap-2 mb-3 items-center">

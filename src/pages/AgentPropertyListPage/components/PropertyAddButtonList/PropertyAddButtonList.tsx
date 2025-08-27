@@ -19,7 +19,7 @@ function PropertyAddButtonList({ fetchPropertyData }: Props) {
 
   return (
     <>
-      <div className="flex gap-2">
+      <div className="max-w-full flex flex-1 flex-col xs:flex-row xs:justify-end gap-2">
         <Button
           variant="contained"
           onClick={handleOpen}

@@ -1,11 +1,5 @@
-import { Box, Typography } from "@mui/material";
-import {
-  InfoCard,
-  InfoItem,
-  InfoLabel,
-  InfoValue,
-} from "../styles/AgentPropertyDetailPage.styles";
 import { AgentPropertyDetail } from "@apis/propertyService";
+import InfoField from "@components/InfoField";
 
 interface PropertyDetailSectionProps {
   property: AgentPropertyDetail;
@@ -28,43 +22,27 @@ const PropertyDetailSection = ({ property }: PropertyDetailSectionProps) => {
   };
 
   return (
-    <InfoCard className="rounded-lg bg-white shadow-sm">
-      <Typography className="text-xl font-semibold text-primary" gutterBottom>
-        매물 세부정보
-      </Typography>
+    <div className="card p-5">
+      <h6 className="text-xl font-semibold text-primary mb-2">매물 세부정보</h6>
 
-      <Box display="flex" flexWrap="wrap" columnGap={2} rowGap={1}>
-        <Box width="calc(50% - 8px)">
-          <InfoItem>
-            <InfoLabel>공급 면적</InfoLabel>
-            <InfoValue>{formatValue(property.totalArea, "m²")}</InfoValue>
-          </InfoItem>
-        </Box>
+      <div className="grid grid-cols-2 xs:grid-cols-1 sm:grid-cols-2">
+        <InfoField
+          label="공급 면적"
+          value={formatValue(property.totalArea, "m²")}
+        />
+        <InfoField
+          label="전용 면적"
+          value={formatValue(property.netArea, "m²")}
+        />
 
-        <Box width="calc(50% - 8px)">
-          <InfoItem>
-            <InfoLabel>전용 면적</InfoLabel>
-            <InfoValue>{formatValue(property.netArea, "m²")}</InfoValue>
-          </InfoItem>
-        </Box>
+        <InfoField label="층수" value={formatValue(property.floor, "층")} />
 
-        <Box width="calc(50% - 8px)">
-          <InfoItem>
-            <InfoLabel>층수</InfoLabel>
-            <InfoValue>{formatValue(property.floor, "층")}</InfoValue>
-          </InfoItem>
-        </Box>
-
-        <Box width="calc(50% - 8px)">
-          <InfoItem>
-            <InfoLabel>건축년도</InfoLabel>
-            <InfoValue>
-              {formatConstructionYear(property.constructionYear)}
-            </InfoValue>
-          </InfoItem>
-        </Box>
-      </Box>
-    </InfoCard>
+        <InfoField
+          label="건축년도"
+          value={formatConstructionYear(property.constructionYear)}
+        />
+      </div>
+    </div>
   );
 };
 

@@ -72,52 +72,58 @@ export default function PublicPropertyFilterModalView({
       onClose={onClose}
       maxWidth={false}
       PaperProps={{
-        className: "w-200 h-175 max-h-[90vh] bg-white rounded-lg",
+        className: "w-[90vw] h-175 max-h-[90vh]",
       }}
     >
       <DialogTitle className="border-b text-primary font-bold border-gray-200">
         공개 매물 필터
       </DialogTitle>
-      <DialogContent className="flex flex-col gap-6 mx-4 p-8">
-        <TextField
-          value={buildingName || ""}
-          onChange={onBuildingNameChange}
-          label="건물명"
-          fullWidth
-        />
-
-        <div className="flex flex-col gap-8">
-          <RegionFilterSection
-            region={region}
-            onSidoChange={onSidoChange}
-            onGuChange={onGuChange}
-            onDongChange={onDongChange}
-          />
-
-          <PropertyTypeFilterSection
-            category={selectedType || ""}
-            buildingType={buildingType || ""}
-            onCategoryChange={onCategoryChange}
-            onBuildingTypeChange={onBuildingTypeChange}
+      <DialogContent className="bg-neutral-100 flex flex-col gap-3 p-5">
+        <div className="p-5 card">
+          <TextField
+            value={buildingName || ""}
+            onChange={onBuildingNameChange}
+            label="건물명"
+            fullWidth
           />
         </div>
-
-        <PriceRangeSection
-          category={selectedType || ""}
-          priceRange={priceRange}
-          depositRange={depositRange}
-          rentRange={rentRange}
-          handlePriceRangeChange={handlePriceRangeChange}
-          handleDepositRangeChange={handleDepositRangeChange}
-          handleRentRangeChange={handleRentRangeChange}
-        />
-
-        <AreaRangeSection
-          netAreaRange={netAreaRange}
-          totalAreaRange={totalAreaRange}
-          handleNetAreaRangeChange={handleNetAreaRangeChange}
-          handleTotalAreaRangeChange={handleTotalAreaRangeChange}
-        />
+        <div className="flex flex-col gap-3">
+          <div className="p-5 card">
+            <RegionFilterSection
+              region={region}
+              onSidoChange={onSidoChange}
+              onGuChange={onGuChange}
+              onDongChange={onDongChange}
+            />
+          </div>
+          <div className="p-5 card">
+            <PropertyTypeFilterSection
+              category={selectedType || ""}
+              buildingType={buildingType || ""}
+              onCategoryChange={onCategoryChange}
+              onBuildingTypeChange={onBuildingTypeChange}
+            />
+          </div>
+        </div>
+        <div className="p-5 card">
+          <PriceRangeSection
+            category={selectedType || ""}
+            priceRange={priceRange}
+            depositRange={depositRange}
+            rentRange={rentRange}
+            handlePriceRangeChange={handlePriceRangeChange}
+            handleDepositRangeChange={handleDepositRangeChange}
+            handleRentRangeChange={handleRentRangeChange}
+          />
+        </div>
+        <div className="p-5 card">
+          <AreaRangeSection
+            netAreaRange={netAreaRange}
+            totalAreaRange={totalAreaRange}
+            handleNetAreaRangeChange={handleNetAreaRangeChange}
+            handleTotalAreaRangeChange={handleTotalAreaRangeChange}
+          />
+        </div>
       </DialogContent>
       <DialogActions className="flex items-center justify-end p-6 border-t border-gray-200">
         <Button variant="text" color="info" onClick={onTemporaryClear}>

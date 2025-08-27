@@ -1,4 +1,3 @@
-import { Box } from "@mui/material";
 import { PublicPropertyItem } from "@ts/property";
 import Table, { ColumnConfig, RowData } from "@components/Table";
 import { PropertyCellRenderer, SortableHeader } from "./components";
@@ -154,7 +153,7 @@ const PublicPropertyTableView = ({
   const tableData = propertyList.map((property) => property);
 
   return (
-    <Box className="w-full mt-0">
+    <div className="w-full mt-0 card">
       <Table
         columns={columns as ColumnConfig[]}
         bodyList={tableData as unknown as RowData[]}
@@ -179,7 +178,7 @@ const PublicPropertyTableView = ({
           },
         }}
       />
-    </Box>
+    </div>
   );
 };
 

@@ -1,6 +1,5 @@
 import FilterListIcon from "@mui/icons-material/FilterList";
 import {
-  Box,
   SelectChangeEvent,
   FormControlLabel,
   TextField,
@@ -69,20 +68,20 @@ const PublicPropertyListPageView = ({
     return (
       <>
         <PageHeader />
-        <Box className="flex justify-center items-center h-[calc(100vh-72px)]">
+        <div className="flex justify-center items-center h-[calc(100vh-72px)]">
           <CircularProgress />
-        </Box>
+        </div>
       </>
     );
   }
 
   return (
-    <div className="flex-grow bg-gray-100 min-h-screen">
+    <div className="flex-grow bg-neutral-50 min-h-screen">
       <PageHeader />
 
-      <div className="p-5">
+      <div className="pt-0 p-6">
         {/* 상단 필터 바 */}
-        <div className="flex flex-col gap-4 bg-white rounded-lg p-3 shadow-sm mb-5">
+        <div className="flex flex-col gap-4 p-3 mb-5 card">
           <div className="block space-y-4">
             {/* 첫 번째 줄: 주소 검색 */}
             <div className="flex items-center gap-2">

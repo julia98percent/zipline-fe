@@ -107,16 +107,13 @@ const PropertyAddModalView = ({
       maxWidth="md"
       fullWidth
       PaperProps={{
-        sx: {
-          borderRadius: "8px",
-          maxHeight: "90vh",
-        },
+        className: "w-[90vw] rounded-lg max-h-[90vh]",
       }}
     >
       <DialogTitle className="border-b text-primary font-bold border-gray-200">
         매물 등록
       </DialogTitle>
-      <DialogContent className="p-7 pt-0 flex flex-col mt-4">
+      <DialogContent className="flex flex-col gap-4 p-3 bg-neutral-100 overflow-x-hidden">
         <CustomerAddressSection
           customerData={customerData}
           addressData={addressData}
@@ -139,15 +136,7 @@ const PropertyAddModalView = ({
           onDetailsChange={otherData.onDetailsChange}
         />
       </DialogContent>
-      <DialogActions className="flex flex-row-reverse items-center justify-between p-6 border-t border-gray-200">
-        <div className="flex gap-2">
-          <Button onClick={onClose} variant="outlined">
-            취소
-          </Button>
-          <Button onClick={onSubmit} color="primary" disabled={!isFormValid}>
-            확인
-          </Button>
-        </div>
+      <DialogActions className="flex flex-col xs:flex-row items-start xs:items-center justify-between p-6 border-t border-gray-200">
         {!isFormValid && validationErrors.length > 0 && (
           <Tooltip
             title={
@@ -172,6 +161,14 @@ const PropertyAddModalView = ({
             </div>
           </Tooltip>
         )}
+        <div className="flex gap-2 ml-auto">
+          <Button onClick={onClose} variant="outlined">
+            취소
+          </Button>
+          <Button onClick={onSubmit} color="primary" disabled={!isFormValid}>
+            확인
+          </Button>
+        </div>
       </DialogActions>
     </Dialog>
   );

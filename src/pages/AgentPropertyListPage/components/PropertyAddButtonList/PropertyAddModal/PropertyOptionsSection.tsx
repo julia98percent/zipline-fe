@@ -25,9 +25,9 @@ const PropertyOptionsSection = ({
   onDetailsChange,
 }: PropertyOptionsSectionProps) => {
   return (
-    <div className="flex flex-col mt-4 pb-4 gap-5">
+    <div className="flex flex-col gap-5">
       <div className="grid grid-cols-2 gap-4">
-        <div>
+        <div className=" card p-5">
           <h6 className="font-semibold">반려동물</h6>
           <RadioGroup
             row
@@ -38,7 +38,7 @@ const PropertyOptionsSection = ({
             <FormControlLabel value="false" control={<Radio />} label="불가" />
           </RadioGroup>
         </div>
-        <div>
+        <div className=" card p-5">
           <h6 className="font-semibold">건물 엘리베이터</h6>
           <RadioGroup
             row
@@ -50,26 +50,25 @@ const PropertyOptionsSection = ({
           </RadioGroup>
         </div>
       </div>
-      {/* 입주 가능일 */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 card p-5 gap-4">
+        <DatePicker
+          onChange={onMoveInDateChange}
+          value={moveInDate}
+          label="입주 가능일"
+          slotProps={{
+            textField: {
+              fullWidth: true,
+            },
+          }}
+        />
 
-      <DatePicker
-        onChange={onMoveInDateChange}
-        value={moveInDate}
-        label="입주 가능일"
-        slotProps={{
-          textField: {
-            fullWidth: true,
-          },
-        }}
-      />
-
-      {/* 특이사항 */}
-      <TextField
-        label="특이사항"
-        value={details ?? ""}
-        onChange={onDetailsChange}
-        fullWidth
-      />
+        <TextField
+          label="특이 사항"
+          value={details ?? ""}
+          onChange={onDetailsChange}
+          fullWidth
+        />
+      </div>
     </div>
   );
 };

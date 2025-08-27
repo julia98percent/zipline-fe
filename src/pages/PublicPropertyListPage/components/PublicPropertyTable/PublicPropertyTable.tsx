@@ -2,7 +2,7 @@ import { useEffect, useRef, useCallback } from "react";
 import { PublicPropertyItem } from "@ts/property";
 import PublicPropertyTableView from "./PublicPropertyTableView";
 import PublicPropertyCard from "../PublicPropertyCard";
-import { Box, Typography } from "@mui/material";
+import { Typography } from "@mui/material";
 import CircularProgress from "@components/CircularProgress";
 
 interface Props {
@@ -59,7 +59,7 @@ const PublicPropertyTable = ({
   }, [handleIntersection]);
 
   return (
-    <Box ref={scrollRef} className="w-full">
+    <div ref={scrollRef} className="w-full">
       {/* 데스크톱: 테이블 뷰 */}
       <div className="hidden lg:block">
         <PublicPropertyTableView
@@ -105,11 +105,11 @@ const PublicPropertyTable = ({
 
       {/* 모든 데이터 로드 완료 메시지 */}
       {!hasMore && propertyList.length > 0 && (
-        <Box className="flex justify-center p-4 text-primary">
+        <div className="flex justify-center p-4 text-primary">
           <Typography variant="body2">모든 매물을 불러왔습니다.</Typography>
-        </Box>
+        </div>
       )}
-    </Box>
+    </div>
   );
 };
 

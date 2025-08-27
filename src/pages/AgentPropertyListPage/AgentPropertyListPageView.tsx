@@ -96,60 +96,120 @@ const AgentPropertyListPageView = ({
     <div className="flex-grow bg-neutral-50 min-h-screen">
       <PageHeader />
 
-      <div className="p-5">
-        {/* 상단 필터 바 */}
-        <div className="flex flex-col gap-4 bg-white rounded-lg p-3 shadow-sm mb-5">
+      <div className="pt-0 p-6">
+        <div className="flex flex-col gap-4 card p-3 mb-5">
           {/* 모바일 필터 레이아웃 (lg: 미만) */}
-          <div className="lg:hidden space-y-3">
-            {/* 첫 번째 줄: 주소 선택 (시/도, 시/군/구, 동) */}
-            <div className="grid grid-cols-3 gap-2">
-              <RegionSelector
-                label="시/도"
-                value={selectedSido}
-                regions={regions}
-                onChange={onSidoChange}
-              />
-              <RegionSelector
-                value={selectedGu}
-                regions={sigunguOptions}
-                onChange={onGuChange}
-                disabled={!selectedSido}
-                label="시/군/구"
-              />
-              <RegionSelector
-                value={selectedDong}
-                regions={dongOptions}
-                onChange={onDongChange}
-                disabled={!selectedGu}
-                label="동"
-              />
+          <div className="lg:hidden space-y-4">
+            {/* sm 이하: 2줄 레이아웃 */}
+            <div className="block md:hidden space-y-2">
+              {/* 첫 번째 줄: 시/도, 시/군/구 */}
+              <div className="grid grid-cols-2 gap-2">
+                <RegionSelector
+                  label="시/도"
+                  value={selectedSido}
+                  regions={regions}
+                  onChange={onSidoChange}
+                />
+                <RegionSelector
+                  value={selectedGu}
+                  regions={sigunguOptions}
+                  onChange={onGuChange}
+                  disabled={!selectedSido}
+                  label="시/군/구"
+                />
+              </div>
+
+              {/* 두 번째 줄: 동, 매물 카테고리 */}
+              <div className="grid grid-cols-2 gap-2">
+                <RegionSelector
+                  value={selectedDong}
+                  regions={dongOptions}
+                  onChange={onDongChange}
+                  disabled={!selectedGu}
+                  label="동"
+                />
+                <Select
+                  size="small"
+                  label="카테고리"
+                  value={searchParams.category || ""}
+                  onChange={onCategoryChange}
+                  aria-label="매물 카테고리"
+                >
+                  {categoryOptions.map((opt) => (
+                    <MenuItem key={opt.value} value={opt.value || ""}>
+                      {opt.label}
+                    </MenuItem>
+                  ))}
+                </Select>
+              </div>
+
+              {/* 세 번째 줄: 상세 필터, 필터 초기화 */}
+              <div className="grid grid-cols-2 gap-2">
+                <Button
+                  variant="outlined"
+                  onClick={onFilterModalToggle}
+                  startIcon={<FilterListIcon />}
+                >
+                  상세 필터
+                </Button>
+                <Button variant="text" onClick={onReset} className="flex-1">
+                  필터 초기화
+                </Button>
+              </div>
             </div>
 
-            {/* 두 번째 줄: 카테고리, 상세 필터, 필터 초기화 */}
-            <div className="grid grid-cols-3 gap-2">
-              <Select
-                size="small"
-                label="매물 카테고리"
-                value={searchParams.category || ""}
-                onChange={onCategoryChange}
-                aria-label="매물 카테고리"
-              >
-                {categoryOptions.map((opt) => (
-                  <MenuItem key={opt.value} value={opt.value || ""}>
-                    {opt.label}
-                  </MenuItem>
-                ))}
-              </Select>
-              <Button
-                variant="outlined"
-                onClick={onFilterModalToggle}
-                startIcon={<FilterListIcon />}
-              >
-                상세 필터
-              </Button>
-              <Button variant="text" onClick={onReset}>
-                필터 초기화
-              </Button>
+            {/* md 이상: 기존 3개 한 줄 레이아웃 */}
+            <div className="hidden md:block space-y-4">
+              {/* 첫 번째 줄: 시/도, 시/군/구, 동 */}
+              <div className="grid grid-cols-3 gap-2">
+                <RegionSelector
+                  label="시/도"
+                  value={selectedSido}
+                  regions={regions}
+                  onChange={onSidoChange}
+                />
+                <RegionSelector
+                  value={selectedGu}
+                  regions={sigunguOptions}
+                  onChange={onGuChange}
+                  disabled={!selectedSido}
+                  label="시/군/구"
+                />
+                <RegionSelector
+                  value={selectedDong}
+                  regions={dongOptions}
+                  onChange={onDongChange}
+                  disabled={!selectedGu}
+                  label="동"
+                />
+              </div>
+
+              {/* 두 번째 줄: 매물 카테고리, 상세 필터, 필터 초기화 */}
+              <div className="grid grid-cols-3 gap-2">
+                <Select
+                  size="small"
+                  label="매물 카테고리"
+                  value={searchParams.category || ""}
+                  onChange={onCategoryChange}
+                  aria-label="매물 카테고리"
+                >
+                  {categoryOptions.map((opt) => (
+                    <MenuItem key={opt.value} value={opt.value || ""}>
+                      {opt.label}
+                    </MenuItem>
+                  ))}
+                </Select>
+                <Button
+                  variant="outlined"
+                  onClick={onFilterModalToggle}
+                  startIcon={<FilterListIcon />}
+                >
+                  상세 필터
+                </Button>
+                <Button variant="text" onClick={onReset}>
+                  필터 초기화
+                </Button>
+              </div>
             </div>
 
             <div className="flex justify-end">
@@ -202,7 +262,6 @@ const AgentPropertyListPageView = ({
               </Select>
             </div>
 
-            {/* 두 번째 줄: 필터 초기화, 상세 필터, 매물 등록 버튼들 */}
             <div className="flex justify-between items-center">
               <div className="flex items-center gap-2">
                 <Button

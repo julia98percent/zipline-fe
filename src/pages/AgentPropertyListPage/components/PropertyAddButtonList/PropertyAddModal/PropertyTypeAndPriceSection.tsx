@@ -61,9 +61,9 @@ const PropertyTypeAndPriceSection = ({
   } = priceInputs.monthlyRent;
 
   return (
-    <div className="flex flex-col border-b border-gray-200 pb-7 mb-7 gap-5">
-      <div>
-        <h6 className="font-semibold">거래 유형</h6>
+    <div className="flex flex-col gap-4">
+      <div className="card p-5">
+        <h6 className="font-semibold mb-2">거래 유형</h6>
         <RadioGroup
           row
           value={type}
@@ -74,6 +74,7 @@ const PropertyTypeAndPriceSection = ({
           <FormControlLabel value="DEPOSIT" control={<Radio />} label="전세" />
           <FormControlLabel value="MONTHLY" control={<Radio />} label="월세" />
         </RadioGroup>
+
         {/* 조건부 가격 필드 */}
         {type === "SALE" && (
           <TextField
@@ -110,7 +111,7 @@ const PropertyTypeAndPriceSection = ({
           />
         )}
         {type === "MONTHLY" && (
-          <div className="grid grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <TextField
               label="보증금"
               value={deposit ?? ""}
@@ -145,7 +146,7 @@ const PropertyTypeAndPriceSection = ({
         )}
       </div>
 
-      <div>
+      <div className="card p-5">
         <h6 className="font-semibold">부동산 유형</h6>
         <RadioGroup
           row
@@ -174,6 +175,7 @@ const PropertyTypeAndPriceSection = ({
         </RadioGroup>
       </div>
       <FormControlLabel
+        className="ml-1"
         control={
           <Checkbox
             checked={createContract}

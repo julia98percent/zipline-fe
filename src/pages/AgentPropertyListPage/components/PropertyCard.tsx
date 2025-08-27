@@ -1,6 +1,6 @@
 import { Property, PropertyCategory } from "@ts/property";
 import { formatDate } from "@utils/dateUtil";
-import { Typography, Chip, Box, Card, CardContent } from "@mui/material";
+import { Typography, Chip } from "@mui/material";
 import {
   getPropertyTypeColors,
   getPropertyCategoryColors,
@@ -51,16 +51,16 @@ const PropertyCard = ({ property, onRowClick }: PropertyCardProps) => {
   };
 
   return (
-    <Card
-      className="mb-4 rounded-lg shadow-sm"
+    <div
+      className="mb-4 card"
       style={{
         cursor: onRowClick ? "pointer" : "default",
       }}
       onClick={handleClick}
     >
-      <CardContent className="p-4">
+      <div className="p-4">
         {/* 상단: 매물 유형과 거래 유형 */}
-        <Box className="flex gap-2 mb-3">
+        <div className="flex gap-2 mb-3">
           <Chip
             label={PropertyCategory[property.realCategory]}
             size="small"
@@ -85,7 +85,7 @@ const PropertyCard = ({ property, onRowClick }: PropertyCardProps) => {
             size="small"
             className="text-xs"
           />
-        </Box>
+        </div>
 
         {/* 주소 */}
         <Typography
@@ -101,18 +101,18 @@ const PropertyCard = ({ property, onRowClick }: PropertyCardProps) => {
         )}
 
         {/* 면적과 가격 */}
-        <Box className="flex justify-between items-end">
+        <div className="flex justify-between items-end">
           <Typography variant="body2" className="text-gray-600 text-sm">
             {property.netArea.toFixed(1)}m²
           </Typography>
           <Typography variant="h6" className="font-bold text-gray-800 text-lg">
             {getPriceText(property)}
           </Typography>
-        </Box>
+        </div>
 
         {/* 기타 정보 (입주일, 상세설명) */}
         {(property.moveInDate || property.details) && (
-          <Box className="mt-3 pt-3 border-t border-gray-200">
+          <div className="mt-3 pt-3 border-t border-gray-200">
             {property.moveInDate && (
               <Typography
                 variant="caption"
@@ -131,10 +131,10 @@ const PropertyCard = ({ property, onRowClick }: PropertyCardProps) => {
                   : property.details}
               </Typography>
             )}
-          </Box>
+          </div>
         )}
-      </CardContent>
-    </Card>
+      </div>
+    </div>
   );
 };
 

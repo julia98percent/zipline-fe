@@ -1,16 +1,11 @@
-import { Box, Chip, Typography } from "@mui/material";
-import {
-  InfoCard,
-  InfoItem,
-  InfoLabel,
-  InfoValue,
-} from "../styles/AgentPropertyDetailPage.styles";
+import { Chip } from "@mui/material";
 import { AgentPropertyDetail } from "@apis/propertyService";
 import {
   getPropertyTypeColors,
   getPropertyCategoryColors,
 } from "@constants/property";
 import { formatKoreanPrice } from "@utils/numberUtil";
+import InfoField from "@components/InfoField";
 
 interface PropertyInfoSectionProps {
   property: AgentPropertyDetail;
@@ -60,25 +55,15 @@ const PropertyInfoSection = ({ property }: PropertyInfoSectionProps) => {
   };
 
   return (
-    <InfoCard className="rounded-lg bg-white shadow-sm">
-      <Typography className="text-xl font-semibold text-primary" gutterBottom>
-        매물 정보
-      </Typography>
+    <div className="card p-5">
+      <h6 className="text-xl font-semibold text-primary mb-2">매물 정보</h6>
 
-      <Box display="flex" flexWrap="wrap" columnGap={2} rowGap={1}>
-        {/* 고객명 */}
-        <Box width="calc(50% - 8px)">
-          <InfoItem>
-            <InfoLabel>고객명</InfoLabel>
-            <InfoValue>{property.customer || "-"}</InfoValue>
-          </InfoItem>
-        </Box>
+      <div className="grid grid-cols-2 xs:grid-cols-1 sm:grid-cols-2">
+        <InfoField label="고객명" value={property.customer || "-"} />
 
-        {/* 거래 유형 */}
-        <Box width="calc(50% - 8px)">
-          <InfoItem>
-            <InfoLabel>거래 유형</InfoLabel>
-
+        <InfoField
+          label="거래 유형"
+          value={
             <Chip
               label={getTransactionType(property.type)}
               size="small"
@@ -88,14 +73,12 @@ const PropertyInfoSection = ({ property }: PropertyInfoSectionProps) => {
                 color: getTypeTextColor(property.type),
               }}
             />
-          </InfoItem>
-        </Box>
+          }
+        />
 
-        {/* 매물 종류 */}
-        <Box width="calc(50% - 8px)">
-          <InfoItem>
-            <InfoLabel>매물 종류</InfoLabel>
-
+        <InfoField
+          label="매물 종류"
+          value={
             <Chip
               label={getCategoryName(property.realCategory)}
               size="small"
@@ -105,46 +88,25 @@ const PropertyInfoSection = ({ property }: PropertyInfoSectionProps) => {
                 color: getCategoryTextColor(property.realCategory),
               }}
             />
-          </InfoItem>
-        </Box>
+          }
+        />
 
-        {/* 가격 정보 */}
         {property.type === "SALE" && (
-          <Box width="calc(50% - 8px)">
-            <InfoItem>
-              <InfoLabel>매매가</InfoLabel>
-              <InfoValue>{formatPrice(property.price)}</InfoValue>
-            </InfoItem>
-          </Box>
+          <InfoField label="매매가" value={formatPrice(property.price)} />
         )}
 
         {property.type === "DEPOSIT" && (
-          <Box width="calc(50% - 8px)">
-            <InfoItem>
-              <InfoLabel>보증금</InfoLabel>
-              <InfoValue>{formatPrice(property.deposit)}</InfoValue>
-            </InfoItem>
-          </Box>
+          <InfoField label="보증금" value={formatPrice(property.deposit)} />
         )}
 
         {property.type === "MONTHLY" && (
           <>
-            <Box width="calc(50% - 8px)">
-              <InfoItem>
-                <InfoLabel>보증금</InfoLabel>
-                <InfoValue>{formatPrice(property.deposit)}</InfoValue>
-              </InfoItem>
-            </Box>
-            <Box width="calc(50% - 8px)">
-              <InfoItem>
-                <InfoLabel>월세</InfoLabel>
-                <InfoValue>{formatPrice(property.monthlyRent)}</InfoValue>
-              </InfoItem>
-            </Box>
+            <InfoField label="보증금" value={formatPrice(property.deposit)} />
+            <InfoField label="월세" value={formatPrice(property.monthlyRent)} />
           </>
         )}
-      </Box>
-    </InfoCard>
+      </div>
+    </div>
   );
 };
 

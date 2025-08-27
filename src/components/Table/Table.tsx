@@ -85,9 +85,17 @@ function Table<T extends RowData>({
   };
 
   return (
-    <Paper className={`rounded-lg shadow-sm ${className || ""}`} sx={sx}>
+    <Paper className={`card ${className || ""}`} sx={sx}>
       <TableContainer style={{ maxHeight: maxHeight }}>
-        <MuiTable stickyHeader={stickyHeader}>
+        <MuiTable
+          stickyHeader={stickyHeader}
+          sx={{
+            "& .MuiTableRow-root:last-child .MuiTableCell-root": {
+              borderBottom: "none",
+            },
+            ...sx,
+          }}
+        >
           <TableHead>
             <TableRow>
               {finalColumns.map((column) => (

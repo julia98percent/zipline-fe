@@ -1,5 +1,5 @@
 import React from "react";
-import { Box, Card, CardContent, Typography } from "@mui/material";
+import { Card, CardContent } from "@mui/material";
 import CircularProgress from "@components/CircularProgress";
 import AssignmentIcon from "@mui/icons-material/Assignment";
 import DonutLargeIcon from "@mui/icons-material/DonutLarge";
@@ -31,7 +31,7 @@ const StatisticsCards: React.FC<StatisticsCardsProps> = ({
 }) => {
   const cards = [
     {
-      title: "신규 고객 (7일)",
+      title: "신규 고객",
       value: `${recentCustomers}명`,
       icon: PersonAddIcon,
       color: "#1976d2",
@@ -69,57 +69,48 @@ const StatisticsCards: React.FC<StatisticsCardsProps> = ({
   ];
 
   return (
-    <Box className="flex flex-wrap gap-3 mb-4 mt-4">
+    <div className="grid grid-cols-2 sm:grid-cols-4 flex-wrap gap-3">
       {cards.map((card, index) => {
         const IconComponent = card.icon;
         return (
-          <Box
+          <Card
             key={index}
-            className="h-21 flex-[1_1_100%] md:flex-[1_1_calc(50%-12px)] lg:flex-[1_1_calc(25%-12px)]"
+            className="h-full flex flex-col card hover:bg-neutral-100"
           >
-            <Card className="h-full flex flex-col shadow-sm rounded-md bg-white transition-colors duration-200 hover:bg-gray-50">
-              <CardContent
-                className="h-full p-4 flex items-center gap-4"
+            <CardContent
+              className="flex flex-col lg:flex-row h-full p-4 flex items-center gap-4"
+              style={{
+                cursor: card.clickable ? "pointer" : "default",
+              }}
+              sx={{
+                "&:last-child": { pb: 2 },
+              }}
+              onClick={card.clickable ? card.onClick : undefined}
+            >
+              <div
+                className="w-10 h-10 sm:w-14 sm:h-14 rounded-full flex items-center justify-center"
                 style={{
-                  cursor: card.clickable ? "pointer" : "default",
+                  backgroundColor: card.backgroundColor,
                 }}
-                sx={{
-                  "&:last-child": { pb: 2 },
-                }}
-                onClick={card.clickable ? card.onClick : undefined}
               >
-                <Box
-                  className="w-12 h-12 rounded-full flex items-center justify-center"
-                  style={{
-                    backgroundColor: card.backgroundColor,
-                  }}
-                >
-                  <IconComponent
-                    className="text-2xl"
-                    style={{ color: card.color }}
-                  />
-                </Box>
-                <Box className="flex-1">
-                  <Typography
-                    variant="body2"
-                    color="text.secondary"
-                    className="text-xs mb-1"
-                  >
-                    {card.title}
-                  </Typography>
-                  <Typography
-                    variant="h5"
-                    className="font-semibold text-2xl leading-none"
-                  >
-                    {isLoading ? <CircularProgress size={20} /> : card.value}
-                  </Typography>
-                </Box>
-              </CardContent>
-            </Card>
-          </Box>
+                <IconComponent
+                  className="text-2xl"
+                  style={{ color: card.color }}
+                />
+              </div>
+              <div className="flex flex-col items-start gap-1">
+                <span className="font-semibold text-2xl leading-none">
+                  {isLoading ? <CircularProgress size={20} /> : card.value}
+                </span>
+                <span color="text.secondary" className="text-xs mb-1">
+                  {card.title}
+                </span>
+              </div>
+            </CardContent>
+          </Card>
         );
       })}
-    </Box>
+    </div>
   );
 };
 

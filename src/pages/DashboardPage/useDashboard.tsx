@@ -66,14 +66,8 @@ interface DashboardData {
   // Event handlers
   handlePrevWeek: () => void;
   handleNextWeek: () => void;
-  handleCounselTabChange: (
-    event: React.SyntheticEvent,
-    newValue: "request" | "latest"
-  ) => void;
-  handleContractTabChange: (
-    event: React.SyntheticEvent,
-    newValue: "expiring" | "recent"
-  ) => void;
+  handleCounselTabChange: (e: React.MouseEvent<HTMLDivElement>) => void;
+  handleContractTabChange: (e: React.MouseEvent<HTMLDivElement>) => void;
   handleMoreClick: (daySchedules: Schedule[], dayStr: string) => void;
   handleScheduleClick: (schedule: Schedule) => void;
   handleCloseDetailModal: () => void;
@@ -191,15 +185,15 @@ export const useDashboard = (): DashboardData => {
   }, [selectedDate]);
 
   const handleCounselTabChange = useCallback(
-    (_event: React.SyntheticEvent, newValue: "request" | "latest") => {
-      setCounselTab(newValue);
+    (e: React.MouseEvent<HTMLDivElement>) => {
+      setCounselTab(e.currentTarget.id as "request" | "latest");
     },
     []
   );
 
   const handleContractTabChange = useCallback(
-    (_event: React.SyntheticEvent, newValue: "expiring" | "recent") => {
-      setContractTab(newValue);
+    (e: React.MouseEvent<HTMLDivElement>) => {
+      setContractTab(e.currentTarget.id as "expiring" | "recent");
     },
     []
   );

@@ -1,4 +1,4 @@
-import { Modal, Typography, Box } from "@mui/material";
+import { Dialog, DialogContent, DialogTitle } from "@mui/material";
 import { useState, useEffect, useCallback } from "react";
 import { formatDate } from "@utils/dateUtil";
 import { PreCounsel } from "@ts/counsel";
@@ -94,11 +94,18 @@ const RecentCustomersModal = ({
   }));
 
   return (
-    <Modal open={open} onClose={handleClose}>
-      <Box className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-4/5 max-w-4xl bg-gray-100 shadow-2xl p-6 rounded-lg max-h-4/5 overflow-auto">
-        <Typography className="font-bold text-primary text-xl mb-4">
-          최근 유입 고객
-        </Typography>
+    <Dialog
+      open={open}
+      onClose={handleClose}
+      maxWidth={false}
+      PaperProps={{
+        className: "w-200 h-175 max-h-[90vh] bg-white rounded-lg",
+      }}
+    >
+      <DialogTitle className="border-b text-primary font-bold border-gray-200">
+        최근 유입 고객
+      </DialogTitle>
+      <DialogContent className="flex flex-col gap-4 p-3 bg-neutral-100 overflow-x-hidden">
         <Table
           columns={columns}
           bodyList={tableData}
@@ -112,10 +119,10 @@ const RecentCustomersModal = ({
             handleRowsPerPageChange(parseInt(event.target.value, 10))
           }
           isLoading={loading}
-          noDataMessage="신규 사전 상담이 없습니다"
+          noDataMessage="신규 사전 상담이 없습니다."
         />
-      </Box>
-    </Modal>
+      </DialogContent>
+    </Dialog>
   );
 };
 

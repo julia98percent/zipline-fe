@@ -1,5 +1,5 @@
 import React from "react";
-import { Box, Card, Tabs, Tab, Chip, Tooltip } from "@mui/material";
+import { Chip, Divider, Tooltip } from "@mui/material";
 import { formatDate } from "@utils/dateUtil";
 import { Counsel } from "@ts/counsel";
 import Table, { ColumnConfig } from "@components/Table";
@@ -10,10 +10,7 @@ interface CounselListProps {
   counselTab: "request" | "latest";
   currentCounselList: Counsel[];
   counselLoading: boolean;
-  handleCounselTabChange: (
-    event: React.SyntheticEvent,
-    newValue: "request" | "latest"
-  ) => void;
+  handleCounselTabChange: (e: React.MouseEvent<HTMLDivElement>) => void;
   handleCounselClick: (counselId: number) => void;
 }
 
@@ -30,14 +27,16 @@ const CounselList: React.FC<CounselListProps> = ({
       key: "customerName",
       label: "고객명",
       align: "left",
+      width: "25%",
       render: (_, counsel) => counsel.customerName,
     },
     {
       key: "title",
       label: "제목",
       align: "left",
+      width: "50%",
       render: (_, counsel) => (
-        <Box className="flex items-center gap-2">
+        <div className="flex items-center gap-2">
           {counsel.title}
           {counsel.completed && (
             <Chip
@@ -47,14 +46,16 @@ const CounselList: React.FC<CounselListProps> = ({
               className="text-xs h-4"
             />
           )}
-        </Box>
+        </div>
       ),
     },
     {
       key: "dueDate",
       label: "마감일",
       align: "left",
-      render: (_, counsel) => formatDate(counsel.dueDate),
+      width: "25%",
+      render: (_, counsel) =>
+        counsel.dueDate ? formatDate(counsel.dueDate) : "-",
     },
   ];
 
@@ -63,58 +64,45 @@ const CounselList: React.FC<CounselListProps> = ({
     ...counsel,
   }));
 
-  return (
-    <Card className="p-4 flex flex-col shadow-sm rounded-md bg-white min-h-96 h-fit">
-      <Box className="border-b border-gray-300">
-        <Box className="flex items-center justify-between mb-2">
-          <h6 className="text-lg font-semibold text-primary">상담 목록</h6>
-        </Box>
-        <Tabs
-          value={counselTab}
-          onChange={handleCounselTabChange}
-          className="min-h-auto"
-          sx={{
-            "& .MuiTab-root": {
-              minHeight: "32px",
-              fontSize: "14px",
-              padding: "6px 12px",
-            },
-            "& .MuiTabs-indicator": {
-              backgroundColor: "primary.main",
-            },
-          }}
-        >
-          <Tab
-            label={
-              <div className="flex items-center gap-1">
-                <p style={{ color: "inherit" }}>의뢰일 임박 순</p>
-                <Tooltip title="2주 이내 의뢰 마감 예정인 상담이 표시됩니다.">
-                  <HelpOutlineIcon className="text-base color-inherit" />
-                </Tooltip>
-              </div>
-            }
-            value="request"
-            className="text-sm"
-            sx={{
-              "&.Mui-selected": {
-                color: "primary.main",
-              },
-            }}
-          />
+  const getNoDataMessage = () => {
+    if (counselTab === "request") {
+      return "마감 예정인 상담이 없습니다.";
+    } else {
+      return "최신 상담이 없습니다.";
+    }
+  };
 
-          <Tab
-            label="최신 순"
-            value="latest"
-            className="text-sm"
-            sx={{
-              "&.Mui-selected": {
-                color: "primary.main",
-              },
-            }}
-          />
-        </Tabs>
-      </Box>
-      <Box className="flex flex-1 overflow-auto">
+  return (
+    <div className="flex flex-col min-h-96 h-fit card">
+      <div className="flex items-center justify-between p-4 border-b border-gray-200">
+        <h6 className="text-lg font-semibold text-primary">상담 목록</h6>
+        <div className="flex items-center gap-2 text-sm">
+          <div
+            className={`flex items-center gap-1 cursor-pointer ${
+              counselTab === "request" ? "text-primary" : "text-info"
+            } ${counselTab === "request" ? "font-semibold" : ""}`}
+            onClick={handleCounselTabChange}
+            id="request"
+          >
+            의뢰일 임박 순
+            <Tooltip title="2주 이내 의뢰 마감 예정인 상담이 표시됩니다.">
+              <HelpOutlineIcon className="text-base color-inherit" />
+            </Tooltip>
+          </div>
+          <Divider orientation="vertical" className="h-4 bg-neutral-300" />
+
+          <div
+            className={`flex items-center gap-1 cursor-pointer ${
+              counselTab === "latest" ? "text-primary" : "text-info"
+            }  ${counselTab === "latest" ? "font-semibold" : ""}`}
+            onClick={handleCounselTabChange}
+            id="latest"
+          >
+            최신 순
+          </div>
+        </div>
+      </div>
+      <div className="flex flex-1 overflow-auto">
         {counselLoading ? (
           <div className="flex flex-1 justify-center items-center">
             <CircularProgress size={36} />
@@ -125,7 +113,7 @@ const CounselList: React.FC<CounselListProps> = ({
             bodyList={tableData}
             handleRowClick={(counsel) => handleCounselClick(counsel.counselUid)}
             pagination={false}
-            noDataMessage="마감 예정인 상담이 없습니다."
+            noDataMessage={getNoDataMessage()}
             className="shadow-none! w-full"
             sx={{
               "& .MuiTableCell-head": {
@@ -137,12 +125,11 @@ const CounselList: React.FC<CounselListProps> = ({
                 fontSize: "12px",
                 padding: "8px 16px",
               },
-              boxShadow: "none",
             }}
           />
         )}
-      </Box>
-    </Card>
+      </div>
+    </div>
   );
 };
 

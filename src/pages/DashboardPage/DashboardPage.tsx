@@ -16,8 +16,7 @@ const DashboardPage = () => {
     <div className="h-screen overflow-auto p-0">
       <PageHeader />
 
-      <div className="p-6 pt-0">
-        {/* 통계 카드 영역 */}
+      <div className="flex flex-col p-6 pt-0 gap-4">
         <StatisticsCards
           recentCustomers={dashboardData.recentCustomers}
           recentContractsCount={dashboardData.recentContractsCount}
@@ -36,11 +35,8 @@ const DashboardPage = () => {
           }
         />
 
-        {/* 메인 컨텐츠 영역 */}
         <div className="flex flex-col gap-6">
-          {/* 상단 영역 - 주간 일정과 설문 목록 */}
           <div className="flex flex-col xl:flex-row gap-6">
-            {/* 왼쪽 - 주간 일정 캘린더 */}
             <div className="flex-1 lg:flex-[2] flex flex-col min-h-96 xl:w-full">
               <WeeklyScheduleCalendar
                 schedules={dashboardData.schedules}
@@ -56,18 +52,13 @@ const DashboardPage = () => {
               />
             </div>
 
-            {/* 오른쪽 - 신규 사전 상담 목록 */}
-            <div className="flex-1 lg:flex-1 flex flex-col min-h-96">
-              <SurveyList
-                surveyResponses={dashboardData.surveyResponses}
-                handleSurveyClick={dashboardData.handleSurveyClick}
-              />
-            </div>
+            <SurveyList
+              surveyResponses={dashboardData.surveyResponses}
+              handleSurveyClick={dashboardData.handleSurveyClick}
+            />
           </div>
 
-          {/* 하단 영역 - 상담 목록과 계약 목록을 한 줄로 */}
           <div className="flex flex-col lg:flex-row gap-6">
-            {/* 상담 목록 */}
             <div className="flex-1 min-h-96">
               <CounselList
                 counselTab={dashboardData.counselTab}
@@ -78,7 +69,6 @@ const DashboardPage = () => {
               />
             </div>
 
-            {/* 계약 목록 */}
             <div className="flex-1 min-h-96">
               <ContractList
                 contractTab={dashboardData.contractTab}
@@ -91,7 +81,6 @@ const DashboardPage = () => {
         </div>
       </div>
 
-      {/* 모든 모달들 */}
       <DashboardModals
         selectedSchedule={dashboardData.selectedSchedule}
         isDetailModalOpen={dashboardData.isDetailModalOpen}

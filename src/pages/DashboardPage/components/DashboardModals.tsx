@@ -129,7 +129,7 @@ const DashboardModals: React.FC<DashboardModalsProps> = ({
         maxWidth="md"
         fullWidth
       >
-        <DialogTitle>
+        <DialogTitle className="font-medium text-primary border-b border-gray-200">
           {selectedDayStr} 일정 ({selectedDaySchedules.length}개)
         </DialogTitle>
         <DialogContent>
@@ -138,30 +138,33 @@ const DashboardModals: React.FC<DashboardModalsProps> = ({
             bodyList={scheduleTableData}
             handleRowClick={(schedule) => handleScheduleClick(schedule)}
             pagination={false}
-            noDataMessage="일정이 없습니다"
+            noDataMessage="일정이 없습니다."
+            className="shadow-none! w-full"
           />
         </DialogContent>
         <DialogActions>
-          <Button onClick={() => setMoreModalOpen(false)}>닫기</Button>
+          <Button variant="outlined" onClick={() => setMoreModalOpen(false)}>
+            닫기
+          </Button>
         </DialogActions>
       </Dialog>
-      {/* Recent Customers Modal */}
+
       <RecentCustomersModal
         open={isRecentCustomersModalOpen}
         onClose={() => setIsRecentCustomersModalOpen(false)}
         onSurveyClick={handleSurveyClick}
       />
-      {/* Recent Contracts Modal */}
+
       <RecentContractsModal
         open={recentContractsModalOpen}
         onClose={() => setRecentContractsModalOpen(false)}
       />
-      {/* Ongoing Contracts Modal */}
+
       <OngoingContractsModal
         open={ongoingContractsOpen}
         onClose={() => setOngoingContractsOpen(false)}
       />
-      {/* Completed Contracts Modal */}
+
       <CompletedContractsModal
         open={completedContractsOpen}
         onClose={() => setCompletedContractsOpen(false)}

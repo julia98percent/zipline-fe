@@ -1,5 +1,4 @@
 import React from "react";
-import { Box, Card } from "@mui/material";
 import { formatDate } from "@utils/dateUtil";
 import { PreCounsel } from "@ts/counsel";
 import Table, { ColumnConfig } from "@components/Table";
@@ -44,13 +43,11 @@ const SurveyList: React.FC<SurveyListProps> = ({
     : [];
 
   return (
-    <Card className="flex-1 flex flex-col rounded-md bg-white shadow-sm p-4">
-      <Box className="flex items-center justify-between border-b border-[#e0e0e0]">
-        <h6 className="text-lg font-semibold pb-2 text-primary">
-          신규 사전 상담
-        </h6>
-      </Box>
-      <Box className="flex-1 overflow-auto">
+    <div className="flex-1 flex flex-col card">
+      <div className="flex items-center justify-between border-b border-neutral-200 p-4">
+        <h6 className="text-lg font-semibold text-primary">신규 사전 상담</h6>
+      </div>
+      <div className="flex-1 overflow-auto">
         <Table
           columns={columns}
           bodyList={tableData}
@@ -58,7 +55,7 @@ const SurveyList: React.FC<SurveyListProps> = ({
             handleSurveyClick(survey.surveyResponseUid)
           }
           pagination={false}
-          noDataMessage="신규 사전 상담이 없습니다"
+          noDataMessage="신규 사전 상담이 없습니다."
           sx={{
             "& .MuiTableCell-head": {
               fontSize: "13px",
@@ -71,8 +68,8 @@ const SurveyList: React.FC<SurveyListProps> = ({
             },
           }}
         />
-      </Box>
-    </Card>
+      </div>
+    </div>
   );
 };
 

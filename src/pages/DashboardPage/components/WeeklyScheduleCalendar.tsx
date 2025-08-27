@@ -1,6 +1,6 @@
 import React from "react";
 import { IconButton } from "@mui/material";
-import { ChevronLeft, ChevronRight, OpenInFull } from "@mui/icons-material";
+import { ChevronLeft, ChevronRight, CalendarMonth } from "@mui/icons-material";
 import dayjs from "dayjs";
 import { Schedule } from "@ts/schedule";
 import {
@@ -35,20 +35,21 @@ const WeeklyScheduleCalendar: React.FC<WeeklyScheduleCalendarProps> = ({
   onViewAllSchedules,
 }) => {
   return (
-    <div className="flex-1 flex flex-col bg-white rounded-md shadow-sm border border-gray-100">
+    <div className="flex-1 flex flex-col card">
       {/* Header */}
-      <div className="p-4 border-b border-gray-200 flex items-center justify-between">
-        <div className="flex items-center gap-2 h-full">
-          <h6 className="text-lg font-semibold text-primary">주간 일정</h6>
-          <IconButton
-            edge="end"
-            size="small"
+      <div className="p-4 border-b border-gray-200 flex flex-col sm:flex-row items-center justify-between">
+        <div className="w-full flex flex-row items-center justify-between gap-2 h-full">
+          <h6 className="text-lg whitespace-nowrap font-semibold text-primary">
+            주간 일정
+          </h6>
+          <Button
+            startIcon={<CalendarMonth />}
             onClick={onViewAllSchedules}
-            className="p-1 min-w-0 hover:bg-gray-100"
-            aria-label="전체 일정 보기"
+            color="info"
+            variant="text"
           >
-            <OpenInFull fontSize="small" />
-          </IconButton>
+            월간 보기
+          </Button>
         </div>
 
         <div className="flex items-center">
@@ -101,7 +102,7 @@ const WeeklyScheduleCalendar: React.FC<WeeklyScheduleCalendarProps> = ({
 
                 {daySchedules.length === 0 ? (
                   <div className="text-xs text-gray-500 text-center py-4">
-                    일정이 없습니다
+                    일정이 없습니다.
                   </div>
                 ) : (
                   <div className="flex flex-col gap-1 flex-1 overflow-hidden">
@@ -168,7 +169,7 @@ const WeeklyScheduleCalendar: React.FC<WeeklyScheduleCalendarProps> = ({
                     border rounded-lg p-4 lg:w-[calc(33.333vw-20px)] min-w-[200px] flex-shrink-0 h-full 
                     ${
                       isToday
-                        ? "border-2 border-blue-600 bg-blue-50"
+                        ? "border-2 border-primary-light bg-blue-50"
                         : "border border-gray-200"
                     }
                     ${!hasSchedules && !isToday ? "bg-gray-50" : "bg-white"}
@@ -185,7 +186,7 @@ const WeeklyScheduleCalendar: React.FC<WeeklyScheduleCalendarProps> = ({
                   <div className="flex flex-col gap-2 max-h-[200px] overflow-y-auto">
                     {daySchedules.length === 0 ? (
                       <div className="text-xs text-gray-500 text-center py-4">
-                        일정이 없습니다
+                        일정이 없습니다.
                       </div>
                     ) : (
                       <>

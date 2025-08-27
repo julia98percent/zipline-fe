@@ -1,4 +1,10 @@
-import { Modal, Box, Typography, Chip, useMediaQuery } from "@mui/material";
+import {
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  Chip,
+  useMediaQuery,
+} from "@mui/material";
 import { useState, useEffect, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
 import { ContractCategory, Contract } from "@ts/contract";
@@ -8,6 +14,7 @@ import Table, { ColumnConfig } from "@components/Table";
 import ContractCard from "@pages/ContractListPage/ContractCard/ContractCard";
 import MobilePagination from "@components/MobilePagination";
 import { getPropertyTypeColors } from "@constants/property";
+import CircularProgress from "@components/CircularProgress";
 
 interface CompletedContractsModalProps {
   open: boolean;
@@ -193,28 +200,31 @@ const CompletedContractsModal = ({
   }));
 
   return (
-    <Modal
+    <Dialog
       open={open}
       onClose={onClose}
-      aria-labelledby="completed-contracts-modal"
+      maxWidth={false}
+      PaperProps={{
+        className: "w-[90vw] sm:w-[80vw] max-h-[90vh] rounded-lg",
+      }}
     >
-      <Box className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-4/5 max-w-4xl bg-gray-100 shadow-2xl p-6 rounded-lg max-h-4/5 overflow-auto">
-        <Typography className="font-bold text-primary text-xl mb-4">
-          완료된 계약 목록
-        </Typography>
-        
+      <DialogTitle className="border-b text-primary font-bold border-gray-200">
+        완료된 계약 목록
+      </DialogTitle>
+      <DialogContent className="flex flex-col gap-4 p-3 bg-neutral-100">
         {isSmallModal ? (
-          /* 작은 모달에서는 카드 컴포넌트 사용 */
-          <Box>
+          <div className="h-full pb-4">
             {loading ? (
-              <Box className="text-center py-8">로딩 중...</Box>
+              <div className="flex justify-center items-center">
+                <CircularProgress />
+              </div>
             ) : contracts.length === 0 ? (
-              <Box className="text-center py-8 text-gray-500">
-                완료된 계약이 없습니다
-              </Box>
+              <div className="text-center py-8 text-gray-500">
+                완료된 계약이 없습니다.
+              </div>
             ) : (
               <>
-                <Box className="space-y-4 max-h-96 overflow-y-auto">
+                <div className="space-y-4 max-h-96 overflow-y-auto">
                   {contracts.map((contract) => (
                     <ContractCard
                       key={contract.uid}
@@ -222,7 +232,7 @@ const CompletedContractsModal = ({
                       onRowClick={handleContractClick}
                     />
                   ))}
-                </Box>
+                </div>
                 <MobilePagination
                   page={page}
                   totalElements={totalCount}
@@ -231,9 +241,8 @@ const CompletedContractsModal = ({
                 />
               </>
             )}
-          </Box>
+          </div>
         ) : (
-          /* 큰 모달에서는 테이블 사용 */
           <Table
             columns={columns}
             bodyList={tableData}
@@ -247,11 +256,11 @@ const CompletedContractsModal = ({
               handleRowsPerPageChange(parseInt(e.target.value, 10))
             }
             isLoading={loading}
-            noDataMessage="완료된 계약이 없습니다"
+            noDataMessage="완료된 계약이 없습니다."
           />
         )}
-      </Box>
-    </Modal>
+      </DialogContent>
+    </Dialog>
   );
 };
 

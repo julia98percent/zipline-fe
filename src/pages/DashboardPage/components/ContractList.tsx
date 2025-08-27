@@ -1,5 +1,5 @@
 import React, { useMemo } from "react";
-import { Box, Card, Tabs, Tab, Tooltip } from "@mui/material";
+import { Divider, Tooltip } from "@mui/material";
 import { useNavigate } from "react-router-dom";
 import { formatDate } from "@utils/dateUtil";
 import { Contract } from "@ts/contract";
@@ -12,10 +12,7 @@ interface ContractListProps {
   contractTab: "expiring" | "recent";
   currentContractList: Contract[];
   contractLoading: boolean;
-  handleContractTabChange: (
-    event: React.SyntheticEvent,
-    newValue: "expiring" | "recent"
-  ) => void;
+  handleContractTabChange: (e: React.MouseEvent<HTMLDivElement>) => void;
 }
 
 const ContractList = ({
@@ -112,53 +109,36 @@ const ContractList = ({
   };
 
   return (
-    <Card className="p-4 flex flex-col rounded-md bg-white min-h-96 h-fit shadow-sm">
-      <Box className="border-b border-gray-300">
-        <Box className="flex items-center justify-between mb-2 ">
-          <h6 className="text-lg font-semibold text-primary">계약 목록</h6>
-        </Box>
-        <Tabs
-          value={contractTab}
-          onChange={handleContractTabChange}
-          className="min-h-auto"
-          sx={{
-            "& .MuiTab-root": {
-              minHeight: "32px",
-              fontSize: "14px",
-              padding: "6px 12px",
-            },
-          }}
-        >
-          <Tab
-            className="text-sm"
-            label={
-              <div className="flex items-center gap-1">
-                <p className="text-inherit">만료 예정 계약</p>
-                <Tooltip title="6개월 이내 만료 예정인 계약이 표시됩니다.">
-                  <HelpOutlineIcon className="text-inherit text-base" />
-                </Tooltip>
-              </div>
-            }
-            value="expiring"
-            sx={{
-              "&.Mui-selected": {
-                color: "primary.main",
-              },
-            }}
-          />
-          <Tab
-            label="최근 계약"
-            value="recent"
-            className="text-sm"
-            sx={{
-              "&.Mui-selected": {
-                color: "primary.main",
-              },
-            }}
-          />
-        </Tabs>
-      </Box>
-      <Box className="flex flex-1 overflow-auto">
+    <div className="flex flex-col min-h-96 h-fit card">
+      <div className="flex items-center justify-between p-4 border-b border-gray-200">
+        <h6 className="text-lg font-semibold text-primary">계약 목록</h6>
+        <div className="flex items-center gap-2 text-sm">
+          <div
+            className={`flex items-center gap-1 cursor-pointer ${
+              contractTab === "expiring" ? "text-primary" : "text-neutral-900"
+            } ${contractTab === "expiring" ? "font-semibold" : ""}`}
+            onClick={handleContractTabChange}
+            id="expiring"
+          >
+            만료 예정 계약
+            <Tooltip title="6개월 이내 만료 예정인 계약이 표시됩니다.">
+              <HelpOutlineIcon className="text-inherit text-base" />
+            </Tooltip>
+          </div>
+          <Divider orientation="vertical" className="h-4 bg-neutral-300" />
+
+          <div
+            className={`flex items-center gap-1 cursor-pointer ${
+              contractTab === "recent" ? "text-primary" : "text-neutral-900"
+            } ${contractTab === "recent" ? "font-semibold" : ""}`}
+            id="recent"
+            onClick={handleContractTabChange}
+          >
+            최근 계약
+          </div>
+        </div>
+      </div>
+      <div className="flex flex-1 overflow-auto">
         {contractLoading ? (
           <div className="flex flex-1 justify-center items-center">
             <CircularProgress size={36} />
@@ -184,8 +164,8 @@ const ContractList = ({
             }}
           />
         )}
-      </Box>
-    </Card>
+      </div>
+    </div>
   );
 };
 

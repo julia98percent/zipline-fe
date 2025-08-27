@@ -47,15 +47,16 @@ const Button = ({
   ...props
 }: ButtonType) => {
   const classNameWithVariant =
-    `${variant == "outlined" && " bg-white "}` +
-    `${variant == "text" && " hover:bg-black/5 "}`;
+    `${variant == "outlined" && " bg-white px-4 py-2 "}` +
+    `${variant == "text" && " hover:bg-black/5 px-1 "}` +
+    `${variant == "contained" && " px-4 py-1 "}`;
 
   return (
     <MuiButton
       id={id}
       value={value}
       disabled={disabled}
-      className={`${classNameWithVariant} shadow-none hover:shadow-none h-[40px] px-4 py-2 rounded whitespace-nowrap ${className}`}
+      className={`${classNameWithVariant} shadow-none hover:shadow-none h-[40px] rounded whitespace-nowrap ${className}`}
       onClick={onClick}
       onMouseEnter={onMouseEnter}
       onMouseLeave={onMouseLeave}

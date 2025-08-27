@@ -1,4 +1,4 @@
-import { Box, Tabs, Tab } from "@mui/material";
+import { Tabs, Tab } from "@mui/material";
 import CustomerInfoTabPanel from "./components/CustomerInfoTabPanel";
 import { TabType, TabState } from "./CustomerInfo";
 import { Counsel } from "@ts/counsel";
@@ -46,7 +46,7 @@ const CustomerInfoView = ({
   };
 
   return (
-    <Box className="mt-0">
+    <div className="p-5 mt-0 card">
       <Tabs
         value={currentTab}
         onChange={handleTabChange}
@@ -79,7 +79,7 @@ const CustomerInfoView = ({
           onContractRowsPerPageChange={onContractRowsPerPageChange}
         />
       )}
-    </Box>
+    </div>
   );
 };
 

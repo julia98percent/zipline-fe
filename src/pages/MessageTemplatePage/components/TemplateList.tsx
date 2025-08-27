@@ -1,8 +1,6 @@
 import React from "react";
 import {
-  Box,
   Typography,
-  Paper,
   List,
   ListItem,
   ListItemText,
@@ -25,13 +23,11 @@ const TemplateList: React.FC<TemplateListProps> = ({
   onAddNewTemplate,
 }) => {
   return (
-    <Paper className="p-6 rounded-lg shadow-sm">
-      <Typography variant="h6" className="mb-2 text-gray-800">
-        템플릿 목록
-      </Typography>
+    <div className="p-5 card">
+      <h6 className="text-lg font-semibold text-primary mb-2">템플릿 목록</h6>
       <List className="py-0">
         {templateList.map((category) => (
-          <Box key={category.id}>
+          <div key={category.id}>
             <ListItem className="px-0 py-1">
               <ListItemText
                 primary={category.name}
@@ -75,7 +71,7 @@ const TemplateList: React.FC<TemplateListProps> = ({
               </ListItem>
             ))}
             <Divider className="my-1" />
-          </Box>
+          </div>
         ))}
       </List>
       <Button
@@ -86,7 +82,7 @@ const TemplateList: React.FC<TemplateListProps> = ({
       >
         템플릿 추가하기
       </Button>
-    </Paper>
+    </div>
   );
 };
 

@@ -4,7 +4,6 @@ import {
   DialogTitle,
   DialogContent,
   DialogActions,
-  Paper,
   CircularProgress,
 } from "@mui/material";
 import { useDropzone } from "react-dropzone";
@@ -14,6 +13,7 @@ import { AxiosError } from "axios";
 import { showToast } from "@components/Toast";
 import Button from "@components/Button";
 import { FILE_ERROR_MESSAGES } from "@constants/clientErrorMessage";
+import InfoField from "@components/InfoField";
 
 interface Props {
   open: boolean;
@@ -102,90 +102,106 @@ function BulkUploadModal({ open, handleClose, fetchPropertyData }: Props) {
   };
 
   return (
-    <Dialog open={open} onClose={handleClose} maxWidth="sm" fullWidth>
-      <DialogTitle>매물 데이터 일괄 등록</DialogTitle>
-      <DialogContent>
-        <div className="flex flex-col gap-1 mb-6">
-          <p className="text-gray-800 font-semibold">엑셀 파일 업로드 정책</p>
+    <Dialog
+      open={open}
+      onClose={handleClose}
+      maxWidth={false}
+      PaperProps={{
+        className: "w-[90vw] md:w-[80vw] max-h-[90vh] rounded-lg",
+      }}
+    >
+      <DialogTitle className="border-b text-primary font-bold border-gray-200">
+        매물 데이터 일괄 등록
+      </DialogTitle>
+      <DialogContent className="bg-neutral-100 flex flex-col gap-3 p-3">
+        <div className="p-5 card">
+          <h6 className="text-lg font-semibold mb-2">엑셀 파일 업로드 정책</h6>
 
-          <div className="flex items-center gap-2">
-            <p className="text-secondary">
-              • 파일 형식:{" "}
-              <span className="font-medium text-primary">.xlsx, .xls</span>
+          <div className="flex flex-col mb-4">
+            <InfoField
+              label="• 파일 형식:"
+              value={
+                <span className="text-sm font-medium text-primary">
+                  .xlsx, .xls
+                </span>
+              }
+              className="flex flex-row items-center"
+            />
+            <InfoField
+              label="• 파일 크기:"
+              value={
+                <span className="text-sm font-medium text-primary">
+                  10MB 이하
+                </span>
+              }
+              className="flex flex-row items-center"
+            />
+
+            <p className="text-sm text-neutral-600 py-1">
+              • 필수 입력 항목이 누락된 경우 업로드가 실패할 수 있습니다.
+            </p>
+
+            <p className="text-sm ml-4 font-medium text-primary">
+              - 필수 항목: 고객명, 매물 주소, 매물 카테고리, 매물 유형,
+              공급면적, 전용면적
             </p>
           </div>
 
-          <div className="flex items-center gap-2">
-            <p color="text.secondary">• 파일 크기:</p>
-            <p className="font-medium text-primary">10MB 이하</p>
+          <div className="bg-gray-50 p-4 rounded border border-gray-300">
+            <p className="text-sm text-neutral-800 mb-2">
+              엑셀의 열 순서가 변경되면 업로드가 실패할 수 있으니,{" "}
+              <Link
+                to={import.meta.env.VITE_PROPERTY_EXCEL_TEMPLATE_URL}
+                className="text-primary font-medium"
+              >
+                제공되는 템플릿
+              </Link>
+              을 그대로 사용하는 것을 권장합니다.
+            </p>
+            <p className="text-primary mt-2">
+              <Link
+                to={import.meta.env.VITE_PROPERTY_EXCEL_TEMPLATE_URL}
+                className="text-primary font-medium"
+              >
+                → 템플릿 다운로드
+              </Link>
+            </p>
           </div>
+        </div>
+        <div className="p-5 card">
+          <h6 className="text-md font-semibold mb-2">✔️ 지정된 입력 값 안내</h6>
 
-          <p color="text.secondary">
-            • 필수 입력 항목이 누락된 경우 업로드가 실패할 수 있습니다.
-          </p>
-          <p className="ml-4 font-medium text-primary">
-            - 필수 항목: 고객명, 매물 주소, 매물 카테고리, 매물 유형, 공급면적,
-            전용면적
+          <InfoField
+            label="• 매물 카테고리:"
+            value={
+              <span className="text-sm font-medium text-primary">
+                아파트, 빌라, 상가, 오피스텔, 원룸, 투룸, 주택
+              </span>
+            }
+            className="flex flex-row items-center"
+          />
+
+          <InfoField
+            label="• 매물 유형:"
+            value={
+              <span className="text-sm font-medium text-primary">
+                매매, 전세, 월세
+              </span>
+            }
+            className="flex flex-row items-center"
+          />
+
+          <p className="my-1 text-sm text-red-600">
+            • 허용되지 않은 값이 입력될 경우, 업로드 과정에서 오류가 발생합니다.
           </p>
         </div>
-
-        <div className="bg-gray-50 p-4 rounded border border-gray-300">
-          <p color="text.secondary" className="mb-2">
-            엑셀의 열 순서가 변경되면 업로드가 실패할 수 있으니,{" "}
-            <Link
-              to={import.meta.env.VITE_PROPERTY_EXCEL_TEMPLATE_URL}
-              style={{
-                color: "#164F9E",
-                textDecoration: "none",
-                fontWeight: 500,
-              }}
-            >
-              제공되는 템플릿
-            </Link>
-            을 그대로 사용하는 것을 권장합니다.
-          </p>
-          <p className="text-primary mt-2">
-            <Link
-              to={import.meta.env.VITE_PROPERTY_EXCEL_TEMPLATE_URL}
-              style={{
-                color: "#164F9E",
-                textDecoration: "none",
-                fontWeight: 500,
-              }}
-            >
-              → 템플릿 다운로드
-            </Link>
-          </p>
-        </div>
-
-        <div className="mt-6">
-          <p className="text-gray-800 font-semibold">지정된 입력 값 안내</p>
-
-          <p color="text.secondary" className="inline">
-            • 매물 카테고리:{" "}
-          </p>
-          <span className="font-medium text-primary">
-            아파트, 빌라, 상가, 오피스텔, 원룸, 투룸, 주택
-          </span>
-          <p color="text.secondary">
-            • 매물 유형:{" "}
-            <span className="font-medium text-primary">매매, 전세, 월세</span>
-          </p>
-        </div>
-
-        <p className="my-2 text-xs text-red-500">
-          * 허용되지 않은 값이 입력될 경우, 업로드 과정에서 오류가 발생합니다.
-        </p>
-
-        <Paper
+        <div
           {...getRootProps()}
-          className="p-6 text-center cursor-pointer border-2 border-dashed"
-          style={{
-            borderColor: isDragActive ? "#1976d2" : "#e0e0e0",
-            backgroundColor: isDragActive ? "rgba(0, 0, 0, 0.04)" : "#ffffff",
-            opacity: isLoading ? 0.5 : 1,
-            pointerEvents: isLoading ? "none" : "auto",
-          }}
+          className={`p-5 text-center cursor-pointer card border border-dashed ${
+            isDragActive
+              ? "border-primary bg-primary/5"
+              : "border-gray-300 bg-white"
+          } ${isLoading ? "opacity-50 pointer-events-none" : "opacity-100"}`}
         >
           <input {...getInputProps()} />
           {file ? (
@@ -197,7 +213,7 @@ function BulkUploadModal({ open, handleClose, fetchPropertyData }: Props) {
                 : "파일을 드래그하거나 클릭하여 업로드하세요"}
             </p>
           )}
-        </Paper>
+        </div>
 
         {error && (
           <div className="mt-4 p-4 bg-red-50 border border-red-200 rounded">
@@ -232,7 +248,7 @@ function BulkUploadModal({ open, handleClose, fetchPropertyData }: Props) {
           onClick={handleClose}
           disabled={isLoading}
           variant="outlined"
-          color="primary"
+          color="info"
         >
           취소
         </Button>

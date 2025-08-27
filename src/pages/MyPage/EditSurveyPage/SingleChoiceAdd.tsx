@@ -1,16 +1,14 @@
 import {
-  Box,
-  TextField,
   FormControlLabel,
   Radio,
   RadioGroup,
   FormControl,
-  Typography,
   IconButton,
 } from "@mui/material";
-import DeleteIcon from "@mui/icons-material/Delete";
+import DeleteIcon from "@mui/icons-material/DeleteOutlineRounded";
 import Button from "@components/Button";
 import { QuestionType } from "@apis/preCounselService";
+import TextField from "@components/TextField";
 
 interface Props {
   question: QuestionType;
@@ -32,14 +30,12 @@ function SingleChoiceAdd({
   questionIndex,
 }: Props) {
   return (
-    <Box className="w-full max-w-xl">
+    <div className="w-full">
       <FormControl fullWidth>
-        <Typography className="mb-4 font-medium text-primary">
-          단일 선택 옵션
-        </Typography>
+        <p className="mb-4 font-medium text-primary">단일 선택 옵션</p>
         <RadioGroup>
           {question.choices?.map((choice, choiceIndex) => (
-            <Box key={choiceIndex} className="flex items-center gap-4 mb-2">
+            <div key={choiceIndex} className="flex items-center mb-2">
               <FormControlLabel
                 className="w-full"
                 sx={{
@@ -68,12 +64,13 @@ function SingleChoiceAdd({
               <IconButton
                 onClick={() => handleDeleteChoice(questionIndex, choiceIndex)}
               >
-                <DeleteIcon />
+                <DeleteIcon className="text-red-600" />
               </IconButton>
-            </Box>
+            </div>
           ))}
         </RadioGroup>
         <Button
+          variant="outlined"
           onClick={() => {
             handleAddChoice(questionIndex);
           }}
@@ -81,7 +78,7 @@ function SingleChoiceAdd({
           선택지 추가
         </Button>
       </FormControl>
-    </Box>
+    </div>
   );
 }
 

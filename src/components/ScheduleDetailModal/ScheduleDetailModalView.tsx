@@ -3,7 +3,6 @@ import {
   DialogTitle,
   DialogContent,
   DialogActions,
-  Box,
   TextField,
   Autocomplete,
   FormControlLabel,
@@ -62,16 +61,23 @@ const ScheduleDetailModalView = ({
   onSave,
 }: ScheduleDetailModalViewProps) => {
   return (
-    <Dialog open={open} onClose={onClose} maxWidth="sm" fullWidth>
-      <DialogTitle>
+    <Dialog
+      open={open}
+      onClose={onClose}
+      maxWidth={false}
+      PaperProps={{
+        className: "w-[90vw] sm:w-[50vw] max-h-[90vh] rounded-lg",
+      }}
+    >
+      <DialogTitle className="border-b text-primary font-bold border-gray-200">
         {isEditMode
           ? editingSchedule?.uid
             ? "일정 수정"
             : "일정 추가"
           : "일정 상세"}
       </DialogTitle>
-      <DialogContent>
-        <Box className="mt-4">
+      <DialogContent className="bg-neutral-100 flex flex-col gap-3 p-3">
+        <div className="w-full p-5 card">
           <TextField
             autoFocus={isEditMode}
             margin="dense"
@@ -259,7 +265,7 @@ const ScheduleDetailModalView = ({
               }}
             />
           </div>
-        </Box>
+        </div>
       </DialogContent>
       <DialogActions className="flex flex-row-reverse items-center justify-between p-6 border-t border-gray-200">
         <div className="flex gap-2">

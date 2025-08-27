@@ -50,9 +50,9 @@ const RoleFilters = ({ filtersTemp, setFiltersTemp }: FilterSectionProps) => {
   );
 
   return (
-    <div>
+    <div className="p-5 card">
       <h5 className="text-lg font-bold mb-4">역할</h5>
-      <div className="grid grid-cols-2 sm:grid-cols-4">
+      <div className="grid grid-cols-2 sm:grid-cols-4 md:grid-cols-5">
         {ROLES.map((role) => {
           const isChecked = filtersTemp[
             role as keyof typeof filtersTemp
@@ -73,6 +73,7 @@ const RoleFilters = ({ filtersTemp, setFiltersTemp }: FilterSectionProps) => {
           );
         })}
         <FormControlLabel
+          className="whitespace-nowrap"
           control={
             <Checkbox
               checked={filtersTemp.noRole}

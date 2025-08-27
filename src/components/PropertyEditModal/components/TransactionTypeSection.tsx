@@ -42,7 +42,7 @@ const TransactionTypeSection = ({
   priceError,
 }: TransactionTypeSectionProps) => {
   return (
-    <div>
+    <div className="p-5 card">
       <h6 className="font-semibold">거래 유형</h6>
 
       <div className="flex flex-col gap-4">

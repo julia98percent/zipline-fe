@@ -13,7 +13,7 @@ const CounselDetailsContent = ({
 }: CounselDetailsContentProps) => {
   return (
     <div className="p-5 card">
-      <h6 className="text-xl font-semibold text-primary mb-2">상담 내용</h6>
+      <h6 className="text-lg font-semibold text-primary mb-2">상담 내용</h6>
       <div className="flex flex-col gap-4">
         {isEditing ? (
           <TextArea

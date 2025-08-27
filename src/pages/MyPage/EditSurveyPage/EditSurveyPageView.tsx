@@ -1,13 +1,10 @@
 import { ChangeEvent } from "react";
 import Button from "@components/Button";
 import {
-  Box,
-  TextField,
   FormControlLabel,
   Checkbox,
   Typography,
   Divider,
-  Paper,
   Tooltip,
 } from "@mui/material";
 import Select, { MenuItem } from "@components/Select";
@@ -16,6 +13,7 @@ import SingleChoiceAdd from "./SingleChoiceAdd";
 import MultipleChoiceAdd from "./MultipleChoiceAdd";
 import { SurveyType, QuestionType } from "@apis/preCounselService";
 import CircularProgress from "@components/CircularProgress";
+import TextField from "@components/TextField";
 
 const QUESTION_TYPE = [
   { value: "SUBJECTIVE", label: "주관식" },
@@ -69,52 +67,51 @@ const EditSurveyPageView = ({
 
   if (loading) {
     return (
-      <Box>
+      <>
         <PageHeader />
-        <div className="flex items-center justify-center h-[calc(100vh-72px)]">
+        <div className="flex justify-center items-center h-[calc(100vh-72px)]">
           <CircularProgress />
         </div>
-      </Box>
+      </>
     );
   }
 
   return (
-    <Box>
+    <div>
       <PageHeader />
 
-      <Box
-        className="flex justify-end sticky top-[64px] z-[999] bg-white gap-2
-        px-8 py-4 border-b border-[#e0e0e0] shadow-[0_2px_4px_rgba(0,0,0,0.05)]"
+      <div
+        className="flex justify-end sticky top-[64px] z-[999] bg-neutral-50 gap-2
+       px-5 pb-1 border-b border-neutral-300 items-center"
       >
-        <Button onClick={onAddQuestion} variant="outlined">
+        <Button onClick={onAddQuestion} color="info" variant="text">
           질문 추가
         </Button>
-        <Button onClick={onUpdateSurvey}>설문 저장</Button>
-      </Box>
+        <Divider orientation="vertical" className="h-4" />
+        <Button onClick={onUpdateSurvey} variant="text">
+          설문 저장
+        </Button>
+      </div>
 
-      {/* Content */}
-      <Box className="p-8">
-        <TextField
-          fullWidth
-          label="설문 제목"
-          value={survey.title}
-          onChange={handleSurveyTitleChange}
-          className="mb-16"
-        />
+      <div className="flex flex-col p-5 sm:p-8 gap-4">
+        <div className="p-5 card">
+          <TextField
+            fullWidth
+            label="설문 제목"
+            value={survey.title}
+            onChange={handleSurveyTitleChange}
+          />
+        </div>
 
         {survey.questions.map((question, questionIndex) => (
-          <Paper
-            key={questionIndex}
-            elevation={1}
-            className="mb-8 p-6 rounded-md bg-[#f9f9f9] relative"
-          >
+          <div key={questionIndex} className="flex flex-col p-5 card gap-4">
             {questionIndex < 2 && (
-              <Box className="inline bg-[#e3f2fd] text-primary mb-4 float-right text-xs px-2 py-1 rounded">
+              <div className="bg-[#e3f2fd] text-primary float-right text-xs px-2 py-1 rounded max-w-[65px] ml-auto">
                 기본 질문
-              </Box>
+              </div>
             )}
-            {/* 질문 기본 정보 영역 */}
-            <Box>
+
+            <div className="flex flex-col gap-4">
               <TextField
                 disabled={questionIndex < 2}
                 fullWidth
@@ -123,7 +120,6 @@ const EditSurveyPageView = ({
                 onChange={(event) =>
                   onQuestionChange(questionIndex, "title", event.target.value)
                 }
-                className="mb-4"
               />
               <TextField
                 disabled={questionIndex < 2}
@@ -137,16 +133,16 @@ const EditSurveyPageView = ({
                     event.target.value
                   )
                 }
-                className="mb-4"
               />
               <StringBooleanSelect
+                label="질문 유형"
                 disabled={questionIndex < 2}
                 fullWidth
                 value={question.type}
                 onChange={(event) =>
                   onQuestionChange(questionIndex, "type", event.target.value)
                 }
-                className="mb-2"
+                size="medium"
               >
                 {QUESTION_TYPE.map((type) => (
                   <MenuItem key={type.value} value={type.value}>
@@ -172,14 +168,13 @@ const EditSurveyPageView = ({
                   </Typography>
                 }
               />
-            </Box>
+            </div>
 
             {(question.type === "SINGLE_CHOICE" ||
               question.type === "MULTIPLE_CHOICE") && (
               <>
-                <Divider className="my-4" />
+                <Divider />
 
-                {/* 단일 선택 객관식 */}
                 {question.type === "SINGLE_CHOICE" && (
                   <SingleChoiceAdd
                     question={question}
@@ -190,7 +185,6 @@ const EditSurveyPageView = ({
                   />
                 )}
 
-                {/* 다중 선택 객관식 */}
                 {question.type === "MULTIPLE_CHOICE" && (
                   <MultipleChoiceAdd
                     question={question}
@@ -203,26 +197,27 @@ const EditSurveyPageView = ({
               </>
             )}
 
-            <Box className="flex justify-end mt-4">
+            <div className="ml-auto">
               {isQuestionDeletable(questionIndex) ? (
                 <Button
                   color="error"
+                  variant="outlined"
                   onClick={() => onDeleteQuestion(questionIndex)}
                 >
                   질문 삭제
                 </Button>
               ) : (
-                <Tooltip title="기본 질문은 삭제할 수 없습니다">
+                <Tooltip title="기본 질문은 삭제할 수 없습니다.">
                   <Button color="info" disabled>
                     질문 삭제
                   </Button>
                 </Tooltip>
               )}
-            </Box>
-          </Paper>
+            </div>
+          </div>
         ))}
-      </Box>
-    </Box>
+      </div>
+    </div>
   );
 };
 

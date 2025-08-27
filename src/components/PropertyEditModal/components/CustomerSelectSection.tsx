@@ -17,20 +17,22 @@ const CustomerSelectSection = ({
   onCustomerChange,
 }: CustomerSelectSectionProps) => {
   return (
-    <StringSelect
-      label="고객 선택"
-      value={customerUid !== null ? customerUid.toString() : ""}
-      onChange={(e) => onCustomerChange(e.target.value)}
-      fullWidth
-      showEmptyOption={true}
-      size="medium"
-    >
-      {customers.map((customer) => (
-        <MenuItem key={customer.uid} value={customer.uid.toString()}>
-          {customer.name}
-        </MenuItem>
-      ))}
-    </StringSelect>
+    <div className="p-5 card">
+      <StringSelect
+        label="고객 선택"
+        value={customerUid !== null ? customerUid.toString() : ""}
+        onChange={(e) => onCustomerChange(e.target.value)}
+        fullWidth
+        showEmptyOption={true}
+        size="medium"
+      >
+        {customers.map((customer) => (
+          <MenuItem key={customer.uid} value={customer.uid.toString()}>
+            {customer.name}
+          </MenuItem>
+        ))}
+      </StringSelect>
+    </div>
   );
 };
 

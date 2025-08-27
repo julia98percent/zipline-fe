@@ -36,7 +36,7 @@ const LabelFilters = ({
   };
 
   return (
-    <>
+    <div className="p-5 card">
       <h5 className="text-lg font-bold mb-4">라벨</h5>
       {labels.length ? (
         <div className="flex flex-wrap gap-2">
@@ -70,7 +70,7 @@ const LabelFilters = ({
           ))}
         </div>
       ) : null}
-    </>
+    </div>
   );
 };
 

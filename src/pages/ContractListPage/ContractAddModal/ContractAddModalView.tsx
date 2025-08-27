@@ -93,7 +93,7 @@ const ContractAddModalView = ({
       onClose={handleModalClose}
       maxWidth={false}
       PaperProps={{
-        className: "w-[90vw] md:w-[80vw] max-h-[90vh] rounded-lg",
+        className: "w-[90vw] sm:w-[70vw] max-h-[90vh] rounded-lg",
       }}
     >
       <DialogTitle className="border-b text-primary font-bold border-gray-200">

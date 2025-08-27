@@ -187,7 +187,7 @@ const ContractTable = ({
           handleChangePage={onPageChange}
           rowsPerPage={rowsPerPage}
           handleChangeRowsPerPage={onRowsPerPageChange}
-          noDataMessage="계약 데이터가 없습니다"
+          noDataMessage="계약 데이터가 없습니다."
           className="min-w[650px]"
           sx={{
             "& .MuiTableCell-root": {
@@ -207,7 +207,7 @@ const ContractTable = ({
       <Box className="block lg:hidden">
         {contractList.length === 0 ? (
           <Box className="text-center py-8 text-gray-500">
-            계약 데이터가 없습니다
+            계약 데이터가 없습니다.
           </Box>
         ) : (
           <>

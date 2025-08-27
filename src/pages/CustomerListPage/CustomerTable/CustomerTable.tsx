@@ -1,4 +1,3 @@
-import { Box } from "@mui/material";
 import { useNavigate } from "react-router-dom";
 import { useState, useEffect } from "react";
 import DeleteConfirmModal from "@components/DeleteConfirmModal";
@@ -284,8 +283,8 @@ const CustomerTable = ({
   };
 
   return (
-    <Box className="w-full mt-[28px]">
-      <Box className="hidden lg:block">
+    <div className="w-full mt-[28px]">
+      <div className="hidden lg:block">
         <Table
           columns={columns}
           bodyList={customerList.map((customer) => ({
@@ -300,18 +299,18 @@ const CustomerTable = ({
           handleChangeRowsPerPage={(e) =>
             setRowsPerPage(Number(e.target.value))
           }
-          noDataMessage="고객 데이터가 없습니다"
+          noDataMessage="고객 데이터가 없습니다."
         />
-      </Box>
+      </div>
 
-      <Box className="block lg:hidden">
+      <div className="block lg:hidden">
         {customerList.length === 0 ? (
-          <Box className="text-center py-8 text-gray-500">
-            고객 데이터가 없습니다
-          </Box>
+          <div className="text-center py-8 text-gray-500">
+            고객 데이터가 없습니다.
+          </div>
         ) : (
           <>
-            <Box className="space-y-3">
+            <div className="space-y-3">
               {customerList.map((customer) => (
                 <CustomerCard
                   key={customer.uid}
@@ -335,7 +334,7 @@ const CustomerTable = ({
                   }}
                 />
               ))}
-            </Box>
+            </div>
 
             <MobilePagination
               page={page}
@@ -345,7 +344,7 @@ const CustomerTable = ({
             />
           </>
         )}
-      </Box>
+      </div>
 
       <DeleteConfirmModal
         open={deleteModalOpen}
@@ -353,7 +352,7 @@ const CustomerTable = ({
         onCancel={handleDeleteCancel}
         category="고객"
       />
-    </Box>
+    </div>
   );
 };
 

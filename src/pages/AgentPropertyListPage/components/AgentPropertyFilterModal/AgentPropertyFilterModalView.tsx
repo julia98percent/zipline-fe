@@ -331,7 +331,7 @@ const AgentPropertyFilterModalView = ({
           <Button onClick={onReset} variant="text" color="info">
             입력 값 초기화
           </Button>
-          <Button onClick={onClose} variant="outlined">
+          <Button onClick={onClose} variant="outlined" color="info">
             취소
           </Button>
           <Button onClick={onApply}>적용</Button>

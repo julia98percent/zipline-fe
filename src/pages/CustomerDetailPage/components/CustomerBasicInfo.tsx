@@ -8,6 +8,7 @@ import { Customer } from "@ts/customer";
 import { Region } from "@ts/region";
 import { fetchSido, fetchSigungu, fetchDong } from "@apis/regionService";
 import { RegionHierarchy } from "@utils/regionUtil";
+import InfoField from "@components/InfoField";
 
 interface CustomerBasicInfoProps {
   customer: Customer;
@@ -155,113 +156,124 @@ const CustomerBasicInfo = ({
   };
 
   return (
-    <div className="flex-grow p-6 rounded-lg bg-white shadow-sm mt-2">
-      <h6 className="mb-4 font-semibold text-xl text-primary">기본 정보</h6>
-      <div className="flex flex-wrap gap-4">
-        <div className="flex-[0_0_calc(50%-8px)]">
-          <div className="text-sm text-gray-600 mb-1">이름</div>
-          {isEditing ? (
-            <TextField
-              fullWidth
-              size="small"
-              value={editedCustomer?.name || ""}
-              onChange={(e) => onInputChange("name", e.target.value)}
-            />
-          ) : (
-            <div className="text-base">{customer.name}</div>
-          )}
-        </div>
-        <div className="flex-[0_0_calc(50%-8px)]">
-          <div className="text-sm text-gray-600 mb-1">전화번호</div>
-          {isEditing ? (
-            <TextField
-              fullWidth
-              size="small"
-              value={formatPhoneNumber(editedCustomer?.phoneNo ?? "")}
-              onChange={(e) => onInputChange("phoneNo", e.target.value)}
-            />
-          ) : (
-            <div className="text-base">{customer.phoneNo}</div>
-          )}
-        </div>
-        <div className="flex-[0_0_calc(50%-8px)]">
-          <div className="text-sm text-gray-600 mb-1">통신사</div>
-          {isEditing ? (
-            <Select
-              value={editedCustomer?.telProvider || ""}
-              onChange={(e) => onInputChange("telProvider", e.target.value)}
-              size="small"
-            >
-              <MenuItem value="SKT">SKT</MenuItem>
-              <MenuItem value="KT">KT</MenuItem>
-              <MenuItem value="LGU+">LGU+</MenuItem>
-              <MenuItem value="SKT 알뜰폰">SKT 알뜰폰</MenuItem>
-              <MenuItem value="KT 알뜰폰">KT 알뜰폰</MenuItem>
-              <MenuItem value="LGU+ 알뜰폰">LGU+ 알뜰폰</MenuItem>
-            </Select>
-          ) : (
-            <div className="text-base">{customer.telProvider || "-"}</div>
-          )}
-        </div>
-        <div className="flex-[0_0_calc(100%)]">
-          <div className="text-sm text-gray-600 mb-1">관심 지역</div>
-          {isEditing ? (
-            <div className="grid grid-cols-3 gap-2">
-              <RegionSelector
-                label="시/도"
-                value={selectedSido || 0}
-                regions={sidoOptions}
-                onChange={handleSidoChange}
+    <div className="card p-5">
+      <h6 className="text-lg font-semibold text-primary mb-2">기본 정보</h6>
+      <div className="grid grid-cols-2 gap-4">
+        <InfoField
+          label="이름"
+          value={
+            isEditing ? (
+              <TextField
+                fullWidth
+                size="small"
+                value={editedCustomer?.name || ""}
+                onChange={(e) => onInputChange("name", e.target.value)}
               />
-              <RegionSelector
-                label="시/군/구"
-                value={selectedGu || 0}
-                regions={sigunguOptions}
-                onChange={handleGuChange}
-                disabled={!selectedSido}
+            ) : (
+              customer.name
+            )
+          }
+        />
+        <InfoField
+          label="전화번호"
+          value={
+            isEditing ? (
+              <TextField
+                fullWidth
+                size="small"
+                value={formatPhoneNumber(editedCustomer?.phoneNo ?? "")}
+                onChange={(e) => onInputChange("phoneNo", e.target.value)}
               />
-              <RegionSelector
-                label="동"
-                value={selectedDong || 0}
-                regions={dongOptions}
-                onChange={handleDongChange}
-                disabled={!selectedGu}
+            ) : (
+              customer.phoneNo
+            )
+          }
+        />
+        <InfoField
+          className="w-full"
+          label="통신사"
+          value={
+            isEditing ? (
+              <Select
+                value={editedCustomer?.telProvider || ""}
+                onChange={(e) => onInputChange("telProvider", e.target.value)}
+                size="small"
+              >
+                <MenuItem value="SKT">SKT</MenuItem>
+                <MenuItem value="KT">KT</MenuItem>
+                <MenuItem value="LGU+">LGU+</MenuItem>
+                <MenuItem value="SKT 알뜰폰">SKT 알뜰폰</MenuItem>
+                <MenuItem value="KT 알뜰폰">KT 알뜰폰</MenuItem>
+                <MenuItem value="LGU+ 알뜰폰">LGU+ 알뜰폰</MenuItem>
+              </Select>
+            ) : (
+              customer.telProvider || "-"
+            )
+          }
+        />
+        <InfoField
+          label="관심 지역"
+          value={
+            isEditing ? (
+              <div className="grid grid-cols-1 gap-2">
+                <RegionSelector
+                  label="시/도"
+                  value={selectedSido || 0}
+                  regions={sidoOptions}
+                  onChange={handleSidoChange}
+                />
+                <RegionSelector
+                  label="시/군/구"
+                  value={selectedGu || 0}
+                  regions={sigunguOptions}
+                  onChange={handleGuChange}
+                  disabled={!selectedSido}
+                />
+                <RegionSelector
+                  label="동"
+                  value={selectedDong || 0}
+                  regions={dongOptions}
+                  onChange={handleDongChange}
+                  disabled={!selectedGu}
+                />
+              </div>
+            ) : (
+              customer.preferredRegionKR || "-"
+            )
+          }
+        />
+        <InfoField
+          label="생년월일"
+          value={
+            isEditing ? (
+              <TextField
+                fullWidth
+                size="small"
+                value={editedCustomer?.birthday || ""}
+                onChange={(e) => handleChangeBirthday(e.target.value)}
+                placeholder="YYYYMMDD"
+                inputProps={{ maxLength: 8 }}
               />
-            </div>
-          ) : (
-            <div className="text-base">{customer.preferredRegionKR || "-"}</div>
-          )}
-        </div>
-        <div className="flex-[0_0_calc(50%-8px)]">
-          <div className="text-sm text-gray-600 mb-1">생년월일</div>
-          {isEditing ? (
-            <TextField
-              fullWidth
-              size="small"
-              value={editedCustomer?.birthday || ""}
-              onChange={(e) => handleChangeBirthday(e.target.value)}
-              placeholder="YYYYMMDD"
-              inputProps={{ maxLength: 8 }}
-            />
-          ) : (
-            <div className="text-base">{formatBirthDay(customer.birthday)}</div>
-          )}
-        </div>
-        <div className="flex-[0_0_calc(50%-8px)]">
-          <div className="text-sm text-gray-600 mb-1">유입 경로</div>
-          {isEditing ? (
-            <TextField
-              fullWidth
-              value={editedCustomer?.trafficSource || ""}
-              onChange={(e) => onInputChange("trafficSource", e.target.value)}
-              size="small"
-            />
-          ) : (
-            <div className="text-base truncate max-w-[20vw]">
-              {customer.trafficSource || "-"}
-            </div>
-          )}
-        </div>
+            ) : (
+              formatBirthDay(customer.birthday)
+            )
+          }
+        />
+        <InfoField
+          label="유입 경로"
+          value={
+            isEditing ? (
+              <TextField
+                fullWidth
+                value={editedCustomer?.trafficSource || ""}
+                onChange={(e) => onInputChange("trafficSource", e.target.value)}
+                size="small"
+              />
+            ) : (
+              customer.trafficSource || "-"
+            )
+          }
+        />
       </div>
     </div>
   );

@@ -81,7 +81,7 @@ function CounselListPageView({
 
       <div className="flex flex-col p-5 pt-0 gap-4">
         {/* 상단 검색/필터 영역 */}
-        <div className="p-3 card">
+        <div className="p-5 card">
           <div className="space-y-5">
             <CounselSearchFilters
               search={search}

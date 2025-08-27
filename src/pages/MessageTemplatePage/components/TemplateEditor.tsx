@@ -46,7 +46,7 @@ const TemplateEditor: React.FC<TemplateEditorProps> = ({
 }) => {
   return (
     <Paper className="flex-1 p-5 rounded-lg shadow-sm h-[500px] min-h-max">
-      <div className="flex gap-7 mb-4">
+      <div className="flex gap-2 mb-4">
         <TextField
           fullWidth
           size="small"

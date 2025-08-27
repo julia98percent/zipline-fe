@@ -26,7 +26,7 @@ const CustomerManagementSection = ({
             customers.length && "mb-2"
           }`}
         >
-          <h6 className="text-xl font-semibold text-primary">
+          <h6 className="text-lg font-semibold text-primary">
             문자 발송 대상 고객
           </h6>
           <Button variant="contained" color="primary" onClick={onAddCustomer}>

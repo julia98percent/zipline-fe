@@ -13,7 +13,7 @@ const CounselCard = ({ counsel, onRowClick }: CounselCardProps) => {
   return (
     <div
       onClick={() => onRowClick(counsel.counselUid)}
-      className="card p-3 cursor-pointer"
+      className="card p-5 cursor-pointer"
     >
       <div className="mb-2 font-medium text-gray-900">
         <span className="mr-1">{`[${counsel.type}]`}</span>

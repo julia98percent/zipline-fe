@@ -53,7 +53,7 @@ function PreCounselListPage() {
   }, [fetchData]);
 
   return (
-    <div className="bg-gray-100">
+    <>
       <PageHeader />
       <div className="w-full p-5">
         <PreCounselTable
@@ -75,7 +75,7 @@ function PreCounselListPage() {
         onClose={handleCloseSurveyDetailModal}
         surveyResponseUid={selectedSurveyId}
       />
-    </div>
+    </>
   );
 }
 

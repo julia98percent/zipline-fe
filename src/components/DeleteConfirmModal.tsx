@@ -3,10 +3,7 @@ import {
   DialogTitle,
   DialogContent,
   DialogActions,
-  IconButton,
-  Typography,
 } from "@mui/material";
-import CloseIcon from "@mui/icons-material/Close";
 import Button from "@components/Button";
 
 interface DeleteConfirmModalProps {
@@ -31,33 +28,22 @@ const DeleteConfirmModal = ({
   confirmColor = "error",
 }: DeleteConfirmModalProps) => {
   const defaultTitle = `${category} 삭제`;
-  const defaultMessage = `이 ${category}을 정말 삭제할까요?`;
+  const defaultMessage = `이 ${category} 정보를 영구적으로 삭제하시겠습니까?`;
 
   return (
     <Dialog
       open={open}
       onClose={onCancel}
       PaperProps={{
-        sx: {
-          width: "400px", // 원하는 고정 너비
-          maxWidth: "90%", // 모바일 대응
-          borderRadius: 2,
-        },
+        className: "min-w-[320px] w-[40vw] md:w-[30vw] rounded-lg",
       }}
     >
       <DialogTitle className="flex justify-between items-center">
-        <Typography variant="h6" fontWeight="bold">
-          {title || defaultTitle}
-        </Typography>
-        <IconButton edge="end" onClick={onCancel}>
-          <CloseIcon />
-        </IconButton>
+        {title || defaultTitle}
       </DialogTitle>
 
-      <DialogContent>
-        <Typography textAlign="center" mt={1} mb={2}>
-          {message || defaultMessage}
-        </Typography>
+      <DialogContent className="m-auto pb-4">
+        <span>{message || defaultMessage}</span>
       </DialogContent>
 
       <DialogActions className="flex justify-center mb-4">
@@ -72,7 +58,7 @@ const DeleteConfirmModal = ({
         <Button
           onClick={onCancel}
           variant="outlined"
-          color="primary"
+          color="info"
           className="min-w-[100px]"
         >
           취소

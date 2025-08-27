@@ -1,5 +1,6 @@
-import { TextField, InputAdornment } from "@mui/material";
+import { InputAdornment } from "@mui/material";
 import { NumericInputResponse } from "@hooks/useNumericInput";
+import TextField from "@components/TextField";
 
 interface Props {
   minPriceInput: NumericInputResponse;
@@ -39,19 +40,19 @@ const PriceFilters = ({
   ];
 
   return (
-    <div>
+    <div className="p-5 card">
       <h5 className="text-lg font-bold mb-2">금액 조건</h5>
       {priceCategories.map((category) => (
         <div key={category.label} className="flex flex-col mb-2">
           <h6 className="font-semibold mb-2">{category.label}</h6>
-          <div className="flex items-start justify-center gap-4 items-center">
+          <div className="grid sm:grid-cols-[1fr_auto_1fr] gap-2 sm:gap-4">
             <TextField
               label="최소"
               value={category.min.value || ""}
               onChange={category.min.handleChange}
               onBlur={category.min.handleBlur}
               error={!!category.min.error}
-              helperText={category.min.error}
+              helperText={category.min.error || ""}
               fullWidth
               InputProps={{
                 endAdornment: (
@@ -60,7 +61,7 @@ const PriceFilters = ({
               }}
             />
 
-            <span className="mt-4">~</span>
+            <span className="mx-auto sm:mx-0 sm:mt-4">~</span>
             <TextField
               label="최대"
               type="text"
@@ -69,7 +70,7 @@ const PriceFilters = ({
               onChange={category.max.handleChange}
               onBlur={category.max.handleBlur}
               error={!!category.max.error}
-              helperText={category.max.error}
+              helperText={category.max.error || ""}
               fullWidth
               InputProps={{
                 endAdornment: (

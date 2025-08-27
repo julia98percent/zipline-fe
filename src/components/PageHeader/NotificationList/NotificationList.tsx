@@ -1,5 +1,5 @@
 import { useCallback, useState } from "react";
-import { Box, Typography, List } from "@mui/material";
+import { List } from "@mui/material";
 import type { Notification } from "@stores/useNotificationStore";
 import useNotificationStore from "@stores/useNotificationStore";
 import PreCounselDetailModal from "@components/PreCounselDetailModal";
@@ -61,25 +61,24 @@ function NotificationList({
 
   return (
     <>
-      <Box className="absolute top-15 -right-12 bg-white shadow-lg rounded-lg p-4 z-50 w-[40vw] min-w-[300px] max-w-96 max-h-[50vh] overflow-hidden flex flex-col">
-        <div className="flex items-center justify-between text-gray-900 font-semibold px-2 pb-2 border-b border-gray-200">
+      <div className="absolute top-12 right-0 card z-50 w-[40vw] min-w-[300px] max-w-96 max-h-[50vh] overflow-hidden flex flex-col border border-neutral-100">
+        <div className="py-2 px-3 flex items-center justify-between text-gray-900 font-semibold border-b border-gray-200">
           <h5 className="text-md">알림</h5>
           <Button
             variant="text"
             color="primary"
             onClick={handleReadAllNotifications}
-            className="p-0"
           >
             모두 읽음 표시
           </Button>
         </div>
-        <List className="flex flex-col flex-1 overflow-y-auto min-h-0 divide-y divide-gray-200 gap-2">
+        <List className="flex flex-col flex-1 overflow-y-auto min-h-0 divide-y divide-neutral-200 gap-2 bg-neutral-100">
           {notifications.length === 0 ? (
-            <Box className="p-6 text-center">
-              <Typography className="text-neutral-500 text-sm">
+            <div className="p-6 text-center">
+              <h6 className="text-neutral-500 text-sm">
                 새로운 알림이 없습니다.
-              </Typography>
-            </Box>
+              </h6>
+            </div>
           ) : (
             notifications.map((notification) => (
               <NotificationItem
@@ -90,7 +89,7 @@ function NotificationList({
             ))
           )}
         </List>
-      </Box>
+      </div>
 
       <PreCounselDetailModal
         open={isSurveyDetailModalOpen}

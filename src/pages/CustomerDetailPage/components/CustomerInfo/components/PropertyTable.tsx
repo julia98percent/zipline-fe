@@ -145,7 +145,7 @@ function PropertyTable({
       handleChangeRowsPerPage={(e) =>
         onRowsPerPageChange(Number(e.target.value))
       }
-      noDataMessage="등록된 매물이 없습니다"
+      noDataMessage="등록된 매물이 없습니다."
       pagination={true}
       sx={{
         "& .MuiTableRow-root": {

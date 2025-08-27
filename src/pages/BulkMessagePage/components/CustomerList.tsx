@@ -2,7 +2,6 @@ import {
   Box,
   List,
   ListItem,
-  ListItemText,
   ListItemSecondaryAction,
   IconButton,
 } from "@mui/material";
@@ -56,10 +55,12 @@ const CustomerList = ({
             }}
             onClick={() => onCustomerSelect(customer)}
           >
-            <ListItemText
-              primary={customer.name}
-              secondary={<CustomerRoleChips customer={customer} />}
-            />
+            <div>
+              <span className="text-md font-normal">{customer.name}</span>
+              <div className="text-sm text-gray-500">
+                <CustomerRoleChips customer={customer} />
+              </div>
+            </div>
             <ListItemSecondaryAction>
               <IconButton
                 edge="end"

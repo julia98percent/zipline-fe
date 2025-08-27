@@ -2,9 +2,6 @@ import { Customer, Label } from "@ts/customer";
 import {
   Typography,
   Chip,
-  Box,
-  Card,
-  CardContent,
   IconButton,
   TextField,
   Autocomplete,
@@ -107,13 +104,10 @@ const CustomerCard = ({
   };
 
   return (
-    <Card
-      className="cursor-pointer hover:shadow-md transition-shadow w-full"
-      onClick={handleCardClick}
-    >
-      <CardContent className="p-4">
+    <div className="cursor-pointer card w-full" onClick={handleCardClick}>
+      <div className="p-4">
         {/* 헤더: 이름과 액션 버튼 */}
-        <Box className="flex items-center justify-between mb-2">
+        <div className="flex items-center justify-between mb-2">
           {isEditing ? (
             <TextField
               size="small"
@@ -130,7 +124,7 @@ const CustomerCard = ({
             </Typography>
           )}
 
-          <Box className="flex gap-1">
+          <div className="flex gap-1">
             {isEditing ? (
               <>
                 <Tooltip title="저장">
@@ -165,7 +159,7 @@ const CustomerCard = ({
                     onEdit?.(customer);
                   }}
                 >
-                  <EditIcon style={{ color: "#164F9E" }} />
+                  <EditIcon className="text-primary-dark" />
                 </IconButton>
                 <IconButton
                   size="small"
@@ -174,12 +168,12 @@ const CustomerCard = ({
                     onDelete?.(customer);
                   }}
                 >
-                  <DeleteIcon style={{ color: "#E53535" }} />
+                  <DeleteIcon className="text-neutral-800" />
                 </IconButton>
               </>
             )}
-          </Box>
-        </Box>
+          </div>
+        </div>
 
         {/* 전화번호 */}
         {isEditing ? (
@@ -199,16 +193,16 @@ const CustomerCard = ({
 
         {/* 역할 배지들과 라벨들을 한 줄로 표시 */}
         {isEditing ? (
-          <Box className="space-y-3">
+          <div className="space-y-3">
             {/* 역할 편집 */}
-            <Box>
+            <div>
               <Typography
                 variant="body2"
                 className="text-gray-700 mb-2 font-medium"
               >
                 고객 역할
               </Typography>
-              <Box className="flex flex-wrap gap-2">
+              <div className="flex flex-wrap gap-2">
                 <Chip
                   label="임차인"
                   size="small"
@@ -305,11 +299,11 @@ const CustomerCard = ({
                     },
                   }}
                 />
-              </Box>
-            </Box>
+              </div>
+            </div>
 
             {/* 라벨 편집 */}
-            <Box>
+            <div>
               <Typography
                 variant="body2"
                 className="text-gray-700 mb-2 font-medium"
@@ -381,10 +375,10 @@ const CustomerCard = ({
                   ))
                 }
               />
-            </Box>
-          </Box>
+            </div>
+          </div>
         ) : (
-          <Box className="flex flex-wrap gap-1">
+          <div className="flex flex-wrap gap-1">
             {/* 역할 배지들 */}
             {getRoleBadges().map((badge, index) => (
               <Chip
@@ -423,10 +417,10 @@ const CustomerCard = ({
                 )}
               </>
             )}
-          </Box>
+          </div>
         )}
-      </CardContent>
-    </Card>
+      </div>
+    </div>
   );
 };
 

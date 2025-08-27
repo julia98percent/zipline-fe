@@ -1,12 +1,4 @@
-import {
-  Dialog,
-  DialogTitle,
-  DialogContent,
-  Stack,
-  Divider,
-  IconButton,
-} from "@mui/material";
-import { Clear } from "@mui/icons-material";
+import { Dialog, DialogTitle, DialogContent, Divider } from "@mui/material";
 import { translateMessageStatusToKorean } from "@utils/messageUtil";
 import { fetchMessageList } from "@apis/messageService";
 import { useEffect, useState, useCallback } from "react";
@@ -80,25 +72,18 @@ function MessageDetailModal({ open, onClose, messageHistory }: Props) {
       open={open}
       onClose={onClose}
       PaperProps={{
-        sx: {
-          width: "90vw",
-        },
+        className: "w-[90vw] rounded-lg max-h-[90vh]",
       }}
     >
-      <div className="flex justify-between items-center font-bold p-3">
-        <DialogTitle className="font-bold text-primary text-xl p-0">
-          문자 발송 내역 상세
-        </DialogTitle>
-        <IconButton onClick={onClose}>
-          <Clear />
-        </IconButton>
-      </div>
+      <DialogTitle className="font-semibold text-primary">
+        문자 발송 내역 상세
+      </DialogTitle>
 
       <DialogContent className="border-t border-gray-200 bg-neutral-100 flex flex-col sm:flex-row p-3 gap-4">
-        <Stack spacing={2} className="card p-3">
+        <div className="flex flex-col card p-5 gap-2">
           <div className="flex flex-col items-center">
             <h6 className="font-medium mb-2">문자 발송 요청 상태</h6>
-            <p color="primary" className="font-semibold">
+            <p className="font-semibold text-primary">
               {translateMessageStatusToKorean(messageHistory?.status)}
             </p>
           </div>
@@ -106,12 +91,12 @@ function MessageDetailModal({ open, onClose, messageHistory }: Props) {
           <MessageStatistics messageHistory={messageHistory} />
           <MessageDateInfo messageHistory={messageHistory} />
           <MessageLog messageHistory={messageHistory} />
-        </Stack>
-        <Stack className="p-3 flex-1 flex flex-col gap-4 card">
+        </div>
+        <div className="p-3 flex-1 flex flex-col gap-4 card">
           <h6 className="text-center font-medium">발송 요청 문자 목록</h6>
 
           <MessageDetail messageList={messageList} />
-        </Stack>
+        </div>
       </DialogContent>
     </Dialog>
   );

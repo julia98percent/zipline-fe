@@ -72,7 +72,7 @@ export default function PublicPropertyFilterModalView({
       onClose={onClose}
       maxWidth={false}
       PaperProps={{
-        className: "w-[90vw] h-175 max-h-[90vh]",
+        className: "w-[90vw] h-175 max-h-[90vh] rounded-lg",
       }}
     >
       <DialogTitle className="border-b text-primary font-bold border-gray-200">
@@ -129,7 +129,7 @@ export default function PublicPropertyFilterModalView({
         <Button variant="text" color="info" onClick={onTemporaryClear}>
           입력 값 초기화
         </Button>
-        <Button variant="outlined" onClick={onClose}>
+        <Button variant="outlined" color="info" onClick={onClose}>
           취소
         </Button>
         <Button onClick={onApply} variant="contained">

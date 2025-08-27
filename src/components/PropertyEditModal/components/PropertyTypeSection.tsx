@@ -10,7 +10,7 @@ const PropertyTypeSection = ({
   onRealCategoryChange,
 }: PropertyTypeSectionProps) => {
   return (
-    <div>
+    <div className="p-5 card">
       <h6 className="font-semibold">부동산 유형 선택</h6>
 
       <div className="flex flex-col gap-4">

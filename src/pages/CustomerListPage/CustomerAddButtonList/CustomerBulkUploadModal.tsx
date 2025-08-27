@@ -4,9 +4,7 @@ import {
   DialogTitle,
   DialogContent,
   DialogActions,
-  Box,
   Typography,
-  Paper,
   CircularProgress,
 } from "@mui/material";
 import { useDropzone } from "react-dropzone";
@@ -15,6 +13,7 @@ import { Link } from "react-router-dom";
 import { AxiosError } from "axios";
 import { showToast } from "@components/Toast";
 import Button from "@components/Button";
+import InfoField from "@components/InfoField";
 
 interface Props {
   open: boolean;
@@ -88,171 +87,122 @@ function CustomerBulkUploadModal({
   };
 
   return (
-    <Dialog open={open} onClose={handleClose} maxWidth="sm" fullWidth>
-      <DialogTitle>고객 데이터 일괄 등록</DialogTitle>
-      <DialogContent>
-        <Typography
-          variant="subtitle2"
-          className="text-[#333333] font-semibold mb-4"
-        >
-          엑셀 파일 업로드 정책
-        </Typography>
+    <Dialog
+      open={open}
+      onClose={handleClose}
+      maxWidth={false}
+      PaperProps={{
+        className: "w-[90vw] md:w-[80vw] max-h-[90vh] rounded-lg",
+      }}
+    >
+      <DialogTitle className="border-b text-primary font-bold border-gray-200">
+        고객 데이터 일괄 등록
+      </DialogTitle>
+      <DialogContent className="bg-neutral-100 flex flex-col gap-3 p-3">
+        <div className="p-5 card">
+          <h6 className="text-lg font-semibold mb-2">엑셀 파일 업로드 정책</h6>
 
-        <Box className="flex flex-col gap-3 mb-6">
-          <Box className="flex items-center gap-2">
-            <Typography variant="body2" color="text.secondary">
-              • 파일 형식:
-            </Typography>
-            <Typography variant="body2" className="text-primary font-medium">
-              .xlsx, .xls
-            </Typography>
-          </Box>
+          <div className="flex flex-col mb-4">
+            <InfoField
+              label="• 파일 형식:"
+              value={
+                <span className="text-sm font-medium text-primary">
+                  .xlsx, .xls
+                </span>
+              }
+              className="flex flex-row items-center"
+            />
+            <InfoField
+              label="• 파일 크기:"
+              value={
+                <span className="text-sm font-medium text-primary">
+                  10MB 이하
+                </span>
+              }
+              className="flex flex-row items-center"
+            />
+          </div>
 
-          <Box className="flex items-center gap-2">
-            <Typography variant="body2" color="text.secondary">
-              • 파일 크기:
-            </Typography>
-            <Typography variant="body2" className="text-primary font-medium">
-              10MB 이하
-            </Typography>
-          </Box>
-
-          <Typography variant="body2" color="text.secondary">
-            • 필수 입력 항목이 누락된 경우 업로드가 실패할 수 있습니다.
-          </Typography>
-        </Box>
-
-        <Box className="bg-[#F8F9FA] p-4 rounded-xs border border-gray-200">
-          <Typography variant="body2" color="text.secondary" className="mb-2">
-            엑셀의 열 순서가 변경되면 업로드가 실패할 수 있으니,{" "}
-            <Link
-              to={import.meta.env.VITE_PROPERTY_EXCEL_TEMPLATE_URL}
-              style={{
-                color: "#164F9E",
-                textDecoration: "none",
-                fontWeight: 500,
-              }}
-            >
-              제공되는 템플릿
-            </Link>
-            을 그대로 사용하는 것을 권장합니다.
-          </Typography>
-          <Typography variant="body2" className="text-primary mt-2">
-            <Link
-              to={import.meta.env.VITE_CUSTOMER_EXCEL_TEMPLATE_URL}
-              style={{
-                color: "#164F9E",
-                textDecoration: "none",
-                fontWeight: 500,
-              }}
-            >
-              → 템플릿 다운로드
-            </Link>
-          </Typography>
-        </Box>
-
-        <Box className="mt-6">
-          <Typography
-            variant="body2"
-            className="text-gray-800 mb-4 font-medium"
-          >
-            • 지정된 입력 값 안내
-          </Typography>
-
-          <Box className="flex flex-col gap-3 pl-4">
-            <Box>
-              <Typography
-                variant="body2"
-                className="text-gray-800 font-medium mb-1"
+          <div className="bg-gray-50 p-4 rounded border border-gray-300">
+            <p className="text-sm text-neutral-800 mb-2">
+              엑셀의 열 순서가 변경되면 업로드가 실패할 수 있으니,{" "}
+              <Link
+                to={import.meta.env.VITE_PROPERTY_EXCEL_TEMPLATE_URL}
+                className="text-primary font-medium"
               >
-                고객 전화번호
-              </Typography>
-              <Typography variant="body2" color="text.secondary">
-                형식:{" "}
-                <Typography
-                  component="span"
-                  className="text-primary font-medium"
-                >
-                  000-0000-0000
-                </Typography>
-              </Typography>
-            </Box>
-
-            <Box>
-              <Typography
-                variant="body2"
-                className="text-gray-800 font-medium mb-1"
+                제공되는 템플릿
+              </Link>
+              을 그대로 사용하는 것을 권장합니다.
+            </p>
+            <span className="text-primary mt-2">
+              <Link
+                to={import.meta.env.VITE_CUSTOMER_EXCEL_TEMPLATE_URL}
+                className="text-primary font-medium"
               >
-                생일
-              </Typography>
-              <Typography variant="body2" color="text.secondary">
-                형식:{" "}
-                <Typography
-                  component="span"
-                  className="text-primary font-medium"
-                >
-                  YYYYMMDD (숫자 8자리)
-                </Typography>
-              </Typography>
-            </Box>
+                → 템플릿 다운로드
+              </Link>
+            </span>
+          </div>
+        </div>
+        <div className="p-5 card">
+          <h6 className="text-md font-semibold mb-2">✔️ 지정된 입력 값 안내</h6>
 
-            <Box>
-              <Typography
-                variant="body2"
-                className="text-gray-800 font-medium mb-1"
-              >
-                고객 역할 지정
-              </Typography>
-              <Typography variant="body2" color="text.secondary">
+          <InfoField
+            label="• 고객 전화번호 형식:"
+            value={
+              <span className="text-sm font-medium text-primary">
+                000-0000-0000
+              </span>
+            }
+            className="flex flex-row items-center"
+          />
+
+          <InfoField
+            label="• 생일 형식:"
+            value={
+              <span className="text-sm font-medium text-primary">
+                YYYYMMDD (숫자 8자리)
+              </span>
+            }
+            className="flex flex-row items-center"
+          />
+
+          <InfoField
+            label="• 고객 역할 지정:"
+            value={
+              <p className="text-sm">
                 임대인, 매도인, 임차인, 매수인 항목에{" "}
-                <Typography
-                  component="span"
-                  className="text-primary font-medium"
-                >
-                  TRUE
-                </Typography>{" "}
-                또는{" "}
-                <Typography
-                  component="span"
-                  className="text-primary font-medium"
-                >
-                  FALSE
-                </Typography>
-                로 입력
-              </Typography>
-            </Box>
-          </Box>
+                <span className="font-medium text-primary">TRUE</span> 또는{" "}
+                <span className="font-medium text-primary">FALSE</span>로 입력
+              </p>
+            }
+            className="flex flex-row items-center"
+          />
 
-          <Typography
-            variant="body2"
-            color="error"
-            className="my-2 text-xs rounded-xs"
-          >
-            * 허용되지 않은 값이 입력될 경우, 업로드 과정에서 오류가 발생합니다.
-          </Typography>
-        </Box>
+          <p className="my-1 text-sm text-red-600">
+            • 허용되지 않은 값이 입력될 경우, 업로드 과정에서 오류가 발생합니다.
+          </p>
+        </div>
 
-        <Paper
+        <div
           {...getRootProps()}
-          className="p-6 text-center cursor-pointer border-2 border-dashed "
-          sx={{
-            borderColor: isDragActive ? "primary.main" : "grey.300",
-            bgcolor: isDragActive ? "action.hover" : "background.paper",
-            opacity: isLoading ? 0.5 : 1,
-            pointerEvents: isLoading ? "none" : "auto",
-          }}
+          className={`p-5 text-center cursor-pointer card border border-dashed ${
+            isDragActive
+              ? "border-primary bg-primary/5"
+              : "border-gray-300 bg-white"
+          } ${isLoading ? "opacity-50 pointer-events-none" : "opacity-100"}`}
         >
           <input {...getInputProps()} />
           {file ? (
-            <Typography>{file.name}</Typography>
+            <span>{file.name}</span>
           ) : (
-            <Typography>
+            <p>
               {isDragActive
                 ? "파일을 여기에 놓으세요"
                 : "파일을 드래그하거나 클릭하여 업로드하세요"}
-            </Typography>
+            </p>
           )}
-        </Paper>
+        </div>
 
         {error && (
           <Typography color="error" className="mt-2">
@@ -261,7 +211,12 @@ function CustomerBulkUploadModal({
         )}
       </DialogContent>
       <DialogActions>
-        <Button onClick={handleClose} disabled={isLoading} variant="outlined">
+        <Button
+          onClick={handleClose}
+          disabled={isLoading}
+          variant="outlined"
+          color="info"
+        >
           취소
         </Button>
         <Button

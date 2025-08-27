@@ -89,6 +89,24 @@ export const getPageBreadcrumb = (pathname: string): BreadcrumbItem[] => {
     return breadcrumbs;
   }
 
+  if (pathname.startsWith("/messages/templates")) {
+    breadcrumbs.push({
+      name: "문자 템플릿",
+      path: "/messages/templates",
+      isActive: pathname === "/messages/templates",
+    });
+
+    if (pathname !== "/messages/templates") {
+      const detailName = getDetailName(pathname, "문자");
+      breadcrumbs.push({
+        name: detailName,
+        path: pathname,
+        isActive: true,
+      });
+    }
+    return breadcrumbs;
+  }
+
   for (const menu of MENU_INFO) {
     if (menu.submenu) {
       for (const submenu of menu.submenu) {
@@ -106,7 +124,11 @@ export const getPageBreadcrumb = (pathname: string): BreadcrumbItem[] => {
 
           if (pathname !== submenu.to && pathname.includes("/")) {
             const detailName = getDetailName(pathname, menu.name);
-            breadcrumbs.push({ name: detailName, path: pathname, isActive: true });
+            breadcrumbs.push({
+              name: detailName,
+              path: pathname,
+              isActive: true,
+            });
           }
           return breadcrumbs;
         }
@@ -125,7 +147,6 @@ export const getPageBreadcrumb = (pathname: string): BreadcrumbItem[] => {
       return breadcrumbs;
     }
   }
-
   breadcrumbs.push({ name: "페이지", path: pathname, isActive: true });
   return breadcrumbs;
 };

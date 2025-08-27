@@ -74,7 +74,7 @@ const CustomerListPageView = ({
 }: CustomerListPageViewProps) => {
   if (loading) {
     return (
-      <div className="flex-grow h-screen overflow-auto bg-gray-100 max-w-full box-border">
+      <div>
         <PageHeader />
         <div className="h-[calc(100vh-72px)] flex justify-center items-center">
           <CircularProgress />
@@ -84,15 +84,15 @@ const CustomerListPageView = ({
   }
 
   return (
-    <div className="flex-grow h-screen overflow-auto bg-gray-100 max-w-full box-border">
+    <div>
       <PageHeader />
 
-      <div className="p-5 max-w-full mx-auto">
-        <div className="bg-white rounded-lg shadow-sm p-3">
+      <div className="p-5 pt-0">
+        <div className="p-5 card">
           <div className="flex flex-col sm:gap-4">
             {/* 작은/중간 화면 레이아웃 */}
-            <div className="sm:hidden">
-              <div className="grid grid-cols-1 sm:grid-cols-[3fr_2fr] gap-2 mb-4">
+            <div className="sm:hidden md:block lg:hidden">
+              <div className="grid grid-cols-1 sm:grid-cols-[3fr_2fr] gap-2 mb-2">
                 <TextField
                   fullWidth
                   size="small"
@@ -137,7 +137,7 @@ const CustomerListPageView = ({
             </div>
 
             {/* 큰 화면 레이아웃 */}
-            <div className="hidden sm:block">
+            <div className="hidden sm:block md:hidden lg:block">
               {/* 첫 번째 줄: 검색창만 */}
               <div className="mb-4">
                 <TextField

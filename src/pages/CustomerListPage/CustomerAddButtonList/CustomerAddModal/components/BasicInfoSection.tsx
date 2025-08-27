@@ -30,7 +30,7 @@ export default function BasicInfoSection({
   onFieldBlur,
 }: BasicInfoSectionProps) {
   return (
-    <div className="border-b border-gray-200">
+    <div className="p-5 card">
       <h5 className="text-lg font-bold mb-4">기본 정보</h5>
       <div className="flex flex-col gap-5 mb-4">
         <div className="grid grid-cols-2 md:grid-cols-3 gap-4">

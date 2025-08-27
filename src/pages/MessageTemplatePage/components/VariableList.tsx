@@ -1,13 +1,6 @@
-import React from "react";
-import {
-  Box,
-  Typography,
-  Paper,
-  List,
-  ListItem,
-  ListItemText,
-} from "@mui/material";
+import { List, ListItem, ListItemText } from "@mui/material";
 import { AllowedVariable } from "@ts/message";
+import AddIcon from "@mui/icons-material/Add";
 
 interface VariableListProps {
   allowedVariables: readonly AllowedVariable[];
@@ -36,15 +29,13 @@ const VariableList: React.FC<VariableListProps> = ({
   };
 
   return (
-    <Paper className="p-6 rounded-lg shadow-sm">
-      <Typography variant="h6" className="mb-4 text-gray-800">
-        변수 목록
-      </Typography>
+    <div className="p-5 card">
+      <h6 className="text-lg font-semibold text-primary mb-2">변수 목록</h6>
       <List className="py-0">
         {VARIABLE_LIST.map((variable) => (
           <ListItem
             key={variable.key}
-            className="px-3 py-2 cursor-pointer rounded-md transition-all duration-200 mb-1"
+            className="px-3 py-1 cursor-pointer rounded-md transition-all duration-200 mb-1"
             sx={{
               "&:hover": {
                 backgroundColor: "rgba(22, 79, 158, 0.04)",
@@ -58,48 +49,30 @@ const VariableList: React.FC<VariableListProps> = ({
           >
             <ListItemText
               primary={
-                <Box className="flex items-center justify-between">
-                  <Box className="flex items-center">
-                    <Typography
-                      variant="body2"
-                      className="text-gray-800 font-medium"
-                    >
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center">
+                    <span className="text-sm text-gray-800 font-medium">
                       {variable.label}
-                    </Typography>
-                    <Typography
-                      variant="caption"
-                      className="text-gray-600 ml-2"
-                    >
+                    </span>
+                    <span className="text-sm text-gray-600 ml-2">
                       {`{{${variable.key}}}`}
-                    </Typography>
-                  </Box>
-                  <Box className="variable-insert-icon text-xs flex items-center gap-1 transition-all duration-200 opacity-0 transform -translate-x-1 text-primary">
-                    <Typography variant="caption" className="font-medium">
-                      추가
-                    </Typography>
-                    <Box
-                      component="span"
-                      className="w-4 h-4 flex items-center justify-center rounded bg-primary text-white text-xs"
-                    >
-                      +
-                    </Box>
-                  </Box>
-                </Box>
+                    </span>
+                  </div>
+                  <AddIcon className="bg-primary-light text-white text-sm rounded" />
+                </div>
               }
             />
           </ListItem>
         ))}
       </List>
-      <Typography
-        variant="caption"
-        color="textSecondary"
-        className="mt-2 block"
-      >
-        변수는 반드시 <b>{"{{변수명}}"}</b> 형태로만 입력해 주세요.
-        <br />
-        (예: {"{{이름}}"}, {"{{생년월일}}"}, {"{{관심지역}}"})
-      </Typography>
-    </Paper>
+      <div className="bg-gray-50 p-4 rounded border border-gray-300">
+        <p className="text-sm text-neutral-800 mb-2">
+          ✔️ 변수는 반드시 <b>{"{{변수명}}"}</b> 형태로만 입력해 주세요.
+          <br />
+          (예: {"{{이름}}"}, {"{{생년월일}}"}, {"{{관심지역}}"})
+        </p>
+      </div>
+    </div>
   );
 };
 

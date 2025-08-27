@@ -91,17 +91,14 @@ export default function CustomerAddModalView({
       maxWidth="md"
       fullWidth
       PaperProps={{
-        sx: {
-          borderRadius: "8px",
-          maxHeight: "90vh",
-        },
+        className: "w-[90vw] rounded-lg max-h-[90vh]",
       }}
     >
       <DialogTitle className="border-b text-primary font-bold border-gray-200">
         고객 등록
       </DialogTitle>
 
-      <DialogContent className="mt-4 p-7 pt-0">
+      <DialogContent className="flex flex-col gap-4 p-3 bg-neutral-100 overflow-x-hidden">
         <BasicInfoSection
           name={formData.name}
           phoneNo={formData.phoneNo}
@@ -113,49 +110,50 @@ export default function CustomerAddModalView({
           onTelProviderChange={onTelProviderChange}
           onFieldBlur={onFieldBlur}
         />
+        <div className="p-5 card flex flex-col gap-5">
+          <AdditionalInfoSection
+            regionState={regionState}
+            trafficSource={formData.trafficSource}
+            onRegionChange={onRegionChange}
+            onFieldChange={onFieldChange}
+          />
 
-        <AdditionalInfoSection
-          regionState={regionState}
-          trafficSource={formData.trafficSource}
-          onRegionChange={onRegionChange}
-          onFieldChange={onFieldChange}
-        />
+          <RoleSection
+            seller={formData.seller}
+            buyer={formData.buyer}
+            tenant={formData.tenant}
+            landlord={formData.landlord}
+            onRoleChange={onRoleChange}
+          />
 
-        <RoleSection
-          seller={formData.seller}
-          buyer={formData.buyer}
-          tenant={formData.tenant}
-          landlord={formData.landlord}
-          onRoleChange={onRoleChange}
-        />
+          <PriceSection
+            showSalePrice={formData.seller || formData.buyer}
+            showRentPrice={formData.tenant || formData.landlord}
+            minPriceInput={minPriceInput}
+            maxPriceInput={maxPriceInput}
+            minRentInput={minRentInput}
+            maxRentInput={maxRentInput}
+            minDepositInput={minDepositInput}
+            maxDepositInput={maxDepositInput}
+            onFieldChange={onFieldChange}
+          />
 
-        <PriceSection
-          showSalePrice={formData.seller || formData.buyer}
-          showRentPrice={formData.tenant || formData.landlord}
-          minPriceInput={minPriceInput}
-          maxPriceInput={maxPriceInput}
-          minRentInput={minRentInput}
-          maxRentInput={maxRentInput}
-          minDepositInput={minDepositInput}
-          maxDepositInput={maxDepositInput}
-          onFieldChange={onFieldChange}
-        />
-
-        <LabelSection
-          labels={labels}
-          selectedLabels={selectedLabels}
-          isAddingLabel={isAddingLabel}
-          newLabelName={newLabelName}
-          onLabelSelect={onLabelSelect}
-          onAddLabel={onAddLabel}
-          onSetIsAddingLabel={onSetIsAddingLabel}
-          onSetNewLabelName={onSetNewLabelName}
-        />
+          <LabelSection
+            labels={labels}
+            selectedLabels={selectedLabels}
+            isAddingLabel={isAddingLabel}
+            newLabelName={newLabelName}
+            onLabelSelect={onLabelSelect}
+            onAddLabel={onAddLabel}
+            onSetIsAddingLabel={onSetIsAddingLabel}
+            onSetNewLabelName={onSetNewLabelName}
+          />
+        </div>
       </DialogContent>
 
       <DialogActions className="flex flex-row-reverse items-center justify-between p-6 border-t border-gray-200">
         <div className="flex gap-2">
-          <Button onClick={onClose} variant="outlined">
+          <Button onClick={onClose} variant="outlined" color="info">
             취소
           </Button>
           <Button

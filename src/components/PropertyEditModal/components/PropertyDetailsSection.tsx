@@ -22,7 +22,7 @@ const PropertyDetailsSection = ({
   onConstructionYearChange,
 }: PropertyDetailsSectionProps) => {
   return (
-    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 p-5 card">
       <TextField
         label="공급 면적"
         value={totalArea}

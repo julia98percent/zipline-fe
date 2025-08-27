@@ -7,7 +7,7 @@ interface PropertyDetailsSectionProps {
 const PropertyDetailsSection = ({ details }: PropertyDetailsSectionProps) => {
   return (
     <div className="card p-5">
-      <h6 className="text-xl font-semibold text-primary mb-2">특이 사항</h6>
+      <h6 className="text-lg font-semibold text-primary mb-2">특이 사항</h6>
       <InfoField value={details || "-"} />
     </div>
   );

@@ -1,7 +1,8 @@
 import { Contract } from "@ts/contract";
-import { Typography, Chip, Box, Card, CardContent } from "@mui/material";
+import Chip from "@mui/material/Chip";
 import { CONTRACT_STATUS_TYPES } from "@constants/contract";
 import { getPropertyTypeColors } from "@constants/property";
+import InfoField from "@components/InfoField";
 
 interface ContractCardProps {
   contract: Contract;
@@ -82,7 +83,6 @@ const ContractCard = ({ contract, onRowClick }: ContractCardProps) => {
   const getCategoryChip = (category: string | null) => {
     if (!category || category === "null") return null;
 
-    // 영어 카테고리를 한글로 변환
     const getCategoryLabel = (cat: string) => {
       switch (cat) {
         case "SALE":
@@ -92,7 +92,7 @@ const ContractCard = ({ contract, onRowClick }: ContractCardProps) => {
         case "MONTHLY":
           return "월세";
         default:
-          return cat; // 알 수 없는 카테고리는 그대로 표시
+          return cat;
       }
     };
 
@@ -111,89 +111,47 @@ const ContractCard = ({ contract, onRowClick }: ContractCardProps) => {
   };
 
   return (
-    <Card
-      className="mb-3 rounded-lg shadow-sm border border-gray-200 cursor-pointer hover:shadow-md transition-shadow"
-      onClick={handleCardClick}
-    >
-      <CardContent className="p-3">
-        {/* 카테고리와 상태 */}
-        <Box className="flex gap-1 mb-2 flex-wrap items-center">
+    <div className="card cursor-pointer" onClick={handleCardClick}>
+      <div className="flex flex-col p-5 gap-2">
+        <div className="flex gap-1 flex-wrap items-center">
           {getCategoryChip(contract.category)}
           {getStatusChip(contract.status)}
-        </Box>
+        </div>
 
-        {/* 주소 */}
-        <Box className="mb-2">
-          <Typography variant="subtitle1" className="font-semibold">
-            {contract.address}
-          </Typography>
-        </Box>
+        <h6 className="text-md font-semibold">{contract.address}</h6>
+        <div className="grid grid-cols-1 sm:grid-cols-2">
+          <InfoField
+            className="flex-row items-center text-sm"
+            label="• 임대/매도인: "
+            value={getCustomerDisplay(contract.lessorOrSellerNames)}
+          />
 
-        {/* 임대/매도인 */}
-        <Box className="flex items-start gap-2 mb-1 ml-2">
-          <Typography variant="body2" className="text-gray-600 mt-0.5">
-            •
-          </Typography>
-          <Box className="flex-1">
-            <Typography variant="caption" className="text-gray-600">
-              임대/매도인:{" "}
-            </Typography>
-            <Typography variant="body2" className="text-gray-800 inline">
-              {getCustomerDisplay(contract.lessorOrSellerNames)}
-            </Typography>
-          </Box>
-        </Box>
+          <InfoField
+            className="flex-row items-center text-sm"
+            label="• 임차/매수인: "
+            value={getCustomerDisplay(contract.lesseeOrBuyerNames)}
+          />
 
-        {/* 임차/매수인 */}
-        <Box className="flex items-start gap-2 mb-2 ml-2">
-          <Typography variant="body2" className="text-gray-600 mt-0.5">
-            •
-          </Typography>
-          <Box className="flex-1">
-            <Typography variant="caption" className="text-gray-600">
-              임차/매수인:{" "}
-            </Typography>
-            <Typography variant="body2" className="text-gray-800 inline">
-              {getCustomerDisplay(contract.lesseeOrBuyerNames)}
-            </Typography>
-          </Box>
-        </Box>
+          <InfoField
+            className="flex-row items-center text-sm"
+            label="• 계약일: "
+            value={getCustomerDisplay(contract.contractDate)}
+          />
 
-        {/* 계약 날짜 정보 */}
-        <Box className="space-y-1">
-          {contract.contractDate && (
-            <Box className="flex items-start gap-2 ml-2">
-              <Typography variant="caption" className="text-gray-600 mt-0.5">
-                •
-              </Typography>
-              <Typography variant="caption" className="text-gray-600 flex-1">
-                계약일: {contract.contractDate}
-              </Typography>
-            </Box>
-          )}
-          {contract.contractStartDate && (
-            <Box className="flex items-start gap-2 ml-2">
-              <Typography variant="caption" className="text-gray-600 mt-0.5">
-                •
-              </Typography>
-              <Typography variant="caption" className="text-gray-600 flex-1">
-                시작일: {contract.contractStartDate}
-              </Typography>
-            </Box>
-          )}
-          {contract.contractEndDate && (
-            <Box className="flex items-start gap-2 ml-2">
-              <Typography variant="caption" className="text-gray-600 mt-0.5">
-                •
-              </Typography>
-              <Typography variant="caption" className="text-gray-600 flex-1">
-                종료일: {contract.contractEndDate}
-              </Typography>
-            </Box>
-          )}
-        </Box>
-      </CardContent>
-    </Card>
+          <InfoField
+            className="flex-row items-center text-sm"
+            label="• 계약 시작일: "
+            value={getCustomerDisplay(contract.contractStartDate)}
+          />
+
+          <InfoField
+            className="flex-row items-center text-sm"
+            label="• 계약 종료일: "
+            value={getCustomerDisplay(contract.contractEndDate)}
+          />
+        </div>
+      </div>
+    </div>
   );
 };
 

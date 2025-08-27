@@ -113,8 +113,8 @@ const TemplatePreview: React.FC<TemplatePreviewProps> = ({
 
   return (
     <div className="mt-4">
-      <span className="text-sm font-normal text-[#666] mb-1">미리보기</span>
-      <div className="p-7 bg-[#F8F9FA] rounded-lg min-h-[48px] max-h-[200px] text-base overflow-y-scroll">
+      <span className="text-sm font-normal text-neutral-600">미리보기</span>
+      <div className="mt-1 p-7 bg-neutral-100 rounded-lg min-h-[48px] max-h-[200px] text-base overflow-y-auto">
         {getHighlightedPreview(templateContent, allowedVariables)}
       </div>
       {hasBrokenVariable && (

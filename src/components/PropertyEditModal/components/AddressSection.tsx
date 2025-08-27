@@ -16,7 +16,7 @@ const AddressSection = ({
   onDetailAddressChange,
 }: AddressSectionProps) => {
   return (
-    <div className="flex flex-col items-start">
+    <div className="flex flex-col items-start p-5 card">
       <TextField
         label="주소"
         value={address ?? ""}

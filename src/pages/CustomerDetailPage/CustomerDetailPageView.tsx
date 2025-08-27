@@ -1,4 +1,3 @@
-import { Paper } from "@mui/material";
 import PageHeader from "@components/PageHeader/PageHeader";
 import DeleteConfirmModal from "@components/DeleteConfirmModal";
 import { Customer, Label } from "@ts/customer";
@@ -71,10 +70,10 @@ const CustomerDetailPageView = ({
   }
 
   return (
-    <div className="flex-grow h-screen overflow-auto bg-gray-100 p-0 max-w-screen box-border">
+    <div>
       <PageHeader />
 
-      <div className="p-6 pt-0">
+      <div className="flex flex-col gap-4 p-5 pt-0">
         <CustomerActionButtons
           isEditing={isEditing}
           onEditClick={onEditClick}
@@ -83,7 +82,7 @@ const CustomerDetailPageView = ({
           onDeleteClick={onDeleteClick}
         />
 
-        <div className="grid grid-cols-1 sm:grid-cols-[2fr_1fr] gap-6 mb-6">
+        <div className="grid grid-cols-1 lg:grid-cols-[2fr_1fr] gap-4">
           <CustomerBasicInfo
             customer={customer}
             isEditing={isEditing}
@@ -110,11 +109,7 @@ const CustomerDetailPageView = ({
           onInputChange={onInputChange}
         />
 
-        {!isEditing && (
-          <Paper elevation={0} className="p-6 rounded-lg">
-            <CustomerInfo customerId={customerId} />
-          </Paper>
-        )}
+        {!isEditing && <CustomerInfo customerId={customerId} />}
       </div>
 
       <DeleteConfirmModal

@@ -92,7 +92,7 @@ function ConsultationTable({
       handleChangeRowsPerPage={(e) =>
         onRowsPerPageChange(Number(e.target.value))
       }
-      noDataMessage="등록된 상담 내역이 없습니다"
+      noDataMessage="등록된 상담 내역이 없습니다."
       pagination={true}
       sx={{
         "& .MuiTableCell-root": {

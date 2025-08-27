@@ -182,8 +182,8 @@ const MessageHistoryPage = () => {
     <div>
       <PageHeader />
 
-      <div className="p-5 pt-0">
-        <div className="grid grid-cols-1 lg:grid-cols-[2fr_1fr] bg-white p-3 mb-7 rounded-lg shadow-sm gap-2">
+      <div className="flex flex-col gap-4 p-5 pt-0">
+        <div className="grid grid-cols-1 lg:grid-cols-[2fr_1fr] p-3 card gap-2">
           <div className="flex flex-col xs:flex-row gap-2 xs:items-center">
             <h6 className="text-sm text-gray-700 font-medium whitespace-nowrap">
               문자 발송일

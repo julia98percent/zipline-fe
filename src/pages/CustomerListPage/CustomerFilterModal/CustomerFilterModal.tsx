@@ -267,11 +267,18 @@ const CustomerFilterModal = ({
   const isSubmitButtonDisabled = validationErrors.length > 0;
 
   return (
-    <Dialog open={open} onClose={onClose}>
+    <Dialog
+      open={open}
+      onClose={onClose}
+      maxWidth={false}
+      PaperProps={{
+        className: "w-[90vw] sm:w-[70vw] rounded-lg max-h-[90vh]",
+      }}
+    >
       <DialogTitle className="border-b text-primary font-bold border-gray-200">
         고객 필터
       </DialogTitle>
-      <DialogContent className="flex flex-col p-6 gap-6">
+      <DialogContent className="flex flex-col gap-4 p-3 bg-neutral-100 overflow-x-hidden">
         <RoleFilters
           filtersTemp={filtersTemp}
           setFiltersTemp={setFiltersTemp}
@@ -306,7 +313,7 @@ const CustomerFilterModal = ({
           <Button variant="text" color="info" onClick={handleReset}>
             입력 값 초기화
           </Button>
-          <Button variant="outlined" onClick={onClose}>
+          <Button variant="outlined" color="info" onClick={onClose}>
             취소
           </Button>
           <Button

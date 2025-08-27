@@ -21,7 +21,7 @@ const ContractInfoSection = ({ contractInfo }: ContractInfoSectionProps) => {
 
   return (
     <div className="card p-5">
-      <h6 className="text-xl font-semibold text-primary mb-2">계약 정보</h6>
+      <h6 className="text-lg font-semibold text-primary mb-2">계약 정보</h6>
 
       {!contractInfo || contractInfo?.contractUid === null ? (
         <div className="flex justify-center items-center min-h-[200px]">

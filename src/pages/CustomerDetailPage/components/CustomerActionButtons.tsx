@@ -1,7 +1,5 @@
-import { Box } from "@mui/material";
-import EditIcon from "@mui/icons-material/Edit";
-import DeleteIcon from "@mui/icons-material/Delete";
 import Button from "@components/Button";
+import Divider from "@mui/material/Divider";
 
 interface CustomerActionButtonsProps {
   isEditing: boolean;
@@ -19,47 +17,29 @@ const CustomerActionButtons = ({
   onDeleteClick,
 }: CustomerActionButtonsProps) => {
   return (
-    <Box className="flex justify-end mb-4">
+    <div className="flex justify-end">
       {isEditing ? (
-        <div className="mt-4 flex gap-2">
-          <Button
-            variant="outlined"
-            color="info"
-            className="min-w-[83px]"
-            onClick={onCancelEdit}
-          >
+        <div className="flex items-center justify-end gap-1">
+          <Button variant="text" color="info" onClick={onCancelEdit}>
             취소
           </Button>
-          <Button
-            variant="contained"
-            color="primary"
-            className="min-w-[83px]"
-            onClick={onSaveEdit}
-          >
+          <Divider orientation="vertical" className="h-4 bg-neutral-300" />
+          <Button variant="text" color="primary" onClick={onSaveEdit}>
             저장
           </Button>
         </div>
       ) : (
-        <div className="flex justify-end mt-4 gap-2">
-          <Button
-            variant="outlined"
-            color="primary"
-            onClick={onEditClick}
-            startIcon={<EditIcon />}
-          >
+        <div className="flex items-center justify-end gap-1">
+          <Button variant="text" color="info" onClick={onEditClick}>
             수정
           </Button>
-          <Button
-            variant="outlined"
-            color="error"
-            onClick={onDeleteClick}
-            startIcon={<DeleteIcon />}
-          >
+          <Divider orientation="vertical" className="h-4 bg-neutral-300" />
+          <Button variant="text" color="error" onClick={onDeleteClick}>
             삭제
           </Button>
         </div>
       )}
-    </Box>
+    </div>
   );
 };
 

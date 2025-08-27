@@ -10,7 +10,6 @@ import PageHeader from "@components/PageHeader/PageHeader";
 import ScheduleDetailModal from "@components/ScheduleDetailModal/ScheduleDetailModal";
 import AddScheduleModal from "./AddScheduleModal";
 import Button from "@components/Button";
-import { useResponsiveCalendar } from "@hooks/useResponsiveCalendar";
 import { Schedule } from "@ts/schedule";
 
 interface ScheduleFormData {
@@ -61,8 +60,6 @@ interface ScheduleViewProps {
 }
 
 const ScheduleView: React.FC<ScheduleViewProps> = ({ state, handlers }) => {
-  const { calendarConfig, calendarRef } = useResponsiveCalendar();
-
   const {
     isAddModalOpen,
     isDetailModalOpen,
@@ -85,11 +82,10 @@ const ScheduleView: React.FC<ScheduleViewProps> = ({ state, handlers }) => {
   } = handlers;
 
   return (
-    <div className="flex-grow bg-gray-100 min-h-screen">
+    <div>
       <PageHeader />
 
       <div className="p-5">
-        {/* Add Schedule Button */}
         <div className="flex justify-end mb-5">
           <Button
             onClick={handleAddSchedule}
@@ -101,9 +97,8 @@ const ScheduleView: React.FC<ScheduleViewProps> = ({ state, handlers }) => {
           </Button>
         </div>
 
-        <div className="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden p-4">
+        <div className="p-5 card">
           <FullCalendar
-            ref={calendarRef}
             plugins={[dayGridPlugin, interactionPlugin]}
             initialView="dayGridMonth"
             events={events}
@@ -114,26 +109,26 @@ const ScheduleView: React.FC<ScheduleViewProps> = ({ state, handlers }) => {
               center: "",
               right: "prev,today,next",
             }}
-            contentHeight={calendarConfig.contentHeight}
             locale={koLocale}
-            dayMaxEvents={calendarConfig.dayMaxEvents}
             moreLinkContent={({ num }) => `+${num}개`}
             eventTimeFormat={{
               hour: "2-digit",
               minute: "2-digit",
               hour12: false,
             }}
+            dayMaxEvents={3}
             initialDate={dayjs().format("YYYY-MM-DD")}
             fixedWeekCount={false}
             showNonCurrentDates={true}
             eventDisplay="block"
-            eventMinHeight={calendarConfig.eventMinHeight}
-            moreLinkClick="popover"
+            // moreLinkClick="popover"
             dayPopoverFormat={{
               month: "long",
               day: "numeric",
               year: "numeric",
             }}
+            height={"auto"}
+            stickyHeaderDates
             weekNumbers={false}
             dayHeaders={true}
             eventClassNames={(arg) => {
@@ -163,7 +158,6 @@ const ScheduleView: React.FC<ScheduleViewProps> = ({ state, handlers }) => {
                 if (timeEl) timeEl.style.display = "none";
               }
             }}
-            windowResizeDelay={100}
           />
         </div>
       </div>

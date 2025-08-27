@@ -14,7 +14,7 @@ const PropertyFeaturesSection = ({
   onHasElevatorChange,
 }: PropertyFeaturesSectionProps) => {
   return (
-    <div className="grid grid-cols-2 gap-4">
+    <div className="grid grid-cols-2 gap-4 p-5 card">
       <div>
         <h6 className="font-semibold">반려동물 가능 여부</h6>
         <RadioGroup

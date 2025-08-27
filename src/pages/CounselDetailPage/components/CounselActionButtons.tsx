@@ -17,14 +17,7 @@ const CounselActionButtons = ({
   onDeleteClick,
 }: CounselActionButtonsProps) => {
   return (
-    <div
-      style={{
-        display: "flex",
-        justifyContent: "flex-end",
-        gap: 8,
-        marginBottom: 16,
-      }}
-    >
+    <div className="flex justify-end">
       {!isEditing ? (
         <div className="flex items-center">
           <Button variant="text" color="info" onClick={onEdit}>

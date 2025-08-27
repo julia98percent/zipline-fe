@@ -20,8 +20,8 @@ const AdditionalInfoSection = ({
   onDetailsChange,
 }: AdditionalInfoSectionProps) => {
   return (
-    <div className="flex flex-col gap-6">
-      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+    <div className="flex flex-col gap-4">
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 p-5 card">
         <DatePicker
           onChange={onMoveInDateChange}
           value={moveInDate}
@@ -32,7 +32,6 @@ const AdditionalInfoSection = ({
             },
           }}
         />
-
         <TextField
           label="주차 가능 대수"
           value={parkingCapacity}
@@ -40,15 +39,17 @@ const AdditionalInfoSection = ({
           fullWidth
         />
       </div>
-      <TextField
-        label="특이사항"
-        value={details ?? ""}
-        onChange={onDetailsChange}
-        fullWidth
-        multiline
-        rows={4}
-        inputProps={{ maxLength: 255 }}
-      />
+      <div className="p-5 card">
+        <TextField
+          label="특이사항"
+          value={details ?? ""}
+          onChange={onDetailsChange}
+          fullWidth
+          multiline
+          rows={4}
+          inputProps={{ maxLength: 255 }}
+        />
+      </div>
     </div>
   );
 };

@@ -261,13 +261,13 @@ function PropertyEditModal({
       onClose={handleClose}
       maxWidth={false}
       PaperProps={{
-        className: "w-200 h-175 max-h-[90vh] bg-white rounded-lg",
+        className: "w-[90vw] sm:w-[50vw] rounded-lg max-h-[90vh]",
       }}
     >
       <DialogTitle className="border-b text-primary font-bold border-gray-200">
         매물 수정
       </DialogTitle>
-      <DialogContent className="flex flex-col gap-6 p-7">
+      <DialogContent className="bg-neutral-100 flex flex-col gap-3 p-3">
         <CustomerSelectSection
           customerUid={customerUid}
           customers={customerList}
@@ -333,7 +333,7 @@ function PropertyEditModal({
 
       <DialogActions className="flex flex-row-reverse items-center justify-between p-6 border-t border-gray-200">
         <div className="flex gap-2">
-          <Button onClick={handleClose} variant="outlined">
+          <Button onClick={handleClose} variant="outlined" color="info">
             취소
           </Button>
           <Button

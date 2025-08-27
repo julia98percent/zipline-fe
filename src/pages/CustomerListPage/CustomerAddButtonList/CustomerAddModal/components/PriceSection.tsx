@@ -52,7 +52,11 @@ export default function PriceSection({
   const priceCategories = allCategories.filter((category) => category.show);
 
   return (
-    <div className="flex flex-col pb-7 mb-4 border-b border-gray-200 mt-2">
+    <div
+      className={`flex flex-col border-b border-gray-200 ${
+        priceCategories.length && "pb-4 mb-4 mt-2"
+      }`}
+    >
       {priceCategories.map((category) => (
         <div key={category.label} className="flex flex-col mb-3">
           <div className="flex items-start justify-center gap-4 items-center">

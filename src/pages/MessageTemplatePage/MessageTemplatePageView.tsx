@@ -1,4 +1,3 @@
-import { Box } from "@mui/material";
 import DeleteConfirmModal from "@components/DeleteConfirmModal";
 import PageHeader from "@components/PageHeader/PageHeader";
 import {
@@ -53,10 +52,10 @@ function MessageTemplatePageView({
   onCloseDeleteDialog,
 }: MessageTemplatePageViewProps) {
   return (
-    <Box className="p-0 pb-6 min-h-screen bg-gray-100">
+    <div>
       <PageHeader />
 
-      <Box className="p-6">
+      <div className="p-5 pt-0">
         <div className="flex flex-col lg:flex-row gap-7">
           {/* 데스크톱: 왼쪽 영역 (템플릿 목록 + 변수 목록) / 모바일: 템플릿 목록 */}
           <div className="lg:w-80 flex flex-col gap-7">
@@ -107,7 +106,7 @@ function MessageTemplatePageView({
             />
           </div>
         </div>
-      </Box>
+      </div>
 
       <DeleteConfirmModal
         open={openDeleteDialog}
@@ -115,7 +114,7 @@ function MessageTemplatePageView({
         onCancel={onCloseDeleteDialog}
         category="문자 템플릿"
       />
-    </Box>
+    </div>
   );
 }
 

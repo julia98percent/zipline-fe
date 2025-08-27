@@ -142,13 +142,20 @@ function CounselModal({ open, onClose, onSuccess }: CounselModalProps) {
   const isSubmitButtonDisabled = validationErrors.length > 0;
 
   return (
-    <Dialog open={open} onClose={onClose} maxWidth="md" fullWidth>
+    <Dialog
+      open={open}
+      onClose={onClose}
+      maxWidth={false}
+      PaperProps={{
+        className: "w-[90vw] md:w-[80vw] max-h-[90vh] rounded-lg",
+      }}
+    >
       <DialogTitle className="border-b text-primary font-bold border-gray-200">
         상담 등록
       </DialogTitle>
 
-      <DialogContent className=" p-7">
-        <div className="flex flex-col gap-4">
+      <DialogContent className="bg-neutral-100 flex flex-col gap-3 p-3">
+        <div className="flex flex-col gap-4  p-5 card">
           <TextField
             label="상담 제목"
             value={title}
@@ -229,19 +236,7 @@ function CounselModal({ open, onClose, onSuccess }: CounselModalProps) {
           />
         </div>
       </DialogContent>
-      <DialogActions className="flex flex-row-reverse items-center justify-between p-6 border-t border-gray-200">
-        <div className="flex gap-2">
-          <Button variant="outlined" onClick={onClose}>
-            취소
-          </Button>
-          <Button
-            onClick={handleSubmit}
-            variant="contained"
-            disabled={isSubmitButtonDisabled}
-          >
-            등록
-          </Button>
-        </div>
+      <DialogActions className="flex flex-col xs:flex-row items-start xs:items-center justify-between p-6 border-t border-gray-200 gap-2">
         {isSubmitButtonDisabled && (
           <Tooltip
             title={
@@ -266,6 +261,18 @@ function CounselModal({ open, onClose, onSuccess }: CounselModalProps) {
             </div>
           </Tooltip>
         )}
+        <div className="flex gap-2 ml-auto">
+          <Button variant="outlined" color="info" onClick={onClose}>
+            취소
+          </Button>
+          <Button
+            onClick={handleSubmit}
+            variant="contained"
+            disabled={isSubmitButtonDisabled}
+          >
+            등록
+          </Button>
+        </div>
       </DialogActions>
     </Dialog>
   );

@@ -25,7 +25,7 @@ const CounselBasicInfo = ({
 }: CounselBasicInfoProps) => {
   return (
     <div className="card p-5">
-      <h6 className="text-xl font-semibold text-primary mb-2">기본 정보</h6>
+      <h6 className="text-lg font-semibold text-primary mb-2">기본 정보</h6>
 
       {isEditing ? (
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-2">

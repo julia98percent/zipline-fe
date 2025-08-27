@@ -9,17 +9,10 @@ interface ToastProps {
 
 const showToast = ({ message, type, duration = 2000 }: ToastProps) => {
   toast[type](message, {
-    position: "top-right",
     autoClose: duration,
-    hideProgressBar: false,
-    closeOnClick: true,
-    pauseOnHover: true,
     draggable: true,
-    style: {
-      marginTop: "10px",
-      marginRight: "20px",
-      zIndex: 9999,
-    },
+    className:
+      "w-[70vw]! xs:w-[60vw]! sm:w-[40vw]! md:w-[30vw]! lg:w-[22vw]! mb-2! mr-[20px]",
   });
 };
 

@@ -453,9 +453,9 @@ export const renderActionsColumn = (
               onEditStart(customer);
             }}
             size="small"
-            className="z-50"
+            className="z-30"
           >
-            <EditIcon style={{ color: "#164F9E" }} />
+            <EditIcon className="text-primary-dark" />
           </IconButton>
           <IconButton
             onClick={(e) => {
@@ -463,9 +463,9 @@ export const renderActionsColumn = (
               onDelete(customer);
             }}
             size="small"
-            className="z-50"
+            className="z-30"
           >
-            <DeleteIcon style={{ color: "#E53535" }} />
+            <DeleteIcon className="text-neutral-900" />
           </IconButton>
         </>
       )}

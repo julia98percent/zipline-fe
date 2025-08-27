@@ -20,7 +20,7 @@ const MessageTemplateSection = ({
 }: MessageTemplateSectionProps) => {
   return (
     <div className="p-5 card">
-      <h6 className="text-xl font-semibold text-primary mb-2">
+      <h6 className="text-lg font-semibold text-primary mb-2">
         문자 템플릿 선택
       </h6>
 

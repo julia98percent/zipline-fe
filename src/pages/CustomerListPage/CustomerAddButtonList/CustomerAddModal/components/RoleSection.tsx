@@ -16,9 +16,8 @@ export default function RoleSection({
   onRoleChange,
 }: RoleSectionProps) {
   return (
-    <div>
+    <div className="flex flex-col">
       <h6 className="mb-2 font-semibold">역할</h6>
-
       <div className="grid grid-cols-3 sm:grid-cols-5">
         <FormControlLabel
           control={

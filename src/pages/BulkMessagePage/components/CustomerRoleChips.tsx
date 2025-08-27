@@ -1,4 +1,4 @@
-import { Box, Chip } from "@mui/material";
+import { Chip } from "@mui/material";
 import { Customer } from "@ts/customer";
 import { CUSTOMER_TYPE_COLORS } from "@constants/customer";
 
@@ -8,7 +8,7 @@ interface CustomerRoleChipsProps {
 
 const CustomerRoleChips = ({ customer }: CustomerRoleChipsProps) => {
   return (
-    <Box className="flex gap-1 mt-1">
+    <div className="flex gap-1 mt-1">
       {customer.tenant && (
         <Chip
           label={CUSTOMER_TYPE_COLORS.tenant.label}
@@ -59,7 +59,7 @@ const CustomerRoleChips = ({ customer }: CustomerRoleChipsProps) => {
             variant="outlined"
           />
         ))}
-    </Box>
+    </div>
   );
 };
 

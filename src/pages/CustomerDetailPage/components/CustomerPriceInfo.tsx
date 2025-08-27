@@ -1,4 +1,4 @@
-import { Paper, Typography, TextField, InputAdornment } from "@mui/material";
+import { TextField, InputAdornment } from "@mui/material";
 import { formatKoreanPrice } from "@utils/numberUtil";
 import { Customer } from "@ts/customer";
 import { MAX_PROPERTY_PRICE } from "@constants/property";
@@ -25,7 +25,7 @@ const CustomerPriceInfo = ({
     value: number | null | undefined,
     editedValue: number | null
   ) => (
-    <div className="flex-[0_0_calc(50%-8px)]">
+    <div>
       <div className="text-sm text-gray-600 mb-1">{label}</div>
       {isEditing ? (
         <TextField
@@ -57,11 +57,11 @@ const CustomerPriceInfo = ({
   );
 
   return (
-    <Paper elevation={0} className="p-6 rounded-lg mb-6 shadow-none bg-white">
-      <Typography variant="h6" className="mb-4 text-primary font-semibold">
+    <div className="flex-1 p-5 card">
+      <h6 className="text-lg font-semibold text-primary mb-2">
         희망 거래 가격
-      </Typography>
-      <div className="flex flex-wrap gap-4">
+      </h6>
+      <div className="grid grid-cols-1 xs:grid-cols-2 flex-wrap gap-4">
         {renderPriceField(
           "최소 매매가",
           "minPrice",
@@ -99,7 +99,7 @@ const CustomerPriceInfo = ({
           editedCustomer?.maxRent ?? null
         )}
       </div>
-    </Paper>
+    </div>
   );
 };
 

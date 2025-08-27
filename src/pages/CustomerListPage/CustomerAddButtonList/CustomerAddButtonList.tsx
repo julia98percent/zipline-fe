@@ -19,7 +19,7 @@ function CustomerAddButtonList({ fetchCustomerData }: Props) {
 
   return (
     <>
-      <div className="hidden sm:flex sm:justify-end gap-2">
+      <div className="flex flex-col sm:flex-row justify-end gap-2">
         <Button variant="contained" onClick={handleOpen}>
           <AddIcon />
           고객 등록
@@ -31,7 +31,7 @@ function CustomerAddButtonList({ fetchCustomerData }: Props) {
       </div>
 
       {/* Mobile view - below 768px */}
-      <div className="flex sm:hidden flex-col gap-3 w-full">
+      {/* <div className="flex sm:hidden flex-col gap-3 w-full">
         <Button
           variant="contained"
           onClick={handleOpen}
@@ -43,7 +43,7 @@ function CustomerAddButtonList({ fetchCustomerData }: Props) {
         <Button variant="outlined" onClick={handleOpenBulkUpload}>
           고객 데이터 일괄 등록(.csv)
         </Button>
-      </div>
+      </div> */}
 
       <CustomerAddModal
         open={open}

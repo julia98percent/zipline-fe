@@ -1,12 +1,10 @@
 import {
-  Box,
-  Typography,
   TextField,
   Checkbox,
   FormControlLabel,
   IconButton,
 } from "@mui/material";
-import DeleteIcon from "@mui/icons-material/Delete";
+import DeleteIcon from "@mui/icons-material/DeleteOutlineRounded";
 import Button from "@components/Button";
 import { QuestionType } from "@apis/preCounselService";
 
@@ -30,12 +28,12 @@ function MultipleChoiceAdd({
   questionIndex,
 }: Props) {
   return (
-    <Box className="w-full max-w-150">
-      <Typography className="mb-4 font-medium" text-primary>
+    <div className="w-full">
+      <p className="mb-4 font-medium" text-primary>
         다중 선택 옵션
-      </Typography>
+      </p>
       {question.choices?.map((choice, choiceIndex) => (
-        <Box key={choiceIndex} className="flex items-center gap-4 mb-2 w-full">
+        <div key={choiceIndex} className="flex items-center mb-2 w-full">
           <FormControlLabel
             className="w-full"
             sx={{
@@ -64,14 +62,18 @@ function MultipleChoiceAdd({
           <IconButton
             onClick={() => handleDeleteChoice(questionIndex, choiceIndex)}
           >
-            <DeleteIcon />
+            <DeleteIcon className="text-red-600" />
           </IconButton>
-        </Box>
+        </div>
       ))}
-      <Button fullWidth onClick={() => handleAddChoice(questionIndex)}>
+      <Button
+        fullWidth
+        variant="outlined"
+        onClick={() => handleAddChoice(questionIndex)}
+      >
         선택지 추가
       </Button>
-    </Box>
+    </div>
   );
 }
 

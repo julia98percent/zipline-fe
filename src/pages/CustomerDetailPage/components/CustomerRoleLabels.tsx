@@ -1,11 +1,4 @@
-import {
-  Box,
-  Paper,
-  Typography,
-  Chip,
-  TextField,
-  Autocomplete,
-} from "@mui/material";
+import { Chip, TextField, Autocomplete } from "@mui/material";
 import { Label, Customer } from "@ts/customer";
 
 // 새로 생성할 라벨을 나타내는 임시 UID
@@ -36,13 +29,11 @@ const CustomerRoleLabels = ({
   onLabelInputChange,
 }: CustomerRoleLabelsProps) => {
   return (
-    <Paper elevation={0} className="flex-1 p-6 rounded-lg shadow-sm mt-2">
+    <div className="flex-1 p-5 card">
       {/* 역할 정보 영역 */}
-      <Box className="mb-8">
-        <Typography variant="h6" className="mb-4 font-semibold text-primary">
-          역할
-        </Typography>
-        <Box className="flex gap-2 flex-wrap">
+      <div className="mb-8">
+        <h6 className="text-lg font-semibold text-primary mb-2">역할</h6>
+        <div className="flex gap-2 flex-wrap">
           {isEditing ? (
             <>
               <Chip
@@ -124,15 +115,13 @@ const CustomerRoleLabels = ({
                 !customer.seller && <div>없음</div>}
             </>
           )}
-        </Box>
-      </Box>
+        </div>
+      </div>
 
       {/* 라벨 영역 */}
-      <Box>
-        <Typography variant="h6" className="mb-4 font-semibold text-primary">
-          라벨
-        </Typography>
-        <Box className="flex flex-wrap gap-2">
+      <div>
+        <h6 className="text-lg font-semibold text-primary mb-2">라벨</h6>
+        <div className="flex flex-wrap gap-2">
           {isEditing ? (
             <Autocomplete
               multiple
@@ -180,7 +169,6 @@ const CustomerRoleLabels = ({
                     }
 
                     if (event.key === "Enter") {
-                      // Autocomplete의 기본 Enter 동작을 방지
                       event.stopPropagation();
 
                       const currentInputValue = labelInputValue?.trim();
@@ -204,7 +192,7 @@ const CustomerRoleLabels = ({
                               exactMatch,
                             ]);
                           }
-                          // 성공적으로 추가되거나 이미 있는 경우 모두 입력 필드 초기화
+
                           onLabelInputChange?.("");
                         } else {
                           const partialMatches = availableLabels.filter(
@@ -328,23 +316,26 @@ const CustomerRoleLabels = ({
 
                 return filtered;
               }}
-              renderOption={(props, option) => (
-                <Box component="li" {...props}>
-                  {option.uid === NEW_LABEL_TEMP_UID ? (
-                    <Box className="flex items-center gap-2">
-                      <span>"{option.name}" 새 라벨 생성</span>
-                      <Chip
-                        label="NEW"
-                        size="small"
-                        color="primary"
-                        variant="outlined"
-                      />
-                    </Box>
-                  ) : (
-                    option.name
-                  )}
-                </Box>
-              )}
+              renderOption={(props, option) => {
+                const { key: _, ...newProps } = props;
+                return (
+                  <li key={option.uid + option.name} {...newProps}>
+                    {option.uid === NEW_LABEL_TEMP_UID ? (
+                      <div className="flex items-center gap-2">
+                        <span>"{option.name}" 새 라벨 생성</span>
+                        <Chip
+                          label="NEW"
+                          size="small"
+                          color="primary"
+                          variant="outlined"
+                        />
+                      </div>
+                    ) : (
+                      option.name
+                    )}
+                  </li>
+                );
+              }}
               className="w-full"
             />
           ) : (
@@ -354,15 +345,13 @@ const CustomerRoleLabels = ({
                   <Chip key={label.uid} label={label.name} variant="outlined" />
                 ))
               ) : (
-                <Typography variant="body1" color="textSecondary">
-                  -
-                </Typography>
+                <span>-</span>
               )}
             </>
           )}
-        </Box>
-      </Box>
-    </Paper>
+        </div>
+      </div>
+    </div>
   );
 };
 

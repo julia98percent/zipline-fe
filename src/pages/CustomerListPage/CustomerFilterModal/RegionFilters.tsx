@@ -39,7 +39,7 @@ const RegionFilters = ({
     };
 
   return (
-    <div>
+    <div className="p-5 card">
       <h5 className="text-lg font-bold mb-4">지역</h5>
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
         <RegionSelector

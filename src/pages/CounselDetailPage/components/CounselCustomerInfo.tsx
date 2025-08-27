@@ -26,7 +26,7 @@ interface CounselCustomerInfoProps {
 const CounselCustomerInfo = ({ customer }: CounselCustomerInfoProps) => {
   return (
     <div className="card p-5">
-      <h6 className="text-xl font-semibold text-primary mb-2">고객 정보</h6>
+      <h6 className="text-lg font-semibold text-primary mb-2">고객 정보</h6>
       <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-2">
         <InfoField label="고객명" value={customer.name} />
         <InfoField label="연락처" value={customer.phoneNo} />

@@ -111,7 +111,7 @@ const ContractStatusStepper = ({
   return (
     <div className="p-5 card">
       <div className="flex justify-between items-center mb-4">
-        <h6 className="text-xl font-semibold text-primary mb-2">
+        <h6 className="text-lg font-semibold text-primary mb-2">
           계약 진행 상태
         </h6>
         {!isTerminated && onStatusChange && (

@@ -160,7 +160,7 @@ const ContractDetailContentView = ({
         <div className="flex-2 rounded-lg bg-white shadow-sm flex flex-col min-h-96">
           <div className="flex-1 flex flex-col p-6">
             <div className="flex justify-between items-center mb-4">
-              <h6 className="text-xl font-bold text-primary">계약 기본 정보</h6>
+              <h6 className="text-lg font-bold text-primary">계약 기본 정보</h6>
               <IconButton
                 onClick={onEditBasicInfo}
                 size="small"
@@ -225,7 +225,7 @@ const ContractDetailContentView = ({
         <div className="flex-1 flex flex-col min-h-96 card">
           <div className="flex-1 flex flex-col p-6">
             <div className="flex justify-between items-center mb-4">
-              <h6 className="text-xl font-bold text-primary">첨부 문서</h6>
+              <h6 className="text-lg font-bold text-primary">첨부 문서</h6>
               <IconButton
                 onClick={onEditDocuments}
                 size="small"
@@ -273,7 +273,7 @@ const ContractDetailContentView = ({
       {/* 하단: 상태 변경 이력 */}
 
       <div className="card p-5 h-full">
-        <h6 className="text-xl font-bold text-primary mb-2">
+        <h6 className="text-lg font-bold text-primary mb-2">
           계약 상태 변경 이력
         </h6>
         {histories.length > 0 ? (

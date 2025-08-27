@@ -12,7 +12,7 @@ const CounselPropertyInfo = ({
 }: CounselPropertyInfoProps) => {
   return (
     <div className="flex flex-col gap-2 p-5 card">
-      <h6 className="text-xl font-semibold text-primary mb-2">부동산 정보</h6>
+      <h6 className="text-lg font-semibold text-primary mb-2">부동산 정보</h6>
       <InfoField label="주소" value={property.address} />
       <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-2">
         <InfoField

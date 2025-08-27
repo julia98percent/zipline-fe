@@ -68,7 +68,7 @@ const ContractBasicInfoSection = ({
           ))
         ) : (
           <MenuItem disabled value="">
-            등록된 매물이 없습니다
+            등록된 매물이 없습니다.
           </MenuItem>
         )}
       </StringSelect>

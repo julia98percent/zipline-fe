@@ -26,43 +26,42 @@ export default function AdditionalInfoSection({
   onFieldChange,
 }: AdditionalInfoSectionProps) {
   return (
-    <div className="flex flex-col gap-5 my-4 pb-7 border-b border-gray-200">
+    <div className="flex flex-col gap-5">
       <h5 className="text-lg font-bold">부가 정보</h5>
-      <div>
-        <h6 className="mb-2 font-semibold">관심 지역</h6>
-        <div className="grid grid-cols-3 gap-2">
-          <RegionSelector
-            value={regionState.selectedSido || ""}
-            regions={regionState.sido}
-            onChange={(event) =>
-              onRegionChange("sido")(event as unknown as SelectChangeEvent)
-            }
-            label="시/도"
-            size="medium"
-          />
 
-          <RegionSelector
-            value={regionState.selectedSigungu || ""}
-            regions={regionState.sigungu}
-            onChange={(event) =>
-              onRegionChange("sigungu")(event as unknown as SelectChangeEvent)
-            }
-            disabled={!regionState.selectedSido}
-            label="시/군/구"
-            size="medium"
-          />
+      <h6 className="mb-2 font-semibold">관심 지역</h6>
+      <div className="grid grid-cols-3 gap-2">
+        <RegionSelector
+          value={regionState.selectedSido || ""}
+          regions={regionState.sido}
+          onChange={(event) =>
+            onRegionChange("sido")(event as unknown as SelectChangeEvent)
+          }
+          label="시/도"
+          size="medium"
+        />
 
-          <RegionSelector
-            value={regionState.selectedDong || ""}
-            regions={regionState.dong}
-            onChange={(event) =>
-              onRegionChange("dong")(event as unknown as SelectChangeEvent)
-            }
-            disabled={!regionState.selectedSigungu}
-            label="읍/면/동"
-            size="medium"
-          />
-        </div>
+        <RegionSelector
+          value={regionState.selectedSigungu || ""}
+          regions={regionState.sigungu}
+          onChange={(event) =>
+            onRegionChange("sigungu")(event as unknown as SelectChangeEvent)
+          }
+          disabled={!regionState.selectedSido}
+          label="시/군/구"
+          size="medium"
+        />
+
+        <RegionSelector
+          value={regionState.selectedDong || ""}
+          regions={regionState.dong}
+          onChange={(event) =>
+            onRegionChange("dong")(event as unknown as SelectChangeEvent)
+          }
+          disabled={!regionState.selectedSigungu}
+          label="읍/면/동"
+          size="medium"
+        />
       </div>
       <div>
         <h6 className="mb-2 font-semibold">유입 경로</h6>

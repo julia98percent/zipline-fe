@@ -54,6 +54,7 @@ export default function LabelSection({
               onSetNewLabelName("");
             }}
             variant="outlined"
+            color="info"
           >
             취소
           </Button>

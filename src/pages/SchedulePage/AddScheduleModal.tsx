@@ -9,7 +9,6 @@ import {
   FormControlLabel,
   Checkbox,
   CircularProgress,
-  Typography,
   Autocomplete,
   Tooltip,
 } from "@mui/material";
@@ -139,15 +138,15 @@ function AddScheduleModal({ open, onClose, onSubmit }: AddScheduleModalProps) {
       onClose={handleClose}
       maxWidth={false}
       PaperProps={{
-        className: "w-200 h-175 max-h-[90vh] bg-white rounded-lg",
+        className: "w-[90vw] sm:w-[70vw] max-h-[90vh] rounded-lg",
       }}
     >
       <DialogTitle className="border-b text-primary font-bold border-gray-200">
         일정 등록
       </DialogTitle>
 
-      <DialogContent className="p-7">
-        <div className="grid grid-cols-1 gap-4">
+      <DialogContent className="bg-neutral-100 flex flex-col gap-3 p-3">
+        <div className="grid grid-cols-1 gap-4 card p-5">
           <FormControl fullWidth>
             <Autocomplete
               options={customers}
@@ -248,24 +247,11 @@ function AddScheduleModal({ open, onClose, onSubmit }: AddScheduleModalProps) {
           </div>
         </div>
       </DialogContent>
-      <DialogActions className="flex flex-row-reverse items-center justify-between p-6 border-t border-gray-200">
+      <DialogActions className="flex flex-col xs:flex-row items-start xs:items-center justify-between p-6 border-t border-gray-200">
         {errorMessage && (
-          <Typography className="absolute left-6 text-red-600 text-sm">
-            {errorMessage}
-          </Typography>
+          <p className="absolute left-6 text-red-600 text-sm">{errorMessage}</p>
         )}
-        <div className="flex gap-2">
-          <Button onClick={onClose} variant="outlined">
-            취소
-          </Button>
-          <Button
-            onClick={handleSubmit}
-            variant="contained"
-            disabled={isSubmitButtonDisabled}
-          >
-            저장
-          </Button>
-        </div>
+
         {isSubmitButtonDisabled && validationErrors.length > 0 && (
           <Tooltip
             title={
@@ -290,6 +276,18 @@ function AddScheduleModal({ open, onClose, onSubmit }: AddScheduleModalProps) {
             </div>
           </Tooltip>
         )}
+        <div className="flex gap-2 ml-auto">
+          <Button onClick={onClose} variant="outlined" color="info">
+            취소
+          </Button>
+          <Button
+            onClick={handleSubmit}
+            variant="contained"
+            disabled={isSubmitButtonDisabled}
+          >
+            저장
+          </Button>
+        </div>
       </DialogActions>
     </Dialog>
   );

@@ -155,7 +155,7 @@ function ContractTable({
       handleChangeRowsPerPage={(e) =>
         onRowsPerPageChange(Number(e.target.value))
       }
-      noDataMessage="등록된 계약이 없습니다"
+      noDataMessage="등록된 계약이 없습니다."
       pagination={true}
     />
   );

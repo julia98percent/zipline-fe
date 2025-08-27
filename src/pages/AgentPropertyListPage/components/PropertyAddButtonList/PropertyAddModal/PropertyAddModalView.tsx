@@ -162,7 +162,7 @@ const PropertyAddModalView = ({
           </Tooltip>
         )}
         <div className="flex gap-2 ml-auto">
-          <Button onClick={onClose} variant="outlined">
+          <Button onClick={onClose} variant="outlined" color="info">
             취소
           </Button>
           <Button onClick={onSubmit} color="primary" disabled={!isFormValid}>

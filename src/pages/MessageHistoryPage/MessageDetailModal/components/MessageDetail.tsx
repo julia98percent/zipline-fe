@@ -19,7 +19,7 @@ function MessageDetail({ messageList }: { messageList: MessageDetailType[] }) {
 
   return (
     <>
-      <div className="p-4">
+      <div className="p-4 w-[300px] max-w-full">
         <Stack spacing={1}>
           {messageList.length > 0 && (
             <>

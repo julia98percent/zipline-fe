@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect, useRef } from "react";
 import { IconButton } from "@mui/material";
 import { ChevronLeft, ChevronRight, CalendarMonth } from "@mui/icons-material";
 import dayjs from "dayjs";
@@ -34,6 +34,17 @@ const WeeklyScheduleCalendar: React.FC<WeeklyScheduleCalendarProps> = ({
   handleMoreClick,
   onViewAllSchedules,
 }) => {
+  const todayRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    if (todayRef.current) {
+      todayRef.current.scrollIntoView({
+        behavior: 'smooth',
+        block: 'nearest',
+        inline: 'center'
+      });
+    }
+  }, [getWeekDates]);
   return (
     <div className="flex-1 flex flex-col card">
       {/* Header */}
@@ -165,6 +176,7 @@ const WeeklyScheduleCalendar: React.FC<WeeklyScheduleCalendarProps> = ({
               return (
                 <div
                   key={index}
+                  ref={isToday ? todayRef : null}
                   className={`
                     border rounded-lg p-4 lg:w-[calc(33.333vw-20px)] min-w-[200px] flex-shrink-0 h-full 
                     ${

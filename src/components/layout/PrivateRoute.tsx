@@ -42,7 +42,10 @@ const PrivateRoute = () => {
           mobileOpen={mobileOpen}
           onMobileClose={handleMobileClose}
         />
-        <div className="flex-1 bg-neutral-50 min-w-0 overflow-x-hidden">
+        <div
+          className="flex-1 bg-neutral-50 min-w-0 overflow-x-hidden"
+          style={{ scrollbarGutter: "stable" }}
+        >
           <Outlet />
         </div>
       </div>

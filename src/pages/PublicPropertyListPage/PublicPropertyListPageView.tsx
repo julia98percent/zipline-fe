@@ -119,7 +119,7 @@ const PublicPropertyListPageView = ({
                   상세 필터
                 </Button>
                 <Button variant="text" onClick={onSortReset}>
-                  필터 초기화
+                  필터 및 정렬 초기화
                 </Button>
               </div>
             </div>

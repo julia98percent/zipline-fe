@@ -101,10 +101,6 @@ const PropertyCellRenderer = {
     <span>{formatKoreanPrice(price)}</span>
   ),
 
-  MonthlyRent: ({ monthlyRent }: { monthlyRent: number }) => (
-    <span>{monthlyRent === 0 ? "-" : `${monthlyRent}만`}</span>
-  ),
-
   Area: ({ area, useMetric }: { area: number; useMetric: boolean }) => (
     <span>{useMetric ? `${area}m²` : `${(area / 3.3).toFixed(1)}평`}</span>
   ),

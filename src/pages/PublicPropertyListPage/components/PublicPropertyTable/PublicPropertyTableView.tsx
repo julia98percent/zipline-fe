@@ -105,7 +105,7 @@ const PublicPropertyTableView = ({
       ),
       align: "center",
       render: (_, property) => (
-        <PropertyCellRenderer.MonthlyRent monthlyRent={property.monthlyRent} />
+        <PropertyCellRenderer.Price price={property.monthlyRent} />
       ),
     },
     {

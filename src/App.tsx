@@ -1,7 +1,5 @@
-import { Routes, Route, Navigate, useLocation } from "react-router-dom";
+import { Routes, Route, Navigate } from "react-router-dom";
 import "react-toastify/dist/ReactToastify.css";
-import SessionExpiredModal from "@components/SessionExpiredModal";
-import useSessionStore from "@stores/useSessionStore";
 import PrivateRoute from "./components/layout/PrivateRoute";
 import GuestRoute from "./components/layout/GuestRoute";
 import SignUpPage from "@pages/SignUpPage";
@@ -30,18 +28,6 @@ import CounselDetailPage from "@pages/CounselDetailPage";
 import PreCounselListPage from "@pages/PreCounselListPage";
 
 const App = () => {
-  const { showSessionExpiredModal, closeSessionExpiredModal } =
-    useSessionStore();
-  const location = useLocation();
-
-  const handleLoginRedirect = () => {
-    closeSessionExpiredModal();
-
-    if (location.pathname !== "/sign-in") {
-      window.location.href = "/sign-in";
-    }
-  };
-
   return (
     <>
       <Routes>
@@ -103,11 +89,6 @@ const App = () => {
 
         <Route path="error" element={<ErrorPage />} />
       </Routes>
-
-      <SessionExpiredModal
-        open={showSessionExpiredModal}
-        onLoginRedirect={handleLoginRedirect}
-      />
     </>
   );
 };

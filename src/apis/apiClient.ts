@@ -1,7 +1,6 @@
 import axios, { AxiosInstance } from "axios";
 import { showToast } from "@components/Toast";
 import { saveCurrentLocation } from "@utils/sessionUtil";
-import useSessionStore from "@stores/useSessionStore";
 
 const apiClient: AxiosInstance = axios.create({
   baseURL: import.meta.env.VITE_SERVER_URL,
@@ -36,13 +35,14 @@ export const getCsrfToken = async (): Promise<string | null> => {
 const handleSessionExpired = () => {
   clearCsrfToken();
   sessionStorage.clear();
-  
+
   const authPages = ["/sign-in", "/sign-up", "/find-account"];
-  const isAuthPage = authPages.some(page => window.location.pathname.includes(page));
-  
+  const isAuthPage = authPages.some((page) =>
+    window.location.pathname.includes(page)
+  );
+
   if (!isAuthPage) {
     saveCurrentLocation();
-    useSessionStore.getState().openSessionExpiredModal();
   }
 };
 

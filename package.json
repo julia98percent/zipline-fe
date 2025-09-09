@@ -4,10 +4,10 @@
   "version": "0.0.0",
   "type": "module",
   "scripts": {
-    "dev": "vite",
-    "build": "vite build",
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
     "lint": "eslint .",
-    "preview": "vite preview",
     "types": "tsc --noEmit"
   },
   "dependencies": {
@@ -25,10 +25,11 @@
     "axios": "^1.8.4",
     "dayjs": "^1.11.13",
     "eventsource": "^4.0.0",
-    "react": "^19.0.0",
+    "next": "^15.5.2",
+    "react": "^19.1.1",
     "react-calendar": "^5.1.0",
     "react-daum-postcode": "^3.2.0",
-    "react-dom": "^19.0.0",
+    "react-dom": "^19.1.1",
     "react-dropzone": "^14.3.8",
     "react-qr-code": "^2.0.15",
     "react-router-dom": "^7.4.0",
@@ -38,7 +39,7 @@
   },
   "devDependencies": {
     "@eslint/js": "^9.21.0",
-    "@types/node": "^22.15.3",
+    "@types/node": "^24.3.1",
     "@types/react": "^19.0.10",
     "@types/react-dom": "^19.0.4",
     "@vitejs/plugin-react-swc": "^3.8.0",

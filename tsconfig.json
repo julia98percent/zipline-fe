@@ -1,39 +1,70 @@
 {
   "compilerOptions": {
     "paths": {
-      "@components/*": ["./src/components/*"],
-      "@pages/*": ["./src/pages/*"],
-      "@assets/*": ["./src/assets/*"],
-      "@hooks/*": ["./src/hooks/*"],
-      "@apis/*": ["./src/apis/*"],
-      "@utils/*": ["./src/utils/*"],
-      "@stores/*": ["./src/stores/*"],
-      "@ts/*": ["./src/ts/*"],
-      "@constants/*": ["./src/constants/*"],
-      "@context/*": ["./src/context/*"]
+      "@components/*": [
+        "./src/components/*"
+      ],
+      "@pages/*": [
+        "./src/pages/*"
+      ],
+      "@assets/*": [
+        "./src/assets/*"
+      ],
+      "@hooks/*": [
+        "./src/hooks/*"
+      ],
+      "@apis/*": [
+        "./src/apis/*"
+      ],
+      "@utils/*": [
+        "./src/utils/*"
+      ],
+      "@stores/*": [
+        "./src/stores/*"
+      ],
+      "@ts/*": [
+        "./src/ts/*"
+      ],
+      "@constants/*": [
+        "./src/constants/*"
+      ],
+      "@context/*": [
+        "./src/context/*"
+      ]
     },
     "types": [],
     "target": "ES2020",
     "useDefineForClassFields": true,
-    "lib": ["ES2020", "DOM", "DOM.Iterable"],
+    "lib": [
+      "ES2020",
+      "DOM",
+      "DOM.Iterable"
+    ],
     "module": "ESNext",
     "skipLibCheck": true,
     "forceConsistentCasingInFileNames": false,
-
     /* Bundler mode */
     "moduleResolution": "bundler",
     "allowImportingTsExtensions": true,
     "isolatedModules": true,
     "moduleDetection": "force",
     "noEmit": true,
-    "jsx": "react-jsx",
-
+    "jsx": "preserve",
     /* Linting */
     "strict": true,
     "noUnusedLocals": true,
     "noUnusedParameters": true,
     "noFallthroughCasesInSwitch": true,
-    "noUncheckedSideEffectImports": true
+    "noUncheckedSideEffectImports": true,
+    "allowJs": true,
+    "incremental": true,
+    "esModuleInterop": true,
+    "resolveJsonModule": true
   },
-  "include": ["src"]
+  "include": [
+    "src"
+  ],
+  "exclude": [
+    "node_modules"
+  ]
 }

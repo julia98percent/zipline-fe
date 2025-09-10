@@ -5,6 +5,7 @@
   "scripts": {
     "dev": "next dev --turbopack -p 5173",
     "build": "next build --turbopack",
+    "build:analyze": "ANALYZE=true next build --turbopack",
     "start": "next start -p 5173",
     "lint": "eslint .",
     "types": "tsc --noEmit"
@@ -16,18 +17,18 @@
     "@fullcalendar/daygrid": "^6.1.17",
     "@fullcalendar/interaction": "^6.1.17",
     "@fullcalendar/react": "^6.1.17",
+    "@microsoft/fetch-event-source": "^2.0.1",
     "@mui/icons-material": "^7.0.1",
     "@mui/material": "^7.0.1",
     "@mui/system": "^7.1.0",
     "@mui/x-date-pickers": "^7.28.2",
     "axios": "^1.8.4",
     "dayjs": "^1.11.13",
-    "eventsource": "^4.0.0",
-    "react": "19.1.0",
-    "react-dom": "19.1.0",
     "next": "15.5.2",
+    "react": "19.1.0",
     "react-calendar": "^5.1.0",
     "react-daum-postcode": "^3.2.0",
+    "react-dom": "19.1.0",
     "react-dropzone": "^14.3.8",
     "react-qr-code": "^2.0.15",
     "react-select": "^5.10.1",
@@ -35,14 +36,15 @@
     "zustand": "^5.0.3"
   },
   "devDependencies": {
-    "typescript": "^5",
+    "@eslint/eslintrc": "^3",
+    "@next/bundle-analyzer": "^15.5.2",
+    "@tailwindcss/postcss": "^4",
     "@types/node": "^20",
     "@types/react": "^19",
     "@types/react-dom": "^19",
-    "@tailwindcss/postcss": "^4",
-    "tailwindcss": "^4",
     "eslint": "^9",
     "eslint-config-next": "15.5.2",
-    "@eslint/eslintrc": "^3"
+    "tailwindcss": "^4",
+    "typescript": "^5"
   }
 }

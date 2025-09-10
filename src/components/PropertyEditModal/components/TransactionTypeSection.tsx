@@ -4,9 +4,9 @@ import {
   Radio,
   InputAdornment,
 } from "@mui/material";
-import TextField from "@components/TextField";
-import { PropertyType } from "@ts/property";
-import { formatKoreanPrice } from "@utils/numberUtil";
+import TextField from "@/components/TextField";
+import { PropertyType } from "@/types/property";
+import { formatKoreanPrice } from "@/utils/numberUtil";
 
 interface TransactionTypeSectionProps {
   type: PropertyType;

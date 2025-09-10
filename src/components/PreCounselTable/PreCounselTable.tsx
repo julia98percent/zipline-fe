@@ -1,8 +1,8 @@
 import { Box } from "@mui/material";
-import Table, { ColumnConfig } from "@components/Table/Table";
-import MobilePagination from "@components/MobilePagination";
+import Table, { ColumnConfig } from "@/components/Table/Table";
+import MobilePagination from "@/components/MobilePagination";
 import dayjs from "dayjs";
-import { PreCounsel } from "@ts/counsel";
+import { PreCounsel } from "@/types/counsel";
 import PreCounselCard from "./PreCounselCard";
 
 interface Props {

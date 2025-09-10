@@ -1,28 +1,29 @@
+"use client";
 import { IconButton, Badge } from "@mui/material";
 import { useState, useRef, useEffect, useCallback } from "react";
-import { useLocation, useNavigate } from "react-router-dom";
+import { usePathname, useRouter } from "next/navigation";
+import type { Route } from "next";
 import MenuIcon from "@mui/icons-material/Menu";
 import HomeIcon from "@mui/icons-material/Home";
 import ChevronRightIcon from "@mui/icons-material/ChevronRight";
-import { useSSE } from "@context/SSEContext";
+import { useSSE } from "@/context/SSEContext";
 import NotificationsNoneIcon from "@mui/icons-material/NotificationsNone";
 import NotificationList from "./NotificationList";
-import useNotificationStore from "@stores/useNotificationStore";
-import useMobileMenuStore from "@stores/useMobileMenuStore";
-import { fetchNotifications } from "@apis/notificationService";
-import { getPageBreadcrumb } from "@utils/pageUtils";
+import useNotificationStore from "@/stores/useNotificationStore";
+import useMobileMenuStore from "@/stores/useMobileMenuStore";
+import { fetchNotifications } from "@/apis/notificationService";
+import { getPageBreadcrumb } from "@/utils/pageUtils";
 
 const PageHeader = () => {
   useSSE();
-  const location = useLocation();
-  const navigate = useNavigate();
+  const pathname = usePathname();
+  const router = useRouter();
   const { notificationList, setNotificationList } = useNotificationStore();
   const { toggle: toggleMobileMenu } = useMobileMenuStore();
 
-  const breadcrumbs = getPageBreadcrumb(location.pathname);
+  const breadcrumbs = getPageBreadcrumb(pathname);
 
-  const isDashboard =
-    location.pathname === "/" || location.pathname.startsWith("/dashboard");
+  const isDashboard = pathname === "/" || pathname.startsWith("/dashboard");
   const [isNotificationOpen, setIsNotificationOpen] = useState(false);
   const [isChildModalOpen, setIsChildModalOpen] = useState(false);
   const notificationRef = useRef<HTMLDivElement>(null);
@@ -99,7 +100,7 @@ const PageHeader = () => {
 
                   {index === 0 ? (
                     <button
-                      onClick={() => navigate(breadcrumb.path)}
+                      onClick={() => router.push(breadcrumb.path as Route)}
                       className="flex items-center hover:bg-gray-100 p-1 rounded transition-colors"
                     >
                       <HomeIcon
@@ -112,7 +113,7 @@ const PageHeader = () => {
                     </button>
                   ) : (
                     <button
-                      onClick={() => navigate(breadcrumb.path)}
+                      onClick={() => router.push(breadcrumb.path as Route)}
                       className={`px-2 py-1 rounded transition-colors ${
                         breadcrumb.isActive
                           ? "text-gray-900 font-semibold text-lg"

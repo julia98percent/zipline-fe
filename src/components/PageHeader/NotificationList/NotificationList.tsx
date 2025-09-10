@@ -1,10 +1,10 @@
 import { useCallback, useState } from "react";
 import { List } from "@mui/material";
-import type { Notification } from "@stores/useNotificationStore";
-import useNotificationStore from "@stores/useNotificationStore";
-import PreCounselDetailModal from "@components/PreCounselDetailModal";
-import { readAllNotifications } from "@apis/notificationService";
-import Button from "@components/Button";
+import type { Notification } from "@/stores/useNotificationStore";
+import useNotificationStore from "@/stores/useNotificationStore";
+import PreCounselDetailModal from "@/components/PreCounselDetailModal";
+import { readAllNotifications } from "@/apis/notificationService";
+import Button from "@/components/Button";
 import NotificationItem from "./NotificationItem";
 
 interface NotificationListProps {

@@ -1,4 +1,4 @@
-import { MSG_ERROR_MESSAGES, MESSAGE_STATUS } from "@constants/Message";
+import { MSG_ERROR_MESSAGES, MESSAGE_STATUS } from "@/constants/Message";
 
 export const getStatusMessage = (statusCode: string): string => {
   if (statusCode.startsWith("4")) {

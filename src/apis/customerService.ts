@@ -1,21 +1,21 @@
-import apiClient from "@apis/apiClient";
+import apiClient from "@/apis/apiClient";
 import {
   ApiResponse,
   API_ERROR_MESSAGES,
   PageRequestParams,
-} from "@ts/apiResponse";
-import { CUSTOMER_ERROR_MESSAGES } from "@constants/clientErrorMessage";
+} from "@/types/apiResponse";
+import { CUSTOMER_ERROR_MESSAGES } from "@/constants/clientErrorMessage";
 import {
   Customer,
   CustomerData,
   CustomerListData,
   Label,
   CustomerUpdateData,
-} from "@ts/customer";
-import { handleApiResponse, handleApiError } from "@utils/apiUtil";
-import { ContractResponse } from "@ts/contract";
-import { ConsultationResponse } from "@ts/counsel";
-import { PropertyResponse } from "@ts/property";
+} from "@/types/customer";
+import { handleApiResponse, handleApiError } from "@/utils/apiUtil";
+import { ContractResponse } from "@/types/contract";
+import { ConsultationResponse } from "@/types/counsel";
+import { PropertyResponse } from "@/types/property";
 
 export const createCustomer = async (
   customerData: CustomerData | CustomerUpdateData

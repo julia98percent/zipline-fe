@@ -1,15 +1,22 @@
-import { Outlet, Navigate } from "react-router-dom";
-import useAuthStore from "@stores/useAuthStore";
+"use client";
+import { useEffect } from "react";
+import { useRouter } from "next/navigation";
+import useAuthStore from "@/stores/useAuthStore";
 
-const GuestRoute = () => {
+const GuestRoute = ({ children }: { children: React.ReactNode }) => {
   const { isSignedIn } = useAuthStore();
-  if (isSignedIn === true) return <Navigate to="/" replace />;
+  const router = useRouter();
 
-  return (
-    <div className="overflow-y-scroll h-full">
-      <Outlet />
-    </div>
-  );
+  useEffect(() => {
+    if (isSignedIn === true) {
+      router.replace("/");
+    }
+  }, [isSignedIn, router]);
+
+  if (isSignedIn === true) {
+    return null;
+  }
+
+  return <>{children}</>;
 };
-
 export default GuestRoute;

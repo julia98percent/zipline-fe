@@ -1,8 +1,8 @@
-import apiClient from "@apis/apiClient";
-import { ApiResponse } from "@ts/apiResponse";
-import { Schedule } from "@ts/schedule";
-import { handleApiResponse, handleApiError } from "@utils/apiUtil";
-import { SCHEDULE_ERROR_MESSAGES } from "@constants/clientErrorMessage";
+import apiClient from "@/apis/apiClient";
+import { ApiResponse } from "@/types/apiResponse";
+import { Schedule } from "@/types/schedule";
+import { handleApiResponse, handleApiError } from "@/utils/apiUtil";
+import { SCHEDULE_ERROR_MESSAGES } from "@/constants/clientErrorMessage";
 import dayjs, { Dayjs } from "dayjs";
 
 export const fetchSchedulesByDateRange = async (params: {

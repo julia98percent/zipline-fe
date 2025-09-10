@@ -1,9 +1,10 @@
+"use client";
 import { useState, useEffect, useCallback } from "react";
-import { fetchPreCounselDetail } from "@apis/preCounselService";
-import { PreCounselDetail } from "@ts/counsel";
+import { fetchPreCounselDetail } from "@/apis/preCounselService";
+import { PreCounselDetail } from "@/types/counsel";
 import PreCounselDetailModalView from "./PreCounselDetailModalView";
-import { createCustomer } from "@apis/customerService";
-import { showToast } from "@components/Toast";
+import { createCustomer } from "@/apis/customerService";
+import { showToast } from "@/components/Toast";
 
 interface PreCounselDetailModalContainerProps {
   open: boolean;

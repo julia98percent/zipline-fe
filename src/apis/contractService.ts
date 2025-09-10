@@ -1,14 +1,14 @@
-import apiClient from "@apis/apiClient";
-import { ApiResponse } from "@ts/apiResponse";
-import { CONTRACT_ERROR_MESSAGES } from "@constants/clientErrorMessage";
+import apiClient from "@/apis/apiClient";
+import { ApiResponse } from "@/types/apiResponse";
+import { CONTRACT_ERROR_MESSAGES } from "@/constants/clientErrorMessage";
 import {
   ContractDetail,
   ContractHistory,
   ContractListSearchParams,
   ContractListData,
   Contract,
-} from "@ts/contract";
-import { handleApiResponse, handleApiError } from "@utils/apiUtil";
+} from "@/types/contract";
+import { handleApiResponse, handleApiError } from "@/utils/apiUtil";
 
 export const fetchContractDetail = async (
   contractUid: string

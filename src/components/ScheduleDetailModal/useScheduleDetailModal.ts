@@ -1,9 +1,10 @@
+"use client";
 import { useState, useEffect, useCallback } from "react";
-import { Schedule } from "@ts/schedule";
+import { Schedule } from "@/types/schedule";
 import dayjs, { Dayjs } from "dayjs";
-import { fetchCustomerList } from "@apis/customerService";
-import { showToast } from "@components/Toast";
-import { getValidationErrors } from "@utils/scheduleUtil";
+import { fetchCustomerList } from "@/apis/customerService";
+import { showToast } from "@/components/Toast";
+import { getValidationErrors } from "@/utils/scheduleUtil";
 
 interface Customer {
   uid: number;

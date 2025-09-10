@@ -1,3 +1,4 @@
+"use client";
 import {
   List,
   ListItem,
@@ -6,9 +7,10 @@ import {
   Divider,
   ListItemIcon,
 } from "@mui/material";
-import { Link, useLocation, useNavigate } from "react-router-dom";
+import CustomLink from "@/components/CustomLink";
+import Image from "next/image";
+import { usePathname, useRouter } from "next/navigation";
 import DashboardIcon from "@mui/icons-material/Dashboard";
-import Logo from "@assets/logo.png";
 import BusinessIcon from "@mui/icons-material/Business";
 import PeopleIcon from "@mui/icons-material/People";
 import SettingsIcon from "@mui/icons-material/Settings";
@@ -16,10 +18,10 @@ import CalendarMonthIcon from "@mui/icons-material/CalendarMonth";
 import ForumIcon from "@mui/icons-material/Forum";
 import EmailIcon from "@mui/icons-material/Email";
 import LogoutIcon from "@mui/icons-material/Logout";
-import useAuthStore from "@stores/useAuthStore";
-import { logoutUser } from "@apis/userService";
-import { clearAllAuthState } from "@utils/authUtil";
-import { MENU_INFO, ParentMenuName } from "@utils/pageUtils";
+import useAuthStore from "@/stores/useAuthStore";
+import { logoutUser } from "@/apis/userService";
+import { clearAllAuthState } from "@/utils/authUtil";
+import { MENU_INFO, ParentMenuName } from "@/utils/pageUtils";
 
 const getMenuIcon = (name: ParentMenuName, isActive = false) => {
   const iconColor = isActive ? "#164F9E" : "#222222";
@@ -47,10 +49,10 @@ interface NavigationContentProps {
 }
 
 const NavigationContent = ({ onItemClick }: NavigationContentProps) => {
-  const location = useLocation();
-  const currentPath = location.pathname;
+  const pathname = usePathname();
+  const currentPath = pathname;
   const { user } = useAuthStore();
-  const navigate = useNavigate();
+  const router = useRouter();
 
   const handleLogout = async (e: React.MouseEvent) => {
     e.preventDefault();
@@ -58,35 +60,41 @@ const NavigationContent = ({ onItemClick }: NavigationContentProps) => {
       await logoutUser();
     } finally {
       clearAllAuthState();
-      navigate("/sign-in");
+      router.push("/sign-in");
     }
   };
 
   return (
     <div className="bg-neutral-100 h-full">
       <div className="p-4">
-        <Link to={"/"}>
+        <CustomLink href={"/"}>
           <div className="flex items-center">
-            <img src={Logo} alt="ZIPLINE Logo" className="w-6 h-6 mr-2" />
+            <Image
+              src={"/assets/logo.png"}
+              alt="ZIPLINE Logo"
+              width={12}
+              height={12}
+              className="w-6 h-6 mr-2"
+            />
             <h3 className="text-lg font-bold text-blue-800 text-primary">
               ZIPLINE
             </h3>
           </div>
-        </Link>
+        </CustomLink>
       </div>
       <List className="p-0">
         <ListItem disablePadding>
-          <Link to="/" className="w-full">
+          <CustomLink href="/" className="w-full">
             <ListItemButton
               onClick={onItemClick}
               className="hover:bg-gray-50 px-4 justify-start"
               style={{
                 borderLeft:
-                  currentPath === "/" || currentPath.startsWith("/dashboard")
+                  currentPath === "/" || currentPath?.startsWith("/dashboard")
                     ? "4px solid #164F9E"
                     : "none",
                 backgroundColor:
-                  currentPath === "/" || currentPath.startsWith("/dashboard")
+                  currentPath === "/" || currentPath?.startsWith("/dashboard")
                     ? "rgba(22, 79, 158, 0.04)"
                     : "transparent",
               }}
@@ -97,7 +105,7 @@ const NavigationContent = ({ onItemClick }: NavigationContentProps) => {
                   style={{
                     color:
                       currentPath === "/" ||
-                      currentPath.startsWith("/dashboard")
+                      currentPath?.startsWith("/dashboard")
                         ? "#164F9E"
                         : "#222222",
                     fontSize: 24,
@@ -108,24 +116,24 @@ const NavigationContent = ({ onItemClick }: NavigationContentProps) => {
                 primary="대시보드"
                 style={{
                   color:
-                    currentPath === "/" || currentPath.startsWith("/dashboard")
+                    currentPath === "/" || currentPath?.startsWith("/dashboard")
                       ? "#164F9E"
                       : "#222222",
                   fontWeight:
-                    currentPath === "/" || currentPath.startsWith("/dashboard")
+                    currentPath === "/" || currentPath?.startsWith("/dashboard")
                       ? "bold"
                       : "normal",
                 }}
               />
             </ListItemButton>
-          </Link>
+          </CustomLink>
         </ListItem>
         <Divider />
         {MENU_INFO.map(({ name, key, to, submenu }) => {
           const hasSubmenu = Boolean(submenu);
           const isActive = hasSubmenu
-            ? submenu?.some((sub) => currentPath.startsWith(sub.to))
-            : currentPath.startsWith(to!);
+            ? submenu?.some((sub) => currentPath?.startsWith(sub.to))
+            : currentPath?.startsWith(to!);
 
           return (
             <ListItem
@@ -135,7 +143,7 @@ const NavigationContent = ({ onItemClick }: NavigationContentProps) => {
             >
               {hasSubmenu ? (
                 <div className="w-full">
-                  <Link to={submenu![0].to}>
+                  <CustomLink href={submenu![0].to!}>
                     <ListItemButton
                       onClick={onItemClick}
                       className="hover:bg-gray-50"
@@ -151,18 +159,18 @@ const NavigationContent = ({ onItemClick }: NavigationContentProps) => {
                         }}
                       />
                     </ListItemButton>
-                  </Link>
+                  </CustomLink>
                   <List className="py-0">
                     {submenu?.map((sub) => (
-                      <Link to={sub.to} key={`${sub.to}-submenu`}>
+                      <CustomLink href={sub.to} key={`${sub.to}-submenu`}>
                         <ListItemButton
                           onClick={onItemClick}
                           className="hover:bg-gray-50 justify-start px-4 py-1 mb-1 ml-8"
                           style={{
-                            borderLeft: currentPath.startsWith(sub.to)
+                            borderLeft: currentPath?.startsWith(sub.to)
                               ? "4px solid #164F9E"
                               : "none",
-                            backgroundColor: currentPath.startsWith(sub.to)
+                            backgroundColor: currentPath?.startsWith(sub.to)
                               ? "rgba(22, 79, 158, 0.04)"
                               : "transparent",
                           }}
@@ -171,21 +179,21 @@ const NavigationContent = ({ onItemClick }: NavigationContentProps) => {
                             primary={sub.name}
                             className="text-sm"
                             style={{
-                              color: currentPath.startsWith(sub.to)
+                              color: currentPath?.startsWith(sub.to)
                                 ? "#164F9E"
                                 : "#222222",
-                              fontWeight: currentPath.startsWith(sub.to)
+                              fontWeight: currentPath?.startsWith(sub.to)
                                 ? "bold"
                                 : "normal",
                             }}
                           />
                         </ListItemButton>
-                      </Link>
+                      </CustomLink>
                     ))}
                   </List>
                 </div>
               ) : (
-                <Link to={to!} className="w-full">
+                <CustomLink href={to as `/${string}`} className="w-full">
                   <ListItemButton
                     onClick={onItemClick}
                     className="hover:bg-gray-50"
@@ -207,12 +215,12 @@ const NavigationContent = ({ onItemClick }: NavigationContentProps) => {
                       }}
                     />
                   </ListItemButton>
-                </Link>
+                </CustomLink>
               )}
             </ListItem>
           );
         })}
-        <Link to="/my">
+        <CustomLink href={"/my"}>
           <div className="m-3 px-2 py-2 rounded bg-white border border-gray-200">
             <span className="font-semibold">{user?.name || "사용자"} 님</span>
             <span className="text-sm text-gray-600">
@@ -227,7 +235,7 @@ const NavigationContent = ({ onItemClick }: NavigationContentProps) => {
               <span>로그아웃</span>
             </div>
           </div>
-        </Link>
+        </CustomLink>
       </List>
     </div>
   );

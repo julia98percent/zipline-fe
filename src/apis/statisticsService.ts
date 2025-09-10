@@ -1,6 +1,6 @@
-import apiClient from "@apis/apiClient";
-import { ApiResponse } from "@ts/apiResponse";
-import { handleApiResponse, handleApiError } from "@utils/apiUtil";
+import apiClient from "@/apis/apiClient";
+import { ApiResponse } from "@/types/apiResponse";
+import { handleApiResponse, handleApiError } from "@/utils/apiUtil";
 
 const STATISTICS_ERROR_MESSAGES = {
   FETCH_FAILED: "통계 데이터를 가져오는데 실패했습니다.",

@@ -6,11 +6,11 @@ import {
   Divider,
   Link,
 } from "@mui/material";
-import { formatDate } from "@utils/dateUtil";
-import { PreCounselDetail } from "@ts/counsel";
-import Button from "@components/Button";
-import CircularProgress from "@components/CircularProgress";
-import InfoField from "@components/InfoField";
+import { formatDate } from "@/utils/dateUtil";
+import { PreCounselDetail } from "@/types/counsel";
+import Button from "@/components/Button";
+import CircularProgress from "@/components/CircularProgress";
+import InfoField from "@/components/InfoField";
 
 interface PreCounselDetailModalProps {
   open: boolean;

@@ -8,9 +8,9 @@ import {
   FormControlLabel,
   Checkbox,
 } from "@mui/material";
-import { Schedule } from "@ts/schedule";
-import Button from "@components/Button";
-import DatePicker from "@components/DatePicker";
+import { Schedule } from "@/types/schedule";
+import Button from "@/components/Button";
+import DatePicker from "@/components/DatePicker";
 import dayjs, { Dayjs } from "dayjs";
 
 interface Customer {

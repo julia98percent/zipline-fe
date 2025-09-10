@@ -1,5 +1,7 @@
+"use client";
+
 import { useRef, useEffect } from "react";
-import { showToast } from "@components/Toast";
+import { showToast } from "@/components/Toast";
 
 interface KakaoMapProps {
   lat: number;
@@ -60,9 +62,7 @@ const KakaoMap = ({
     const loadKakaoMap = () => {
       if (!window.kakao || !window.kakao.maps) {
         const script = document.createElement("script");
-        script.src = `https://dapi.kakao.com/v2/maps/sdk.js?appkey=${
-          import.meta.env.VITE_KAKAO_MAP_SECRET
-        }&autoload=false`;
+        script.src = `https://dapi.kakao.com/v2/maps/sdk.js?appkey=${process.env.NEXT_PUBLIC_KAKAO_MAP_SECRET}&autoload=false`;
         script.async = true;
         script.onload = () => {
           window.kakao.maps.load(createMap);

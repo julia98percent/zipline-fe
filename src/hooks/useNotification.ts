@@ -1,6 +1,7 @@
+"use client";
 import { useState, useCallback } from "react";
-import { fetchPreCounselDetail } from "@apis/preCounselService";
-import { PreCounselDetail } from "@ts/counsel";
+import { fetchPreCounselDetail } from "@/apis/preCounselService";
+import { PreCounselDetail } from "@/types/counsel";
 
 export const useNotification = () => {
   const [isSurveyDetailModalOpen, setIsSurveyDetailModalOpen] = useState(false);

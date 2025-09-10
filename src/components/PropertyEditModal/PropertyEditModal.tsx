@@ -1,6 +1,7 @@
+"use client";
 import axios from "axios";
 import { useEffect, useState } from "react";
-import Button from "@components/Button";
+import Button from "@/components/Button";
 import {
   Dialog,
   DialogTitle,
@@ -9,10 +10,10 @@ import {
   Tooltip,
 } from "@mui/material";
 import dayjs, { Dayjs } from "dayjs";
-import { showToast } from "@components/Toast";
-import { useRawNumericInput } from "@hooks/useNumericInput";
-import { updateProperty } from "@apis/propertyService";
-import { fetchCustomerList } from "@apis/customerService";
+import { showToast } from "@/components/Toast";
+import { useRawNumericInput } from "@/hooks/useNumericInput";
+import { updateProperty } from "@/apis/propertyService";
+import { fetchCustomerList } from "@/apis/customerService";
 import {
   CustomerSelectSection,
   AddressSection,
@@ -22,8 +23,8 @@ import {
   PropertyFeaturesSection,
   AdditionalInfoSection,
 } from "./components";
-import { Property, PropertyType } from "@ts/property";
-import { MAX_PROPERTY_PRICE } from "@constants/property";
+import { Property, PropertyType } from "@/types/property";
+import { MAX_PROPERTY_PRICE } from "@/constants/property";
 
 interface PropertyEditModalProps {
   open: boolean;
@@ -199,7 +200,7 @@ function PropertyEditModal({
         `https://dapi.kakao.com/v2/local/search/address.json?query=${address}`,
         {
           headers: {
-            Authorization: `KakaoAK ${import.meta.env.VITE_KAKAO_MAP_KEY}`,
+            Authorization: `KakaoAK ${process.env.NEXT_PUBLIC_KAKAO_MAP_KEY}`,
           },
         }
       )

@@ -1,3 +1,4 @@
+"use client";
 import {
   createContext,
   useContext,
@@ -7,8 +8,8 @@ import {
   useCallback,
 } from "react";
 import { EventSource } from "eventsource";
-import useNotificationStore from "@stores/useNotificationStore";
-import { getCsrfToken } from "@apis/apiClient";
+import useNotificationStore from "@/stores/useNotificationStore";
+import { getCsrfToken } from "@/apis/apiClient";
 
 interface SSEContextValue {
   isConnected: boolean;
@@ -22,7 +23,7 @@ const MAX_RECONNECT_ATTEMPTS = 3;
 
 export function SSEProvider({ children }: { children: React.ReactNode }) {
   const eventSourceRef = useRef<EventSource | null>(null);
-  const reconnectTimeoutRef = useRef<number | null>(null);
+  const reconnectTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const reconnectCount = useRef<number>(0);
   const isConnectingRef = useRef<boolean>(false);
   const csrfTokenRef = useRef<string | null>(null);
@@ -63,7 +64,7 @@ export function SSEProvider({ children }: { children: React.ReactNode }) {
       }
 
       const eventSource = new EventSource(
-        `${import.meta.env.VITE_SERVER_URL}/notifications/stream`,
+        `${process.env.NEXT_PUBLIC_SERVER_URL}/notifications/stream`,
         {
           fetch: (input, init) =>
             fetch(input, {

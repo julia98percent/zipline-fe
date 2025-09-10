@@ -1,13 +1,17 @@
-import { useEffect } from "react";
-import { Outlet, Navigate } from "react-router-dom";
-import NavigationBar from "@components/NavigationBar";
-import CircularProgress from "@components/CircularProgress";
-import { clearAllAuthState } from "@utils/authUtil";
-import useAuthStore from "@stores/useAuthStore";
-import useMobileMenuStore from "@stores/useMobileMenuStore";
-import { SSEProvider } from "@context/SSEContext";
+"use client";
 
-const PrivateRoute = () => {
+import { useEffect } from "react";
+import { useRouter } from "next/navigation";
+import NavigationBar from "@/components/NavigationBar";
+import CircularProgress from "@/components/CircularProgress";
+import PageHeader from "@/components/PageHeader";
+import { clearAllAuthState } from "@/utils/authUtil";
+import useAuthStore from "@/stores/useAuthStore";
+import useMobileMenuStore from "@/stores/useMobileMenuStore";
+import { SSEProvider } from "@/context/SSEContext";
+
+const PrivateRoute = ({ children }: { children: React.ReactNode }) => {
+  const router = useRouter();
   const { user, isSignedIn, checkAuth } = useAuthStore();
   const { isOpen: mobileOpen, close: handleMobileClose } = useMobileMenuStore();
 
@@ -23,9 +27,11 @@ const PrivateRoute = () => {
     }
   }, [isSignedIn]);
 
-  if (isSignedIn === false) {
-    return <Navigate to="/sign-in" replace />;
-  }
+  useEffect(() => {
+    if (isSignedIn === false) {
+      router.replace("/sign-in");
+    }
+  }, [isSignedIn, router]);
 
   if (isSignedIn === null || (isSignedIn && !user)) {
     return (
@@ -46,7 +52,8 @@ const PrivateRoute = () => {
           className="flex-1 bg-neutral-50 min-w-0 overflow-x-hidden"
           style={{ scrollbarGutter: "stable" }}
         >
-          <Outlet />
+          <PageHeader />
+          {children}
         </div>
       </div>
     </SSEProvider>

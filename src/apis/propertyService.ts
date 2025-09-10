@@ -1,10 +1,10 @@
-import apiClient from "@apis/apiClient";
+import apiClient from "@/apis/apiClient";
 import {
   ApiResponse,
   CursorPaginatedResponse,
   PaginatedResponse,
-} from "@ts/apiResponse";
-import { ContractCategoryType } from "@ts/contract";
+} from "@/types/apiResponse";
+import { ContractCategoryType } from "@/types/contract";
 import {
   PropertyType,
   PropertyCategoryType,
@@ -12,7 +12,7 @@ import {
   PublicPropertySearchParams,
   PublicPropertySearchResponse,
   Property,
-} from "@ts/property";
+} from "@/types/property";
 
 export interface AgentPropertyDetail {
   customer: string;

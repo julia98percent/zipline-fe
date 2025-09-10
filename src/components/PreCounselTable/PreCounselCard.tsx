@@ -1,6 +1,6 @@
 import { Box, Typography } from "@mui/material";
 import dayjs from "dayjs";
-import { PreCounsel } from "@ts/counsel";
+import { PreCounsel } from "@/types/counsel";
 
 interface PreCounselCardProps {
   counsel: PreCounsel;

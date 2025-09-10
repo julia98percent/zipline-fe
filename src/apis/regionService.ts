@@ -1,8 +1,8 @@
-import apiClient from "@apis/apiClient";
-import { ApiResponse } from "@ts/apiResponse";
-import { REGION_ERROR_MESSAGES } from "@constants/clientErrorMessage";
-import { Region } from "@ts/region";
-import { handleApiResponse, handleApiError } from "@utils/apiUtil";
+import apiClient from "@/apis/apiClient";
+import { ApiResponse } from "@/types/apiResponse";
+import { REGION_ERROR_MESSAGES } from "@/constants/clientErrorMessage";
+import { Region } from "@/types/region";
+import { handleApiResponse, handleApiError } from "@/utils/apiUtil";
 
 export const fetchRegions = async (
   parentCortarNo: number

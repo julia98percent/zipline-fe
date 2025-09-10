@@ -1,6 +1,6 @@
-import useAuthStore from "@stores/useAuthStore";
-import useNotificationStore from "@stores/useNotificationStore";
-import { clearCsrfToken } from "@apis/apiClient";
+import useAuthStore from "@/stores/useAuthStore";
+import useNotificationStore from "@/stores/useNotificationStore";
+import { clearCsrfToken } from "@/apis/apiClient";
 
 export const clearAllAuthState = () => {
   useAuthStore.getState().logout();

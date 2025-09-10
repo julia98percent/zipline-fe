@@ -1,6 +1,4 @@
-import contractImage from "@assets/contract.png";
-import houseImage from "@assets/house.png";
-import counselImage from "@assets/counsel.png";
+import Image from "next/image";
 
 const EntryImage = () => {
   return (
@@ -15,16 +13,31 @@ const EntryImage = () => {
         <h2 className="mt-[10px] font-bold text-5xl tracking-wide">ZIPLINE</h2>
       </div>
       <div className="relative w-full h-full">
-        <img
-          src={contractImage}
+        <Image
+          src={"/assets/contract.png"}
+          alt="장식용 계약 이미지"
+          width={250}
+          height={250}
+          quality={100}
+          unoptimized
           className="absolute w-[17vw] min-w-[180px] top-[48%] left-[22%] transform -translate-x-1/2 -translate-y-1/2 -rotate-6 floating z-10"
         />
-        <img
-          src={houseImage}
+        <Image
+          src={"/assets/house.png"}
+          alt="장식용 집 이미지"
+          width={400}
+          height={380}
+          quality={100}
+          unoptimized
           className="absolute w-[25vw] min-w-[250px] top-[50%] left-[70%] transform -translate-x-1/2 -translate-y-1/2 rotate-4 floating"
         />
-        <img
-          src={counselImage}
+        <Image
+          src={"/assets/counsel.png"}
+          alt="장식용 상담 이미지"
+          width={400}
+          height={200}
+          quality={100}
+          unoptimized
           className="absolute w-[30vw] min-w-[300px] top-[80%] left-[40%] transform -translate-x-1/2 -translate-y-1/2 floating z-10"
         />
       </div>

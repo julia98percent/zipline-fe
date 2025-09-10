@@ -1,6 +1,6 @@
 import { Dispatch, SetStateAction } from "react";
 import { useDaumPostcodePopup } from "react-daum-postcode";
-import Button from "@components/Button";
+import Button from "@/components/Button";
 
 interface Props {
   setAddress: Dispatch<SetStateAction<string | null>>;

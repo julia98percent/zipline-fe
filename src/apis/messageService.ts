@@ -1,17 +1,17 @@
-import apiClient from "@apis/apiClient";
+import apiClient from "@/apis/apiClient";
 import {
   MessageDetail,
   MessageHistoryResponse,
   MessageDetailListResponse,
-} from "@ts/message";
-import { MESSAGE_ERROR_MESSAGES } from "@constants/clientErrorMessage";
-import { ApiResponse } from "@ts/apiResponse";
+} from "@/types/message";
+import { MESSAGE_ERROR_MESSAGES } from "@/constants/clientErrorMessage";
+import { ApiResponse } from "@/types/apiResponse";
 import {
   MessageTemplate,
   BulkMessagePayload,
   BulkMessageSendResponse,
-} from "@ts/message";
-import { handleApiResponse, handleApiError } from "@utils/apiUtil";
+} from "@/types/message";
+import { handleApiResponse, handleApiError } from "@/utils/apiUtil";
 
 export const fetchMessages = async (params: {
   criteria?: string;

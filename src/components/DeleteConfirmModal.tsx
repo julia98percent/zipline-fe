@@ -4,7 +4,7 @@ import {
   DialogContent,
   DialogActions,
 } from "@mui/material";
-import Button from "@components/Button";
+import Button from "@/components/Button";
 
 interface DeleteConfirmModalProps {
   open: boolean;

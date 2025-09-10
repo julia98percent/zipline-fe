@@ -9,7 +9,7 @@ import {
   SxProps,
   TableCellProps,
 } from "@mui/material";
-import EnhancedPagination from "./EnhancedPagination";
+import Pagination from "./Pagination";
 
 export interface ColumnConfig<T = unknown> {
   key: string;
@@ -143,7 +143,7 @@ function Table<T extends RowData>({
         </MuiTable>
       </TableContainer>
       {pagination && handleChangePage && handleChangeRowsPerPage && (
-        <EnhancedPagination
+        <Pagination
           totalElements={totalElements}
           page={page}
           rowsPerPage={rowsPerPage}

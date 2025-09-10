@@ -1,4 +1,4 @@
-import { MenuItem, StringSelect } from "@components/Select";
+import { MenuItem, StringSelect } from "@/components/Select";
 
 interface Customer {
   uid: number;

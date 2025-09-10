@@ -1,4 +1,4 @@
-import { ApiResponse } from "@ts/apiResponse";
+import { ApiResponse } from "@/types/apiResponse";
 
 export function handleApiResponse<T>(
   response: ApiResponse<T>,

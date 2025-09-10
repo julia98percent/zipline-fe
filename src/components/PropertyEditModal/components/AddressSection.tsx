@@ -1,5 +1,5 @@
 import { TextField } from "@mui/material";
-import DaumPost from "@components/DaumPost";
+import DaumPost from "@/components/DaumPost";
 import { Dispatch, SetStateAction } from "react";
 
 interface AddressSectionProps {

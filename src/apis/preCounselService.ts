@@ -1,8 +1,12 @@
-import apiClient from "@apis/apiClient";
-import { PreCounsel, PreCounselDetail, PreCounselListData } from "@ts/counsel";
-import { COUNSEL_ERROR_MESSAGES } from "@constants/clientErrorMessage";
-import { ApiResponse } from "@ts/apiResponse";
-import { handleApiResponse, handleApiError } from "@utils/apiUtil";
+import apiClient from "@/apis/apiClient";
+import {
+  PreCounsel,
+  PreCounselDetail,
+  PreCounselListData,
+} from "@/types/counsel";
+import { COUNSEL_ERROR_MESSAGES } from "@/constants/clientErrorMessage";
+import { ApiResponse } from "@/types/apiResponse";
+import { handleApiResponse, handleApiError } from "@/utils/apiUtil";
 
 // Survey related types
 export interface ChoiceType {

@@ -1,8 +1,13 @@
+"use client";
+
 import { useCallback } from "react";
-import { useSearchParams } from "react-router-dom";
+import type { Route } from "next";
+import { useSearchParams, useRouter, usePathname } from "next/navigation";
 
 export const useUrlFilters = () => {
-  const [searchParams, setSearchParams] = useSearchParams();
+  const searchParams = useSearchParams();
+  const router = useRouter();
+  const pathname = usePathname();
 
   const getParam = useCallback(
     (key: string, defaultValue: string = ""): string => {
@@ -29,49 +34,45 @@ export const useUrlFilters = () => {
 
   const setParam = useCallback(
     (key: string, value: string | number | boolean) => {
-      setSearchParams((prev) => {
-        const params = new URLSearchParams(prev);
-        if (value === null || value === undefined || value === "") {
-          params.delete(key);
-        } else {
-          params.set(key, value.toString());
-        }
+      const params = new URLSearchParams(searchParams.toString());
+      if (value === null || value === undefined || value === "") {
+        params.delete(key);
+      } else {
+        params.set(key, value.toString());
+      }
 
-        params.delete("page");
-        return params;
-      });
+      params.delete("page");
+      router.push(`${pathname}?${params.toString()}` as Route);
     },
-    [setSearchParams]
+    [searchParams, router, pathname]
   );
 
   const setParams = useCallback(
     (updates: Record<string, string | number | boolean | null>) => {
-      setSearchParams((prev) => {
-        const params = new URLSearchParams(prev);
+      const params = new URLSearchParams(searchParams.toString());
 
-        Object.entries(updates).forEach(([key, value]) => {
-          if (
-            value === null ||
-            value === undefined ||
-            value === "" ||
-            value === 0
-          ) {
-            params.delete(key);
-          } else {
-            params.set(key, value.toString());
-          }
-        });
-
-        params.delete("page");
-        return params;
+      Object.entries(updates).forEach(([key, value]) => {
+        if (
+          value === null ||
+          value === undefined ||
+          value === "" ||
+          value === 0
+        ) {
+          params.delete(key);
+        } else {
+          params.set(key, value.toString());
+        }
       });
+
+      params.delete("page");
+      router.push(`${pathname}?${params.toString()}` as Route);
     },
-    [setSearchParams]
+    [searchParams, router, pathname]
   );
 
   const clearAllFilters = useCallback(() => {
-    setSearchParams({});
-  }, [setSearchParams]);
+    router.push(pathname as Route);
+  }, [router, pathname]);
 
   return {
     getParam,

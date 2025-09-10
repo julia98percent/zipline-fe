@@ -1,6 +1,6 @@
 import { create } from "zustand";
-import { User } from "@ts/user";
-import { fetchUserInfo } from "@apis/userService";
+import { User } from "@/types/user";
+import { fetchUserInfo } from "@/apis/userService";
 
 interface AuthState {
   isSignedIn: boolean | null;

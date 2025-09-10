@@ -1,15 +1,16 @@
-import React from "react";
-import { translateNotificationCategory } from "@utils/stringUtil";
-import { formatDateTimeToKorean } from "@utils/dateUtil";
+"use client";
+import { memo } from "react";
+import { translateNotificationCategory } from "@/utils/stringUtil";
+import { formatDateTimeToKorean } from "@/utils/dateUtil";
 import {
   deleteNotification as deleteNotificationApi,
   readNotification,
-} from "@apis/notificationService";
-import type { Notification } from "@stores/useNotificationStore";
-import useNotificationStore from "@stores/useNotificationStore";
+} from "@/apis/notificationService";
+import type { Notification } from "@/stores/useNotificationStore";
+import useNotificationStore from "@/stores/useNotificationStore";
 import ClearIcon from "@mui/icons-material/Clear";
 import { IconButton } from "@mui/material";
-import { showToast } from "@components/Toast";
+import { showToast } from "@/components/Toast";
 
 interface NotificationItemProps {
   notification: Notification;
@@ -33,8 +34,6 @@ function NotificationItem({
           type: "error",
         });
       }
-    } else {
-      console.log("Navigate to:", notification.url);
     }
   };
 
@@ -77,4 +76,4 @@ function NotificationItem({
   );
 }
 
-export default React.memo(NotificationItem);
+export default memo(NotificationItem);

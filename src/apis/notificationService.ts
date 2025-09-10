@@ -1,8 +1,8 @@
-import apiClient from "@apis/apiClient";
-import { Notification } from "@stores/useNotificationStore";
-import { API_STATUS_CODES } from "@ts/apiResponse";
-import { NOTIFICATION_ERROR_MESSAGES } from "@constants/clientErrorMessage";
-import { handleApiResponse, handleApiError } from "@utils/apiUtil";
+import apiClient from "@/apis/apiClient";
+import { Notification } from "@/stores/useNotificationStore";
+import { API_STATUS_CODES } from "@/types/apiResponse";
+import { NOTIFICATION_ERROR_MESSAGES } from "@/constants/clientErrorMessage";
+import { handleApiResponse, handleApiError } from "@/utils/apiUtil";
 
 interface ApiResponse<T = unknown> {
   success: boolean;

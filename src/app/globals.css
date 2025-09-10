@@ -1,0 +1,46 @@
+@import "tailwindcss";
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@theme {
+  --color-primary: #164f9e;
+  --color-primary-dark: #0d3b7a;
+  --color-primary-light: #2a6fdb;
+  --breakpoint-xs: 24rem;
+}
+
+body {
+  @apply h-screen bg-gray-50;
+}
+
+@layer components {
+  .fc-toolbar-title {
+    @apply text-lg text-gray-800;
+  }
+  .fc-toolbar-chunk .fc-button {
+    @apply bg-transparent! border-none! text-gray-700!
+    px-2! py-1! hover:bg-gray-100! rounded-md! cursor-pointer!
+    focus:outline-none! focus:ring-2! focus:ring-blue-500!
+    focus:shadow-none! focus:ring-gray-200! focus:ring-offset-1!;
+  }
+  .card {
+    @apply shadow-sm rounded-md bg-white transition-colors;
+  }
+}
+
+@layer utilities {
+  @keyframes float {
+    0%,
+    100% {
+      transform: translateY(0);
+    }
+    50% {
+      transform: translateY(-10px);
+    }
+  }
+
+  .floating {
+    animation: float 3s ease-in-out infinite;
+  }
+}

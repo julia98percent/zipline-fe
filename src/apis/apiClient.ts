@@ -1,9 +1,9 @@
 import axios, { AxiosInstance } from "axios";
-import { showToast } from "@components/Toast";
-import { saveCurrentLocation } from "@utils/sessionUtil";
+import { showToast } from "@/components/Toast";
+import { saveCurrentLocation } from "@/utils/sessionUtil";
 
 const apiClient: AxiosInstance = axios.create({
-  baseURL: import.meta.env.VITE_SERVER_URL,
+  baseURL: process.env.NEXT_PUBLIC_SERVER_URL,
   withCredentials: true,
   headers: {
     "Content-Type": "application/json",

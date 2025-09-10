@@ -1,4 +1,4 @@
-import { Schedule } from "@ts/schedule";
+import { Schedule } from "@/types/schedule";
 import { useScheduleDetailModal } from "./useScheduleDetailModal";
 import ScheduleDetailModalView from "./ScheduleDetailModalView";
 

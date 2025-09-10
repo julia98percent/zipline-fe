@@ -1,5 +1,5 @@
 import { TextField } from "@mui/material";
-import DatePicker from "@components/DatePicker";
+import DatePicker from "@/components/DatePicker";
 import { Dayjs } from "dayjs";
 
 interface AdditionalInfoSectionProps {

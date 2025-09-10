@@ -2,6 +2,20 @@ import axios, { AxiosInstance } from "axios";
 import { showToast } from "@/components/Toast";
 import { saveCurrentLocation } from "@/utils/sessionUtil";
 
+const getServerCookies = async (): Promise<string> => {
+  if (typeof window !== "undefined") {
+    return "";
+  }
+
+  try {
+    const { cookies } = await import("next/headers");
+    const cookieStore = await cookies();
+    return cookieStore.toString();
+  } catch {
+    return "";
+  }
+};
+
 const apiClient: AxiosInstance = axios.create({
   baseURL: process.env.NEXT_PUBLIC_SERVER_URL,
   withCredentials: true,
@@ -34,7 +48,10 @@ export const getCsrfToken = async (): Promise<string | null> => {
 
 const handleSessionExpired = () => {
   clearCsrfToken();
-  sessionStorage.clear();
+
+  if (typeof window === "undefined") {
+    return;
+  }
 
   const authPages = ["/sign-in", "/sign-up", "/find-account"];
   const isAuthPage = authPages.some((page) =>
@@ -48,12 +65,25 @@ const handleSessionExpired = () => {
 
 apiClient.interceptors.request.use(
   async (config) => {
-    if (!csrfToken && config.method !== "get") {
-      await initializeCsrf();
+    if (typeof window === "undefined") {
+      try {
+        const serverCookies = await getServerCookies();
+        if (serverCookies) {
+          config.headers["Cookie"] = serverCookies;
+        }
+      } catch (error) {
+        console.warn("서버 쿠키 설정 실패:", error);
+      }
     }
 
-    if (csrfToken && config.method !== "get") {
-      config.headers["X-XSRF-TOKEN"] = csrfToken;
+    if (typeof window !== "undefined") {
+      if (!csrfToken && config.method !== "get") {
+        await initializeCsrf();
+      }
+
+      if (csrfToken && config.method !== "get") {
+        config.headers["X-XSRF-TOKEN"] = csrfToken;
+      }
     }
 
     if (config.data instanceof FormData) {

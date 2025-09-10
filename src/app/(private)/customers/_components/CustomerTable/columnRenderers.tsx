@@ -377,7 +377,7 @@ export const renderLabelsColumn = (
           <Box component="li" {...props}>
             {option.uid === NEW_LABEL_TEMP_UID ? (
               <Box className="flex items-center gap-1">
-                <span>"{option.name}" 새 라벨 생성</span>
+                <span>&quot;{option.name}&quot; 새 라벨 생성</span>
                 <Chip
                   label="NEW"
                   size="small"

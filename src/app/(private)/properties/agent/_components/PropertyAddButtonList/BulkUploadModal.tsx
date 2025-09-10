@@ -9,7 +9,6 @@ import {
 } from "@mui/material";
 import { useDropzone } from "react-dropzone";
 import { uploadPropertiesBulk } from "@/apis/propertyService";
-import Link from "next/link";
 import { AxiosError } from "axios";
 import { showToast } from "@/components/Toast";
 import Button from "@/components/Button";
@@ -233,7 +232,7 @@ function BulkUploadModal({ open, handleClose, fetchPropertyData }: Props) {
                         <strong>{err.rowNum}행</strong> - {err.message}
                         {err.value && (
                           <span className="text-red-500 ml-1">
-                            (입력값: "{err.value}")
+                            (입력값: &quot;{err.value}&quot;)
                           </span>
                         )}
                       </span>

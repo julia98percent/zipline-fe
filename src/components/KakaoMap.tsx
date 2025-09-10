@@ -16,9 +16,9 @@ declare global {
     kakao: {
       maps: {
         load: (callback: () => void) => void;
-        Map: new (container: HTMLElement, options: any) => any;
-        LatLng: new (lat: number, lng: number) => any;
-        Marker: new (options: any) => any;
+        Map: new (container: HTMLElement, options: Record<string, unknown>) => unknown;
+        LatLng: new (lat: number, lng: number) => unknown;
+        Marker: new (options: Record<string, unknown>) => unknown;
       };
     };
   }

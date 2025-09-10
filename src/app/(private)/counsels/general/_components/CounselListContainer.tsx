@@ -31,11 +31,11 @@ function CounselListPage() {
   const startDate = useMemo(() => {
     const dateStr = getParam("startDate");
     return dateStr ? dayjs(dateStr) : null;
-  }, [searchParams]);
+  }, [getParam]);
   const endDate = useMemo(() => {
     const dateStr = getParam("endDate");
     return dateStr ? dayjs(dateStr) : null;
-  }, [searchParams]);
+  }, [getParam]);
   const selectedType = getParam("type") || null;
   const selectedCompleted = getParam("completed")
     ? getBooleanParam("completed")

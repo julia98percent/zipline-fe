@@ -10,7 +10,11 @@ import useAuthStore from "@/stores/useAuthStore";
 import useMobileMenuStore from "@/stores/useMobileMenuStore";
 import { SSEProvider } from "@/context/SSEContext";
 
-const PrivateRoute = ({ children }: { children: React.ReactNode }) => {
+interface PrivateRouteClientProps {
+  children: React.ReactNode;
+}
+
+const PrivateRouteClient = ({ children }: PrivateRouteClientProps) => {
   const router = useRouter();
   const { user, isSignedIn, checkAuth } = useAuthStore();
   const { isOpen: mobileOpen, close: handleMobileClose } = useMobileMenuStore();
@@ -43,21 +47,16 @@ const PrivateRoute = ({ children }: { children: React.ReactNode }) => {
 
   return (
     <SSEProvider>
-      <div className="relative flex flex-row w-full h-screen">
-        <NavigationBar
-          mobileOpen={mobileOpen}
-          onMobileClose={handleMobileClose}
-        />
-        <div
-          className="flex-1 bg-neutral-50 min-w-0 overflow-x-hidden"
-          style={{ scrollbarGutter: "stable" }}
-        >
-          <PageHeader />
-          {children}
-        </div>
+      <NavigationBar
+        mobileOpen={mobileOpen}
+        onMobileClose={handleMobileClose}
+      />
+      <div className="flex-1 bg-neutral-50 min-w-0 overflow-x-hidden">
+        <PageHeader />
+        {children}
       </div>
     </SSEProvider>
   );
 };
 
-export default PrivateRoute;
+export default PrivateRouteClient;

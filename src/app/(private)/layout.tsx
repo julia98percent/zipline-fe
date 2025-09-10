@@ -1,9 +1,9 @@
-import PrivateRoute from "@/components/layout/PrivateRoute";
+import PrivateLayout from "@/components/layout/PrivateLayout";
 
-export default function PrivateLayout({
+export default function Layout({
   children,
 }: {
   children: React.ReactNode;
 }) {
-  return <PrivateRoute>{children}</PrivateRoute>;
+  return <PrivateLayout>{children}</PrivateLayout>;
 }

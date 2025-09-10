@@ -95,7 +95,6 @@ const ContractList = ({
     },
   ];
 
-  // 테이블 데이터 변환 (uid를 id로 매핑)
   const tableData = filteredAndSortedContracts.map((contract) => ({
     id: contract.uid,
     ...contract,

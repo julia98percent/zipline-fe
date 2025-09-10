@@ -169,9 +169,9 @@ export const verifyCode = async (data: VerifyCodeRequest): Promise<void> => {
 };
 
 export interface RemainingTimeResponse {
-  remainingSeconds: number; // 남은 시간(초)
-  serverTimestamp: number; // 서버 타임스탬프
-  active: boolean; // 인증번호 활성 상태
+  remainingSeconds: number;
+  serverTimestamp: number;
+  active: boolean;
 }
 
 export const getRemainingTime = async (userId: string): Promise<number> => {

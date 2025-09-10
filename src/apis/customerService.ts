@@ -247,7 +247,6 @@ export const createLabel = async (name: string): Promise<Label> => {
   }
 };
 
-// 고객 일괄 업로드
 export const uploadCustomersBulk = async (file: File): Promise<void> => {
   try {
     const formData = new FormData();

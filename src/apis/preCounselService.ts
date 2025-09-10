@@ -8,7 +8,6 @@ import { COUNSEL_ERROR_MESSAGES } from "@/constants/clientErrorMessage";
 import { ApiResponse } from "@/types/apiResponse";
 import { handleApiResponse, handleApiError } from "@/utils/apiUtil";
 
-// Survey related types
 export interface ChoiceType {
   id: number;
   text: string;
@@ -102,7 +101,6 @@ export const fetchPreCounselDetail = async (
   }
 };
 
-// 설문 응답 목록 조회
 export const fetchSurveyResponses = async (params: {
   page?: number;
   size?: number;
@@ -125,7 +123,6 @@ export const fetchSurveyResponses = async (params: {
   }
 };
 
-// 특정 설문 응답 상세 조회
 export const fetchSurveyResponseDetail = async (
   surveyResponseUid: number
 ): Promise<PreCounsel> => {
@@ -143,7 +140,6 @@ export const fetchSurveyResponseDetail = async (
   }
 };
 
-// Survey 관련 함수들 (surveyService에서 이동)
 export const getSurvey = async (userUrl: string): Promise<SurveyType> => {
   try {
     const { data: response } = await apiClient.get<ApiResponse<SurveyType>>(
@@ -181,7 +177,6 @@ export const submitSurveyAnswers = async (
   try {
     const formData = new FormData();
 
-    // requestDTO를 JSON 문자열로 변환하여 FormData에 추가
     const requestDTO = answers
       .filter((answer) => {
         const question = questions.find((q) => q.id === answer.questionId);
@@ -195,7 +190,6 @@ export const submitSurveyAnswers = async (
 
     formData.append("requestDTO", JSON.stringify(requestDTO));
 
-    // 파일 추가 - 파일명에 questionId를 포함
     answers.forEach((answer) => {
       if (answer.file) {
         const originalFileName = answer.file.name;
@@ -256,7 +250,6 @@ export const updateSurvey = async (surveyData: SurveyType): Promise<void> => {
   }
 };
 
-// 제출된 설문 응답 목록 조회 (기존 fetchSubmittedSurveyResponses와 통합)
 export const fetchSubmittedSurveyResponses = async (
   page: number,
   size: number

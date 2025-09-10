@@ -61,11 +61,10 @@ interface DashboardData {
   completedContractsOpen: boolean;
   setCompletedContractsOpen: React.Dispatch<React.SetStateAction<boolean>>;
   recentContracts: Contract[];
-  // Computed values
+
   currentCounselList: Counsel[];
   currentContractList: Contract[];
 
-  // Event handlers
   handlePrevWeek: () => void;
   handleNextWeek: () => void;
   handleCounselTabChange: (e: React.MouseEvent<HTMLDivElement>) => void;
@@ -80,7 +79,6 @@ interface DashboardData {
   handleCounselClick: (counselId: number) => void;
   handleViewAllSchedules: () => void;
 
-  // Utility functions
   getWeekDates: () => dayjs.Dayjs[];
   getDayName: (date: dayjs.Dayjs) => string;
   currentWeekRange: () => string;
@@ -90,7 +88,6 @@ interface DashboardData {
 export const useDashboard = (): DashboardData => {
   const router = useRouter();
 
-  // State declarations
   const [selectedDate, setSelectedDate] = useState(new Date());
   const [counselTab, setCounselTab] = useState<"request" | "latest">("request");
   const [contractTab, setContractTab] = useState<"expiring" | "recent">(
@@ -130,7 +127,6 @@ export const useDashboard = (): DashboardData => {
   const [ongoingContractsOpen, setOngoingContractsOpen] = useState(false);
   const [completedContractsOpen, setCompletedContractsOpen] = useState(false);
 
-  // API functions
   const fetchSurveyResponses = useCallback(async (): Promise<void> => {
     try {
       const surveyResponses = await fetchSurveyResponsesAPI(
@@ -162,8 +158,12 @@ export const useDashboard = (): DashboardData => {
         fetchDashboardCounsels({ sortType: "LATEST", page: 0, size: 5 }),
       ]);
 
-      setCounselListByDueDate((dueDateCounsels as any)?.counsels || []);
-      setCounselListByLatest((latestCounsels as any)?.counsels || []);
+      setCounselListByDueDate(
+        (dueDateCounsels as { counsels?: Counsel[] })?.counsels || []
+      );
+      setCounselListByLatest(
+        (latestCounsels as { counsels?: Counsel[] })?.counsels || []
+      );
     } catch (error) {
       console.error("Error fetching counsel lists:", error);
       setCounselListByDueDate([]);
@@ -173,7 +173,6 @@ export const useDashboard = (): DashboardData => {
     }
   }, []);
 
-  // Event handlers
   const handlePrevWeek = useCallback(() => {
     const newDate = new Date(selectedDate);
     newDate.setDate(newDate.getDate() - 7);
@@ -269,15 +268,17 @@ export const useDashboard = (): DashboardData => {
     }
   }, [recentContractsCount]);
 
-  const handleCounselClick = useCallback((counselId: number) => {
-    router.push(`/counsels/general/${counselId}`);
-  }, []);
+  const handleCounselClick = useCallback(
+    (counselId: number) => {
+      router.push(`/counsels/general/${counselId}`);
+    },
+    [router]
+  );
 
   const handleViewAllSchedules = useCallback(() => {
     router.push("/schedules");
-  }, []);
+  }, [router]);
 
-  // Utility functions
   const getWeekDates = useCallback(() => {
     const startOfWeek = dayjs(selectedDate).startOf("week");
     const dates = [];
@@ -346,9 +347,8 @@ export const useDashboard = (): DashboardData => {
     };
 
     fetchStatisticsData();
-  }, []); // 통계 데이터는 날짜와 무관하므로 한번만 로딩
+  }, []);
 
-  // Fetch schedules when date changes (독립적으로 실행)
   useEffect(() => {
     const fetchSchedules = async () => {
       try {
@@ -366,19 +366,16 @@ export const useDashboard = (): DashboardData => {
     };
 
     fetchSchedules();
-  }, [selectedDate]); // selectedDate에만 의존
+  }, [selectedDate]);
 
-  // Fetch survey responses
   useEffect(() => {
     fetchSurveyResponses();
   }, [fetchSurveyResponses]);
 
-  // Fetch counsel lists
   useEffect(() => {
     fetchCounselLists();
   }, [fetchCounselLists]);
 
-  // Fetch contracts
   useEffect(() => {
     const fetchAllContracts = async () => {
       setContractLoading(true);
@@ -402,7 +399,6 @@ export const useDashboard = (): DashboardData => {
   }, []);
 
   return {
-    // State values
     selectedDate,
     setSelectedDate,
     counselTab,
@@ -453,7 +449,6 @@ export const useDashboard = (): DashboardData => {
     handleCounselClick,
     handleViewAllSchedules,
 
-    // Utility functions
     getWeekDates,
     getDayName,
     currentWeekRange,

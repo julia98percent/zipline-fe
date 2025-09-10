@@ -20,7 +20,6 @@ const CounselList: React.FC<CounselListProps> = ({
   handleCounselTabChange,
   handleCounselClick,
 }) => {
-  // 컬럼 설정
   const columns: ColumnConfig<Counsel>[] = [
     {
       key: "customerName",

@@ -370,7 +370,6 @@ export const searchAgentProperties = async (
     queryParams.append("page", searchParams.page.toString());
     queryParams.append("size", searchParams.size.toString());
 
-    // sortFields가 존재하고 비어있지 않을 때만 추가
     if (
       searchParams.sortFields &&
       Object.keys(searchParams.sortFields).length > 0

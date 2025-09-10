@@ -18,8 +18,8 @@ const EntryImage = () => {
           alt="장식용 계약 이미지"
           width={250}
           height={250}
-          quality={100}
-          unoptimized
+          quality={85}
+          priority
           className="absolute w-[17vw] min-w-[180px] top-[48%] left-[22%] transform -translate-x-1/2 -translate-y-1/2 -rotate-6 floating z-10"
         />
         <Image
@@ -27,8 +27,7 @@ const EntryImage = () => {
           alt="장식용 집 이미지"
           width={400}
           height={380}
-          quality={100}
-          unoptimized
+          quality={85}
           className="absolute w-[25vw] min-w-[250px] top-[50%] left-[70%] transform -translate-x-1/2 -translate-y-1/2 rotate-4 floating"
         />
         <Image
@@ -36,8 +35,7 @@ const EntryImage = () => {
           alt="장식용 상담 이미지"
           width={400}
           height={200}
-          quality={100}
-          unoptimized
+          quality={85}
           className="absolute w-[30vw] min-w-[300px] top-[80%] left-[40%] transform -translate-x-1/2 -translate-y-1/2 floating z-10"
         />
       </div>

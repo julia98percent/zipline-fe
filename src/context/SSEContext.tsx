@@ -7,7 +7,7 @@ import {
   useState,
   useCallback,
 } from "react";
-import { EventSource } from "eventsource";
+import { fetchEventSource } from "@microsoft/fetch-event-source";
 import useNotificationStore from "@/stores/useNotificationStore";
 import { getCsrfToken } from "@/apis/apiClient";
 
@@ -22,8 +22,10 @@ const SSEContext = createContext<SSEContextValue | null>(null);
 const MAX_RECONNECT_ATTEMPTS = 3;
 
 export function SSEProvider({ children }: { children: React.ReactNode }) {
-  const eventSourceRef = useRef<EventSource | null>(null);
-  const reconnectTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const abortControllerRef = useRef<AbortController | null>(null);
+  const reconnectTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(
+    null
+  );
   const reconnectCount = useRef<number>(0);
   const isConnectingRef = useRef<boolean>(false);
   const csrfTokenRef = useRef<string | null>(null);
@@ -32,9 +34,9 @@ export function SSEProvider({ children }: { children: React.ReactNode }) {
   const { addNotificationList } = useNotificationStore();
 
   const cleanup = useCallback(() => {
-    if (eventSourceRef.current) {
-      eventSourceRef.current.close();
-      eventSourceRef.current = null;
+    if (abortControllerRef.current) {
+      abortControllerRef.current.abort();
+      abortControllerRef.current = null;
     }
 
     if (reconnectTimeoutRef.current) {
@@ -47,11 +49,11 @@ export function SSEProvider({ children }: { children: React.ReactNode }) {
   }, []);
 
   const connect = useCallback(async () => {
-    if (
-      isConnectingRef.current ||
-      (eventSourceRef.current &&
-        eventSourceRef.current.readyState === EventSource.OPEN)
-    ) {
+    if (typeof window === "undefined") {
+      return;
+    }
+
+    if (isConnectingRef.current || abortControllerRef.current) {
       return;
     }
 
@@ -63,59 +65,69 @@ export function SSEProvider({ children }: { children: React.ReactNode }) {
         csrfTokenRef.current = await getCsrfToken();
       }
 
-      const eventSource = new EventSource(
+      const abortController = new AbortController();
+      abortControllerRef.current = abortController;
+
+      await fetchEventSource(
         `${process.env.NEXT_PUBLIC_SERVER_URL}/notifications/stream`,
         {
-          fetch: (input, init) =>
-            fetch(input, {
-              ...init,
-              credentials: "include",
-              headers: {
-                ...init?.headers,
-                "X-XSRF-TOKEN": `${csrfTokenRef.current}`,
-              },
-            }),
+          signal: abortController.signal,
+          credentials: "include",
+          headers: {
+            "X-XSRF-TOKEN": `${csrfTokenRef.current}`,
+          },
+          async onopen(response) {
+            if (response.ok && response.status === 200) {
+              setIsConnected(true);
+              reconnectCount.current = 0;
+              isConnectingRef.current = false;
+            } else {
+              throw new Error(
+                `Failed to connect: ${response.status} ${response.statusText}`
+              );
+            }
+          },
+          onmessage(event) {
+            try {
+              if (event.data && event.data.startsWith("{")) {
+                const notification = JSON.parse(event.data);
+                addNotificationList(notification);
+              }
+            } catch (error) {
+              console.error("Error parsing notification:", error);
+              console.error("Raw event data:", event.data);
+            }
+          },
+          onerror(err) {
+            if (err.name === "AbortError" || err.message?.includes("aborted")) {
+              return;
+            }
+
+            console.error("SSE connection error:", err);
+            setIsConnected(false);
+            isConnectingRef.current = false;
+
+            if (reconnectCount.current < MAX_RECONNECT_ATTEMPTS) {
+              reconnectCount.current++;
+              const delay = Math.min(
+                1000 * Math.pow(2, reconnectCount.current),
+                30000
+              );
+
+              reconnectTimeoutRef.current = setTimeout(() => {
+                connect();
+              }, delay);
+            }
+            return;
+          },
         }
       );
+    } catch (error: any) {
+      if (error?.name === "AbortError" || error?.message?.includes("aborted")) {
+        return;
+      }
 
-      eventSource.onopen = () => {
-        setIsConnected(true);
-        reconnectCount.current = 0;
-        isConnectingRef.current = false;
-      };
-
-      eventSource.addEventListener("notification", (event) => {
-        try {
-          const notification = JSON.parse(event.data);
-          addNotificationList(notification);
-        } catch (error) {
-          console.error("알림 데이터 파싱 오류:", error);
-        }
-      });
-
-      eventSource.onerror = (error) => {
-        console.error("SSE 연결 오류:", error);
-        isConnectingRef.current = false;
-        setIsConnected(false);
-
-        if (eventSource.readyState === EventSource.CLOSED) {
-          if (reconnectCount.current < MAX_RECONNECT_ATTEMPTS) {
-            const delay = Math.min(
-              1000 * Math.pow(2, reconnectCount.current),
-              30000
-            );
-
-            reconnectTimeoutRef.current = setTimeout(() => {
-              reconnectCount.current++;
-              connect();
-            }, delay);
-          }
-        }
-      };
-
-      eventSourceRef.current = eventSource;
-    } catch (error) {
-      console.error("SSE 연결 생성 오류:", error);
+      console.error("SSE connection setup error:", error);
       isConnectingRef.current = false;
       setIsConnected(false);
     }
@@ -127,24 +139,30 @@ export function SSEProvider({ children }: { children: React.ReactNode }) {
     connect();
   }, [connect]);
 
+  const disconnect = useCallback(() => {
+    cleanup();
+  }, [cleanup]);
+
   useEffect(() => {
     connect();
     return cleanup;
-  }, []);
+  }, [connect, cleanup]);
 
-  const value = {
+  const contextValue: SSEContextValue = {
     isConnected,
     reconnect,
-    disconnect: cleanup,
+    disconnect,
   };
 
-  return <SSEContext.Provider value={value}>{children}</SSEContext.Provider>;
+  return (
+    <SSEContext.Provider value={contextValue}>{children}</SSEContext.Provider>
+  );
 }
 
-export function useSSE() {
+export function useSSE(): SSEContextValue {
   const context = useContext(SSEContext);
   if (!context) {
-    throw new Error("useSSE must be used within SSEProvider");
+    throw new Error("useSSE must be used within an SSEProvider");
   }
   return context;
 }

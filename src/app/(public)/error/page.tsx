@@ -1,6 +1,10 @@
+import { Metadata } from "next";
 import GoHomeButton from "./_components/GoHomeButton";
 
-export const dynamic = 'force-static';
+export const metadata: Metadata = {
+  title: "페이지를 찾을 수 없습니다",
+  description: "404 - 요청하신 페이지가 존재하지 않습니다",
+};
 
 export default function ErrorPage() {
   return (

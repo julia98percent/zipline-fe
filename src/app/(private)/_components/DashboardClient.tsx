@@ -1,6 +1,9 @@
 "use client";
 
 import dynamic from "next/dynamic";
+import { Schedule } from "@/types/schedule";
+import { Contract } from "@/types/contract";
+import { Counsel, PreCounsel } from "@/types/counsel";
 import { useDashboard } from "./useDashboard";
 import StatisticsCards from "./StatisticsCards";
 import WeeklyScheduleCalendar from "./WeeklyScheduleCalendar";
@@ -12,8 +15,23 @@ const DashboardModals = dynamic(() => import("./DashboardModals"), {
   ssr: false,
 });
 
-const DashboardClient = () => {
-  const dashboardData = useDashboard();
+interface DashboardClientProps {
+  initialStatistics: {
+    recentCustomers: number;
+    recentContractsCount: number;
+    ongoingContracts: number;
+    completedContracts: number;
+  };
+  initialSchedules: Schedule[];
+  initialSurveyResponses: PreCounsel[];
+  initialCounselListByDueDate: Counsel[];
+  initialCounselListByLatest: Counsel[];
+  initialExpiringContracts: Contract[];
+  initialRecentContracts: Contract[];
+}
+
+const DashboardClient = (props: DashboardClientProps) => {
+  const dashboardData = useDashboard(props);
 
   return (
     <>

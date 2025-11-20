@@ -9,17 +9,10 @@ import { Schedule } from "@/types/schedule";
 import { Contract } from "@/types/contract";
 import { Counsel, PreCounsel } from "@/types/counsel";
 import { showToast } from "@/components/Toast";
-import { fetchDashboardStatistics } from "@/apis/statisticsService";
 import {
   fetchSchedulesByDateRange,
   updateSchedule,
 } from "@/apis/scheduleService";
-import { fetchSubmittedSurveyResponses as fetchSurveyResponsesAPI } from "@/apis/preCounselService";
-import { fetchDashboardCounsels } from "@/apis/counselService";
-import {
-  fetchExpiringContractsForDashboard,
-  fetchRecentContractsForDashboard,
-} from "@/apis/contractService";
 
 dayjs.extend(isSameOrAfter);
 dayjs.extend(isSameOrBefore);
@@ -85,7 +78,22 @@ interface DashboardData {
   getScheduleColor: (customerUid: number | null) => string;
 }
 
-export const useDashboard = (): DashboardData => {
+interface UseDashboardProps {
+  initialStatistics: {
+    recentCustomers: number;
+    recentContractsCount: number;
+    ongoingContracts: number;
+    completedContracts: number;
+  };
+  initialSchedules: Schedule[];
+  initialSurveyResponses: PreCounsel[];
+  initialCounselListByDueDate: Counsel[];
+  initialCounselListByLatest: Counsel[];
+  initialExpiringContracts: Contract[];
+  initialRecentContracts: Contract[];
+}
+
+export const useDashboard = (props: UseDashboardProps): DashboardData => {
   const router = useRouter();
 
   const [selectedDate, setSelectedDate] = useState(new Date());
@@ -93,13 +101,24 @@ export const useDashboard = (): DashboardData => {
   const [contractTab, setContractTab] = useState<"expiring" | "recent">(
     "expiring"
   );
-  const [recentCustomers, setRecentCustomers] = useState<number>(0);
-  const [recentContractsCount, setRecentContractsCount] = useState<number>(0);
-  const [ongoingContracts, setOngoingContracts] = useState<number>(0);
-  const [completedContracts, setCompletedContracts] = useState<number>(0);
-  const [recentContracts, setRecentContracts] = useState<Contract[]>([]);
-  const [isLoading, setIsLoading] = useState<boolean>(true);
-  const [schedules, setSchedules] = useState<Schedule[]>([]);
+  // State - 초기 데이터를 서버에서 받은 값으로 설정
+  const [recentCustomers] = useState<number>(
+    props.initialStatistics.recentCustomers
+  );
+  const [recentContractsCount] = useState<number>(
+    props.initialStatistics.recentContractsCount
+  );
+  const [ongoingContracts] = useState<number>(
+    props.initialStatistics.ongoingContracts
+  );
+  const [completedContracts] = useState<number>(
+    props.initialStatistics.completedContracts
+  );
+  const [recentContracts] = useState<Contract[]>(props.initialRecentContracts);
+  const [isLoading] = useState<boolean>(false); // 서버에서 이미 로딩했으므로 false
+  const [schedules, setSchedules] = useState<Schedule[]>(
+    props.initialSchedules
+  );
   const [moreModalOpen, setMoreModalOpen] = useState(false);
   const [selectedDaySchedules, setSelectedDaySchedules] = useState<Schedule[]>(
     []
@@ -109,14 +128,20 @@ export const useDashboard = (): DashboardData => {
     null
   );
   const [isDetailModalOpen, setIsDetailModalOpen] = useState(false);
-  const [surveyResponses, setSurveyResponses] = useState<PreCounsel[]>([]);
-  const [expiringContracts, setExpiringContracts] = useState<Contract[]>([]);
-  const [contractLoading, setContractLoading] = useState(true);
-  const [counselListByDueDate, setCounselListByDueDate] = useState<Counsel[]>(
-    []
+  const [surveyResponses] = useState<PreCounsel[]>(
+    props.initialSurveyResponses
   );
-  const [counselListByLatest, setCounselListByLatest] = useState<Counsel[]>([]);
-  const [counselLoading, setCounselLoading] = useState(false);
+  const [expiringContracts] = useState<Contract[]>(
+    props.initialExpiringContracts
+  );
+  const [contractLoading] = useState(false);
+  const [counselListByDueDate] = useState<Counsel[]>(
+    props.initialCounselListByDueDate
+  );
+  const [counselListByLatest] = useState<Counsel[]>(
+    props.initialCounselListByLatest
+  );
+  const [counselLoading] = useState(false); // 서버에서 이미 로딩했으므로 false
 
   const [selectedSurveyId, setSelectedSurveyId] = useState<number | null>(null);
   const [isSurveyDetailModalOpen, setIsSurveyDetailModalOpen] = useState(false);
@@ -126,52 +151,6 @@ export const useDashboard = (): DashboardData => {
     useState(false);
   const [ongoingContractsOpen, setOngoingContractsOpen] = useState(false);
   const [completedContractsOpen, setCompletedContractsOpen] = useState(false);
-
-  const fetchSurveyResponses = useCallback(async (): Promise<void> => {
-    try {
-      const surveyResponses = await fetchSurveyResponsesAPI(
-        0,
-        SURVEY_PAGE_SIZE
-      );
-      setSurveyResponses(
-        surveyResponses.surveyResponses.map((response) => ({
-          uid: response.surveyResponseUid,
-          name: response.name,
-          phoneNo: response.phoneNumber,
-          phoneNumber: response.phoneNumber,
-          createdAt: response.submittedAt,
-          submittedAt: response.submittedAt,
-          surveyResponseUid: response.surveyResponseUid,
-        }))
-      );
-    } catch (error) {
-      console.error("Failed to fetch survey responses:", error);
-      setSurveyResponses([]);
-    }
-  }, []);
-
-  const fetchCounselLists = useCallback(async () => {
-    setCounselLoading(true);
-    try {
-      const [dueDateCounsels, latestCounsels] = await Promise.all([
-        fetchDashboardCounsels({ sortType: "DUE_DATE", page: 0, size: 5 }),
-        fetchDashboardCounsels({ sortType: "LATEST", page: 0, size: 5 }),
-      ]);
-
-      setCounselListByDueDate(
-        (dueDateCounsels as { counsels?: Counsel[] })?.counsels || []
-      );
-      setCounselListByLatest(
-        (latestCounsels as { counsels?: Counsel[] })?.counsels || []
-      );
-    } catch (error) {
-      console.error("Error fetching counsel lists:", error);
-      setCounselListByDueDate([]);
-      setCounselListByLatest([]);
-    } finally {
-      setCounselLoading(false);
-    }
-  }, []);
 
   const handlePrevWeek = useCallback(() => {
     const newDate = new Date(selectedDate);
@@ -329,26 +308,7 @@ export const useDashboard = (): DashboardData => {
     return contractTab === "expiring" ? expiringContracts : recentContracts;
   }, [contractTab, expiringContracts, recentContracts]);
 
-  useEffect(() => {
-    const fetchStatisticsData = async () => {
-      try {
-        setIsLoading(true);
-
-        const statisticsData = await fetchDashboardStatistics();
-        setRecentCustomers(statisticsData.recentCustomers);
-        setRecentContractsCount(statisticsData.recentContractsCount);
-        setOngoingContracts(statisticsData.ongoingContracts);
-        setCompletedContracts(statisticsData.completedContracts);
-      } catch (error) {
-        console.error("Failed to fetch statistics data:", error);
-      } finally {
-        setIsLoading(false);
-      }
-    };
-
-    fetchStatisticsData();
-  }, []);
-
+  // selectedDate가 변경될 때만 schedules 다시 가져오기
   useEffect(() => {
     const fetchSchedules = async () => {
       try {
@@ -367,36 +327,6 @@ export const useDashboard = (): DashboardData => {
 
     fetchSchedules();
   }, [selectedDate]);
-
-  useEffect(() => {
-    fetchSurveyResponses();
-  }, [fetchSurveyResponses]);
-
-  useEffect(() => {
-    fetchCounselLists();
-  }, [fetchCounselLists]);
-
-  useEffect(() => {
-    const fetchAllContracts = async () => {
-      setContractLoading(true);
-      try {
-        const expiringContracts = await fetchExpiringContractsForDashboard(
-          0,
-          5
-        );
-        const recentContracts = await fetchRecentContractsForDashboard(0, 5);
-
-        setExpiringContracts(expiringContracts.contracts || []);
-        setRecentContracts(recentContracts.contracts || []);
-      } catch (error) {
-        console.error("Failed to fetch contracts:", error);
-        setExpiringContracts([]);
-      } finally {
-        setContractLoading(false);
-      }
-    };
-    fetchAllContracts();
-  }, []);
 
   return {
     selectedDate,

@@ -8,6 +8,8 @@ export const metadata: Metadata = {
   description: "공개 매물 정보 조회",
 };
 
+export const dynamic = "force-dynamic";
+
 interface PageProps {
   searchParams: Promise<{
     size?: string;

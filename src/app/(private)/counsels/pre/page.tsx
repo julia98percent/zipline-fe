@@ -7,6 +7,8 @@ export const metadata: Metadata = {
   description: "사전 상담 신청 내역 조회 및 관리",
 };
 
+export const dynamic = "force-dynamic";
+
 interface PageProps {
   searchParams: Promise<{
     page?: string;

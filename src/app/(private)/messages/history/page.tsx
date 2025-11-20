@@ -9,6 +9,8 @@ export const metadata: Metadata = {
   description: "메시지 발송 이력 조회",
 };
 
+export const dynamic = "force-dynamic";
+
 interface PageProps {
   searchParams: Promise<{
     startDate?: string;

@@ -11,6 +11,8 @@ export const metadata: Metadata = {
   description: "개인 매물 정보 조회 및 관리",
 };
 
+export const dynamic = "force-dynamic";
+
 interface PageProps {
   searchParams: Promise<{
     page?: string;

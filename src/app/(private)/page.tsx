@@ -16,6 +16,8 @@ export const metadata: Metadata = {
   description: "부동산 중개 업무 현황 대시보드",
 };
 
+export const dynamic = "force-dynamic";
+
 export default async function DashboardPage() {
   const today = new Date();
   const startDate = dayjs(today).startOf("week").toISOString();

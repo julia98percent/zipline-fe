@@ -7,6 +7,8 @@ export const metadata: Metadata = {
   description: "메시지 템플릿 생성 및 관리",
 };
 
+export const dynamic = "force-dynamic";
+
 export default async function MessageTemplatePage() {
   const templates = await fetchMessageTemplates();
 

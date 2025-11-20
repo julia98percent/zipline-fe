@@ -11,9 +11,20 @@ import { useUrlPagination } from "@/hooks/useUrlPagination";
 import { useUrlFilters } from "@/hooks/useUrlFilters";
 import { FILTER_DEFAULTS } from "@/utils/filterUtil";
 
-const PublicPropertyListPage = () => {
-  const [hasNext, setHasNext] = useState<boolean>(true);
-  const [cursorId, setCursorId] = useState<string | null>(null);
+interface PublicPropertyListContainerProps {
+  initialProperties: PublicPropertyItem[];
+  initialHasNext: boolean;
+  initialCursorId: string | null;
+}
+
+const PublicPropertyListContainer = ({
+  initialProperties,
+  initialHasNext,
+  initialCursorId,
+}: PublicPropertyListContainerProps) => {
+  // State - 초기 데이터를 서버에서 받은 값으로 설정
+  const [hasNext, setHasNext] = useState<boolean>(initialHasNext);
+  const [cursorId, setCursorId] = useState<string | null>(initialCursorId);
 
   const { rowsPerPage } = useUrlPagination();
   const {
@@ -25,8 +36,8 @@ const PublicPropertyListPage = () => {
 
   const [publicPropertyList, setPublicPropertyList] = useState<
     PublicPropertyItem[]
-  >([]);
-  const [loading, setLoading] = useState<boolean>(false);
+  >(initialProperties);
+  const [loading, setLoading] = useState<boolean>(false); // 서버에서 이미 로딩했으므로 false
   const [showFilterModal, setShowFilterModal] = useState<boolean>(false);
   const [searchAddress, setSearchAddress] = useState<string>("");
   const [searchAddressQuery, setSearchAddressQuery] = useState<string>("");
@@ -350,4 +361,4 @@ const PublicPropertyListPage = () => {
   );
 };
 
-export default PublicPropertyListPage;
+export default PublicPropertyListContainer;

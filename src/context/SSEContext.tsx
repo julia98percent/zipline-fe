@@ -122,8 +122,9 @@ export function SSEProvider({ children }: { children: React.ReactNode }) {
           },
         }
       );
-    } catch (error: any) {
-      if (error?.name === "AbortError" || error?.message?.includes("aborted")) {
+    } catch (error: unknown) {
+      const err = error as Error;
+      if (err?.name === "AbortError" || err?.message?.includes("aborted")) {
         return;
       }
 

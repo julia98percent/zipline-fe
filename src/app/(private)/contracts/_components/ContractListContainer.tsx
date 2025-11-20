@@ -10,7 +10,15 @@ import { useUrlFilters } from "@/hooks/useUrlFilters";
 
 export const EXPIRED_PERIOD = ["6개월 이내", "3개월 이내", "1개월 이내"];
 
-function ContractListPage() {
+interface ContractListContainerProps {
+  initialContracts: Contract[];
+  initialTotalElements: number;
+}
+
+function ContractListContainer({
+  initialContracts,
+  initialTotalElements,
+}: ContractListContainerProps) {
   const { page, rowsPerPage, setPage, setRowsPerPage } = useUrlPagination();
   const { getParam, setParam, setParams, clearAllFilters } = useUrlFilters();
 
@@ -26,12 +34,12 @@ function ContractListPage() {
     { value: "EXPIRING", label: "만료임박순" },
   ];
 
-  // State
-  const [contractList, setContractList] = useState<Contract[]>([]);
+  const [contractList, setContractList] =
+    useState<Contract[]>(initialContracts);
   const [filterModalOpen, setFilterModalOpen] = useState(false);
-  const [loading, setLoading] = useState<boolean>(true);
+  const [loading, setLoading] = useState<boolean>(false);
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
-  const [totalElements, setTotalElements] = useState(0);
+  const [totalElements, setTotalElements] = useState(initialTotalElements);
 
   const [searchKeyword, setSearchKeyword] = useState("");
   const searchQuery = getParam("q") || "";
@@ -77,7 +85,6 @@ function ContractListPage() {
     rowsPerPage,
   ]);
 
-  // Event Handlers
   const handlePeriodClick = (label: string) => {
     const newValue = selectedPeriod === label ? null : label;
     setParam("period", newValue || "");
@@ -178,4 +185,4 @@ function ContractListPage() {
   );
 }
 
-export default ContractListPage;
+export default ContractListContainer;

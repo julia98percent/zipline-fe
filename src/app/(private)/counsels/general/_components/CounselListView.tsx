@@ -1,4 +1,4 @@
-import CounselModal from "./CounselModal";
+import dynamic from "next/dynamic";
 import CounselSearchFilters from "./CounselSearchFilters";
 import CounselTypeFilters from "./CounselTypeFilters";
 import CounselTable from "./CounselTable";
@@ -7,6 +7,10 @@ import AddIcon from "@mui/icons-material/Add";
 import { Counsel } from "@/types/counsel";
 import { Dayjs } from "dayjs";
 import CircularProgress from "@/components/CircularProgress";
+
+const CounselModal = dynamic(() => import("./CounselModal"), {
+  ssr: false,
+});
 
 interface CounselListPageViewProps {
   counsels: Counsel[];

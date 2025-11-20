@@ -1,11 +1,30 @@
+import dynamic from "next/dynamic";
 import { Divider, LinearProgress } from "@mui/material";
 import ContractDetailContent from "./ContractDetailContent";
-import ContractDocumentsEditModal from "./ContractDocumentsEditModal";
-import ContractBasicInfoEditModal from "./ContractBasicInfoEditModal";
-import DeleteConfirmModal from "@/components/DeleteConfirmModal";
 import { ContractDetail, ContractHistory } from "@/types/contract";
 import Button from "@/components/Button";
 import CircularProgress from "@/components/CircularProgress";
+
+const ContractDocumentsEditModal = dynamic(
+  () => import("./ContractDocumentsEditModal"),
+  {
+    ssr: false,
+  }
+);
+
+const ContractBasicInfoEditModal = dynamic(
+  () => import("./ContractBasicInfoEditModal"),
+  {
+    ssr: false,
+  }
+);
+
+const DeleteConfirmModal = dynamic(
+  () => import("@/components/DeleteConfirmModal"),
+  {
+    ssr: false,
+  }
+);
 
 interface ContractDetailPageViewProps {
   contract: ContractDetail | null;

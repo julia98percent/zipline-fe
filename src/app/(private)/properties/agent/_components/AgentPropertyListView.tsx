@@ -1,16 +1,27 @@
+import dynamic from "next/dynamic";
 import { SelectChangeEvent } from "@mui/material";
 import FilterListIcon from "@mui/icons-material/FilterList";
 import { useRouter } from "next/navigation";
 import Select, { MenuItem } from "@/components/Select";
 import RegionSelector from "@/components/RegionSelector";
 import AgentPropertyTable from "./AgentPropertyTable";
-import AgentPropertyFilterModal from "./AgentPropertyFilterModal";
-import PropertyAddButtonList from "./PropertyAddButtonList";
 import { Property } from "@/types/property";
 import { Region } from "@/types/region";
 import { AgentPropertySearchParams } from "@/apis/propertyService";
 import Button from "@/components/Button";
 import CircularProgress from "@/components/CircularProgress";
+
+const AgentPropertyFilterModal = dynamic(
+  () => import("./AgentPropertyFilterModal"),
+  {
+    ssr: false,
+  }
+);
+
+const PropertyAddButtonList = dynamic(() => import("./PropertyAddButtonList"), {
+  ssr: false,
+  loading: () => <div className="w-32 h-9 bg-gray-200 animate-pulse rounded" />,
+});
 
 interface CategoryOption {
   value: string;

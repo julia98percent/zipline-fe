@@ -29,7 +29,15 @@ const TYPE_OPTIONS = [
   { value: "MONTHLY", label: "월세" },
 ];
 
-function AgentPropertyListPage() {
+interface AgentPropertyListContainerProps {
+  initialProperties: Property[];
+  initialTotalElements: number;
+}
+
+function AgentPropertyListContainer({
+  initialProperties,
+  initialTotalElements,
+}: AgentPropertyListContainerProps) {
   const { page, rowsPerPage, setPage, setRowsPerPage } = useUrlPagination();
   const {
     getParam,
@@ -39,10 +47,10 @@ function AgentPropertyListPage() {
     searchParams: urlSearchParams,
   } = useUrlFilters();
 
-  // 상태 관리
   const [loading, setLoading] = useState(false);
-  const [agentPropertyList, setAgentPropertyList] = useState<Property[]>([]);
-  const [totalElements, setTotalElements] = useState(0);
+  const [agentPropertyList, setAgentPropertyList] =
+    useState<Property[]>(initialProperties);
+  const [totalElements, setTotalElements] = useState(initialTotalElements);
   const [showFilterModal, setShowFilterModal] = useState(false);
 
   // 지역 관련 상태
@@ -334,4 +342,4 @@ function AgentPropertyListPage() {
   );
 }
 
-export default AgentPropertyListPage;
+export default AgentPropertyListContainer;

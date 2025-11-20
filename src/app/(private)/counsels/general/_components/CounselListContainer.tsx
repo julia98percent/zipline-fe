@@ -9,21 +9,23 @@ import { useUrlPagination } from "@/hooks/useUrlPagination";
 import { useUrlFilters } from "@/hooks/useUrlFilters";
 import dayjs, { Dayjs } from "dayjs";
 
-function CounselListPage() {
+interface CounselListContainerProps {
+  initialCounsels: Counsel[];
+  initialTotalElements: number;
+}
+
+function CounselListContainer({
+  initialCounsels,
+  initialTotalElements,
+}: CounselListContainerProps) {
   const router = useRouter();
   const { page, rowsPerPage, setPage, setRowsPerPage } = useUrlPagination();
-  const {
-    getParam,
-    getBooleanParam,
-    setParam,
-    setParams,
-    clearAllFilters,
-    searchParams,
-  } = useUrlFilters();
+  const { getParam, getBooleanParam, setParam, setParams, clearAllFilters } =
+    useUrlFilters();
 
-  const [counsels, setCounsels] = useState<Counsel[]>([]);
-  const [totalElements, setTotalElements] = useState(0);
-  const [isLoading, setIsLoading] = useState(true);
+  const [counsels, setCounsels] = useState<Counsel[]>(initialCounsels);
+  const [totalElements, setTotalElements] = useState(initialTotalElements);
+  const [isLoading, setIsLoading] = useState(false); // 서버에서 이미 로딩했으므로 false
   const [isModalOpen, setIsModalOpen] = useState(false);
 
   const [search, setSearch] = useState("");
@@ -190,4 +192,4 @@ function CounselListPage() {
   );
 }
 
-export default CounselListPage;
+export default CounselListContainer;

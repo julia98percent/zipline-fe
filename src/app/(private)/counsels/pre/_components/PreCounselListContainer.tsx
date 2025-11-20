@@ -12,12 +12,20 @@ const PreCounselDetailModal = dynamic(
   { ssr: false }
 );
 
-function PreCounselListContainer() {
+interface PreCounselListContainerProps {
+  initialCounsels: PreCounsel[];
+  initialTotalElements: number;
+}
+
+function PreCounselListContainer({
+  initialCounsels,
+  initialTotalElements,
+}: PreCounselListContainerProps) {
   const { page, rowsPerPage, setPage, setRowsPerPage } = useUrlPagination();
 
-  const [counsels, setCounsels] = useState<PreCounsel[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
-  const [totalElements, setTotalElements] = useState(0);
+  const [counsels, setCounsels] = useState<PreCounsel[]>(initialCounsels);
+  const [isLoading, setIsLoading] = useState(false); // 서버에서 이미 로딩했으므로 false
+  const [totalElements, setTotalElements] = useState(initialTotalElements);
   const [isSurveyDetailModalOpen, setIsSurveyDetailModalOpen] = useState(false);
   const [selectedSurveyId, setSelectedSurveyId] = useState<number | null>(null);
 

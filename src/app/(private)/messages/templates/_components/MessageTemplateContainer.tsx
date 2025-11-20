@@ -1,5 +1,5 @@
 "use client";
-import { useState, useEffect, useCallback } from "react";
+import { useState, useCallback } from "react";
 import {
   fetchMessageTemplates,
   createMessageTemplate,
@@ -17,16 +17,29 @@ const TEMPLATE_LIST_INITIAL: MessageTemplateList[] = [
   { id: 2, name: "생일", category: "BIRTHDAY", templates: [] },
   { id: 3, name: "계약 만료", category: "EXPIRED_NOTI", templates: [] },
 ];
-function MessageTemplateContainer() {
+
+interface MessageTemplateContainerProps {
+  initialTemplates: MessageTemplate[];
+}
+
+function MessageTemplateContainer({
+  initialTemplates,
+}: MessageTemplateContainerProps) {
   const [templateTitle, setTemplateTitle] = useState("");
   const [templateContent, setTemplateContent] = useState("");
   const [selectedTemplate, setSelectedTemplate] =
     useState<MessageTemplate | null>(null);
   const [selectedCategory, setSelectedCategory] = useState<string>("");
+
   const [templateList, setTemplateList] = useState<MessageTemplateList[]>(
-    TEMPLATE_LIST_INITIAL
+    TEMPLATE_LIST_INITIAL.map((category) => ({
+      ...category,
+      templates: initialTemplates.filter(
+        (template) => template.category === category.category
+      ) as MessageTemplate[],
+    }))
   );
-  const [isLoading, setIsLoading] = useState(false);
+  const [isLoading, setIsLoading] = useState(false); // 서버에서 이미 로딩했으므로 false
   const [openDeleteDialog, setOpenDeleteDialog] = useState(false);
 
   const fetchTemplates = useCallback(async () => {
@@ -46,10 +59,6 @@ function MessageTemplateContainer() {
       setIsLoading(false);
     }
   }, []);
-
-  useEffect(() => {
-    fetchTemplates();
-  }, [fetchTemplates]);
 
   const handleTemplateSelect = (template: MessageTemplate) => {
     setSelectedTemplate(template);

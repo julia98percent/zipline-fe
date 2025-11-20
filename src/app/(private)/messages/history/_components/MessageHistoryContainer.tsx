@@ -17,25 +17,35 @@ export type MessageHistoryData = Pick<
   "dateCreated" | "status" | "dateCompleted"
 >;
 
-const MessageHistoryPage = () => {
+interface MessageHistoryContainerProps {
+  initialMessages: MessageHistory[];
+  initialHasMore: boolean;
+  initialCursorId: string | null;
+}
+
+const MessageHistoryContainer = ({
+  initialMessages,
+  initialHasMore,
+  initialCursorId,
+}: MessageHistoryContainerProps) => {
   const { getParam, setParam, clearAllFilters, searchParams } = useUrlFilters();
 
   const startDate = useMemo(() => {
     const dateStr = getParam("startDate");
     return dateStr ? dayjs(dateStr) : null;
-  }, [searchParams]);
+  }, [getParam]);
   const endDate = useMemo(() => {
     const dateStr = getParam("endDate");
     return dateStr ? dayjs(dateStr) : null;
-  }, [searchParams]);
+  }, [getParam]);
 
-  const [messages, setMessages] = useState<MessageHistory[]>([]);
+  const [messages, setMessages] = useState<MessageHistory[]>(initialMessages);
   const [selectedMessageHistory, setSelectedMessageHistory] =
     useState<MessageHistory | null>(null);
-  const [isLoading, setIsLoading] = useState(false);
+  const [isLoading, setIsLoading] = useState(false); // 서버에서 이미 로딩했으므로 false
   const [detailModalOpen, setDetailModalOpen] = useState(false);
-  const [hasMore, setHasMore] = useState(true);
-  const [cursorId, setCursorId] = useState<string | null>(null);
+  const [hasMore, setHasMore] = useState(initialHasMore);
+  const [cursorId, setCursorId] = useState<string | null>(initialCursorId);
 
   const prevSearchParamsRef = useRef<{
     startDate?: string | null;
@@ -251,4 +261,4 @@ const MessageHistoryPage = () => {
   );
 };
 
-export default MessageHistoryPage;
+export default MessageHistoryContainer;

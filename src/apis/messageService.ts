@@ -17,6 +17,7 @@ export const fetchMessages = async (params: {
   criteria?: string;
   cond?: string;
   value?: string;
+  startKey?: string | null;
 }) => {
   try {
     const { data: response } = await apiClient.get<MessageHistoryResponse>(

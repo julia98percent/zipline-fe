@@ -8,7 +8,15 @@ import { searchCustomers, updateCustomer } from "@/apis/customerService";
 import { showToast } from "@/components/Toast";
 import CustomerListView from "./CustomerListView";
 
-const CustomerListContainer = () => {
+interface CustomerListContainerProps {
+  initialCustomers: Customer[];
+  initialTotalCount: number;
+}
+
+const CustomerListContainer = ({
+  initialCustomers,
+  initialTotalCount,
+}: CustomerListContainerProps) => {
   const { page, rowsPerPage, setPage, setRowsPerPage, resetToFirstPage } =
     useUrlPagination();
   const {
@@ -21,9 +29,10 @@ const CustomerListContainer = () => {
     searchParams,
   } = useUrlFilters();
 
-  const [loading, setLoading] = useState(true);
-  const [customerList, setCustomerList] = useState<Customer[]>([]);
-  const [totalCount, setTotalCount] = useState(0);
+  const [loading, setLoading] = useState(false);
+  const [customerList, setCustomerList] =
+    useState<Customer[]>(initialCustomers);
+  const [totalCount, setTotalCount] = useState(initialTotalCount);
   const [filterModalOpen, setFilterModalOpen] = useState(false);
 
   const [searchTerm, setSearchTerm] = useState("");

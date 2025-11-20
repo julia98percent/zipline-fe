@@ -1,9 +1,16 @@
 "use client";
 import { useState } from "react";
+import dynamic from "next/dynamic";
 import Button from "@/components/Button";
-import CustomerAddModal from "./CustomerAddModal";
-import CustomerBulkUploadModal from "./CustomerBulkUploadModal";
 import AddIcon from "@mui/icons-material/Add";
+
+const CustomerAddModal = dynamic(() => import("./CustomerAddModal"), {
+  ssr: false,
+});
+const CustomerBulkUploadModal = dynamic(
+  () => import("./CustomerBulkUploadModal"),
+  { ssr: false }
+);
 
 interface Props {
   fetchCustomerData: () => void;

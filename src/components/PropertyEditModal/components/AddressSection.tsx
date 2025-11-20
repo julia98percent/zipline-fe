@@ -1,6 +1,10 @@
+import dynamic from "next/dynamic";
 import { TextField } from "@mui/material";
-import DaumPost from "@/components/DaumPost";
 import { Dispatch, SetStateAction } from "react";
+
+const DaumPost = dynamic(() => import("@/components/DaumPost"), {
+  ssr: false,
+});
 
 interface AddressSectionProps {
   address: string | null;

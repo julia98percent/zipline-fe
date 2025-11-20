@@ -1,11 +1,16 @@
 "use client";
 
 import { useState, useEffect, useCallback } from "react";
+import dynamic from "next/dynamic";
 import { useUrlPagination } from "@/hooks/useUrlPagination";
-import PreCounselDetailModal from "@/components/PreCounselDetailModal";
 import { PreCounselTable } from "@/components/PreCounselTable";
 import { PreCounsel } from "@/types/counsel";
 import { fetchCounsels } from "@/apis/counselService";
+
+const PreCounselDetailModal = dynamic(
+  () => import("@/components/PreCounselDetailModal"),
+  { ssr: false }
+);
 
 function PreCounselListContainer() {
   const { page, rowsPerPage, setPage, setRowsPerPage } = useUrlPagination();

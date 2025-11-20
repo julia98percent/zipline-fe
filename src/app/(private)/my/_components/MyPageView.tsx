@@ -1,4 +1,5 @@
 import { ChangeEvent } from "react";
+import dynamic from "next/dynamic";
 import Link from "next/link";
 import { Collapse, IconButton } from "@mui/material";
 import AccountCircleIcon from "@mui/icons-material/AccountCircle";
@@ -8,9 +9,12 @@ import ChecklistIcon from "@mui/icons-material/Checklist";
 import Button from "@/components/Button";
 import { formatDate } from "@/utils/dateUtil";
 import { formatPhoneNumber } from "@/utils/numberUtil";
-import QRCode from "react-qr-code";
 import { User } from "@/types/user";
 import TextField from "@/components/TextField";
+
+const QRCode = dynamic(() => import("react-qr-code"), {
+  ssr: false,
+});
 
 interface MyPageViewProps {
   user: User | null;

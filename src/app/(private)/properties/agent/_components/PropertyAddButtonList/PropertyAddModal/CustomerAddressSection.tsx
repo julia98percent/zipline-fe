@@ -1,7 +1,11 @@
+import dynamic from "next/dynamic";
 import TextField from "@/components/TextField";
 import { MenuItem } from "@mui/material";
-import DaumPost from "@/components/DaumPost";
 import { Customer } from "@/types/customer";
+
+const DaumPost = dynamic(() => import("@/components/DaumPost"), {
+  ssr: false,
+});
 
 interface CustomerData {
   uid: number | null;

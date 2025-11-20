@@ -1,12 +1,16 @@
 "use client";
 
+import dynamic from "next/dynamic";
 import { useDashboard } from "./useDashboard";
 import StatisticsCards from "./StatisticsCards";
 import WeeklyScheduleCalendar from "./WeeklyScheduleCalendar";
 import CounselList from "./CounselList";
 import ContractList from "./ContractList";
 import SurveyList from "./SurveyList";
-import DashboardModals from "./DashboardModals";
+
+const DashboardModals = dynamic(() => import("./DashboardModals"), {
+  ssr: false,
+});
 
 const DashboardClient = () => {
   const dashboardData = useDashboard();

@@ -1,7 +1,7 @@
+import dynamic from "next/dynamic";
 import ContractTable from "./ContractTable";
 import ContractFilterModal from "./ContractFilterModal";
 import Select, { StringSelect } from "@/components/Select";
-import ContractAddModal from "./ContractAddModal";
 import Button from "@/components/Button";
 import AddIcon from "@mui/icons-material/Add";
 import SearchIcon from "@mui/icons-material/Search";
@@ -10,6 +10,10 @@ import { Contract } from "@/types/contract";
 import { CONTRACT_STATUS_OPTION_LIST } from "@/constants/contract";
 import CircularProgress from "@/components/CircularProgress";
 import TextField from "@/components/TextField";
+
+const ContractAddModal = dynamic(() => import("./ContractAddModal"), {
+  ssr: false,
+});
 
 interface ContractListViewProps {
   loading: boolean;

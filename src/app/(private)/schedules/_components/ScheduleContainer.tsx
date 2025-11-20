@@ -1,5 +1,6 @@
 "use client";
 import { useState } from "react";
+import dynamic from "next/dynamic";
 import dayjs, { Dayjs } from "dayjs";
 import { EventClickArg, DatesSetArg } from "@fullcalendar/core";
 import { Schedule } from "@/types/schedule";
@@ -9,9 +10,20 @@ import {
   createSchedule,
   updateSchedule,
 } from "@/apis/scheduleService";
-import ScheduleView from "./ScheduleView";
 import { SCHEDULE_ERROR_MESSAGES } from "@/constants/clientErrorMessage";
 import { DAY_MAX_EVENTS } from "@/constants/schedule";
+
+const ScheduleView = dynamic(() => import("./ScheduleView"), {
+  loading: () => (
+    <div className="flex items-center justify-center h-96">
+      <div className="text-center">
+        <div className="inline-block animate-spin rounded-full h-8 w-8 border-b-2 border-primary-500"></div>
+        <p className="mt-2 text-neutral-500">일정을 불러오는 중...</p>
+      </div>
+    </div>
+  ),
+  ssr: false, // FullCalendar는 클라이언트에서만 렌더링
+});
 
 interface CalendarEvent {
   id: string;

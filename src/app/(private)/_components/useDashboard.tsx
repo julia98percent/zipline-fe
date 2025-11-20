@@ -17,8 +17,6 @@ import {
 dayjs.extend(isSameOrAfter);
 dayjs.extend(isSameOrBefore);
 
-const SURVEY_PAGE_SIZE = 10;
-
 interface DashboardData {
   selectedDate: Date;
   setSelectedDate: React.Dispatch<React.SetStateAction<Date>>;

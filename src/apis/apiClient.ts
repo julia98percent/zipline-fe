@@ -118,6 +118,7 @@ apiClient.interceptors.response.use(
       originalRequest?.url?.includes("/users/send-code") ||
       originalRequest?.url?.includes("/users/verify-code") ||
       originalRequest?.url?.includes("/users/reset-password") ||
+      originalRequest?.url?.includes("/users/csrf") ||
       originalRequest?.url?.includes("csrf");
 
     if (
@@ -126,7 +127,11 @@ apiClient.interceptors.response.use(
       !isSignupRequest &&
       !isPublicRequest
     ) {
-      handleSessionExpired();
+      // 클라이언트에서만 세션 만료 처리
+      if (typeof window !== "undefined") {
+        handleSessionExpired();
+      }
+      // 서버 사이드에서는 middleware가 처리하므로 에러만 전파
       return Promise.reject(error);
     }
 

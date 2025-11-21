@@ -1,5 +1,6 @@
 import { Switch as MuiSwitch, SwitchProps } from "@mui/material";
 import { styled } from "@mui/material/styles";
+import { PRIMARY, UI } from "@/constants/colors";
 
 const Switch = styled((props: SwitchProps) => (
   <MuiSwitch
@@ -17,9 +18,9 @@ const Switch = styled((props: SwitchProps) => (
     transitionDuration: "300ms",
     "&.Mui-checked": {
       transform: "translateX(22px)",
-      color: "#fff",
+      color: UI.switch.thumb,
       "& + .MuiSwitch-track": {
-        backgroundColor: "#164F9E",
+        backgroundColor: UI.switch.active,
         opacity: 1,
         border: 0,
       },
@@ -28,8 +29,8 @@ const Switch = styled((props: SwitchProps) => (
       },
     },
     "&.Mui-focusVisible .MuiSwitch-thumb": {
-      color: "#164F9E",
-      border: "6px solid #fff",
+      color: PRIMARY.main,
+      border: `6px solid ${UI.switch.thumb}`,
     },
     "&.Mui-disabled .MuiSwitch-thumb": {
       color: theme.palette.grey[100],
@@ -45,7 +46,7 @@ const Switch = styled((props: SwitchProps) => (
   },
   "& .MuiSwitch-track": {
     borderRadius: 26 / 2,
-    backgroundColor: "#E9E9EA",
+    backgroundColor: UI.switch.inactive,
     opacity: 1,
     transition: theme.transitions.create(["background-color"], {
       duration: 500,

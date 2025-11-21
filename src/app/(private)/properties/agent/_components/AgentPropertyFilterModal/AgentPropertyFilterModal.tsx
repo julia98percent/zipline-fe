@@ -23,14 +23,7 @@ interface AgentPropertyFilterModalProps {
   onClose: () => void;
   onApply: (filters: Partial<AgentPropertySearchParams>) => void;
   filters: AgentPropertySearchParams;
-  regions: unknown[];
-  selectedSido: string;
-  selectedGu: string;
-  selectedDong: string;
   typeOptions: TypeOption[];
-  onSidoChange: (event: SelectChangeEvent<number>) => void;
-  onGuChange: (event: SelectChangeEvent<number>) => void;
-  onDongChange: (event: SelectChangeEvent<number>) => void;
 }
 
 const AgentPropertyFilterModal = ({

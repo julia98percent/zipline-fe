@@ -2,6 +2,7 @@ import { ChangeEvent } from "react";
 import { Tooltip } from "@mui/material";
 import ErrorOutlineIcon from "@mui/icons-material/ErrorOutline";
 import TextField from "@/components/TextField";
+import { PRIMARY } from "@/constants/colors";
 
 export interface EmailInputProps {
   email: string;
@@ -51,14 +52,14 @@ const EmailInput = ({
       sx={{
         "& .MuiOutlinedInput-root": {
           "&:hover fieldset": {
-            borderColor: "#164F9E",
+            borderColor: PRIMARY.main,
           },
           "&.Mui-focused fieldset": {
-            borderColor: "#164F9E",
+            borderColor: PRIMARY.main,
           },
         },
         "& .MuiInputLabel-root.Mui-focused": {
-          color: "#164F9E",
+          color: PRIMARY.main,
         },
       }}
     />

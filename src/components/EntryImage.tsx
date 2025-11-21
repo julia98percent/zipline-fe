@@ -2,7 +2,7 @@ import Image from "next/image";
 
 const EntryImage = () => {
   return (
-    <div className="hidden md:flex md:w-1/2 bg-[#0d3b7a] flex-col items-center justify-center p-10 h-screen">
+    <div className="hidden md:flex md:w-1/2 bg-primary-dark flex-col items-center justify-center p-10 h-screen">
       <div className="text-white m-[10vh_auto_0_2vw]">
         <p className="font-medium text-2xl tracking-tighter">
           흩어진 중개 업무,{" "}

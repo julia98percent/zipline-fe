@@ -1,5 +1,6 @@
 import { Chip } from "@mui/material";
 import { Label, CustomerBaseFilter } from "@/types/customer";
+import { INFO, NEUTRAL } from "@/constants/colors";
 
 interface Props {
   setFiltersTemp: (
@@ -53,7 +54,7 @@ const LabelFilters = ({
               onClick={() => handleLabelSelect(label)}
               sx={{
                 backgroundColor: selectedLabels.some((l) => l.uid === label.uid)
-                  ? "#1976d2"
+                  ? INFO.main
                   : "transparent",
                 color: selectedLabels.some((l) => l.uid === label.uid)
                   ? "white"
@@ -62,8 +63,8 @@ const LabelFilters = ({
                   backgroundColor: selectedLabels.some(
                     (l) => l.uid === label.uid
                   )
-                    ? "#1565c0"
-                    : "#f5f5f5",
+                    ? INFO.dark
+                    : NEUTRAL[100],
                 },
               }}
             />

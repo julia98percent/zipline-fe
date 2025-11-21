@@ -12,6 +12,7 @@ import { Schedule } from "@/types/schedule";
 import Button from "@/components/Button";
 import DatePicker from "@/components/DatePicker";
 import dayjs, { Dayjs } from "dayjs";
+import { NEUTRAL, RGBA } from "@/constants/colors";
 
 interface Customer {
   uid: number;
@@ -125,30 +126,30 @@ const ScheduleDetailModalView = ({
                     width: "6px",
                   },
                   "&::-webkit-scrollbar-track": {
-                    background: "#f1f1f1",
+                    background: NEUTRAL[100],
                     borderRadius: "3px",
                   },
                   "&::-webkit-scrollbar-thumb": {
-                    background: "#c1c1c1",
+                    background: NEUTRAL[400],
                     borderRadius: "3px",
                     "&:hover": {
-                      background: "#a8a8a8",
+                      background: NEUTRAL[500],
                     },
                   },
                 },
                 "& .MuiInputLabel-root": {
                   cursor: "default",
-                  color: "rgba(0, 0, 0, 0.6) !important",
+                  color: `${RGBA.blackDisabled} !important`,
                 },
                 "& .MuiInputBase-input": {
                   cursor: "default",
                   userSelect: "none",
                   resize: "none",
-                  color: "rgba(0, 0, 0, 0.87) !important",
-                  WebkitTextFillColor: "rgba(0, 0, 0, 0.87) !important",
+                  color: `${RGBA.blackText} !important`,
+                  WebkitTextFillColor: `${RGBA.blackText} !important`,
                 },
                 "& .MuiOutlinedInput-notchedOutline": {
-                  borderColor: "rgba(0, 0, 0, 0.23) !important",
+                  borderColor: `${RGBA.blackDark} !important`,
                 },
               }),
             }}

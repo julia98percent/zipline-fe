@@ -4,9 +4,107 @@
 @tailwind utilities;
 
 @theme {
+  /* Primary Colors */
   --color-primary: #164f9e;
-  --color-primary-dark: #0d3b7a;
   --color-primary-light: #2a6fdb;
+  --color-primary-dark: #0d3b7a;
+
+  /* Secondary Colors */
+  --color-secondary: #2e5d9f;
+
+  /* Status Colors */
+  --color-success: #4caf50;
+  --color-success-light: #e8f5e9;
+  --color-success-dark: #2e7d32;
+  --color-success-text: #388e3c;
+  --color-success-alt: #219653;
+  --color-success-alt-light: #e9f7ef;
+
+  --color-warning: #f57c00;
+  --color-warning-light: #fff3e0;
+  --color-warning-dark: #ff9800;
+
+  --color-error: #eb5757;
+  --color-error-light: #fdeeee;
+  --color-error-dark: #d32f2f;
+
+  --color-info: #1976d2;
+  --color-info-light: #e3f2fd;
+  --color-info-dark: #0288d1;
+  --color-info-alt: #2196f3;
+
+  --color-purple: #7b1fa2;
+  --color-purple-light: #f3e5f5;
+  --color-purple-dark: #9c27b0;
+
+  /* Contract Types */
+  --color-contract-sale-bg: var(--color-success-light);
+  --color-contract-sale-text: var(--color-success-text);
+  --color-contract-deposit-bg: var(--color-info-light);
+  --color-contract-deposit-text: var(--color-info);
+  --color-contract-monthly-bg: var(--color-warning-light);
+  --color-contract-monthly-text: var(--color-warning);
+
+  /* Customer Roles */
+  --color-tenant-bg: #fef5eb;
+  --color-tenant-text: #f2994a;
+  --color-landlord-bg: var(--color-error-light);
+  --color-landlord-text: var(--color-error);
+  --color-buyer-bg: var(--color-success-alt-light);
+  --color-buyer-text: var(--color-success-alt);
+  --color-seller-bg: #ebf2fc;
+  --color-seller-text: #2f80ed;
+
+  /* Property Categories */
+  --color-apartment-bg: #e1f5fe;
+  --color-apartment-text: #0277bd;
+  --color-officetel-bg: #f1f8e9;
+  --color-officetel-text: #689f38;
+  --color-villa-bg: #fff8e1;
+  --color-villa-text: #f9a825;
+  --color-oneroom-bg: var(--color-purple-light);
+  --color-oneroom-text: var(--color-purple);
+  --color-tworoom-bg: var(--color-success-light);
+  --color-tworoom-text: var(--color-success-text);
+  --color-house-bg: #fce4ec;
+  --color-house-text: #c2185b;
+  --color-commercial-bg: #ede7f6;
+  --color-commercial-text: #512da8;
+
+  /* Neutral Colors */
+  --color-neutral-50: #f9f9f9;
+  --color-neutral-100: #f5f5f5;
+  --color-neutral-200: #f0f0f0;
+  --color-neutral-300: #e0e0e0;
+  --color-neutral-400: #d0d0d0;
+  --color-neutral-500: #999999;
+  --color-neutral-600: #666666;
+  --color-neutral-700: #424242;
+  --color-neutral-800: #333333;
+  --color-neutral-900: #222222;
+
+  /* Background Colors */
+  --color-background-default: #ffffff;
+  --color-background-light: var(--color-neutral-50);
+  --color-background-disabled: var(--color-neutral-200);
+
+  /* Text Colors */
+  --color-text-primary: var(--color-neutral-900);
+  --color-text-secondary: var(--color-neutral-600);
+  --color-text-disabled: var(--color-neutral-500);
+  --color-text-hint: #757575;
+
+  /* UI Elements */
+  --color-border: var(--color-neutral-300);
+  --color-divider: var(--color-neutral-300);
+  --color-hover: var(--color-neutral-100);
+  --color-selected: var(--color-info-light);
+
+  /* Gradient Colors */
+  --color-gradient-start: #73a8ff;
+  --color-gradient-end: #3b70c4;
+
+  /* Breakpoints */
   --breakpoint-xs: 24rem;
 }
 

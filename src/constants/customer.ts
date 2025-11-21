@@ -1,22 +1,24 @@
+import { CUSTOMER_ROLES } from "./colors";
+
 export const CUSTOMER_TYPE_COLORS = {
   tenant: {
-    backgroundColor: "#FEF5EB",
-    color: "#F2994A",
-    label: "임차인",
+    backgroundColor: CUSTOMER_ROLES.tenant.background,
+    color: CUSTOMER_ROLES.tenant.text,
+    label: CUSTOMER_ROLES.tenant.label,
   },
   landlord: {
-    backgroundColor: "#FDEEEE",
-    color: "#EB5757",
-    label: "임대인",
+    backgroundColor: CUSTOMER_ROLES.landlord.background,
+    color: CUSTOMER_ROLES.landlord.text,
+    label: CUSTOMER_ROLES.landlord.label,
   },
   buyer: {
-    backgroundColor: "#E9F7EF",
-    color: "#219653",
-    label: "매수인",
+    backgroundColor: CUSTOMER_ROLES.buyer.background,
+    color: CUSTOMER_ROLES.buyer.text,
+    label: CUSTOMER_ROLES.buyer.label,
   },
   seller: {
-    backgroundColor: "#EBF2FC",
-    color: "#2F80ED",
-    label: "매도인",
+    backgroundColor: CUSTOMER_ROLES.seller.background,
+    color: CUSTOMER_ROLES.seller.text,
+    label: CUSTOMER_ROLES.seller.label,
   },
 } as const;

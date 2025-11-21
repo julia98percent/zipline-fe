@@ -115,7 +115,7 @@ const SignInPage = () => {
                 ID: test01
               </Typography>
               <Typography variant="body2" color="text.secondary">
-                Password: test1234!
+                Password: test012!
               </Typography>
             </div>
 

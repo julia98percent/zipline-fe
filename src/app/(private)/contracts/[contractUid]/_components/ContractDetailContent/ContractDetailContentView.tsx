@@ -12,6 +12,7 @@ import Table, { ColumnConfig } from "@/components/Table";
 import Button from "@/components/Button";
 import { formatKoreanPrice } from "@/utils/numberUtil";
 import InfoField from "@/components/InfoField";
+import { MUI_COLORS } from "@/constants/colors";
 
 interface CustomerInfo {
   name: string;
@@ -109,7 +110,7 @@ const ContractDetailContentView = ({
 
     const categoryColor = isValidCategory(contract.category)
       ? ContractCategoryColors[contract.category]
-      : "#999";
+      : MUI_COLORS.default;
 
     return (
       <Chip

@@ -4,6 +4,7 @@ import EditIcon from "@mui/icons-material/Edit";
 import DoneIcon from "@mui/icons-material/Done";
 import CloseIcon from "@mui/icons-material/Close";
 import { Customer, Label } from "@/types/customer";
+import { CUSTOMER_ROLES, NEUTRAL, TEXT, SUCCESS, ERROR, INFO } from "@/constants/colors";
 
 // 새로 생성할 라벨을 나타내는 임시 UID
 const NEW_LABEL_TEMP_UID = -1;
@@ -85,10 +86,10 @@ export const renderRolesColumn = (
           }}
           className="cursor-pointer"
           sx={{
-            backgroundColor: editingCustomer.tenant ? "#FCE8D4" : "#F5F5F5",
-            color: editingCustomer.tenant ? "#E67E00" : "#757575",
+            backgroundColor: editingCustomer.tenant ? CUSTOMER_ROLES.tenant.background : NEUTRAL[50],
+            color: editingCustomer.tenant ? CUSTOMER_ROLES.tenant.text : TEXT.secondary,
             "&:hover": {
-              backgroundColor: editingCustomer.tenant ? "#FCE8D4" : "#E0E0E0",
+              backgroundColor: editingCustomer.tenant ? CUSTOMER_ROLES.tenant.background : NEUTRAL[200],
             },
           }}
         />
@@ -101,10 +102,10 @@ export const renderRolesColumn = (
           }}
           className="cursor-pointer"
           sx={{
-            backgroundColor: editingCustomer.landlord ? "#FCDADA" : "#F5F5F5",
-            color: editingCustomer.landlord ? "#D63939" : "#757575",
+            backgroundColor: editingCustomer.landlord ? CUSTOMER_ROLES.landlord.background : NEUTRAL[50],
+            color: editingCustomer.landlord ? CUSTOMER_ROLES.landlord.text : TEXT.secondary,
             "&:hover": {
-              backgroundColor: editingCustomer.landlord ? "#FCDADA" : "#E0E0E0",
+              backgroundColor: editingCustomer.landlord ? CUSTOMER_ROLES.landlord.background : NEUTRAL[200],
             },
           }}
         />
@@ -117,10 +118,10 @@ export const renderRolesColumn = (
           }}
           className="cursor-pointer"
           sx={{
-            backgroundColor: editingCustomer.buyer ? "#D4EDDC" : "#F5F5F5",
-            color: editingCustomer.buyer ? "#0E8A3E" : "#757575",
+            backgroundColor: editingCustomer.buyer ? CUSTOMER_ROLES.buyer.background : NEUTRAL[50],
+            color: editingCustomer.buyer ? CUSTOMER_ROLES.buyer.text : TEXT.secondary,
             "&:hover": {
-              backgroundColor: editingCustomer.buyer ? "#D4EDDC" : "#E0E0E0",
+              backgroundColor: editingCustomer.buyer ? CUSTOMER_ROLES.buyer.background : NEUTRAL[200],
             },
           }}
         />
@@ -133,10 +134,10 @@ export const renderRolesColumn = (
           }}
           className="cursor-pointer"
           sx={{
-            backgroundColor: editingCustomer.seller ? "#D6E6F9" : "#F5F5F5",
-            color: editingCustomer.seller ? "#1B64C2" : "#757575",
+            backgroundColor: editingCustomer.seller ? CUSTOMER_ROLES.seller.background : NEUTRAL[50],
+            color: editingCustomer.seller ? CUSTOMER_ROLES.seller.text : TEXT.secondary,
             "&:hover": {
-              backgroundColor: editingCustomer.seller ? "#D6E6F9" : "#E0E0E0",
+              backgroundColor: editingCustomer.seller ? CUSTOMER_ROLES.seller.background : NEUTRAL[200],
             },
           }}
         />
@@ -150,28 +151,28 @@ export const renderRolesColumn = (
         <Chip
           label="임차인"
           size="small"
-          className="bg-[#FEF5EB] text-[#F2994A]"
+          sx={{ backgroundColor: CUSTOMER_ROLES.tenant.background, color: CUSTOMER_ROLES.tenant.text }}
         />
       )}
       {customer.landlord && (
         <Chip
           label="임대인"
           size="small"
-          className="bg-[#FDEEEE] text-[#EB5757]"
+          sx={{ backgroundColor: CUSTOMER_ROLES.landlord.background, color: CUSTOMER_ROLES.landlord.text }}
         />
       )}
       {customer.buyer && (
         <Chip
           label="매수인"
           size="small"
-          className="bg-[#E9F7EF] text-[#219653]"
+          sx={{ backgroundColor: CUSTOMER_ROLES.buyer.background, color: CUSTOMER_ROLES.buyer.text }}
         />
       )}
       {customer.seller && (
         <Chip
           label="매도인"
           size="small"
-          className="bg-[#EBF2FC] text-[#2F80ED]"
+          sx={{ backgroundColor: CUSTOMER_ROLES.seller.background, color: CUSTOMER_ROLES.seller.text }}
         />
       )}
     </Box>
@@ -322,9 +323,9 @@ export const renderLabelsColumn = (
               variant="outlined"
               sx={{
                 backgroundColor:
-                  option.uid === NEW_LABEL_TEMP_UID ? "#e3f2fd" : undefined,
+                  option.uid === NEW_LABEL_TEMP_UID ? INFO.light : undefined,
                 borderColor:
-                  option.uid === NEW_LABEL_TEMP_UID ? "#2196f3" : undefined,
+                  option.uid === NEW_LABEL_TEMP_UID ? INFO.alt : undefined,
               }}
             />
           ))
@@ -432,7 +433,7 @@ export const renderActionsColumn = (
             size="small"
             className="z-10"
           >
-            <DoneIcon style={{ color: "#219653" }} />
+            <DoneIcon style={{ color: SUCCESS.alt }} />
           </IconButton>
           <IconButton
             onClick={(e) => {
@@ -442,7 +443,7 @@ export const renderActionsColumn = (
             size="small"
             className="z-10"
           >
-            <CloseIcon style={{ color: "#EB5757" }} />
+            <CloseIcon style={{ color: ERROR.main }} />
           </IconButton>
         </>
       ) : (

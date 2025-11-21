@@ -69,7 +69,7 @@ const MessageHistoryListView = ({ messageList, onRowClick }: Props) => {
             fontWeight: 600,
             position: "sticky",
             top: 0,
-            background: "#fff",
+            background: "var(--color-background-paper)",
             zIndex: 2,
           },
           "& .MuiTableContainer-root": {

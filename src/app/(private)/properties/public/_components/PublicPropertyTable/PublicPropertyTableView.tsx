@@ -1,6 +1,7 @@
 import { PublicPropertyItem } from "@/types/property";
 import Table, { ColumnConfig, RowData } from "@/components/Table";
 import { PropertyCellRenderer, SortableHeader } from "./components";
+import { BACKGROUND } from "@/constants/colors";
 
 interface Props {
   propertyList: PublicPropertyItem[];
@@ -170,7 +171,7 @@ const PublicPropertyTableView = ({
             fontWeight: 600,
             position: "sticky",
             top: 0,
-            background: "#fff",
+            background: BACKGROUND.paper,
             zIndex: 2,
           },
           "& .MuiTableContainer-root": {

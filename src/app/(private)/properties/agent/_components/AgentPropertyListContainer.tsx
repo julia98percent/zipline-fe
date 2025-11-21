@@ -8,9 +8,7 @@ import {
   searchAgentProperties,
   AgentPropertySearchParams,
 } from "@/apis/propertyService";
-import { fetchSido, fetchSigungu, fetchDong } from "@/apis/regionService";
 import { Property, PropertyType, PropertyCategoryType } from "@/types/property";
-import { Region } from "@/types/region";
 import { showToast } from "@/components/Toast";
 
 const CATEGORY_OPTIONS = [
@@ -52,14 +50,6 @@ function AgentPropertyListContainer({
     useState<Property[]>(initialProperties);
   const [totalElements, setTotalElements] = useState(initialTotalElements);
   const [showFilterModal, setShowFilterModal] = useState(false);
-
-  // 지역 관련 상태
-  const [regions, setRegions] = useState<Region[]>([]);
-  const [sigunguOptions, setSigunguOptions] = useState<Region[]>([]);
-  const [dongOptions, setDongOptions] = useState<Region[]>([]);
-  const selectedSido = getParam("sido");
-  const selectedGu = getParam("gu");
-  const selectedDong = getParam("dong");
 
   const searchParams = useMemo(
     () => ({
@@ -130,94 +120,6 @@ function AgentPropertyListContainer({
     []
   );
 
-  const loadRegions = useCallback(async () => {
-    try {
-      const regionsData = await fetchSido();
-      setRegions(regionsData);
-    } catch (error) {
-      console.error("Error loading regions:", error);
-    }
-  }, []);
-
-  const loadSigunguOptions = useCallback(async (sidoCode: string) => {
-    if (!sidoCode) {
-      setSigunguOptions([]);
-      return;
-    }
-    try {
-      const data = await fetchSigungu(parseInt(sidoCode));
-      setSigunguOptions(data);
-    } catch (error) {
-      console.error("Error loading sigungu:", error);
-      setSigunguOptions([]);
-    }
-  }, []);
-
-  const loadDongOptions = useCallback(async (sigugunCode: string) => {
-    if (!sigugunCode) {
-      setDongOptions([]);
-      return;
-    }
-    try {
-      const data = await fetchDong(parseInt(sigugunCode));
-      setDongOptions(data);
-    } catch (error) {
-      console.error("Error loading dong:", error);
-      setDongOptions([]);
-    }
-  }, []);
-
-  const handleSidoChange = useCallback(
-    async (e: SelectChangeEvent<number>) => {
-      const newSido = String(e.target.value);
-      await loadSigunguOptions(newSido);
-      setDongOptions([]);
-
-      setParams({
-        sido: newSido || null,
-        gu: null,
-        dong: null,
-        legalDistrictCode: newSido ? newSido.slice(0, 2) : null,
-      });
-    },
-    [setParams, loadSigunguOptions]
-  );
-
-  const handleGuChange = useCallback(
-    async (e: SelectChangeEvent<number>) => {
-      const newGu = String(e.target.value);
-      await loadDongOptions(newGu);
-
-      setParams({
-        gu: newGu || null,
-        dong: null,
-        legalDistrictCode: newGu
-          ? newGu.slice(0, 5)
-          : selectedSido
-          ? selectedSido.slice(0, 2)
-          : null,
-      });
-    },
-    [setParams, selectedSido, loadDongOptions]
-  );
-
-  const handleDongChange = useCallback(
-    async (e: SelectChangeEvent<number>) => {
-      const newDong = String(e.target.value);
-
-      setParams({
-        dong: newDong || null,
-        legalDistrictCode: newDong
-          ? newDong.slice(0, 8)
-          : selectedGu
-          ? selectedGu.slice(0, 5)
-          : selectedSido
-          ? selectedSido.slice(0, 2)
-          : null,
-      });
-    },
-    [setParams, selectedSido, selectedGu]
-  );
 
   const handleCategoryChange = useCallback(
     (e: SelectChangeEvent<unknown>) => {
@@ -296,22 +198,6 @@ function AgentPropertyListContainer({
     fetchProperties(searchParams);
   }, [fetchProperties, searchParams]);
 
-  useEffect(() => {
-    loadRegions();
-  }, [loadRegions]);
-
-  useEffect(() => {
-    if (selectedSido) {
-      loadSigunguOptions(selectedSido);
-    }
-  }, [selectedSido, loadSigunguOptions]);
-
-  useEffect(() => {
-    if (selectedGu) {
-      loadDongOptions(selectedGu);
-    }
-  }, [selectedGu, loadDongOptions]);
-
   return (
     <AgentPropertyListView
       loading={loading}
@@ -319,17 +205,8 @@ function AgentPropertyListContainer({
       totalElements={totalElements}
       searchParams={searchParams}
       showFilterModal={showFilterModal}
-      regions={regions}
-      selectedSido={selectedSido}
-      selectedGu={selectedGu}
-      selectedDong={selectedDong}
       categoryOptions={CATEGORY_OPTIONS}
       typeOptions={TYPE_OPTIONS}
-      sigunguOptions={sigunguOptions}
-      dongOptions={dongOptions}
-      onSidoChange={handleSidoChange}
-      onGuChange={handleGuChange}
-      onDongChange={handleDongChange}
       onCategoryChange={handleCategoryChange}
       onFilterApply={handleFilterApply}
       onPageChange={handlePageChange}

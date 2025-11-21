@@ -1,4 +1,5 @@
 import { CircularProgress as MuiCircularProgress } from "@mui/material";
+import { GRADIENT } from "@/constants/colors";
 
 const CircularProgress = ({ size = 56 }) => {
   return (
@@ -12,8 +13,8 @@ const CircularProgress = ({ size = 56 }) => {
             x2="0%"
             y2="100%"
           >
-            <stop offset="0%" stopColor="#73a8ff" />
-            <stop offset="100%" stopColor="#3b70c4" />
+            <stop offset="0%" stopColor={GRADIENT.circularProgress.start} />
+            <stop offset="100%" stopColor={GRADIENT.circularProgress.end} />
           </linearGradient>
         </defs>
       </svg>

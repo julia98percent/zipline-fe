@@ -2,6 +2,7 @@ import { ChangeEvent, useCallback } from "react";
 import { TextField, Tooltip } from "@mui/material";
 import ErrorOutlineIcon from "@mui/icons-material/ErrorOutline";
 import { formatPhoneNumber } from "@/utils/numberUtil";
+import { PRIMARY } from "@/constants/colors";
 
 export interface PhoneNumberInputProps {
   phoneNumber: string;
@@ -71,14 +72,14 @@ const PhoneNumberInput = ({
       sx={{
         "& .MuiOutlinedInput-root": {
           "&:hover fieldset": {
-            borderColor: "#164F9E",
+            borderColor: PRIMARY.main,
           },
           "&.Mui-focused fieldset": {
-            borderColor: "#164F9E",
+            borderColor: PRIMARY.main,
           },
         },
         "& .MuiInputLabel-root.Mui-focused": {
-          color: "#164F9E",
+          color: PRIMARY.main,
         },
       }}
     />

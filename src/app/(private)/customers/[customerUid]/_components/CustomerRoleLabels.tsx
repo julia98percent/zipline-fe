@@ -1,5 +1,6 @@
 import { Chip, TextField, Autocomplete } from "@mui/material";
 import { Label, Customer } from "@/types/customer";
+import { CUSTOMER_ROLES, NEUTRAL, TEXT, INFO, SCHEDULE_COLORS } from "@/constants/colors";
 
 // 새로 생성할 라벨을 나타내는 임시 UID
 const NEW_LABEL_TEMP_UID = -1;
@@ -42,9 +43,9 @@ const CustomerRoleLabels = ({
                 className="cursor-pointer"
                 sx={{
                   backgroundColor: editedCustomer?.tenant
-                    ? "#FEF5EB"
-                    : "#F5F5F5",
-                  color: editedCustomer?.tenant ? "#F2994A" : "#757575",
+                    ? CUSTOMER_ROLES.tenant.background
+                    : NEUTRAL[100],
+                  color: editedCustomer?.tenant ? CUSTOMER_ROLES.tenant.text : TEXT.hint,
                 }}
               />
               <Chip
@@ -55,9 +56,9 @@ const CustomerRoleLabels = ({
                 className="cursor-pointer"
                 sx={{
                   backgroundColor: editedCustomer?.landlord
-                    ? "#FDEEEE"
-                    : "#F5F5F5",
-                  color: editedCustomer?.landlord ? "#EB5757" : "#757575",
+                    ? CUSTOMER_ROLES.landlord.background
+                    : NEUTRAL[100],
+                  color: editedCustomer?.landlord ? CUSTOMER_ROLES.landlord.text : TEXT.hint,
                 }}
               />
               <Chip
@@ -66,9 +67,9 @@ const CustomerRoleLabels = ({
                 className="cursor-pointer"
                 sx={{
                   backgroundColor: editedCustomer?.buyer
-                    ? "#E9F7EF"
-                    : "#F5F5F5",
-                  color: editedCustomer?.buyer ? "#219653" : "#757575",
+                    ? CUSTOMER_ROLES.buyer.background
+                    : NEUTRAL[100],
+                  color: editedCustomer?.buyer ? CUSTOMER_ROLES.buyer.text : TEXT.hint,
                 }}
               />
               <Chip
@@ -77,9 +78,9 @@ const CustomerRoleLabels = ({
                 className="cursor-pointer"
                 sx={{
                   backgroundColor: editedCustomer?.seller
-                    ? "#EBF2FC"
-                    : "#F5F5F5",
-                  color: editedCustomer?.seller ? "#2F80ED" : "#757575",
+                    ? CUSTOMER_ROLES.seller.background
+                    : NEUTRAL[100],
+                  color: editedCustomer?.seller ? CUSTOMER_ROLES.seller.text : TEXT.hint,
                 }}
               />
             </>
@@ -88,25 +89,25 @@ const CustomerRoleLabels = ({
               {customer.tenant && (
                 <Chip
                   label="임차인"
-                  sx={{ backgroundColor: "#FEF5EB", color: "#F2994A" }}
+                  sx={{ backgroundColor: CUSTOMER_ROLES.tenant.background, color: CUSTOMER_ROLES.tenant.text }}
                 />
               )}
               {customer.landlord && (
                 <Chip
                   label="임대인"
-                  sx={{ backgroundColor: "#FDEEEE", color: "#EB5757" }}
+                  sx={{ backgroundColor: CUSTOMER_ROLES.landlord.background, color: CUSTOMER_ROLES.landlord.text }}
                 />
               )}
               {customer.buyer && (
                 <Chip
                   label="매수인"
-                  sx={{ backgroundColor: "#E9F7EF", color: "#219653" }}
+                  sx={{ backgroundColor: CUSTOMER_ROLES.buyer.background, color: CUSTOMER_ROLES.buyer.text }}
                 />
               )}
               {customer.seller && (
                 <Chip
                   label="매도인"
-                  sx={{ backgroundColor: "#EBF2FC", color: "#2F80ED" }}
+                  sx={{ backgroundColor: CUSTOMER_ROLES.seller.background, color: CUSTOMER_ROLES.seller.text }}
                 />
               )}
               {!customer.tenant &&
@@ -257,11 +258,11 @@ const CustomerRoleLabels = ({
                     sx={{
                       backgroundColor:
                         option.uid === NEW_LABEL_TEMP_UID
-                          ? "#e3f2fd"
+                          ? SCHEDULE_COLORS[0]
                           : undefined,
                       borderColor:
                         option.uid === NEW_LABEL_TEMP_UID
-                          ? "#2196f3"
+                          ? INFO.alt
                           : undefined,
                     }}
                   />

@@ -33,7 +33,7 @@ const TemplateList: React.FC<TemplateListProps> = ({
                 sx={{
                   "& .MuiTypography-root": {
                     fontWeight: "bold",
-                    color: "#333333",
+                    color: "var(--color-text-primary)",
                     fontSize: "0.9rem",
                   },
                 }}
@@ -46,7 +46,7 @@ const TemplateList: React.FC<TemplateListProps> = ({
                 style={{
                   backgroundColor:
                     selectedTemplate?.uid === template.uid
-                      ? "#F0F7FF"
+                      ? "var(--color-primary-light-hover)"
                       : "transparent",
                 }}
                 onClick={() => onTemplateSelect(template)}
@@ -59,8 +59,8 @@ const TemplateList: React.FC<TemplateListProps> = ({
                       style={{
                         color:
                           selectedTemplate?.uid === template.uid
-                            ? "#164F9E"
-                            : "#666666",
+                            ? "var(--color-primary)"
+                            : "var(--color-text-secondary)",
                       }}
                     >
                       • {template.name}

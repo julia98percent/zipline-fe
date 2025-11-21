@@ -6,6 +6,7 @@ import Table, { ColumnConfig, RowData } from "@/components/Table/Table";
 import MobilePagination from "@/components/MobilePagination";
 import ContractCard from "./ContractCard";
 import { getPropertyTypeColors } from "@/constants/property";
+import { MUI_COLORS } from "@/constants/colors";
 
 interface Props {
   contractList: Contract[];
@@ -41,19 +42,19 @@ const ContractTable = ({
   const getColor = (color: string) => {
     switch (color) {
       case "primary":
-        return "#1976d2";
+        return MUI_COLORS.primary;
       case "success":
-        return "#2e7d32";
+        return MUI_COLORS.success;
       case "error":
-        return "#d32f2f";
+        return MUI_COLORS.error;
       case "warning":
-        return "#ed6c02";
+        return MUI_COLORS.warning;
       case "info":
-        return "#0288d1";
+        return MUI_COLORS.info;
       case "secondary":
-        return "#9c27b0";
+        return MUI_COLORS.secondary;
       default:
-        return "#999";
+        return MUI_COLORS.default;
     }
   };
 

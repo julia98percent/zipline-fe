@@ -4,6 +4,7 @@ import MobilePagination from "@/components/MobilePagination";
 import dayjs from "dayjs";
 import { Counsel } from "@/types/counsel";
 import CounselCard from "./CounselCard";
+import { SUCCESS, CUSTOMER_ROLES } from "@/constants/colors";
 
 interface Props {
   counsels: Counsel[];
@@ -59,8 +60,8 @@ const CounselTable = ({
           <Chip
             label={isCompleted ? "의뢰 마감" : "의뢰 진행 중"}
             sx={{
-              color: isCompleted ? "#219653" : "#F2994A",
-              backgroundColor: isCompleted ? "#E9F7EF" : "#FEF5EB",
+              color: isCompleted ? SUCCESS.alt : CUSTOMER_ROLES.tenant.text,
+              backgroundColor: isCompleted ? SUCCESS.altLight : CUSTOMER_ROLES.tenant.background,
             }}
           />
         );

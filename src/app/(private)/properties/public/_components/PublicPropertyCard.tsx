@@ -1,6 +1,7 @@
 import { PublicPropertyItem } from "@/types/property";
 import { Typography, Chip, Box, Card, CardContent } from "@mui/material";
 import { formatKoreanPrice } from "@/utils/numberUtil";
+import { SUCCESS, INFO, WARNING, NEUTRAL, TEXT } from "@/constants/colors";
 
 interface PublicPropertyCardProps {
   property: PublicPropertyItem;
@@ -43,13 +44,13 @@ const PublicPropertyCard = ({
   const getCategoryColor = (category: string) => {
     switch (category) {
       case "SALE":
-        return { backgroundColor: "#e8f5e9", color: "#388e3c" };
+        return { backgroundColor: SUCCESS.light, color: SUCCESS.text };
       case "DEPOSIT":
-        return { backgroundColor: "#e3f2fd", color: "#1976d2" };
+        return { backgroundColor: INFO.light, color: INFO.main };
       case "MONTHLY":
-        return { backgroundColor: "#fff3e0", color: "#f57c00" };
+        return { backgroundColor: WARNING.light, color: WARNING.main };
       default:
-        return { backgroundColor: "#f5f5f5", color: "#666" };
+        return { backgroundColor: NEUTRAL[100], color: TEXT.secondary };
     }
   };
 

@@ -8,6 +8,7 @@ import { CONTRACT_STATUS_TYPES } from "@/constants/contract";
 import dayjs from "dayjs";
 import { ContractCategory, ContractCategoryType } from "@/types/contract";
 import { getPropertyTypeColors } from "@/constants/property";
+import { MUI_COLORS } from "@/constants/colors";
 
 interface PropertyHistorySectionProps {
   contractHistories: ContractHistoryItem[];
@@ -25,19 +26,19 @@ const PropertyHistorySection = ({
   const getColor = (color: string) => {
     switch (color) {
       case "primary":
-        return "#1976d2";
+        return MUI_COLORS.primary;
       case "success":
-        return "#2e7d32";
+        return MUI_COLORS.success;
       case "error":
-        return "#d32f2f";
+        return MUI_COLORS.error;
       case "warning":
-        return "#ed6c02";
+        return MUI_COLORS.warning;
       case "info":
-        return "#0288d1";
+        return MUI_COLORS.info;
       case "secondary":
-        return "#9c27b0";
+        return MUI_COLORS.secondary;
       default:
-        return "#999";
+        return MUI_COLORS.default;
     }
   };
 

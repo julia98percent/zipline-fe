@@ -5,19 +5,20 @@ import {
 } from "@/types/contract";
 import { CONTRACT_STATUS_OPTION_LIST } from "@/constants/contract";
 import ContractDetailContentView from "./ContractDetailContentView";
+import { ERROR, INFO, PURPLE, SUCCESS, WARNING, TEXT } from "@/constants/colors";
 
 const CONTRACT_STATUS_COLORS: Record<string, string> = {
-  LISTED: "#9e9e9e",
-  NEGOTIATING: "#0288d1",
-  INTENT_SIGNED: "#f57c00",
-  CANCELLED: "#d32f2f",
-  CONTRACTED: "#388e3c",
-  IN_PROGRESS: "#1976d2",
-  PAID_COMPLETE: "#7b1fa2",
-  REGISTERED: "#388e3c",
-  MOVED_IN: "#388e3c",
-  TERMINATED: "#d32f2f",
-  CLOSED: "#9e9e9e",
+  LISTED: TEXT.secondary,
+  NEGOTIATING: INFO.dark,
+  INTENT_SIGNED: WARNING.main,
+  CANCELLED: ERROR.dark,
+  CONTRACTED: SUCCESS.main,
+  IN_PROGRESS: INFO.main,
+  PAID_COMPLETE: PURPLE.main,
+  REGISTERED: SUCCESS.text,
+  MOVED_IN: SUCCESS.text,
+  TERMINATED: ERROR.dark,
+  CLOSED: TEXT.secondary,
 };
 
 interface Props {
@@ -45,7 +46,7 @@ const ContractDetailContent = ({
   };
 
   const getStatusColor = (statusValue: string): string => {
-    return CONTRACT_STATUS_COLORS[statusValue] || "#9e9e9e";
+    return CONTRACT_STATUS_COLORS[statusValue] || TEXT.secondary;
   };
 
   const getCustomerNamesDisplay = (contractPartyInfo: ContractPartyInfo[]) => {

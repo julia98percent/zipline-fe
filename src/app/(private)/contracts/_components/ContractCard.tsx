@@ -3,6 +3,15 @@ import Chip from "@mui/material/Chip";
 import { CONTRACT_STATUS_TYPES } from "@/constants/contract";
 import { getPropertyTypeColors } from "@/constants/property";
 import InfoField from "@/components/InfoField";
+import {
+  ERROR,
+  INFO,
+  NEUTRAL,
+  PURPLE,
+  SUCCESS,
+  WARNING,
+  TEXT,
+} from "@/constants/colors";
 
 interface ContractCardProps {
   contract: Contract;
@@ -37,8 +46,8 @@ const ContractCard = ({ contract, onRowClick }: ContractCardProps) => {
           label={status}
           size="small"
           sx={{
-            backgroundColor: "#f5f5f5",
-            color: "#666",
+            backgroundColor: NEUTRAL[100],
+            color: TEXT.secondary,
             fontSize: "0.7rem",
             height: "20px",
           }}
@@ -49,19 +58,19 @@ const ContractCard = ({ contract, onRowClick }: ContractCardProps) => {
     const getColor = (color: string) => {
       switch (color) {
         case "primary":
-          return { backgroundColor: "#1976d2", color: "white" };
+          return { backgroundColor: INFO.main, color: "white" };
         case "success":
-          return { backgroundColor: "#2e7d32", color: "white" };
+          return { backgroundColor: SUCCESS.dark, color: "white" };
         case "error":
-          return { backgroundColor: "#d32f2f", color: "white" };
+          return { backgroundColor: ERROR.dark, color: "white" };
         case "warning":
-          return { backgroundColor: "#ed6c02", color: "white" };
+          return { backgroundColor: WARNING.main, color: "white" };
         case "info":
-          return { backgroundColor: "#0288d1", color: "white" };
+          return { backgroundColor: INFO.dark, color: "white" };
         case "secondary":
-          return { backgroundColor: "#9c27b0", color: "white" };
+          return { backgroundColor: PURPLE.dark, color: "white" };
         default:
-          return { backgroundColor: "#f5f5f5", color: "#666" };
+          return { backgroundColor: NEUTRAL[100], color: TEXT.secondary };
       }
     };
 

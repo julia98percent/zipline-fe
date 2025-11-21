@@ -5,6 +5,7 @@ import {
   Typography,
 } from "@mui/material";
 import { CheckCircle } from "@mui/icons-material";
+import { SUCCESS, INFO, MUI_COLORS, NEUTRAL, TEXT, BACKGROUND } from "@/constants/colors";
 
 interface ContractStatusStepperDesktopProps {
   normalFlow: string[];
@@ -39,7 +40,7 @@ const ContractStatusStepperDesktop = ({
             right: "calc(50% + 16px)",
           },
           "& .MuiStepConnector-line": {
-            borderColor: "#e0e0e0",
+            borderColor: NEUTRAL[300],
             borderTopWidth: 2,
           },
           "& .MuiStep-root": {
@@ -62,20 +63,20 @@ const ContractStatusStepperDesktop = ({
                     className="w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold transition-all duration-300"
                     style={{
                       backgroundColor: isCompleted
-                        ? "#4caf50"
+                        ? SUCCESS.main
                         : isActive
-                        ? "#2196f3"
+                        ? INFO.alt
                         : isClickable
-                        ? "#e3f2fd"
-                        : "#e0e0e0",
+                        ? INFO.light
+                        : NEUTRAL[300],
                       color:
                         isCompleted || isActive
-                          ? "#fff"
+                          ? BACKGROUND.paper
                           : isClickable
-                          ? "#1976d2"
-                          : "#666",
+                          ? MUI_COLORS.primary
+                          : TEXT.secondary,
                       cursor: isClickable ? "pointer" : "default",
-                      border: isClickable ? "2px solid #1976d2" : "none",
+                      border: isClickable ? `2px solid ${MUI_COLORS.primary}` : "none",
                     }}
                     onClick={() => isClickable && handleStepClick(step)}
                     title={
@@ -99,12 +100,12 @@ const ContractStatusStepperDesktop = ({
                     sx={{
                       fontWeight: isCompleted || isActive ? "bold" : "normal",
                       color: isCompleted
-                        ? "#4caf50"
+                        ? SUCCESS.main
                         : isActive
-                        ? "#2196f3"
+                        ? INFO.alt
                         : isClickable
-                        ? "#1976d2"
-                        : "#666",
+                        ? MUI_COLORS.primary
+                        : TEXT.secondary,
                     }}
                   >
                     {getStatusLabel(step)}

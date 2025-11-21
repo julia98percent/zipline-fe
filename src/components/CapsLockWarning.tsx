@@ -1,3 +1,5 @@
+import { WARNING } from "@/constants/colors";
+
 interface CapsLockWarningProps {
   show: boolean;
 }
@@ -11,7 +13,7 @@ const CapsLockWarning = ({ show }: CapsLockWarningProps) => {
         position: "absolute",
         top: "-30px",
         left: 0,
-        backgroundColor: "#ff9800",
+        backgroundColor: WARNING.dark,
         color: "white",
         padding: "4px 8px",
         borderRadius: "4px",

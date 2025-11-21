@@ -4,6 +4,7 @@ import AssignmentIcon from "@mui/icons-material/Assignment";
 import DonutLargeIcon from "@mui/icons-material/DonutLarge";
 import CheckCircleIcon from "@mui/icons-material/CheckCircle";
 import PersonAddIcon from "@mui/icons-material/PersonAdd";
+import { INFO, PURPLE, SUCCESS, WARNING } from "@/constants/colors";
 
 interface StatisticsCardsProps {
   recentCustomers: number;
@@ -33,8 +34,8 @@ const StatisticsCards: React.FC<StatisticsCardsProps> = ({
       title: "신규 고객",
       value: `${recentCustomers}명`,
       icon: PersonAddIcon,
-      color: "#1976d2",
-      backgroundColor: "#e3f2fd",
+      color: INFO.main,
+      backgroundColor: INFO.light,
       onClick: onRecentCustomersClick,
       clickable: true,
     },
@@ -42,8 +43,8 @@ const StatisticsCards: React.FC<StatisticsCardsProps> = ({
       title: "최근 계약",
       value: `${recentContractsCount}건`,
       icon: AssignmentIcon,
-      color: "#2e7d32",
-      backgroundColor: "#e8f5e8",
+      color: SUCCESS.main,
+      backgroundColor: SUCCESS.light,
       onClick: onRecentContractsClick,
       clickable: recentContractsCount > 0,
     },
@@ -51,8 +52,8 @@ const StatisticsCards: React.FC<StatisticsCardsProps> = ({
       title: "진행 중인 계약",
       value: `${ongoingContracts}건`,
       icon: DonutLargeIcon,
-      color: "#f57c00",
-      backgroundColor: "#fff3e0",
+      color: WARNING.main,
+      backgroundColor: WARNING.light,
       onClick: onOngoingContractsClick,
       clickable: ongoingContracts > 0,
     },
@@ -60,8 +61,8 @@ const StatisticsCards: React.FC<StatisticsCardsProps> = ({
       title: "완료된 계약",
       value: `${completedContracts}건`,
       icon: CheckCircleIcon,
-      color: "#7b1fa2",
-      backgroundColor: "#f3e5f5",
+      color: PURPLE.main,
+      backgroundColor: PURPLE.light,
       onClick: onCompletedContractsClick,
       clickable: completedContracts > 0,
     },

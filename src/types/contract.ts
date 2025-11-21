@@ -1,5 +1,6 @@
 import { PaginatedResponse } from "./apiResponse";
 import { CONTRACT_STATUS_OPTION_LIST } from "@/constants/contract";
+import { SUCCESS, INFO, WARNING } from "@/constants/colors";
 
 export interface ContractDocument {
   fileName: string;
@@ -71,9 +72,9 @@ export const ContractCategoryKeys = {
 } satisfies Record<ContractCategoryType, ContractCategoryType>;
 
 export const ContractCategoryColors: Record<ContractCategoryType, string> = {
-  SALE: "#388e3c",
-  DEPOSIT: "#1976d2",
-  MONTHLY: "#f57c00",
+  SALE: SUCCESS.text,
+  DEPOSIT: INFO.main,
+  MONTHLY: WARNING.main,
 };
 
 export type ContractResponse = PaginatedResponse<"contracts", Contract[]>;

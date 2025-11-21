@@ -6,6 +6,7 @@ import { Tabs, Tab } from "@mui/material";
 import FindIdTab from "./FindIdTab";
 import FindPasswordTab from "./FindPasswordTab";
 import { Route } from "next";
+import { PRIMARY, TEXT } from "@/constants/colors";
 
 interface TabPanelProps {
   children?: React.ReactNode;
@@ -70,14 +71,14 @@ const FindAccountContainer = () => {
                   textTransform: "none",
                   fontSize: "1rem",
                   fontWeight: 500,
-                  color: "#6B7280",
+                  color: TEXT.secondary,
                   "&.Mui-selected": {
-                    color: "#164F9E",
+                    color: PRIMARY.main,
                     fontWeight: 600,
                   },
                 },
                 "& .MuiTabs-indicator": {
-                  backgroundColor: "#164F9E",
+                  backgroundColor: PRIMARY.main,
                 },
               }}
             >

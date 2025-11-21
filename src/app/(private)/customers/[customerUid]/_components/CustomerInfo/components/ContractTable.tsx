@@ -4,6 +4,7 @@ import Table, { ColumnConfig } from "@/components/Table";
 import { ContractRowData } from "./CustomerInfoTabPanel";
 import { Contract } from "@/types/contract";
 import { getPropertyTypeColors } from "@/constants/property";
+import { INFO, SUCCESS, WARNING } from "@/constants/colors";
 
 interface ContractTableProps {
   contractList: Contract[];
@@ -16,9 +17,9 @@ interface ContractTableProps {
 }
 
 const PROPERTY_TYPES = [
-  { value: "SALE", name: "매매", color: "#4caf50" },
-  { value: "DEPOSIT", name: "전세", color: "#2196f3" },
-  { value: "MONTHLY", name: "월세", color: "#ff9800" },
+  { value: "SALE", name: "매매", color: SUCCESS.main },
+  { value: "DEPOSIT", name: "전세", color: INFO.alt },
+  { value: "MONTHLY", name: "월세", color: WARNING.dark },
 ];
 
 function ContractTable({

@@ -13,6 +13,7 @@ import {
   fetchSchedulesByDateRange,
   updateSchedule,
 } from "@/apis/scheduleService";
+import { SCHEDULE_COLORS, NEUTRAL } from "@/constants/colors";
 
 dayjs.extend(isSameOrAfter);
 dayjs.extend(isSameOrBefore);
@@ -279,20 +280,8 @@ export const useDashboard = (props: UseDashboardProps): DashboardData => {
   }, [selectedDate]);
 
   const getScheduleColor = useCallback((customerUid: number | null) => {
-    if (!customerUid) return "#f0f0f0";
-    const colors = [
-      "#e3f2fd",
-      "#f3e5f5",
-      "#e8f5e8",
-      "#fff3e0",
-      "#fce4ec",
-      "#e0f2f1",
-      "#f1f8e9",
-      "#fff8e1",
-      "#e1f5fe",
-      "#f9fbe7",
-    ];
-    return colors[customerUid % colors.length];
+    if (!customerUid) return NEUTRAL[200];
+    return SCHEDULE_COLORS[customerUid % SCHEDULE_COLORS.length];
   }, []);
 
   // Computed values

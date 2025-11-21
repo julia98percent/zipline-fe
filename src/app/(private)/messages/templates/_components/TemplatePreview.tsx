@@ -48,8 +48,8 @@ const TemplatePreview: React.FC<TemplatePreviewProps> = ({
               key={match.index}
               style={{
                 display: "inline-block",
-                background: "#E3F2FD",
-                color: "#164F9E",
+                background: "var(--color-primary-hover)",
+                color: "var(--color-primary)",
                 borderRadius: "8px",
                 padding: "2px 8px",
                 margin: "0 2px",

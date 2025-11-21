@@ -4,6 +4,7 @@ import { formatKoreanPrice } from "@/utils/numberUtil";
 import Table, { ColumnConfig } from "@/components/Table";
 import { PropertyRowData } from "./CustomerInfoTabPanel";
 import { Property } from "@/types/property";
+import { SUCCESS, ERROR, WARNING, NEUTRAL, TEXT } from "@/constants/colors";
 
 interface PropertyTableProps {
   properties: Property[];
@@ -19,23 +20,23 @@ const getTypeColor = (type: string) => {
   switch (type) {
     case "SALE":
       return {
-        backgroundColor: "#E9F7EF",
-        color: "#219653",
+        backgroundColor: SUCCESS.altLight,
+        color: SUCCESS.alt,
       };
     case "DEPOSIT":
       return {
-        backgroundColor: "#FDEEEE",
-        color: "#EB5757",
+        backgroundColor: ERROR.light,
+        color: ERROR.main,
       };
     case "MONTHLY":
       return {
-        backgroundColor: "#FEF5EB",
-        color: "#F2994A",
+        backgroundColor: WARNING.light,
+        color: WARNING.main,
       };
     default:
       return {
-        backgroundColor: "#F5F5F5",
-        color: "#757575",
+        backgroundColor: NEUTRAL[100],
+        color: TEXT.hint,
       };
   }
 };

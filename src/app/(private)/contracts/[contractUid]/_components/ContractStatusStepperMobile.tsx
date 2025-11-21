@@ -1,6 +1,7 @@
 import { MobileStepper } from "@mui/material";
 import ChevronLeftIcon from "@mui/icons-material/ChevronLeft";
 import ChevronRightIcon from "@mui/icons-material/ChevronRight";
+import { INFO, NEUTRAL, SUCCESS } from "@/constants/colors";
 
 interface ContractStatusStepperMobileProps {
   normalFlow: string[];
@@ -27,9 +28,10 @@ const ContractStatusStepperMobile = ({
         <div className="flex items-center justify-start">
           {activeStep > 0 && (
             <div className="flex items-center">
-              <ChevronLeftIcon className="text-[#4caf50]" />
+              <ChevronLeftIcon style={{ color: SUCCESS.main }} />
               <span
-                className="font-medium break-keep text-[#4caf50] cursor-pointer"
+                className="font-medium break-keep cursor-pointer"
+                style={{ color: SUCCESS.main }}
                 onClick={() =>
                   handleQuickStatusChange(normalFlow[activeStep - 1])
                 }
@@ -85,15 +87,15 @@ const ContractStatusStepperMobile = ({
           flexGrow: 1,
           backgroundColor: "transparent",
           "& .MuiMobileStepper-dot": {
-            backgroundColor: "#e0e0e0",
+            backgroundColor: NEUTRAL[300],
           },
           "& .MuiMobileStepper-dotActive": {
-            backgroundColor: "#2196f3",
+            backgroundColor: INFO.alt,
           },
 
           ...Array.from({ length: activeStep }, (_, i) => ({
             [`& .MuiMobileStepper-dots > div:nth-of-type(${i + 1})`]: {
-              backgroundColor: i < activeStep ? "#4caf50" : "#e0e0e0",
+              backgroundColor: i < activeStep ? SUCCESS.main : NEUTRAL[300],
             },
           })).reduce((acc, curr) => ({ ...acc, ...curr }), {}),
         }}

@@ -1,4 +1,5 @@
 import { Tab, Tabs } from "@mui/material";
+import { PRIMARY } from "@/constants/colors";
 
 interface CustomerTabsSectionProps {
   selectedTab: number;
@@ -25,10 +26,10 @@ export default function CustomerTabsSection({
             py: 1,
           },
           "& .Mui-selected": {
-            color: "#164F9E !important",
+            color: `${PRIMARY.main} !important`,
           },
           "& .MuiTabs-indicator": {
-            backgroundColor: "#164F9E",
+            backgroundColor: PRIMARY.main,
           },
         }}
       >

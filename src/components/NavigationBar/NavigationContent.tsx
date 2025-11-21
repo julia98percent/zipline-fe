@@ -22,9 +22,10 @@ import useAuthStore from "@/stores/useAuthStore";
 import { logoutUser } from "@/apis/userService";
 import { clearAllAuthState } from "@/utils/authUtil";
 import { MENU_INFO, ParentMenuName } from "@/utils/pageUtils";
+import { PRIMARY, TEXT } from "@/constants/colors";
 
 const getMenuIcon = (name: ParentMenuName, isActive = false) => {
-  const iconColor = isActive ? "#164F9E" : "#222222";
+  const iconColor = isActive ? PRIMARY.main : TEXT.primary;
 
   switch (name) {
     case "매물":
@@ -91,11 +92,11 @@ const NavigationContent = ({ onItemClick }: NavigationContentProps) => {
               style={{
                 borderLeft:
                   currentPath === "/" || currentPath?.startsWith("/dashboard")
-                    ? "4px solid #164F9E"
+                    ? `4px solid ${PRIMARY.main}`
                     : "none",
                 backgroundColor:
                   currentPath === "/" || currentPath?.startsWith("/dashboard")
-                    ? "rgba(22, 79, 158, 0.04)"
+                    ? "var(--color-selected)"
                     : "transparent",
               }}
             >
@@ -106,8 +107,8 @@ const NavigationContent = ({ onItemClick }: NavigationContentProps) => {
                     color:
                       currentPath === "/" ||
                       currentPath?.startsWith("/dashboard")
-                        ? "#164F9E"
-                        : "#222222",
+                        ? PRIMARY.main
+                        : TEXT.primary,
                     fontSize: 24,
                   }}
                 />
@@ -117,8 +118,8 @@ const NavigationContent = ({ onItemClick }: NavigationContentProps) => {
                 style={{
                   color:
                     currentPath === "/" || currentPath?.startsWith("/dashboard")
-                      ? "#164F9E"
-                      : "#222222",
+                      ? PRIMARY.main
+                      : TEXT.primary,
                   fontWeight:
                     currentPath === "/" || currentPath?.startsWith("/dashboard")
                       ? "bold"
@@ -154,7 +155,7 @@ const NavigationContent = ({ onItemClick }: NavigationContentProps) => {
                       <ListItemText
                         primary={name}
                         style={{
-                          color: isActive ? "#164F9E" : "#222222",
+                          color: isActive ? PRIMARY.main : TEXT.primary,
                           fontWeight: isActive ? "bold" : "normal",
                         }}
                       />
@@ -168,10 +169,10 @@ const NavigationContent = ({ onItemClick }: NavigationContentProps) => {
                           className="hover:bg-gray-50 justify-start px-4 py-1 mb-1 ml-8"
                           style={{
                             borderLeft: currentPath?.startsWith(sub.to)
-                              ? "4px solid #164F9E"
+                              ? `4px solid ${PRIMARY.main}`
                               : "none",
                             backgroundColor: currentPath?.startsWith(sub.to)
-                              ? "rgba(22, 79, 158, 0.04)"
+                              ? "var(--color-selected)"
                               : "transparent",
                           }}
                         >
@@ -180,8 +181,8 @@ const NavigationContent = ({ onItemClick }: NavigationContentProps) => {
                             className="text-sm"
                             style={{
                               color: currentPath?.startsWith(sub.to)
-                                ? "#164F9E"
-                                : "#222222",
+                                ? PRIMARY.main
+                                : TEXT.primary,
                               fontWeight: currentPath?.startsWith(sub.to)
                                 ? "bold"
                                 : "normal",
@@ -198,9 +199,9 @@ const NavigationContent = ({ onItemClick }: NavigationContentProps) => {
                     onClick={onItemClick}
                     className="hover:bg-gray-50"
                     style={{
-                      borderLeft: isActive ? "4px solid #164F9E" : "none",
+                      borderLeft: isActive ? `4px solid ${PRIMARY.main}` : "none",
                       backgroundColor: isActive
-                        ? "rgba(22, 79, 158, 0.04)"
+                        ? "var(--color-selected)"
                         : "transparent",
                     }}
                   >
@@ -210,7 +211,7 @@ const NavigationContent = ({ onItemClick }: NavigationContentProps) => {
                     <ListItemText
                       primary={name}
                       style={{
-                        color: isActive ? "#164F9E" : "#222222",
+                        color: isActive ? PRIMARY.main : TEXT.primary,
                         fontWeight: isActive ? "bold" : "normal",
                       }}
                     />

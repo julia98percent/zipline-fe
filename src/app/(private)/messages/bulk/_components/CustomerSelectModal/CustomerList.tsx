@@ -39,18 +39,18 @@ const CustomerList = ({
               backgroundColor: selectedCustomers.some(
                 (c) => c.uid === customer.uid
               )
-                ? "#F6F8FF"
-                : "#F8F9FA",
+                ? "var(--color-primary-hover)"
+                : "var(--color-background-alt)",
               cursor: "pointer",
               border: selectedCustomers.some((c) => c.uid === customer.uid)
-                ? "1px solid #164F9E"
+                ? "1px solid var(--color-primary)"
                 : "1px solid transparent",
               "&:hover": {
                 backgroundColor: selectedCustomers.some(
                   (c) => c.uid === customer.uid
                 )
-                  ? "#EBF2FC"
-                  : "#E0E0E0",
+                  ? "var(--color-primary-light-hover)"
+                  : "var(--color-neutral-200)",
               },
             }}
             onClick={() => onCustomerSelect(customer)}

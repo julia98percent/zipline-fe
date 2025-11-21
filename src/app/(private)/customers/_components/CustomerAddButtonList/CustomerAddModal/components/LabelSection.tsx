@@ -3,6 +3,7 @@ import Button from "@/components/Button";
 import TextField from "@/components/TextField";
 import AddIcon from "@mui/icons-material/Add";
 import { Label } from "@/types/customer";
+import { PRIMARY } from "@/constants/colors";
 
 interface LabelSectionProps {
   labels: Label[];
@@ -75,15 +76,15 @@ export default function LabelSection({
             }
             sx={{
               backgroundColor: selectedLabels.some((l) => l.uid === label.uid)
-                ? "	#2A6FDB"
+                ? PRIMARY.light
                 : "transparent",
               color: selectedLabels.some((l) => l.uid === label.uid)
                 ? "white"
                 : "inherit",
-              border: "1px solid #164F9E",
+              border: `1px solid ${PRIMARY.main}`,
               "&:hover": {
                 backgroundColor: selectedLabels.some((l) => l.uid === label.uid)
-                  ? "	#2A6FDB"
+                  ? PRIMARY.light
                   : "rgba(99, 102, 241, 0.1)",
               },
             }}

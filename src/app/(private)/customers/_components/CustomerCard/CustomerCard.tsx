@@ -16,6 +16,7 @@ import DoneIcon from "@mui/icons-material/Done";
 import CloseIcon from "@mui/icons-material/Close";
 import { CUSTOMER_TYPE_COLORS } from "@/constants/customer";
 import { useCallback } from "react";
+import { SUCCESS, ERROR, CUSTOMER_ROLES, NEUTRAL, TEXT } from "@/constants/colors";
 
 interface CustomerCardProps {
   customer: Customer;
@@ -137,7 +138,7 @@ const CustomerCard = ({
                       onSave?.();
                     }}
                   >
-                    <DoneIcon style={{ color: "#219653" }} />
+                    <DoneIcon style={{ color: SUCCESS.alt }} />
                   </IconButton>
                 </Tooltip>
                 <Tooltip title="취소">
@@ -148,7 +149,7 @@ const CustomerCard = ({
                       onCancel?.();
                     }}
                   >
-                    <CloseIcon style={{ color: "#EB5757" }} />
+                    <CloseIcon style={{ color: ERROR.main }} />
                   </IconButton>
                 </Tooltip>
               </>
@@ -219,13 +220,13 @@ const CustomerCard = ({
                   className="cursor-pointer"
                   sx={{
                     backgroundColor: currentCustomer.tenant
-                      ? "#FCE8D4"
-                      : "#F5F5F5",
-                    color: currentCustomer.tenant ? "#E67E00" : "#757575",
+                      ? CUSTOMER_ROLES.tenant.background
+                      : NEUTRAL[50],
+                    color: currentCustomer.tenant ? CUSTOMER_ROLES.tenant.text : TEXT.secondary,
                     "&:hover": {
                       backgroundColor: currentCustomer.tenant
-                        ? "#FCE8D4"
-                        : "#E0E0E0",
+                        ? CUSTOMER_ROLES.tenant.background
+                        : NEUTRAL[200],
                     },
                   }}
                 />
@@ -243,13 +244,13 @@ const CustomerCard = ({
                   className="cursor-pointer"
                   sx={{
                     backgroundColor: currentCustomer.landlord
-                      ? "#FCDADA"
-                      : "#F5F5F5",
-                    color: currentCustomer.landlord ? "#D63939" : "#757575",
+                      ? CUSTOMER_ROLES.landlord.background
+                      : NEUTRAL[50],
+                    color: currentCustomer.landlord ? CUSTOMER_ROLES.landlord.text : TEXT.secondary,
                     "&:hover": {
                       backgroundColor: currentCustomer.landlord
-                        ? "#FCDADA"
-                        : "#E0E0E0",
+                        ? CUSTOMER_ROLES.landlord.background
+                        : NEUTRAL[200],
                     },
                   }}
                 />
@@ -267,13 +268,13 @@ const CustomerCard = ({
                   className="cursor-pointer"
                   sx={{
                     backgroundColor: currentCustomer.buyer
-                      ? "#D4EDDC"
-                      : "#F5F5F5",
-                    color: currentCustomer.buyer ? "#0E8A3E" : "#757575",
+                      ? CUSTOMER_ROLES.buyer.background
+                      : NEUTRAL[50],
+                    color: currentCustomer.buyer ? CUSTOMER_ROLES.buyer.text : TEXT.secondary,
                     "&:hover": {
                       backgroundColor: currentCustomer.buyer
-                        ? "#D4EDDC"
-                        : "#E0E0E0",
+                        ? CUSTOMER_ROLES.buyer.background
+                        : NEUTRAL[200],
                     },
                   }}
                 />
@@ -291,13 +292,13 @@ const CustomerCard = ({
                   className="cursor-pointer"
                   sx={{
                     backgroundColor: currentCustomer.seller
-                      ? "#D6E6F9"
-                      : "#F5F5F5",
-                    color: currentCustomer.seller ? "#1B64C2" : "#757575",
+                      ? CUSTOMER_ROLES.seller.background
+                      : NEUTRAL[50],
+                    color: currentCustomer.seller ? CUSTOMER_ROLES.seller.text : TEXT.secondary,
                     "&:hover": {
                       backgroundColor: currentCustomer.seller
-                        ? "#D6E6F9"
-                        : "#E0E0E0",
+                        ? CUSTOMER_ROLES.seller.background
+                        : NEUTRAL[200],
                     },
                   }}
                 />

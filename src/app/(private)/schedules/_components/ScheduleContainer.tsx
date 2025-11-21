@@ -12,6 +12,7 @@ import {
 } from "@/apis/scheduleService";
 import { SCHEDULE_ERROR_MESSAGES } from "@/constants/clientErrorMessage";
 import { DAY_MAX_EVENTS } from "@/constants/schedule";
+import { TEXT, RGBA } from "@/constants/colors";
 
 const ScheduleView = dynamic(() => import("./ScheduleView"), {
   loading: () => (
@@ -190,14 +191,14 @@ const SchedulePage = () => {
 
   const getCustomerColor = (customerUid: number | null) => {
     const colors = [
-      "#cce7fc", // 파랑
+      "#cce7fc", // 파랑 (Schedule별 고유 색상)
       "#e3f1db", // 초록
       "#ffe4c4", // 주황
       "#f8d7e3", // 분홍
     ];
     return {
       backgroundColor: colors[(customerUid || 0) % colors.length],
-      borderColor: "rgba(0,0,0,0.15)",
+      borderColor: RGBA.blackMedium,
     };
   };
 
@@ -218,7 +219,7 @@ const SchedulePage = () => {
       },
       backgroundColor: colorInfo.backgroundColor,
       borderColor: colorInfo.borderColor,
-      textColor: "#333333",
+      textColor: TEXT.primary,
     };
   });
 

@@ -91,7 +91,7 @@ const BulkMessagePage = ({
           }`}
           sx={{
             "& .MuiAlert-icon": {
-              color: toast.severity === "success" ? "#164F9E" : "#D32F2F",
+              color: toast.severity === "success" ? "var(--color-primary)" : "var(--color-error-dark)",
             },
           }}
         >

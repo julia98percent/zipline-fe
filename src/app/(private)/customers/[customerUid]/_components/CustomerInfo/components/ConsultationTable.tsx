@@ -3,6 +3,7 @@ import { useRouter } from "next/navigation";
 import Table, { ColumnConfig } from "@/components/Table";
 import { Counsel } from "@/types/counsel";
 import { ConsultationRowData } from "./CustomerInfoTabPanel";
+import { SUCCESS, WARNING } from "@/constants/colors";
 
 interface ConsultationTableProps {
   counselList: Counsel[];
@@ -56,8 +57,8 @@ function ConsultationTable({
           label={value ? "완료" : "진행 중"}
           size="small"
           sx={{
-            backgroundColor: value ? "#E9F7EF" : "#FEF5EB",
-            color: value ? "#219653" : "#F2994A",
+            backgroundColor: value ? SUCCESS.altLight : WARNING.light,
+            color: value ? SUCCESS.alt : WARNING.dark,
             height: "24px",
             "& .MuiChip-label": {
               px: 1,

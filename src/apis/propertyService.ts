@@ -469,3 +469,20 @@ export const uploadPropertiesBulk = async (file: File): Promise<void> => {
     throw error;
   }
 };
+
+export const fetchPropertyTemplate = async (): Promise<string> => {
+  try {
+    const { data: response } = await apiClient.get<ApiResponse<{ url: string }>>(
+      "/properties/template"
+    );
+
+    if (response.success && response.data) {
+      return response.data.url;
+    } else {
+      throw new Error(response.message || "템플릿 다운로드 URL을 가져오는데 실패했습니다.");
+    }
+  } catch (error) {
+    console.error("Error fetching property template:", error);
+    throw error;
+  }
+};

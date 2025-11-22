@@ -1,16 +1,19 @@
 "use client";
-import { IconButton, Badge } from "@mui/material";
+import { IconButton, Badge, Button } from "@mui/material";
 import { useState, useRef, useEffect, useCallback } from "react";
 import { usePathname, useRouter } from "next/navigation";
 import type { Route } from "next";
 import MenuIcon from "@mui/icons-material/Menu";
 import HomeIcon from "@mui/icons-material/Home";
 import ChevronRightIcon from "@mui/icons-material/ChevronRight";
+import KeyboardArrowDownIcon from "@mui/icons-material/KeyboardArrowDown";
 import { useSSE } from "@/context/SSEContext";
 import NotificationsNoneIcon from "@mui/icons-material/NotificationsNone";
 import NotificationList from "./NotificationList";
+import UserMenu from "./UserMenu";
 import useNotificationStore from "@/stores/useNotificationStore";
 import useMobileMenuStore from "@/stores/useMobileMenuStore";
+import useAuthStore from "@/stores/useAuthStore";
 import { fetchNotifications } from "@/apis/notificationService";
 import { getPageBreadcrumb } from "@/utils/pageUtils";
 
@@ -20,13 +23,16 @@ const PageHeader = () => {
   const router = useRouter();
   const { notificationList, setNotificationList } = useNotificationStore();
   const { toggle: toggleMobileMenu } = useMobileMenuStore();
+  const { user } = useAuthStore();
 
   const breadcrumbs = getPageBreadcrumb(pathname);
 
   const isDashboard = pathname === "/" || pathname.startsWith("/dashboard");
   const [isNotificationOpen, setIsNotificationOpen] = useState(false);
+  const [isUserMenuOpen, setIsUserMenuOpen] = useState(false);
   const [isChildModalOpen, setIsChildModalOpen] = useState(false);
   const notificationRef = useRef<HTMLDivElement>(null);
+  const userMenuRef = useRef<HTMLDivElement>(null);
 
   const unreadCount =
     notificationList?.filter((notification) => !notification.read).length || 0;
@@ -41,19 +47,30 @@ const PageHeader = () => {
       ) {
         setIsNotificationOpen(false);
       }
+
+      if (
+        userMenuRef.current &&
+        !userMenuRef.current.contains(event.target as Node)
+      ) {
+        setIsUserMenuOpen(false);
+      }
     };
 
-    if (isNotificationOpen) {
+    if (isNotificationOpen || isUserMenuOpen) {
       document.addEventListener("mousedown", handleClickOutside);
     }
 
     return () => {
       document.removeEventListener("mousedown", handleClickOutside);
     };
-  }, [isNotificationOpen, isChildModalOpen]);
+  }, [isNotificationOpen, isUserMenuOpen, isChildModalOpen]);
 
   const handleNotificationToggle = useCallback(() => {
     setIsNotificationOpen((prev) => !prev);
+  }, []);
+
+  const handleUserMenuToggle = useCallback(() => {
+    setIsUserMenuOpen((prev) => !prev);
   }, []);
 
   const handleChildModalStateChange = useCallback((isOpen: boolean) => {
@@ -154,6 +171,22 @@ const PageHeader = () => {
               notifications={notificationList ?? []}
               onNotificationListModalStateChange={handleChildModalStateChange}
             />
+          )}
+        </div>
+
+        <div ref={userMenuRef} className="relative">
+          <Button
+            onClick={handleUserMenuToggle}
+            className="text-gray-800 hover:bg-gray-50 normal-case"
+            endIcon={<KeyboardArrowDownIcon />}
+          >
+            <span className="text-sm font-medium">
+              {user?.name || "사용자"} 님
+            </span>
+          </Button>
+
+          {isUserMenuOpen && (
+            <UserMenu onClose={() => setIsUserMenuOpen(false)} />
           )}
         </div>
       </div>

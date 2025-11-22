@@ -17,10 +17,6 @@ import SettingsIcon from "@mui/icons-material/Settings";
 import CalendarMonthIcon from "@mui/icons-material/CalendarMonth";
 import ForumIcon from "@mui/icons-material/Forum";
 import EmailIcon from "@mui/icons-material/Email";
-import LogoutIcon from "@mui/icons-material/Logout";
-import useAuthStore from "@/stores/useAuthStore";
-import { logoutUser } from "@/apis/userService";
-import { clearAllAuthState } from "@/utils/authUtil";
 import { MENU_INFO, ParentMenuName } from "@/utils/pageUtils";
 import { PRIMARY, TEXT } from "@/constants/colors";
 
@@ -52,18 +48,6 @@ interface NavigationContentProps {
 const NavigationContent = ({ onItemClick }: NavigationContentProps) => {
   const pathname = usePathname();
   const currentPath = pathname;
-  const { user } = useAuthStore();
-  const router = useRouter();
-
-  const handleLogout = async (e: React.MouseEvent) => {
-    e.preventDefault();
-    try {
-      await logoutUser();
-    } finally {
-      clearAllAuthState();
-      router.push("/sign-in");
-    }
-  };
 
   return (
     <div className="bg-neutral-100 h-full">
@@ -221,22 +205,6 @@ const NavigationContent = ({ onItemClick }: NavigationContentProps) => {
             </ListItem>
           );
         })}
-        <CustomLink href={"/my"}>
-          <div className="m-3 px-2 py-2 rounded bg-white border border-gray-200">
-            <span className="font-semibold">{user?.name || "사용자"} 님</span>
-            <span className="text-sm text-gray-600">
-              {user?.email || "이메일"}
-            </span>
-            <Divider className="my-1" />
-            <div
-              className="flex text-sm text-gray-600 items-center p-1 gap-1"
-              onClick={handleLogout}
-            >
-              <LogoutIcon className="w-5" />
-              <span>로그아웃</span>
-            </div>
-          </div>
-        </CustomLink>
       </List>
     </div>
   );

@@ -9,7 +9,6 @@ import PasswordInput from "./PasswordInput";
 import AuthLinks from "./AuthLinks";
 import EntryImage from "@/components/EntryImage";
 import Button from "@/components/Button";
-import { Typography } from "@mui/material";
 import { showToast } from "@/components/Toast";
 import useAuthStore from "@/stores/useAuthStore";
 import { USER_ERROR_MESSAGES } from "@/constants/clientErrorMessage";
@@ -25,9 +24,15 @@ const SignInPage = () => {
 
   const isSignInButtonDisabled = !userId || !password;
 
-  const handleClickSignInButton = async () => {
+  const handleClickSignInButton = async (
+    userIdParam?: string,
+    passwordParam?: string
+  ) => {
+    const loginUserId = userIdParam ?? userId;
+    const loginPassword = passwordParam ?? password;
+
     try {
-      const res = await loginUser(userId, password);
+      const res = await loginUser(loginUserId, loginPassword);
 
       if (res.status === 200) {
         await checkAuth();
@@ -95,7 +100,7 @@ const SignInPage = () => {
               <Button
                 color="primary"
                 fullWidth
-                onClick={handleClickSignInButton}
+                onClick={() => handleClickSignInButton()}
                 disabled={isSignInButtonDisabled}
                 className="h-[46px]"
               >
@@ -103,21 +108,15 @@ const SignInPage = () => {
               </Button>
             </div>
 
-            <div className="flex flex-col items-center mt-6 p-4 rounded-lg border border-neutral-300">
-              <Typography
-                variant="subtitle2"
-                color="text.secondary"
-                className="mb-2"
-              >
-                테스트 계정
-              </Typography>
-              <Typography variant="body2" color="text.secondary">
-                ID: test01
-              </Typography>
-              <Typography variant="body2" color="text.secondary">
-                Password: test012!
-              </Typography>
-            </div>
+            <Button
+              className="mt-2 w-full h-[46px]"
+              variant="outlined"
+              onClick={() => {
+                handleClickSignInButton("test01", "test012!");
+              }}
+            >
+              테스트 계정으로 로그인
+            </Button>
 
             <div className="flex justify-center items-center mt-4 gap-2">
               <AuthLinks />

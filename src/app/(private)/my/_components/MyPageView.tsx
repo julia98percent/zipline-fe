@@ -207,18 +207,6 @@ const MyPageView = ({
           </div>
         </Collapse>
       </div>
-
-      <div className="p-5 mx-2 card">
-        <div className="flex items-center justify-between">
-          <div className="flex items-center gap-2">
-            <CommentIcon />
-            <h6 className="font-semibold">문자 템플릿 설정</h6>
-          </div>
-          <Link href="/messages/templates">
-            <Button variant="text">이동하기</Button>
-          </Link>
-        </div>
-      </div>
     </div>
   );
 };

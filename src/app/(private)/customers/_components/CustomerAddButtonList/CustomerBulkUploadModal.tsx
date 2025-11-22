@@ -10,7 +10,7 @@ import {
   CircularProgress,
 } from "@mui/material";
 import { useDropzone } from "react-dropzone";
-import { uploadCustomersBulk } from "@/apis/customerService";
+import { uploadCustomersBulk, fetchCustomerTemplate } from "@/apis/customerService";
 import CustomLink from "@/components/CustomLink";
 import { AxiosError } from "axios";
 import { showToast } from "@/components/Toast";
@@ -35,6 +35,7 @@ function CustomerBulkUploadModal({
   const [file, setFile] = useState<File | null>(null);
   const [error, setError] = useState<string>("");
   const [isLoading, setIsLoading] = useState(false);
+  const [isDownloadingTemplate, setIsDownloadingTemplate] = useState(false);
 
   const onDrop = useCallback((acceptedFiles: File[]) => {
     const uploadedFile = acceptedFiles[0];
@@ -60,6 +61,25 @@ function CustomerBulkUploadModal({
     },
     multiple: false,
   });
+
+  const handleDownloadTemplate = async () => {
+    try {
+      setIsDownloadingTemplate(true);
+      const templateUrl = await fetchCustomerTemplate();
+      window.open(templateUrl, "_blank");
+    } catch (error) {
+      const axiosError = error as AxiosError<ErrorResponse>;
+      const errorMessage =
+        axiosError.response?.data?.message ||
+        "템플릿 다운로드 중 오류가 발생했습니다.";
+      showToast({
+        message: errorMessage,
+        type: "error",
+      });
+    } finally {
+      setIsDownloadingTemplate(false);
+    }
+  };
 
   const handleUpload = async () => {
     if (!file || isLoading) return;
@@ -127,23 +147,15 @@ function CustomerBulkUploadModal({
 
           <div className="bg-gray-50 p-4 rounded border border-gray-300">
             <p className="text-sm text-neutral-800 mb-2">
-              엑셀의 열 순서가 변경되면 업로드가 실패할 수 있으니,{" "}
-              <CustomLink
-                href={process.env.NEXT_PUBLIC_PROPERTY_EXCEL_TEMPLATE_URL!}
-                className="text-primary font-medium"
-              >
-                제공되는 템플릿
-              </CustomLink>
-              을 그대로 사용하는 것을 권장합니다.
+              엑셀의 열 순서가 변경되면 업로드가 실패할 수 있으니, 제공되는 템플릿을 그대로 사용하는 것을 권장합니다.
             </p>
-            <span className="text-primary mt-2">
-              <CustomLink
-                href={process.env.NEXT_PUBLIC_CUSTOMER_EXCEL_TEMPLATE_URL!}
-                className="text-primary font-medium"
-              >
-                → 템플릿 다운로드
-              </CustomLink>
-            </span>
+            <button
+              onClick={handleDownloadTemplate}
+              disabled={isDownloadingTemplate}
+              className="text-primary font-medium hover:underline disabled:opacity-50"
+            >
+              {isDownloadingTemplate ? "템플릿 준비 중..." : "→ 템플릿 다운로드"}
+            </button>
           </div>
         </div>
         <div className="p-5 card">

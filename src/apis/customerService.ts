@@ -264,3 +264,19 @@ export const uploadCustomersBulk = async (file: File): Promise<void> => {
     throw handleApiError(error, "uploading customers bulk");
   }
 };
+
+export const fetchCustomerTemplate = async (): Promise<string> => {
+  try {
+    const { data: response } = await apiClient.get<ApiResponse<{ url: string }>>(
+      "/customers/template"
+    );
+
+    const data = handleApiResponse(
+      response,
+      "템플릿 다운로드 URL을 가져오는데 실패했습니다."
+    );
+    return data.url;
+  } catch (error) {
+    return handleApiError(error, "fetching customer template");
+  }
+};

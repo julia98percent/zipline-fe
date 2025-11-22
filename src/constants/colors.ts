@@ -44,7 +44,7 @@ export const ERROR = {
 } as const;
 
 export const INFO = {
-  light: "#070a0dff",
+  light: "#dfeaf6",
   main: "#1976d2",
   dark: "#0288d1",
   alt: "#2196f3", // 전세 색상

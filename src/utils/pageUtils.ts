@@ -43,6 +43,7 @@ export const MENU_INFO: MenuItem[] = [
     key: "messages",
     submenu: [
       { name: "단체 문자 발송", to: "/messages/bulk" },
+      { name: "문자 템플릿 설정", to: "/messages/templates" },
       { name: "문자 발송 내역", to: "/messages/history" },
     ],
   },

@@ -10,6 +10,7 @@ import GlobalStyles from "@mui/material/GlobalStyles";
 import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import { koKR } from "@mui/x-date-pickers/locales";
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import ToastProvider from "@/components/Toast";
 import {
   PRIMARY,
@@ -66,6 +67,17 @@ const theme = createTheme({
 
 export default function Providers({ children }: { children: React.ReactNode }) {
   const [mounted, setMounted] = useState(false);
+  const [queryClient] = useState(
+    () =>
+      new QueryClient({
+        defaultOptions: {
+          queries: {
+            staleTime: 60 * 1000,
+            refetchOnWindowFocus: false,
+          },
+        },
+      })
+  );
 
   useEffect(() => {
     setMounted(true);
@@ -76,19 +88,21 @@ export default function Providers({ children }: { children: React.ReactNode }) {
   }
 
   return (
-    <LocalizationProvider
-      dateAdapter={AdapterDayjs}
-      localeText={
-        koKR.components.MuiLocalizationProvider.defaultProps.localeText
-      }
-    >
-      <StyledEngineProvider enableCssLayer>
-        <ThemeProvider theme={theme}>
-          <GlobalStyles styles="@layer theme, base, mui, components, utilities;" />
-          <ToastProvider />
-          {children}
-        </ThemeProvider>
-      </StyledEngineProvider>
-    </LocalizationProvider>
+    <QueryClientProvider client={queryClient}>
+      <LocalizationProvider
+        dateAdapter={AdapterDayjs}
+        localeText={
+          koKR.components.MuiLocalizationProvider.defaultProps.localeText
+        }
+      >
+        <StyledEngineProvider enableCssLayer>
+          <ThemeProvider theme={theme}>
+            <GlobalStyles styles="@layer theme, base, mui, components, utilities;" />
+            <ToastProvider />
+            {children}
+          </ThemeProvider>
+        </StyledEngineProvider>
+      </LocalizationProvider>
+    </QueryClientProvider>
   );
 }

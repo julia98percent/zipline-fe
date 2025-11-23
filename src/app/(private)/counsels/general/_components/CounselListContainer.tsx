@@ -1,13 +1,13 @@
 "use client";
 import { useEffect, useState, useCallback, useMemo } from "react";
 import { useRouter } from "next/navigation";
-import { fetchCounselList } from "@/apis/counselService";
 import { showToast } from "@/components/Toast";
 import CounselListView from "./CounselListView";
 import { Counsel } from "@/types/counsel";
 import { useUrlPagination } from "@/hooks/useUrlPagination";
 import { useUrlFilters } from "@/hooks/useUrlFilters";
 import dayjs, { Dayjs } from "dayjs";
+import { useCounsels } from "@/queries/useCounsels";
 
 interface CounselListContainerProps {
   initialCounsels: Counsel[];
@@ -23,13 +23,10 @@ function CounselListContainer({
   const { getParam, getBooleanParam, setParam, setParams, clearAllFilters } =
     useUrlFilters();
 
-  const [counsels, setCounsels] = useState<Counsel[]>(initialCounsels);
-  const [totalElements, setTotalElements] = useState(initialTotalElements);
-  const [isLoading, setIsLoading] = useState(false); // 서버에서 이미 로딩했으므로 false
   const [isModalOpen, setIsModalOpen] = useState(false);
-
   const [search, setSearch] = useState("");
   const searchQuery = getParam("q") || "";
+
   const startDate = useMemo(() => {
     const dateStr = getParam("startDate");
     return dateStr ? dayjs(dateStr) : null;
@@ -43,27 +40,7 @@ function CounselListContainer({
     ? getBooleanParam("completed")
     : null;
 
-  const fetchCounsels = useCallback(async () => {
-    setIsLoading(true);
-    try {
-      const result = await fetchCounselList({
-        page,
-        size: rowsPerPage,
-        search: searchQuery || undefined,
-        startDate: startDate || undefined,
-        endDate: endDate || undefined,
-        type: selectedType || undefined,
-        completed: selectedCompleted ?? undefined,
-      });
-
-      setCounsels(result.counsels);
-      setTotalElements(result.totalElements);
-    } catch (error) {
-      console.error("Failed to fetch counsels:", error);
-    } finally {
-      setIsLoading(false);
-    }
-  }, [
+  const { data, isLoading, refetch: fetchCounsels } = useCounsels({
     page,
     rowsPerPage,
     searchQuery,
@@ -71,15 +48,16 @@ function CounselListContainer({
     endDate,
     selectedType,
     selectedCompleted,
-  ]);
+    initialCounsels,
+    initialTotalElements,
+  });
+
+  const counsels = data?.counsels || [];
+  const totalElements = data?.totalElements || 0;
 
   useEffect(() => {
     setSearch(searchQuery);
   }, [searchQuery]);
-
-  useEffect(() => {
-    fetchCounsels();
-  }, [fetchCounsels]);
 
   const handleSearchClick = () => {
     if (startDate && endDate && startDate > endDate) {

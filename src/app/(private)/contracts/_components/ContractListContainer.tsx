@@ -1,12 +1,12 @@
 "use client";
 
-import { useEffect, useState, useCallback } from "react";
+import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-import { searchContracts } from "@/apis/contractService";
 import { Contract, ContractCategory } from "@/types/contract";
 import ContractListView from "./ContractListView";
 import { useUrlPagination } from "@/hooks/useUrlPagination";
 import { useUrlFilters } from "@/hooks/useUrlFilters";
+import { useContracts } from "@/queries/useContracts";
 
 export const EXPIRED_PERIOD = ["6개월 이내", "3개월 이내", "1개월 이내"];
 
@@ -34,13 +34,8 @@ function ContractListContainer({
     { value: "EXPIRING", label: "만료임박순" },
   ];
 
-  const [contractList, setContractList] =
-    useState<Contract[]>(initialContracts);
   const [filterModalOpen, setFilterModalOpen] = useState(false);
-  const [loading, setLoading] = useState<boolean>(false);
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
-  const [totalElements, setTotalElements] = useState(initialTotalElements);
-
   const [searchKeyword, setSearchKeyword] = useState("");
   const searchQuery = getParam("q") || "";
 
@@ -51,31 +46,7 @@ function ContractListContainer({
   const mappedCategory = categoryKeywordMap[searchQuery] || "";
   const router = useRouter();
 
-  const fetchContractData = useCallback(async () => {
-    setLoading(true);
-    try {
-      const { contracts, totalElements } = await searchContracts({
-        category: mappedCategory,
-        customerName: searchQuery,
-        address: searchQuery,
-        period: selectedPeriod || "",
-        status: selectedStatus,
-        sort: selectedSort,
-        page,
-        size: rowsPerPage,
-      });
-
-      setContractList(contracts);
-      setTotalElements(totalElements);
-    } catch (error) {
-      console.error("Failed to fetch contracts:", error);
-      setContractList([]);
-      setTotalElements(0);
-    } finally {
-      setLoading(false);
-      setFilterModalOpen(false);
-    }
-  }, [
+  const { data, isLoading: loading, refetch: fetchContractData } = useContracts({
     mappedCategory,
     searchQuery,
     selectedPeriod,
@@ -83,7 +54,13 @@ function ContractListContainer({
     selectedSort,
     page,
     rowsPerPage,
-  ]);
+    initialContracts,
+    initialTotalElements,
+    onFilterModalClose: () => setFilterModalOpen(false),
+  });
+
+  const contractList = data?.contracts || [];
+  const totalElements = data?.totalElements || 0;
 
   const handlePeriodClick = (label: string) => {
     const newValue = selectedPeriod === label ? null : label;
@@ -146,11 +123,6 @@ function ContractListContainer({
   useEffect(() => {
     setSearchKeyword(searchQuery);
   }, [searchQuery]);
-
-  // Effects
-  useEffect(() => {
-    fetchContractData();
-  }, [fetchContractData]);
 
   return (
     <ContractListView

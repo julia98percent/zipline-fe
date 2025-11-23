@@ -1,21 +1,22 @@
 "use client";
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { SelectChangeEvent } from "@mui/material";
 import BulkMessageView from "./BulkMessageView";
 import { showToast } from "@/components/Toast";
-import { fetchMessageTemplates, sendBulkMessages } from "@/apis/messageService";
+import { sendBulkMessages } from "@/apis/messageService";
 import { Customer } from "@/types/customer";
 import { MessageTemplate, BulkMessagePayload } from "@/types/message";
 import useAuthStore from "@/stores/useAuthStore";
+import { useMessageTemplates } from "@/queries/useMessageTemplates";
 
 const BulkMessageContainer = () => {
   const { user } = useAuthStore();
-  const [templates, setTemplates] = useState<MessageTemplate[]>([]);
   const [selectedTemplate, setSelectedTemplate] = useState<number | "">("");
   const [messageContent, setMessageContent] = useState<string>("");
   const [customers, setCustomers] = useState<Customer[]>([]);
   const [isCustomerModalOpen, setIsCustomerModalOpen] = useState(false);
-  const [isLoading, setIsLoading] = useState(false);
+
+  const { data: templates = [], isLoading } = useMessageTemplates();
 
   const replaceVariablesWithCustomerInfo = (
     content: string,
@@ -46,22 +47,6 @@ const BulkMessageContainer = () => {
       return replacements[match as keyof typeof replacements] || match;
     });
   };
-
-  useEffect(() => {
-    const loadTemplates = async () => {
-      try {
-        setIsLoading(true);
-        const templatesData = await fetchMessageTemplates();
-        setTemplates(templatesData);
-      } catch (error) {
-        console.error("Error loading templates:", error);
-      } finally {
-        setIsLoading(false);
-      }
-    };
-
-    loadTemplates();
-  }, []);
 
   const handleTemplateChange = (event: SelectChangeEvent<number | string>) => {
     const selectedTemplateUid =

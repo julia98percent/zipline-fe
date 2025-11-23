@@ -4,9 +4,10 @@ import { useState, useEffect, useCallback, useMemo } from "react";
 import { useUrlPagination } from "@/hooks/useUrlPagination";
 import { useUrlFilters } from "@/hooks/useUrlFilters";
 import { Customer, CustomerFilter } from "@/types/customer";
-import { searchCustomers, updateCustomer } from "@/apis/customerService";
+import { updateCustomer } from "@/apis/customerService";
 import { showToast } from "@/components/Toast";
 import CustomerListView from "./CustomerListView";
+import { useCustomers } from "@/queries/useCustomers";
 
 interface CustomerListContainerProps {
   initialCustomers: Customer[];
@@ -29,12 +30,7 @@ const CustomerListContainer = ({
     searchParams,
   } = useUrlFilters();
 
-  const [loading, setLoading] = useState(false);
-  const [customerList, setCustomerList] =
-    useState<Customer[]>(initialCustomers);
-  const [totalCount, setTotalCount] = useState(initialTotalCount);
   const [filterModalOpen, setFilterModalOpen] = useState(false);
-
   const [searchTerm, setSearchTerm] = useState("");
   const searchQuery = getParam("q");
 
@@ -61,55 +57,17 @@ const CustomerListContainer = ({
     [searchParams]
   );
 
-  const fetchCustomerList = useCallback(async () => {
-    const buildApiParams = (): Record<string, string | number | boolean> => {
-      const params: Record<string, string | number | boolean> = {
-        page,
-        size: rowsPerPage,
-      };
+  const { data, isLoading: loading, refetch: fetchCustomerList } = useCustomers({
+    page,
+    rowsPerPage,
+    searchQuery,
+    filters,
+    initialCustomers,
+    initialTotalCount,
+  });
 
-      if (searchQuery) {
-        params.search = searchQuery;
-      }
-
-      if (filters.tenant) params.tenant = true;
-      if (filters.landlord) params.landlord = true;
-      if (filters.buyer) params.buyer = true;
-      if (filters.seller) params.seller = true;
-      if (filters.minPrice) params.minPrice = filters.minPrice;
-      if (filters.maxPrice) params.maxPrice = filters.maxPrice;
-      if (filters.minRent) params.minRent = filters.minRent;
-      if (filters.maxRent) params.maxRent = filters.maxRent;
-      if (filters.minDeposit) params.minDeposit = filters.minDeposit;
-      if (filters.maxDeposit) params.maxDeposit = filters.maxDeposit;
-      if (filters.labelUids && filters.labelUids.length > 0)
-        params.labelUids = filters.labelUids.join(",");
-      if (filters.noRole) {
-        params.noRole = true;
-      }
-      if (filters.telProvider) params.telProvider = filters.telProvider;
-      if (filters.preferredRegion) params.regionCode = filters.preferredRegion;
-      if (filters.trafficSource) params.trafficSource = filters.trafficSource;
-
-      return params;
-    };
-
-    try {
-      setLoading(true);
-      const params = buildApiParams();
-      const searchParams = new URLSearchParams(
-        params as Record<string, string>
-      );
-      const response = await searchCustomers(searchParams);
-
-      setCustomerList(response.customers);
-      setTotalCount(response.totalCount);
-    } catch (error) {
-      console.error("Failed to fetch customers:", error);
-    } finally {
-      setLoading(false);
-    }
-  }, [page, rowsPerPage, searchQuery, filters]);
+  const customerList = data?.customers || [];
+  const totalCount = data?.totalCount || 0;
 
   const handleCustomerUpdate = async (updatedCustomer: Customer) => {
     try {
@@ -133,11 +91,7 @@ const CustomerListContainer = ({
         telProvider: updatedCustomer.telProvider,
       });
 
-      setCustomerList((prev) =>
-        prev.map((customer) =>
-          customer.uid === updatedCustomer.uid ? updatedCustomer : customer
-        )
-      );
+      fetchCustomerList();
 
       showToast({
         message: "고객 정보가 성공적으로 수정되었습니다.",
@@ -230,10 +184,6 @@ const CustomerListContainer = ({
   useEffect(() => {
     setSearchTerm(searchQuery || "");
   }, [searchQuery]);
-
-  useEffect(() => {
-    fetchCustomerList();
-  }, [fetchCustomerList]);
 
   return (
     <CustomerListView

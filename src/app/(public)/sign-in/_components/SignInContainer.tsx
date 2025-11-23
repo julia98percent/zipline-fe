@@ -39,15 +39,28 @@ const SignInPage = () => {
       const res = await loginUser(loginUserId, loginPassword);
 
       if (res.status === 200) {
+        console.log("[SignIn] Login API successful, calling checkAuth...");
         await checkAuth();
 
-        showToast({
-          message: "로그인에 성공했습니다.",
-          type: "success",
-        });
+        const { isSignedIn } = useAuthStore.getState();
+        console.log("[SignIn] checkAuth completed, isSignedIn:", isSignedIn);
 
-        const redirectPath = localStorage.getItem("redirectAfterLogin");
-        router.replace((redirectPath || "/") as Route);
+        if (isSignedIn) {
+          showToast({
+            message: "로그인에 성공했습니다.",
+            type: "success",
+          });
+
+          const redirectPath = localStorage.getItem("redirectAfterLogin");
+          console.log("[SignIn] Redirecting to:", redirectPath || "/");
+          router.replace((redirectPath || "/") as Route);
+        } else {
+          console.error("[SignIn] ❌ Login succeeded but checkAuth failed - cookie not set properly");
+          showToast({
+            message: "로그인은 성공했지만 세션 설정에 실패했습니다. 쿠키 설정을 확인해주세요.",
+            type: "error",
+          });
+        }
       }
     } catch (e) {
       const error = e as AxiosError<{ message?: string }>;

@@ -15,9 +15,12 @@ const useAuthStore = create<AuthState>((set) => ({
   user: null,
   checkAuth: async () => {
     try {
+      console.log("[checkAuth] Starting authentication check...");
       const userData = await fetchUserInfo();
+      console.log("[checkAuth] ✅ Authentication successful:", userData);
       set({ isSignedIn: true, user: userData });
-    } catch {
+    } catch (error) {
+      console.error("[checkAuth] ❌ Authentication failed:", error);
       set({ isSignedIn: false, user: null });
     }
   },

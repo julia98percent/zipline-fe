@@ -31,7 +31,12 @@ const GuestRoute = ({ children }: { children: React.ReactNode }) => {
   }
 
   if (isSignedIn === true) {
-    return null;
+    // Show loading while redirecting to prevent white screen flash
+    return (
+      <div className="flex justify-center items-center h-screen">
+        <CircularProgress />
+      </div>
+    );
   }
 
   return <>{children}</>;

@@ -77,7 +77,7 @@ const CounselList: React.FC<CounselListProps> = ({
         <div className="flex items-center gap-2 text-sm">
           <div
             className={`flex items-center gap-1 cursor-pointer ${
-              counselTab === "request" ? "text-primary" : "text-info"
+              counselTab === "request" ? "text-primary" : ""
             } ${counselTab === "request" ? "font-semibold" : ""}`}
             onClick={handleCounselTabChange}
             id="request"
@@ -91,7 +91,7 @@ const CounselList: React.FC<CounselListProps> = ({
 
           <div
             className={`flex items-center gap-1 cursor-pointer ${
-              counselTab === "latest" ? "text-primary" : "text-info"
+              counselTab === "latest" ? "text-primary" : ""
             }  ${counselTab === "latest" ? "font-semibold" : ""}`}
             onClick={handleCounselTabChange}
             id="latest"

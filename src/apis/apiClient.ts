@@ -135,17 +135,6 @@ apiClient.interceptors.response.use(
       return Promise.reject(error);
     }
 
-    if (error.response.status >= 500) {
-      if (typeof window !== "undefined") {
-        showToast({
-          message:
-            "서버에 일시적인 문제가 발생했습니다. 잠시 후 다시 시도해주세요.",
-          type: "error",
-        });
-      }
-      return Promise.reject(error);
-    }
-
     return Promise.reject(error);
   }
 );

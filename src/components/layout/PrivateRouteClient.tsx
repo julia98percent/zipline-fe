@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect } from "react";
+import { useEffect, useRef } from "react";
 import { useRouter } from "next/navigation";
 import NavigationBar from "@/components/NavigationBar";
 import CircularProgress from "@/components/CircularProgress";
@@ -18,9 +18,11 @@ const PrivateRouteClient = ({ children }: PrivateRouteClientProps) => {
   const router = useRouter();
   const { user, isSignedIn, checkAuth } = useAuthStore();
   const { isOpen: mobileOpen, close: handleMobileClose } = useMobileMenuStore();
+  const hasCheckedAuth = useRef(false);
 
   useEffect(() => {
-    if (isSignedIn === null) {
+    if (isSignedIn === null && !hasCheckedAuth.current) {
+      hasCheckedAuth.current = true;
       checkAuth();
     }
   }, [isSignedIn, checkAuth]);

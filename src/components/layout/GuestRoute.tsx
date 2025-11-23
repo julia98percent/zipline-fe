@@ -1,5 +1,5 @@
 "use client";
-import { useEffect } from "react";
+import { useEffect, useRef } from "react";
 import { useRouter } from "next/navigation";
 import useAuthStore from "@/stores/useAuthStore";
 import CircularProgress from "@/components/CircularProgress";
@@ -7,9 +7,11 @@ import CircularProgress from "@/components/CircularProgress";
 const GuestRoute = ({ children }: { children: React.ReactNode }) => {
   const { isSignedIn, checkAuth } = useAuthStore();
   const router = useRouter();
+  const hasCheckedAuth = useRef(false);
 
   useEffect(() => {
-    if (isSignedIn === null) {
+    if (isSignedIn === null && !hasCheckedAuth.current) {
+      hasCheckedAuth.current = true;
       checkAuth();
     }
   }, [isSignedIn, checkAuth]);

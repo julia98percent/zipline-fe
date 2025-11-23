@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { signupUser } from "@/apis/userService";
 import useInput from "@/hooks/useInput";
@@ -29,6 +29,11 @@ const isValidPhoneNumber = (phone: string) =>
 const SignUpPage = () => {
   const router = useRouter();
   const [isLoading, setIsLoading] = useState(false);
+
+  // Prefetch sign-in page for faster redirect after signup
+  useEffect(() => {
+    router.prefetch("/sign-in");
+  }, [router]);
 
   const [name, handleChangeName] = useInput("");
   const [userId, handleChangeUserId] = useInput("");

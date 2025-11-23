@@ -1,5 +1,5 @@
 "use client";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Link from "next/link";
 import { useRouter, usePathname, useSearchParams } from "next/navigation";
 import { Tabs, Tab } from "@mui/material";
@@ -36,6 +36,11 @@ const FindAccountContainer = () => {
   const searchParams = useSearchParams();
   const initialTab = searchParams.get("tab") === "password" ? 1 : 0;
   const [activeTab, setActiveTab] = useState(initialTab);
+
+  // Prefetch sign-in page for faster redirect after password reset
+  useEffect(() => {
+    router.prefetch("/sign-in");
+  }, [router]);
 
   const handleTabChange = (
     _event: React.SyntheticEvent | null,

@@ -17,7 +17,13 @@ export const fetchUserInfo = async (): Promise<User> => {
   } catch (error) {
     console.error("[fetchUserInfo] ❌ Request failed:", error);
     if (error && typeof error === "object" && "response" in error) {
-      const axiosError = error as any;
+      const axiosError = error as {
+        response?: {
+          status?: number;
+          data?: unknown;
+          headers?: unknown
+        }
+      };
       console.error("[fetchUserInfo] Error status:", axiosError.response?.status);
       console.error("[fetchUserInfo] Error data:", axiosError.response?.data);
       console.error("[fetchUserInfo] Error headers:", axiosError.response?.headers);

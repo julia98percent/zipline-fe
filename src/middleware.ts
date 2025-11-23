@@ -37,18 +37,17 @@ async function checkAuth(request: NextRequest): Promise<boolean> {
 export async function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
 
-  // Private route 체크
-  const isPrivateRoute =
-    pathname.startsWith("/(private)") ||
-    (!PUBLIC_ROUTES.some((route) => pathname.startsWith(route)) &&
-      pathname !== "/" &&
-      !pathname.startsWith("/_next") &&
-      !pathname.startsWith("/api"));
-
   // Public route 체크
   const isPublicRoute = PUBLIC_ROUTES.some((route) =>
     pathname.startsWith(route)
   );
+
+  // Private route 체크: public route가 아니고, 루트 경로가 아니고, Next.js 내부 경로가 아니면 private
+  const isPrivateRoute =
+    !isPublicRoute &&
+    pathname !== "/" &&
+    !pathname.startsWith("/_next") &&
+    !pathname.startsWith("/api");
 
   const isAuthenticated = await checkAuth(request);
 
@@ -60,7 +59,7 @@ export async function middleware(request: NextRequest) {
 
   // Public route에 인증 상태로 접근 (로그인 페이지 등)
   if (isPublicRoute && isAuthenticated) {
-    const dashboardUrl = new URL("/(private)", request.url);
+    const dashboardUrl = new URL("/customers", request.url);
     return NextResponse.redirect(dashboardUrl);
   }
 

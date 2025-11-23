@@ -7,6 +7,7 @@ interface CustomLinkProps {
   className?: string;
   target?: string;
   rel?: string;
+  prefetch?: boolean;
 }
 
 const CustomLink = ({
@@ -15,6 +16,7 @@ const CustomLink = ({
   className,
   target,
   rel,
+  prefetch = true,
   ...props
 }: CustomLinkProps) => {
   const isExternalLink =
@@ -38,6 +40,7 @@ const CustomLink = ({
     <Link
       href={href as LinkProps<string>["href"]}
       className={className}
+      prefetch={prefetch}
       {...props}
     >
       {children}

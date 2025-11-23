@@ -125,7 +125,7 @@ const SignUpView = ({
               <Typography variant="body2" color="text.secondary">
                 이미 회원이신가요?
               </Typography>
-              <Link href="/sign-in" className="flex items-center">
+              <Link href="/sign-in" prefetch className="flex items-center">
                 <Button variant="text" className="m-0 p-0 font-bold">
                   로그인
                 </Button>

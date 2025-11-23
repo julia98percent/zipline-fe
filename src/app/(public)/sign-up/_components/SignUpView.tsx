@@ -5,7 +5,7 @@ import EmailInput from "./EmailInput";
 import PasswordInput from "./PasswordInput";
 import PhoneNumberInput from "./PhoneNumberInput";
 import UserIdInput from "./UserIdInput";
-import { Typography } from "@mui/material";
+import { Typography, CircularProgress } from "@mui/material";
 import Image from "next/image";
 import EntryImage from "@/components/EntryImage";
 
@@ -31,6 +31,7 @@ interface SignUpViewProps {
     handleSubmit: () => void;
   };
   isFormValid: boolean;
+  isLoading: boolean;
 }
 
 const SignUpView = ({
@@ -38,6 +39,7 @@ const SignUpView = ({
   handlers,
   eventHandlers,
   isFormValid,
+  isLoading,
 }: SignUpViewProps) => {
   const { name, userId, email, phoneNumber, password, passwordCheck } =
     formData;
@@ -106,12 +108,16 @@ const SignUpView = ({
 
               <Button
                 onClick={handleSubmit}
-                disabled={!isFormValid}
+                disabled={!isFormValid || isLoading}
                 color="primary"
                 fullWidth
                 className="h-[46px]"
               >
-                회원가입
+                {isLoading ? (
+                  <CircularProgress size={24} sx={{ color: "white" }} />
+                ) : (
+                  "회원가입"
+                )}
               </Button>
             </div>
 

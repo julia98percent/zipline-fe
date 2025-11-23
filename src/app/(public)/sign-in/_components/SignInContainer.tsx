@@ -1,7 +1,9 @@
 "use client";
 
+import { useState } from "react";
 import { AxiosError } from "axios";
 import { useRouter } from "next/navigation";
+import CircularProgress from "@mui/material/CircularProgress";
 import { loginUser } from "@/apis/userService";
 import useInput from "@/hooks/useInput";
 import UserIdInput from "./UserIdInput";
@@ -21,8 +23,9 @@ const SignInPage = () => {
 
   const [userId, handleChangeUserId] = useInput("");
   const [password, handleChangePassword] = useInput("");
+  const [isLoading, setIsLoading] = useState(false);
 
-  const isSignInButtonDisabled = !userId || !password;
+  const isSignInButtonDisabled = !userId || !password || isLoading;
 
   const handleClickSignInButton = async (
     userIdParam?: string,
@@ -31,6 +34,7 @@ const SignInPage = () => {
     const loginUserId = userIdParam ?? userId;
     const loginPassword = passwordParam ?? password;
 
+    setIsLoading(true);
     try {
       const res = await loginUser(loginUserId, loginPassword);
 
@@ -54,6 +58,8 @@ const SignInPage = () => {
         message: serverMessage,
         type: "error",
       });
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -104,7 +110,11 @@ const SignInPage = () => {
                 disabled={isSignInButtonDisabled}
                 className="h-[46px]"
               >
-                로그인
+                {isLoading ? (
+                  <CircularProgress size={24} sx={{ color: "white" }} />
+                ) : (
+                  "로그인"
+                )}
               </Button>
             </div>
 
@@ -114,8 +124,13 @@ const SignInPage = () => {
               onClick={() => {
                 handleClickSignInButton("test01", "test012!");
               }}
+              disabled={isLoading}
             >
-              테스트 계정으로 로그인
+              {isLoading ? (
+                <CircularProgress size={24} />
+              ) : (
+                "테스트 계정으로 로그인"
+              )}
             </Button>
 
             <div className="flex justify-center items-center mt-4 gap-2">

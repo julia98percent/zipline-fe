@@ -39,7 +39,7 @@ const PrivateRouteClient = ({ children }: PrivateRouteClientProps) => {
 
   if (isSignedIn === null || (isSignedIn && !user)) {
     return (
-      <div className="flex justify-center items-center h-screen">
+      <div className="flex justify-center items-center h-screen w-full">
         <CircularProgress />
       </div>
     );

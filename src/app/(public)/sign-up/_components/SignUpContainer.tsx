@@ -1,5 +1,6 @@
 "use client";
 
+import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { signupUser } from "@/apis/userService";
 import useInput from "@/hooks/useInput";
@@ -27,6 +28,7 @@ const isValidPhoneNumber = (phone: string) =>
 
 const SignUpPage = () => {
   const router = useRouter();
+  const [isLoading, setIsLoading] = useState(false);
 
   const [name, handleChangeName] = useInput("");
   const [userId, handleChangeUserId] = useInput("");
@@ -135,6 +137,7 @@ const SignUpPage = () => {
     if (!validateField("passwordCheck", passwordCheck)) return;
     if (!validateField("phoneNumber", phoneNumber)) return;
 
+    setIsLoading(true);
     try {
       const res = await signupUser({
         userId,
@@ -173,6 +176,8 @@ const SignUpPage = () => {
         message: errorMessage,
         type: "error",
       });
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -201,6 +206,7 @@ const SignUpPage = () => {
     },
 
     isFormValid: Boolean(isFormValid()),
+    isLoading,
   };
 
   return <SignUpView {...viewProps} />;

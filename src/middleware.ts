@@ -5,10 +5,18 @@ const PUBLIC_ROUTES = ["/sign-in", "/sign-up", "/find-account", "/appreciate"];
 
 async function checkAuth(request: NextRequest): Promise<boolean> {
   try {
-    const cookies = request.cookies.toString();
-    console.log("[Middleware checkAuth] Cookies:", cookies ? "EXISTS" : "EMPTY");
+    // Get all cookies
+    const cookieStore = request.cookies;
+    const allCookies = cookieStore.getAll();
 
-    if (!cookies) {
+    console.log("[Middleware checkAuth] Total cookies count:", allCookies.length);
+    console.log("[Middleware checkAuth] Cookie names:", allCookies.map(c => c.name).join(", "));
+
+    // Convert to Cookie header format
+    const cookies = allCookies.map(cookie => `${cookie.name}=${cookie.value}`).join("; ");
+    console.log("[Middleware checkAuth] Cookies string length:", cookies.length);
+
+    if (!cookies || allCookies.length === 0) {
       console.log("[Middleware checkAuth] ❌ No cookies found");
       return false;
     }

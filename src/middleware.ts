@@ -42,10 +42,9 @@ export async function middleware(request: NextRequest) {
     pathname.startsWith(route)
   );
 
-  // Private route 체크: public route가 아니고, 루트 경로가 아니고, Next.js 내부 경로가 아니면 private
+  // Private route 체크: public route가 아니고, Next.js 내부 경로가 아니면 private (루트 경로 포함)
   const isPrivateRoute =
     !isPublicRoute &&
-    pathname !== "/" &&
     !pathname.startsWith("/_next") &&
     !pathname.startsWith("/api");
 
@@ -59,7 +58,7 @@ export async function middleware(request: NextRequest) {
 
   // Public route에 인증 상태로 접근 (로그인 페이지 등)
   if (isPublicRoute && isAuthenticated) {
-    const dashboardUrl = new URL("/customers", request.url);
+    const dashboardUrl = new URL("/", request.url);
     return NextResponse.redirect(dashboardUrl);
   }
 

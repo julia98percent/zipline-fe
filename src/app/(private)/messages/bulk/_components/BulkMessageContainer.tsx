@@ -6,8 +6,10 @@ import { showToast } from "@/components/Toast";
 import { fetchMessageTemplates, sendBulkMessages } from "@/apis/messageService";
 import { Customer } from "@/types/customer";
 import { MessageTemplate, BulkMessagePayload } from "@/types/message";
+import useAuthStore from "@/stores/useAuthStore";
 
 const BulkMessageContainer = () => {
+  const { user } = useAuthStore();
   const [templates, setTemplates] = useState<MessageTemplate[]>([]);
   const [selectedTemplate, setSelectedTemplate] = useState<number | "">("");
   const [messageContent, setMessageContent] = useState<string>("");
@@ -91,7 +93,16 @@ const BulkMessageContainer = () => {
 
   const handleSendMessage = async () => {
     if (!customers.length || !selectedTemplate) return;
-    const from = process.env.NEXT_PUBLIC_MSG_PHONE_NUMBER!;
+
+    const from = user?.phoneNo?.replace(/\D/g, "");
+    if (!from) {
+      showToast({
+        message: "발신 번호를 확인할 수 없습니다.",
+        type: "error",
+      });
+      return;
+    }
+
     const template = templates.find((t) => t.uid === selectedTemplate);
     if (!template) return;
 

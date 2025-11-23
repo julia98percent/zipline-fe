@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { AxiosError } from "axios";
 import { useRouter } from "next/navigation";
 import CircularProgress from "@mui/material/CircularProgress";
@@ -26,6 +26,11 @@ const SignInPage = () => {
   const [isLoading, setIsLoading] = useState(false);
 
   const isSignInButtonDisabled = !userId || !password || isLoading;
+
+  // Prefetch dashboard to reduce redirect delay
+  useEffect(() => {
+    router.prefetch("/");
+  }, [router]);
 
   const handleClickSignInButton = async (
     userIdParam?: string,

@@ -20,8 +20,15 @@ const PrivateRouteClient = ({ children }: PrivateRouteClientProps) => {
   const { isOpen: mobileOpen, close: handleMobileClose } = useMobileMenuStore();
   const hasCheckedAuth = useRef(false);
 
+  console.log("[PrivateRouteClient] Rendering, isSignedIn:", isSignedIn, "user:", !!user);
+
+  useEffect(() => {
+    console.log("[PrivateRouteClient] Mounted");
+  }, []);
+
   useEffect(() => {
     if (isSignedIn === null && !hasCheckedAuth.current) {
+      console.log("[PrivateRouteClient] Calling checkAuth...");
       hasCheckedAuth.current = true;
       checkAuth();
     }

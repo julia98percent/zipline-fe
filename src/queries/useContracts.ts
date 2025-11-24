@@ -28,7 +28,16 @@ export const useContracts = ({
   onFilterModalClose,
 }: UseContractsParams) => {
   return useQuery({
-    queryKey: ["contracts", mappedCategory, searchQuery, selectedPeriod, selectedStatus, selectedSort, page, rowsPerPage],
+    queryKey: [
+      "contracts",
+      mappedCategory,
+      searchQuery,
+      selectedPeriod,
+      selectedStatus,
+      selectedSort,
+      page,
+      rowsPerPage,
+    ],
     queryFn: async () => {
       const result = await searchContracts({
         category: mappedCategory,
@@ -43,6 +52,11 @@ export const useContracts = ({
       onFilterModalClose?.();
       return result;
     },
-    initialData: { contracts: initialContracts, totalElements: initialTotalElements },
+    initialData: {
+      contracts: initialContracts,
+      totalElements: initialTotalElements,
+    },
+    staleTime: 5 * 60 * 1000,
+    gcTime: 15 * 60 * 1000,
   });
 };

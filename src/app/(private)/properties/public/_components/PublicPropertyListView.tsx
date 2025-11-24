@@ -1,3 +1,4 @@
+import dynamic from "next/dynamic";
 import FilterListIcon from "@mui/icons-material/FilterList";
 import {
   SelectChangeEvent,
@@ -6,8 +7,12 @@ import {
   InputAdornment,
   IconButton,
 } from "@mui/material";
-import PublicPropertyFilterModal from "./PublicPropertyFilterModal";
 import PublicPropertyTable from "./PublicPropertyTable";
+
+const PublicPropertyFilterModal = dynamic(
+  () => import("./PublicPropertyFilterModal"),
+  { ssr: false }
+);
 import SearchIcon from "@mui/icons-material/Search";
 import IOSSwitch from "@/components/Switch";
 import {

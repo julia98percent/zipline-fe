@@ -1,10 +1,20 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { AxiosError } from "axios";
 import { useRouter } from "next/navigation";
 import CircularProgress from "@mui/material/CircularProgress";
+import { useQueryClient } from "@tanstack/react-query";
+import dayjs from "dayjs";
 import { loginUser } from "@/apis/userService";
+import { fetchDashboardStatistics } from "@/apis/statisticsService";
+import { fetchSchedulesByDateRange } from "@/apis/scheduleService";
+import { fetchSubmittedSurveyResponses } from "@/apis/preCounselService";
+import { fetchDashboardCounsels } from "@/apis/counselService";
+import {
+  fetchExpiringContractsForDashboard,
+  fetchRecentContractsForDashboard,
+} from "@/apis/contractService";
 import useInput from "@/hooks/useInput";
 import UserIdInput from "./UserIdInput";
 import PasswordInput from "./PasswordInput";
@@ -19,6 +29,7 @@ import type { Route } from "next";
 
 const SignInPage = () => {
   const router = useRouter();
+  const queryClient = useQueryClient();
   const { checkAuth } = useAuthStore();
 
   const [userId, handleChangeUserId] = useInput("");
@@ -26,11 +37,6 @@ const SignInPage = () => {
   const [isLoading, setIsLoading] = useState(false);
 
   const isSignInButtonDisabled = !userId || !password || isLoading;
-
-  // Prefetch dashboard to reduce redirect delay
-  useEffect(() => {
-    router.prefetch("/");
-  }, [router]);
 
   const handleClickSignInButton = async (
     userIdParam?: string,
@@ -44,11 +50,63 @@ const SignInPage = () => {
       const res = await loginUser(loginUserId, loginPassword);
 
       if (res.status === 200) {
-        console.log("[SignIn] Login API successful, calling checkAuth...");
         await checkAuth();
 
         const { isSignedIn } = useAuthStore.getState();
-        console.log("[SignIn] checkAuth completed, isSignedIn:", isSignedIn);
+
+        if (isSignedIn) {
+          const today = new Date();
+          const startDate = dayjs(today).startOf("week").toISOString();
+          const endDate = dayjs(today).endOf("week").toISOString();
+
+          try {
+            await Promise.all([
+              queryClient.prefetchQuery({
+                queryKey: ["dashboardStatistics"],
+                queryFn: fetchDashboardStatistics,
+              }),
+              queryClient.prefetchQuery({
+                queryKey: ["schedules", startDate, endDate],
+                queryFn: () =>
+                  fetchSchedulesByDateRange({ startDate, endDate }),
+              }),
+              queryClient.prefetchQuery({
+                queryKey: ["surveyResponses", 0, 10],
+                queryFn: () => fetchSubmittedSurveyResponses(0, 10),
+              }),
+              queryClient.prefetchQuery({
+                queryKey: ["counsels", "DUE_DATE", 0, 5],
+                queryFn: () =>
+                  fetchDashboardCounsels({
+                    sortType: "DUE_DATE",
+                    page: 0,
+                    size: 5,
+                  }),
+              }),
+              queryClient.prefetchQuery({
+                queryKey: ["counsels", "LATEST", 0, 5],
+                queryFn: () =>
+                  fetchDashboardCounsels({
+                    sortType: "LATEST",
+                    page: 0,
+                    size: 5,
+                  }),
+              }),
+              queryClient.prefetchQuery({
+                queryKey: ["contracts", "expiring", 0, 5],
+                queryFn: () => fetchExpiringContractsForDashboard(0, 5),
+              }),
+              queryClient.prefetchQuery({
+                queryKey: ["contracts", "recent", 0, 5],
+                queryFn: () => fetchRecentContractsForDashboard(0, 5),
+              }),
+            ]);
+            console.log("[SignIn] Dashboard data prefetch completed");
+          } catch (prefetchError) {
+            console.warn("[SignIn] Dashboard prefetch failed:", prefetchError);
+            // Continue with redirect even if prefetch fails
+          }
+        }
 
         if (isSignedIn) {
           showToast({
@@ -57,14 +115,52 @@ const SignInPage = () => {
           });
 
           const redirectPath = localStorage.getItem("redirectAfterLogin");
-          console.log("[SignIn] Redirecting to:", redirectPath || "/");
-          router.replace((redirectPath || "/") as Route);
+          let cookieReady = false;
+          const maxAttempts = 10;
+          const delayMs = 500;
+
+          for (let attempt = 0; attempt < maxAttempts; attempt++) {
+            console.log(
+              `[SignIn] Cookie check attempt ${attempt + 1}/${maxAttempts}`
+            );
+
+            // Wait before checking
+            if (attempt > 0) {
+              await new Promise((resolve) => setTimeout(resolve, delayMs));
+            }
+
+            // Check if cookies work by calling checkAuth again
+            await checkAuth();
+            const { isSignedIn: stillSignedIn } = useAuthStore.getState();
+
+            if (stillSignedIn) {
+              console.log(
+                "[SignIn] ✅ Cookies verified, proceeding with redirect"
+              );
+              cookieReady = true;
+              break;
+            }
+          }
+
+          if (!cookieReady) {
+            console.error(
+              "[SignIn] ❌ Cookie propagation timeout, redirecting anyway"
+            );
+          }
+
+          if (redirectPath) {
+            // Only redirect if there's a saved path
+            localStorage.removeItem("redirectAfterLogin");
+            router.replace(redirectPath as Route);
+          } else {
+            console.log("[SignIn] No redirect path, redirecting to dashboard");
+            router.replace("/");
+          }
         } else {
-          console.error("[SignIn] ❌ Login succeeded but checkAuth failed - cookie not set properly");
-          showToast({
-            message: "로그인은 성공했지만 세션 설정에 실패했습니다. 쿠키 설정을 확인해주세요.",
-            type: "error",
-          });
+          console.error(
+            "[SignIn] ❌ Login succeeded but checkAuth failed - cookie not set properly"
+          );
+          router.replace("/");
         }
       }
     } catch (e) {

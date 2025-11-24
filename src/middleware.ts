@@ -9,12 +9,10 @@ async function checkAuth(request: NextRequest): Promise<boolean> {
     const cookieStore = request.cookies;
     const allCookies = cookieStore.getAll();
 
-    console.log("[Middleware checkAuth] Total cookies count:", allCookies.length);
-    console.log("[Middleware checkAuth] Cookie names:", allCookies.map(c => c.name).join(", "));
-
     // Convert to Cookie header format
-    const cookies = allCookies.map(cookie => `${cookie.name}=${cookie.value}`).join("; ");
-    console.log("[Middleware checkAuth] Cookies string length:", cookies.length);
+    const cookies = allCookies
+      .map((cookie) => `${cookie.name}=${cookie.value}`)
+      .join("; ");
 
     if (!cookies || allCookies.length === 0) {
       console.log("[Middleware checkAuth] ❌ No cookies found");
@@ -25,7 +23,9 @@ async function checkAuth(request: NextRequest): Promise<boolean> {
     console.log("[Middleware checkAuth] Server URL:", serverUrl);
 
     if (!serverUrl) {
-      console.error("[Middleware checkAuth] ❌ NEXT_PUBLIC_SERVER_URL is not defined");
+      console.error(
+        "[Middleware checkAuth] ❌ NEXT_PUBLIC_SERVER_URL is not defined"
+      );
       return false;
     }
 
@@ -38,9 +38,6 @@ async function checkAuth(request: NextRequest): Promise<boolean> {
       },
       credentials: "include",
     });
-
-    console.log("[Middleware checkAuth] Response status:", response.status);
-    console.log("[Middleware checkAuth] Response ok:", response.ok);
 
     if (!response.ok) {
       const responseText = await response.text();
@@ -59,10 +56,15 @@ export async function middleware(request: NextRequest) {
 
   console.log("\n[Middleware] ===== Request to:", pathname, "=====");
 
+  const pathSegments = pathname.split("/").filter(Boolean);
+  const isPreCounselPage =
+    pathSegments.length === 1 &&
+    !PUBLIC_ROUTES.some((route) => pathname.startsWith(route));
+
   // Public route 체크
-  const isPublicRoute = PUBLIC_ROUTES.some((route) =>
-    pathname.startsWith(route)
-  );
+  const isPublicRoute =
+    PUBLIC_ROUTES.some((route) => pathname.startsWith(route)) ||
+    isPreCounselPage;
   console.log("[Middleware] Is public route:", isPublicRoute);
 
   // Private route 체크: public route가 아니고, Next.js 내부 경로가 아니면 private (루트 경로 포함)
@@ -77,14 +79,13 @@ export async function middleware(request: NextRequest) {
 
   // Private route에 비인증 상태로 접근
   if (isPrivateRoute && !isAuthenticated) {
-    console.log("[Middleware] 🔄 Redirecting to /sign-in (unauthenticated access to private route)");
     const signInUrl = new URL("/sign-in", request.url);
     return NextResponse.redirect(signInUrl);
   }
 
   // Public route에 인증 상태로 접근 (로그인 페이지 등)
-  if (isPublicRoute && isAuthenticated) {
-    console.log("[Middleware] 🔄 Redirecting to / (authenticated access to public route)");
+  // 단, 사전 상담 페이지는 로그인 상태에서도 접근 가능하도록 제외
+  if (isPublicRoute && isAuthenticated && !isPreCounselPage) {
     const dashboardUrl = new URL("/", request.url);
     return NextResponse.redirect(dashboardUrl);
   }

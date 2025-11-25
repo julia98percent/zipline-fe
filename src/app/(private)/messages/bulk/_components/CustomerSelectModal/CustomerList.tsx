@@ -39,7 +39,7 @@ const CustomerList = ({
               backgroundColor: selectedCustomers.some(
                 (c) => c.uid === customer.uid
               )
-                ? "var(--color-primary-hover)"
+                ? "var(--color-info-light)"
                 : "var(--color-background-alt)",
               cursor: "pointer",
               border: selectedCustomers.some((c) => c.uid === customer.uid)

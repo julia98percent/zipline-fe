@@ -46,7 +46,7 @@ const TemplateList: React.FC<TemplateListProps> = ({
                 style={{
                   backgroundColor:
                     selectedTemplate?.uid === template.uid
-                      ? "var(--color-primary-light-hover)"
+                      ? "var(--color-info-light)"
                       : "transparent",
                 }}
                 onClick={() => onTemplateSelect(template)}

@@ -38,7 +38,7 @@ const VariableList: React.FC<VariableListProps> = ({
             className="px-3 py-1 cursor-pointer rounded-md transition-all duration-200 mb-1"
             sx={{
               "&:hover": {
-                backgroundColor: "rgba(22, 79, 158, 0.04)",
+                backgroundColor: "var(--color-info-light)",
                 "& .variable-insert-icon": {
                   opacity: 1,
                   transform: "translateX(0)",

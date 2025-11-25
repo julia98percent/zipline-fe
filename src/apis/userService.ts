@@ -6,10 +6,7 @@ import { handleApiError, handleApiResponse } from "@/utils/apiUtil";
 
 export const fetchUserInfo = async (): Promise<User> => {
   try {
-    console.log("[fetchUserInfo] Requesting /users/info...");
     const response = await apiClient.get<ApiResponse<User>>("/users/info");
-    console.log("[fetchUserInfo] Response status:", response.status);
-    console.log("[fetchUserInfo] Response headers:", response.headers);
     return handleApiResponse(
       response.data,
       USER_ERROR_MESSAGES.INFO_FETCH_FAILED
@@ -21,12 +18,18 @@ export const fetchUserInfo = async (): Promise<User> => {
         response?: {
           status?: number;
           data?: unknown;
-          headers?: unknown
-        }
+          headers?: unknown;
+        };
       };
-      console.error("[fetchUserInfo] Error status:", axiosError.response?.status);
+      console.error(
+        "[fetchUserInfo] Error status:",
+        axiosError.response?.status
+      );
       console.error("[fetchUserInfo] Error data:", axiosError.response?.data);
-      console.error("[fetchUserInfo] Error headers:", axiosError.response?.headers);
+      console.error(
+        "[fetchUserInfo] Error headers:",
+        axiosError.response?.headers
+      );
     }
     return handleApiError(error, "fetching user info");
   }

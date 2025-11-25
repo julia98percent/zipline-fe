@@ -20,7 +20,6 @@ async function checkAuth(request: NextRequest): Promise<boolean> {
     }
 
     const serverUrl = process.env.NEXT_PUBLIC_SERVER_URL;
-    console.log("[Middleware checkAuth] Server URL:", serverUrl);
 
     if (!serverUrl) {
       console.error(
@@ -29,7 +28,6 @@ async function checkAuth(request: NextRequest): Promise<boolean> {
       return false;
     }
 
-    console.log("[Middleware checkAuth] Fetching /users/info...");
     const response = await fetch(`${serverUrl}/users/info`, {
       method: "GET",
       headers: {
@@ -54,8 +52,6 @@ async function checkAuth(request: NextRequest): Promise<boolean> {
 export async function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
 
-  console.log("\n[Middleware] ===== Request to:", pathname, "=====");
-
   const pathSegments = pathname.split("/").filter(Boolean);
   const isPreCounselPage =
     pathSegments.length === 1 &&
@@ -65,17 +61,14 @@ export async function middleware(request: NextRequest) {
   const isPublicRoute =
     PUBLIC_ROUTES.some((route) => pathname.startsWith(route)) ||
     isPreCounselPage;
-  console.log("[Middleware] Is public route:", isPublicRoute);
 
   // Private route 체크: public route가 아니고, Next.js 내부 경로가 아니면 private (루트 경로 포함)
   const isPrivateRoute =
     !isPublicRoute &&
     !pathname.startsWith("/_next") &&
     !pathname.startsWith("/api");
-  console.log("[Middleware] Is private route:", isPrivateRoute);
 
   const isAuthenticated = await checkAuth(request);
-  console.log("[Middleware] Is authenticated:", isAuthenticated);
 
   // Private route에 비인증 상태로 접근
   if (isPrivateRoute && !isAuthenticated) {
@@ -90,7 +83,6 @@ export async function middleware(request: NextRequest) {
     return NextResponse.redirect(dashboardUrl);
   }
 
-  console.log("[Middleware] ✅ Allowing access\n");
   return NextResponse.next();
 }
 

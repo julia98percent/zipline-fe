@@ -101,10 +101,8 @@ const SignInPage = () => {
                 queryFn: () => fetchRecentContractsForDashboard(0, 5),
               }),
             ]);
-            console.log("[SignIn] Dashboard data prefetch completed");
           } catch (prefetchError) {
             console.warn("[SignIn] Dashboard prefetch failed:", prefetchError);
-            // Continue with redirect even if prefetch fails
           }
         }
 
@@ -120,10 +118,6 @@ const SignInPage = () => {
           const delayMs = 500;
 
           for (let attempt = 0; attempt < maxAttempts; attempt++) {
-            console.log(
-              `[SignIn] Cookie check attempt ${attempt + 1}/${maxAttempts}`
-            );
-
             // Wait before checking
             if (attempt > 0) {
               await new Promise((resolve) => setTimeout(resolve, delayMs));
@@ -134,9 +128,6 @@ const SignInPage = () => {
             const { isSignedIn: stillSignedIn } = useAuthStore.getState();
 
             if (stillSignedIn) {
-              console.log(
-                "[SignIn] ✅ Cookies verified, proceeding with redirect"
-              );
               cookieReady = true;
               break;
             }
@@ -153,7 +144,6 @@ const SignInPage = () => {
             localStorage.removeItem("redirectAfterLogin");
             router.replace(redirectPath as Route);
           } else {
-            console.log("[SignIn] No redirect path, redirecting to dashboard");
             router.replace("/");
           }
         } else {

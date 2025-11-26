@@ -1,31 +1,14 @@
 "use client";
 import { SelectChangeEvent } from "@mui/material";
-import { useCallback, useEffect, useState, useRef, useMemo } from "react";
-import {
-  PublicPropertyItem,
-  PublicPropertySearchParams,
-} from "@/types/property";
-import { getPublicProperties } from "@/apis/propertyService";
+import { useState, useMemo } from "react";
+import { PublicPropertySearchParams } from "@/types/property";
 import PublicPropertyListView from "./PublicPropertyListView";
 import { useUrlPagination } from "@/hooks/useUrlPagination";
 import { useUrlFilters } from "@/hooks/useUrlFilters";
 import { FILTER_DEFAULTS } from "@/utils/filterUtil";
+import { usePublicProperties } from "@/queries/usePublicProperties";
 
-interface PublicPropertyListContainerProps {
-  initialProperties: PublicPropertyItem[];
-  initialHasNext: boolean;
-  initialCursorId: string | null;
-}
-
-const PublicPropertyListContainer = ({
-  initialProperties,
-  initialHasNext,
-  initialCursorId,
-}: PublicPropertyListContainerProps) => {
-  // State - 초기 데이터를 서버에서 받은 값으로 설정
-  const [hasNext, setHasNext] = useState<boolean>(initialHasNext);
-  const [cursorId, setCursorId] = useState<string | null>(initialCursorId);
-
+const PublicPropertyListContainer = () => {
   const { rowsPerPage } = useUrlPagination();
   const {
     getParam,
@@ -34,14 +17,9 @@ const PublicPropertyListContainer = ({
     searchParams: urlSearchParams,
   } = useUrlFilters();
 
-  const [publicPropertyList, setPublicPropertyList] = useState<
-    PublicPropertyItem[]
-  >(initialProperties);
-  const [loading, setLoading] = useState<boolean>(false); // 서버에서 이미 로딩했으므로 false
   const [showFilterModal, setShowFilterModal] = useState<boolean>(false);
   const [searchAddress, setSearchAddress] = useState<string>("");
   const [searchAddressQuery, setSearchAddressQuery] = useState<string>("");
-
   const [useMetric, setUseMetric] = useState(true);
 
   const searchParams = useMemo(
@@ -88,7 +66,13 @@ const PublicPropertyListContainer = ({
     [rowsPerPage, urlSearchParams, searchAddressQuery]
   );
 
-  const prevSearchParamsRef = useRef<PublicPropertySearchParams>(null);
+  const { data, fetchNextPage, hasNextPage, isLoading, isFetchingNextPage } =
+    usePublicProperties(searchParams);
+
+  const publicPropertyList = useMemo(
+    () => data?.pages?.flatMap((page) => page.content) ?? [],
+    [data]
+  );
 
   const selectedSido = getParam("selectedSido") || "";
   const selectedGu = getParam("selectedGu") || "";
@@ -190,7 +174,6 @@ const PublicPropertyListContainer = ({
 
       setParams(filterParams);
     }
-    setCursorId(null);
     setShowFilterModal(false);
   };
 
@@ -209,7 +192,6 @@ const PublicPropertyListContainer = ({
       sortField: newSortField,
       isAscending: newIsAscending,
     });
-    setCursorId(null);
   };
 
   const handleSortReset = () => {
@@ -217,7 +199,6 @@ const PublicPropertyListContainer = ({
       sortField: "id",
       isAscending: true,
     });
-    setCursorId(null);
   };
 
   const handleAddressSearch = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -226,7 +207,6 @@ const PublicPropertyListContainer = ({
 
   const handleAddressSearchSubmit = () => {
     setSearchAddressQuery(searchAddress.trim());
-    setCursorId(null);
   };
 
   const handleMetricToggle = () => {
@@ -241,103 +221,17 @@ const PublicPropertyListContainer = ({
     setShowFilterModal(false);
   };
 
-  const fetchPropertyData = useCallback(
-    async (isLoadMore = false) => {
-      if (loading && !isLoadMore) return; // 이미 로딩 중이면 중복 호출 방지
-
-      setLoading(true);
-
-      if (!isLoadMore) {
-        setPublicPropertyList([]);
-        setCursorId(null);
-      }
-
-      try {
-        const params = {
-          ...searchParams,
-          cursorId: isLoadMore ? cursorId : null,
-        };
-
-        const response = await getPublicProperties(params);
-        const contentArray = Array.isArray(response.content)
-          ? response.content
-          : [];
-
-        if (isLoadMore) {
-          setPublicPropertyList((prev) => [...prev, ...contentArray]);
-        } else {
-          setPublicPropertyList(contentArray);
-        }
-
-        setCursorId(response.nextCursorId);
-        setHasNext(response.hasNext);
-      } catch (error) {
-        if (!isLoadMore) {
-          setPublicPropertyList([]);
-          setHasNext(false);
-        }
-        console.error("Failed to fetch properties:", error);
-      } finally {
-        setLoading(false);
-      }
-    },
-    [searchParams, cursorId, loading]
-  );
-
-  const handleLoadMore = useCallback(() => {
-    if (hasNext && !loading) {
-      fetchPropertyData(true);
+  const handleLoadMore = () => {
+    if (hasNextPage && !isFetchingNextPage) {
+      fetchNextPage();
     }
-  }, [hasNext, loading, fetchPropertyData]);
-
-  useEffect(() => {
-    const hasSearchParamsChanged =
-      !prevSearchParamsRef.current ||
-      JSON.stringify(prevSearchParamsRef.current) !==
-        JSON.stringify(searchParams);
-
-    if (hasSearchParamsChanged) {
-      prevSearchParamsRef.current = searchParams;
-
-      const fetchData = async () => {
-        if (loading) return;
-
-        setLoading(true);
-        setPublicPropertyList([]);
-        setCursorId(null);
-
-        try {
-          const params = {
-            ...searchParams,
-            cursorId: null,
-          };
-
-          const response = await getPublicProperties(params);
-          const contentArray = Array.isArray(response.content)
-            ? response.content
-            : [];
-
-          setPublicPropertyList(contentArray);
-          setCursorId(response.nextCursorId);
-          setHasNext(response.hasNext);
-        } catch (error) {
-          setPublicPropertyList([]);
-          setHasNext(false);
-          console.error("Failed to fetch properties:", error);
-        } finally {
-          setLoading(false);
-        }
-      };
-
-      fetchData();
-    }
-  }, [searchParams, loading]);
+  };
 
   return (
     <PublicPropertyListView
-      loading={loading}
+      loading={isLoading || isFetchingNextPage}
       publicPropertyList={publicPropertyList}
-      hasNext={hasNext}
+      hasNext={hasNextPage ?? false}
       searchAddress={searchAddress}
       selectedSido={selectedSido}
       selectedGu={selectedGu}

@@ -1,7 +1,6 @@
 import apiClient from "@/apis/apiClient";
 import {
   ApiResponse,
-  CursorPaginatedResponse,
   PaginatedResponse,
 } from "@/types/apiResponse";
 import { ContractCategoryType } from "@/types/contract";
@@ -280,9 +279,7 @@ export const updateProperty = async (
 
 export const getPublicProperties = async (
   searchParams: PublicPropertySearchParams
-): Promise<
-  CursorPaginatedResponse<"content", PublicPropertySearchResponse>
-> => {
+): Promise<PublicPropertySearchResponse> => {
   try {
     const queryParams = new URLSearchParams();
 

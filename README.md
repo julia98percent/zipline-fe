@@ -1,10 +1,12 @@
 # ZIPLINE - 고객/계약 데이터 통합 관리 CRM 서비스
 
-| 기존 분산되어 있던 데이터를 한곳에 모아 관리 효율성을 높인 공인중개사용 백오피스 서비스입니다.
+<img width="1465" height="796" alt="Screenshot 2025-11-27 at 10 33 20 AM" src="https://github.com/user-attachments/assets/44eb1710-d1a4-41a3-9475-665e0d218eb9" />
+
+<br/>
 
 ## ⚒️ 기술 스택
 
-- **Framework**: Next.js 15.5.2 + React 19.1.0 + TypeScript
+- **Framework**: Next.js 15 + React 19 + TypeScript
   - App Router를 활용한 서버/클라이언트 컴포넌트 분리
 - **Data Fetching**: TanStack Query (React Query) v5
   - Prefetch를 활용한 데이터 로딩 최적화
@@ -18,6 +20,8 @@
 ## 👩‍💻 기술적 성과
 
 ### Cursor 기반 무한 스크롤 페이지네이션
+
+![무한 스크롤 페이지네이션 GIF](https://github.com/user-attachments/assets/4c349711-b3ed-4efb-b963-144c02f5363a)
 
 - Challenge: 대량의 공개 매물 데이터를 오프셋(Offset) 방식으로 처리할 때 발생하는 성능 저하 및 데이터 중복/누락 발생
 - Solution: 백엔드의 Cursor 기반 API와 Intersection Observer를 결합하여 무한 스크롤 구현
@@ -118,3 +122,38 @@
 - Convention:
   - Commit Message: feat:, fix:, refactor: 등의 Conventional Commits 준수
   - ESLint & Prettier를 통한 코드 스타일 통일
+
+---
+
+# 🏁 Getting Started
+
+**ZIPLINE** 프로젝트를 로컬 환경에서 실행하기 위한 기본적인 가이드입니다.
+
+### 1️⃣ 환경 변수 설정
+
+프로젝트 실행에 필요한 환경 변수 파일이 필요합니다.
+`.env.example` 파일을 복사한 뒤 해당 파일의 이름을 `.env.local`로 바꿔주세요.<br/>
+
+### 2️⃣ 패키지 설치
+
+아래 명령어를 실행하여 필요한 의존성을 설치합니다:
+
+```bash
+yarn install
+```
+
+### 3️⃣ 개발 서버 실행
+
+개발 환경에서 프로젝트를 실행하려면 다음 명령어를 사용하세요:
+
+```bash
+yarn run dev
+```
+
+### 4️⃣ 로컬 서버 접속
+
+정상적으로 실행되었다면, 브라우저에서 아래 주소로 접속해 프로젝트를 확인할 수 있어요:
+
+```bash
+http://localhost:5173
+```
